@@ -1,22 +1,15 @@
 package com.psj.welfare.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
+import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.psj.welfare.R;
 import com.psj.welfare.adapter.MainViewPagerAdapter;
-import com.psj.welfare.custom.OnSingleClickListener;
 
 import java.util.ArrayList;
 
@@ -31,10 +24,16 @@ public class MainTabLayoutActivity extends AppCompatActivity {
 	// 프래그먼트 별 화면을 표시할 뷰페이저
 	ViewPager viewPager;
 
+	LogoutResponseCallback logoutCallbak;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_maintablayout);
+
+//		UserManagement.getInstance().requestLogout(logoutCallbak);
+
+		Log.e(TAG, "onCreate() 실행");
 
 		viewPager = findViewById(R.id.main_viewpager);
 		MainViewPagerAdapter adapter = new MainViewPagerAdapter(getSupportFragmentManager());
@@ -102,5 +101,40 @@ public class MainTabLayoutActivity extends AppCompatActivity {
 		}
 
 	} // onCreate end
+
+	@Override
+	protected void onStart()
+	{
+		super.onStart();
+		Log.e(TAG, "onStart() 실행");
+	}
+
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+		Log.e(TAG, "onResume() 실행");
+	}
+
+	@Override
+	protected void onRestart()
+	{
+		super.onRestart();
+		Log.e(TAG, "onRestart() 실행");
+	}
+
+	@Override
+	protected void onPause()
+	{
+		super.onPause();
+		Log.e(TAG, "onPause() 실행");
+	}
+
+	@Override
+	protected void onDestroy()
+	{
+		super.onDestroy();
+		Log.e(TAG, "onDestroy() 실행");
+	}
 
 } // MainTabLayoutActivity class end

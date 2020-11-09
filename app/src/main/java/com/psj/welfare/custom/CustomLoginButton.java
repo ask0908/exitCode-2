@@ -11,78 +11,78 @@ import android.widget.TextView;
 
 import com.psj.welfare.R;
 
-public class CustomLoginButton extends LinearLayout {
-	LinearLayout bg;
-	ImageView symbol;
-	TextView text;
+public class CustomLoginButton extends LinearLayout
+{
+    LinearLayout bg;
+    ImageView symbol;
+    TextView text;
 
-	public CustomLoginButton(Context context) {
-		super(context);
-		initView();
-	}
+    public CustomLoginButton(Context context) {
+        super(context);
+        initView();
+    }
 
-	public CustomLoginButton(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		initView();
-		getAttrs(attrs);
-	}
+    public CustomLoginButton(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        initView();
+        getAttrs(attrs);
+    }
 
-	public CustomLoginButton(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs);
-		initView();
-		getAttrs(attrs, defStyle);
-	}
+    public CustomLoginButton(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs);
+        initView();
+        getAttrs(attrs, defStyle);
+    }
 
-	private void initView() {
-		String infService = Context.LAYOUT_INFLATER_SERVICE;
-		LayoutInflater li = (LayoutInflater) getContext().getSystemService(infService);
-		View v = li.inflate(R.layout.welcome_login_button, this, false);
-		addView(v);
-		bg = (LinearLayout) findViewById(R.id.bg);
-		symbol = (ImageView) findViewById(R.id.symbol);
-		text = (TextView) findViewById(R.id.text);
-	}
+    private void initView() {
+        String infService = Context.LAYOUT_INFLATER_SERVICE;
+        LayoutInflater li = (LayoutInflater) getContext().getSystemService(infService);
+        View v = li.inflate(R.layout.welcome_login_button, this, false);
+        addView(v);
+        bg = (LinearLayout) findViewById(R.id.bg);
+        symbol = (ImageView) findViewById(R.id.symbol);
+        text = (TextView) findViewById(R.id.text);
+    }
 
-	private void getAttrs(AttributeSet attrs) {
-		TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.LoginButton);
-		setTypeArray(typedArray);
-	}
+    private void getAttrs(AttributeSet attrs) {
+        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.LoginButton);
+        setTypeArray(typedArray);
+    }
 
-	private void getAttrs(AttributeSet attrs, int defStyle) {
-		TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.LoginButton, defStyle, 0);
-		setTypeArray(typedArray);
-	}
+    private void getAttrs(AttributeSet attrs, int defStyle) {
+        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.LoginButton, defStyle, 0);
+        setTypeArray(typedArray);
+    }
 
-	private void setTypeArray(TypedArray typedArray) {
-		int bg_resID = typedArray.getResourceId(R.styleable.LoginButton_bg, R.drawable.btn_naver);
-		bg.setBackgroundResource(bg_resID);
-		int symbol_resID = typedArray.getResourceId(R.styleable.LoginButton_symbol, R.drawable.login_naver_symbol);
-		symbol.setImageResource(symbol_resID);
-		int textColor = typedArray.getColor(R.styleable.LoginButton_textColor, 0);
-		text.setTextColor(textColor);
-		String text_string = typedArray.getString(R.styleable.LoginButton_text);
-		text.setText(text_string);
-		typedArray.recycle();
-	}
+    private void setTypeArray(TypedArray typedArray) {
+        int bg_resID = typedArray.getResourceId(R.styleable.LoginButton_bg, R.drawable.btn_naver);
+        bg.setBackgroundResource(bg_resID);
+        int symbol_resID = typedArray.getResourceId(R.styleable.LoginButton_symbol, R.drawable.login_naver_symbol);
+        symbol.setImageResource(symbol_resID);
+        int textColor = typedArray.getColor(R.styleable.LoginButton_textColor, 0);
+        text.setTextColor(textColor);
+        String text_string = typedArray.getString(R.styleable.LoginButton_text);
+        text.setText(text_string);
+        typedArray.recycle();
+    }
 
-	void setBg(int bg_resID) {
-		bg.setBackgroundResource(bg_resID);
-	}
+    void setBg(int bg_resID) {
+        bg.setBackgroundResource(bg_resID);
+    }
 
-	void setSymbol(int symbol_resID) {
-		symbol.setImageResource(symbol_resID);
-	}
+    void setSymbol(int symbol_resID) {
+        symbol.setImageResource(symbol_resID);
+    }
 
-	void setTextColor(int color) {
-		text.setTextColor(color);
-	}
+    void setTextColor(int color) {
+        text.setTextColor(color);
+    }
 
-	void setText(String text_string) {
-		text.setText(text_string);
-	}
+    void setText(String text_string) {
+        text.setText(text_string);
+    }
 
-	void setText(int text_resID) {
-		text.setText(text_resID);
-	}
-
-} // CustomLoginButton class end
+    void setText(int text_resID) {
+        text.setText(text_resID);
+    }
+}

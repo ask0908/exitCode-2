@@ -6,7 +6,7 @@
      color 는 테두리 색-->
     <stroke
         android:width="0.5dp"
-        android:color="@color/colorMainBlue" />
+        android:color="@color/colorKakaoBtn" />
     <solid android:color="@color/colorKakaoBtn">
 
 

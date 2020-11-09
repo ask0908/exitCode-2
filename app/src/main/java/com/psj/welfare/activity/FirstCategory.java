@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.psj.welfare.Data.FirstCategoryItem;
 import com.psj.welfare.R;
 import com.psj.welfare.adapter.FirstCategoryAdapter;
-import com.psj.welfare.api.ApiService;
-import com.psj.welfare.api.RetroClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.custom.OnSingleClickListener;
 
 import org.json.JSONException;
@@ -178,7 +178,7 @@ public class FirstCategory extends AppCompatActivity {
 			@Override
 			public void onClick(View v) {
 				Log.i(TAG, "< 이미지 클릭!");
-				Intent f_CategoryIntent = new Intent(FirstCategory.this, MainBeforeActivity.class);
+				Intent f_CategoryIntent = new Intent(FirstCategory.this, MainTabLayoutActivity.class);
 				startActivity(f_CategoryIntent);
 				finish();
 			}
@@ -190,13 +190,10 @@ public class FirstCategory extends AppCompatActivity {
 			public void onSingleClick(View v) {
 				Log.i(TAG, "다음단계 버튼 클릭!");
 
-				// 레트로핏 서버 URL 설정해놓은 객체 생성
-				RetroClient retroClient = new RetroClient();
-				// GET, POST 같은 서버에 데이터를 보내기 위해서 생성합니다
-				ApiService apiService = retroClient.getApiClient().create(ApiService.class);
-
-				// 인터페이스 ApiService에 선언한 category1()를 호출합니다
-				Call<String> call = apiService.category1(select, "1");
+				// 레트로핏 서버 URL 설정해놓은 객체 생성 후 GET, POST 같은 서버에 데이터를 보내기 위해서 생성합니다
+				ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+				// 인터페이스 ApiInterface에 선언한 category1()를 호출합니다
+				Call<String> call = apiInterface.category1(select, "1");
 				call.enqueue(new Callback<String>() {
 					@Override
 					public void onResponse(Call<String> call, Response<String> response) {

@@ -8,9 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,23 +20,18 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.psj.welfare.R;
-import com.psj.welfare.activity.MainActivity;
 import com.psj.welfare.activity.ResultBenefitActivity;
-import com.psj.welfare.activity.SearchActivity;
-import com.psj.welfare.adapter.MainTextVPAdapter;
+import com.psj.welfare.custom.CustomResultBenefitDialog;
 import com.psj.welfare.custom.OnSingleClickListener;
 
 import java.util.ArrayList;
-import java.util.Timer;
 
 /**
  * MainActivity를 대체하는 프래그먼트
  * 앱 실행 시 이 프래그먼트의 화면이 먼저 보이게 한다
  */
 public class MainFragment extends Fragment {
-	/* MainFragment TAG */
 	public static final String TAG = "MainFragment"; // 로그 찍을 때 사용하는 TAG
 
 	// 스크롤뷰
@@ -63,6 +56,9 @@ public class MainFragment extends Fragment {
 	LinearLayout multi_law_layout, etc_layout;
 
 	ArrayList<String> m_favorList = new ArrayList<>();  // 유저에게 제공할 혜택들을 담을 ArrayList
+
+	// 스크롤 수정
+	LinearLayout main_content;
 
 	public MainFragment() {
 		// 프래그먼트 사용 시 있어야 하는 디폴트 생성자
@@ -116,10 +112,30 @@ public class MainFragment extends Fragment {
 
 		// 조회하기 버튼
 		main_done.setOnClickListener(OnSingleClickListener -> {
-			m_favorList.add(0, "전체");
-			Intent m_intent = new Intent(getActivity(), ResultBenefitActivity.class);
-			m_intent.putStringArrayListExtra("favor_btn", m_favorList);
-			startActivity(m_intent);
+			Log.e("main_done 버튼 클릭", "m_favorList 크기 = " + m_favorList.size());
+			// 관심사 선택이 1개라도 안돼 있으면 커스텀 다이얼로그를 띄운다
+			if (m_favorList.size() == 0)
+			{
+				CustomResultBenefitDialog dialog = new CustomResultBenefitDialog(getActivity());
+				dialog.callDialog();
+			}
+			else
+			{
+				m_favorList.add(0, "전체");
+				for (int i = 0; i < m_favorList.size(); i++) {
+					Log.e(TAG, "m_favorList : " + m_favorList);
+				}
+				Intent m_intent = new Intent(getActivity(), ResultBenefitActivity.class);
+				m_intent.putStringArrayListExtra("favor_btn", m_favorList);
+				startActivity(m_intent);
+			}
+//			m_favorList.add(0, "전체");
+//			for (int i = 0; i < m_favorList.size(); i++) {
+//				Log.e(TAG, "m_favorList : " + m_favorList);
+//			}
+//			Intent m_intent = new Intent(getActivity(), ResultBenefitActivity.class);
+//			m_intent.putStringArrayListExtra("favor_btn", m_favorList);
+//			startActivity(m_intent);
 		});
 
 		/* 아기·어린이 혜택 버튼 */
@@ -358,16 +374,16 @@ public class MainFragment extends Fragment {
 			public void onSingleClick(View v) {
 				Log.i(TAG, "혜택 조회하러 가기 클릭!");
 
-				// 스크롤 0.5초만에 Y축 2100 이동
+				// 스크롤 0.5초만에 Y축 main_content 머리로 이동
 				main_ScrollView.post(new Runnable() {
 					@Override
 					public void run() {
 						if (!isClicked) {
 							// 더보기 버튼 클릭 전 스크롤 이동
-							ObjectAnimator.ofInt(main_ScrollView, "scrollY", 2100).setDuration(500).start();
+							ObjectAnimator.ofInt(main_ScrollView, "scrollY", main_content.getTop()).setDuration(500).start();
 						} else {
 							// 더보기 버튼 클릭 후 스크롤 이동
-							ObjectAnimator.ofInt(main_ScrollView, "scrollY", 2500).setDuration(500).start();
+							ObjectAnimator.ofInt(main_ScrollView, "scrollY", main_content.getTop()).setDuration(500).start();
 						}
 
 					} // run end
@@ -377,9 +393,137 @@ public class MainFragment extends Fragment {
 
 	}
 
+	@Override
+	public void onAttach(@NonNull Context context)
+	{
+		super.onAttach(context);
+		Log.e(TAG, "onAttach() 실행");
+	}
+
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		Log.e(TAG, "onCreate() 실행");
+	}
+
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState)
+	{
+		super.onActivityCreated(savedInstanceState);
+		Log.e(TAG, "onActivityCreated() 실행");
+	}
+
+	@Override
+	public void onStart()
+	{
+		super.onStart();
+		Log.e(TAG, "onStart() 실행");
+		// 조회하기 버튼만 누르고 이동했다가 다시 돌아온 후, 다시 조회하기 버튼을 누르면 전체가 여러 개 찍히는 현상이 있다
+		// 이 현상을 없애기 위해서 ArrayList.clear()로 리스트를 싹 비운다
+		m_favorList.clear();
+
+		// ResultBenefitActivity에서 뒤로가기 누를 시 버튼이 선택된 상태의 프래그먼트로 돌아오기 때문에, 버튼이 선택되지 않은 처음의 상태로 되돌리기 위해서 필요한 로직
+		main_child_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.child));
+		main_child_title.setTextColor(getResources().getColor(R.color.colorBlack));
+		main_child.setSelected(false);
+
+		main_student_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.student));
+		main_student_title.setTextColor(getResources().getColor(R.color.colorBlack));
+		main_student.setSelected(false);
+
+		main_old_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.old));
+		main_old_title.setTextColor(getResources().getColor(R.color.colorBlack));
+		main_old.setSelected(false);
+
+		main_pregnancy_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.pregnancy));
+		main_pregnancy_title.setTextColor(getResources().getColor(R.color.colorBlack));
+		main_pregnancy.setSelected(false);
+
+		main_disorder_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.disorder));
+		main_disorder_title.setTextColor(getResources().getColor(R.color.colorBlack));
+		main_disorder.setSelected(false);
+
+		main_cultural_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.cultural));
+		main_cultural_title.setTextColor(getResources().getColor(R.color.colorBlack));
+		main_cultural.setSelected(false);
+
+		main_multicultural_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.multicultural));
+		main_multicultural_title.setTextColor(getResources().getColor(R.color.colorBlack));
+		main_multicultural.setSelected(false);
+
+		main_company_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.company));
+		main_company_title.setTextColor(getResources().getColor(R.color.colorBlack));
+		main_company.setSelected(false);
+
+		main_law_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.law));
+		main_law_title.setTextColor(getResources().getColor(R.color.colorBlack));
+		main_law.setSelected(false);
+
+		main_living_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.living));
+		main_living_title.setTextColor(getResources().getColor(R.color.colorBlack));
+		main_living.setSelected(false);
+
+		main_job_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.job));
+		main_job_title.setTextColor(getResources().getColor(R.color.colorBlack));
+		main_job.setSelected(false);
+
+		main_homeless_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.homeless));
+		main_homeless_title.setTextColor(getResources().getColor(R.color.colorBlack));
+		main_homeless.setSelected(false);
+
+		main_etc_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.etc));
+		main_etc_title.setTextColor(getResources().getColor(R.color.colorBlack));
+		main_etc.setSelected(false);
+	}
+
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		Log.e(TAG, "onResume() 실행");
+	}
+
+	@Override
+	public void onPause()
+	{
+		super.onPause();
+		Log.e(TAG, "onPause() 실행");
+	}
+
+	@Override
+	public void onStop()
+	{
+		super.onStop();
+		Log.e(TAG, "onStop() 실행");
+	}
+
+	@Override
+	public void onDestroyView()
+	{
+		super.onDestroyView();
+		Log.e(TAG, "onDestroyView() 실행");
+	}
+
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+		Log.e(TAG, "onDestroy() 실행");
+	}
+
+	@Override
+	public void onDetach()
+	{
+		super.onDetach();
+		Log.e(TAG, "onDetach() 실행");
+	}
+
 	private void init(View view) {
-		main_logo = (ImageView) view.findViewById(R.id.main_logo);
-		more_layout = (LinearLayout) view.findViewById(R.id.more_layout);
+		main_content = view.findViewById(R.id.main_content);
+
+		main_logo = view.findViewById(R.id.main_logo);
+		more_layout = view.findViewById(R.id.more_layout);
 
 		/* 더보기 버튼을 누르면 나타나야 하는 레이아웃 */
 		multi_law_layout = view.findViewById(R.id.multi_law_layout);
@@ -418,7 +562,7 @@ public class MainFragment extends Fragment {
 		main_etc_img = view.findViewById(R.id.main_etc_img);
 
 		main_child_title = view.findViewById(R.id.main_child_title);
-		main_child_title = view.findViewById(R.id.main_student_title);
+		main_student_title = view.findViewById(R.id.main_student_title);
 		main_old_title = view.findViewById(R.id.main_old_title);
 		main_pregnancy_title = view.findViewById(R.id.main_pregnancy_title);
 		main_disorder_title = view.findViewById(R.id.main_disorder_title);

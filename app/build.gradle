@@ -10,13 +10,19 @@ android {
         applicationId "com.psj.welfare"
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode 6
+        versionName "6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -66,5 +72,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-scalars:2.6.4'
     // java 버전 ReadMoreTextView
     implementation 'com.borjabravo:readmoretextview:2.1.0'
+    // 카카오 SNS 로그인
+    implementation 'com.kakao.sdk:usermgmt:1.16.0'
 
 }

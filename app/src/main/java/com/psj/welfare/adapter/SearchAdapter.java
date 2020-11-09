@@ -4,13 +4,11 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.psj.welfare.Data.FirstCategoryItem;
 import com.psj.welfare.Data.SearchItem;
 import com.psj.welfare.R;
 
@@ -30,7 +28,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
 		this.onClickListener = OnClickListener;
 	}
 
-
 	public class ViewHolder extends RecyclerView.ViewHolder {
 
 		public TextView search_title;
@@ -45,10 +42,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
 			itemView.setClickable(true);
 			itemView.setEnabled(true);
 			itemView.setOnClickListener(onClickListener);
-
 		}
 	}
-
 
 	@NonNull
 	@Override

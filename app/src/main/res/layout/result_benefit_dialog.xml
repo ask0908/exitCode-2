@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#6f52e8"
+        android:orientation="vertical"
+        android:paddingTop="30dp"
+        android:paddingBottom="30dp">
+
+        <ImageView
+            android:id="@+id/dialog_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/main_logo"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#000000"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- 안내 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="관심사를 1개라도 선택하셔야\n결과를 확인하실 수 있어요!"
+            android:fontFamily="@font/jalnan"
+            android:letterSpacing="-0.03"
+            android:lineSpacingExtra="10sp"
+            android:gravity="start"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:textColor="#000000"
+            android:textSize="20sp"/>
+
+        <!-- OK 버튼 -->
+        <TextView
+            android:id="@+id/dialog_ok"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="OK"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:gravity="end"
+            android:layout_marginRight="40dp"
+            android:paddingBottom="20dp"
+            android:paddingTop="20dp"
+            android:textColor="@color/colorMainBlue"/>
+
+    </LinearLayout>
+
+<!--    <TextView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:gravity="center"-->
+<!--        android:text="관심사 1개를 선택하셔야\n검색 결과를 확인할 수 있어요!"-->
+<!--        android:textColor="@color/colorBlack"-->
+<!--        android:letterSpacing="0.02"-->
+<!--        android:lineSpacingExtra="13.3sp"-->
+<!--        android:fontFamily="@font/jalnan"-->
+<!--        android:textSize="25sp"/>-->
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:weightSum="1"-->
+<!--        android:layout_marginTop="10dp"-->
+<!--        android:layout_marginRight="20dp"-->
+<!--        android:orientation="horizontal">-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/dialog_ok_btn"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:text="확 인"-->
+<!--            android:fontFamily="@font/jalnan"-->
+<!--            android:textColor="@color/colorBlack"-->
+<!--            android:letterSpacing="0.02"-->
+<!--            android:lineSpacingExtra="13.3sp"-->
+<!--            android:textSize="20sp"-->
+<!--            android:layout_gravity="end"-->
+<!--            android:gravity="end"/>-->
+
+<!--    </LinearLayout>-->
+
+</LinearLayout>

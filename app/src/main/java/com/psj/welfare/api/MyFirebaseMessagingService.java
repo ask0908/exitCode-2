@@ -16,7 +16,7 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.psj.welfare.R;
-import com.psj.welfare.activity.MainBeforeActivity;
+import com.psj.welfare.activity.MainTabLayoutActivity;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -43,7 +43,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 	}
 
 	public void showNotification(String title, String message, String icon) {
-		Intent intent = new Intent(this, MainBeforeActivity.class);
+		Intent intent = new Intent(this, MainTabLayoutActivity.class);
 		// 호출하는 Activity가 스택에 있을 경우, 해당 Activity를 최상위로 올리면서, 그 위에 있던 Activity들을 모두 삭제하는 Flag
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -53,7 +53,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 		Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
 		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelID)
-				.setSmallIcon(R.drawable.goodfather)
+				.setSmallIcon(R.drawable.etc)
 				.setContentTitle(title)
 				.setContentText(message)
 				.setAutoCancel(true)

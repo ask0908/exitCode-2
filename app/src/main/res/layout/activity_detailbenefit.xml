@@ -19,9 +19,6 @@
             android:layout_marginTop="20dp"
             android:src="@drawable/main_logo" />
 
-
-        <!-- 테스트 주석 githubClone/exitCode -->
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="210dp"
@@ -155,7 +152,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:layout_marginTop="43dp"
-                        android:fontFamily="@font/nanum_gothic_coding_bold"
+                        android:fontFamily="@font/nanum_barun_gothic_bold"
                         android:letterSpacing="-0.02"
                         android:lineSpacingExtra="25.8sp"
                         android:text="지원대상"
@@ -173,7 +170,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="22.5dp"
                     android:layout_marginRight="5dp"
-                    android:fontFamily="@font/nanum_gothic_coding_bold"
+                    android:fontFamily="@font/nanum_barun_gothic_bold"
                     android:letterSpacing="-0.03"
                     android:lineSpacingExtra="8.5sp"
                     android:text="기초생활수급가구, 차상위계층, 복지사각지대(기초지자체 추천),사회복지시설 등."
@@ -226,7 +223,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:layout_marginTop="43dp"
-                        android:fontFamily="@font/nanum_gothic_coding_bold"
+                        android:fontFamily="@font/nanum_barun_gothic_bold"
                         android:letterSpacing="-0.02"
                         android:lineSpacingExtra="25.8sp"
                         android:text="지원내용"
@@ -244,7 +241,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="22.5dp"
                     android:layout_marginRight="5dp"
-                    android:fontFamily="@font/nanum_gothic_coding_bold"
+                    android:fontFamily="@font/nanum_barun_gothic_bold"
                     android:letterSpacing="-0.03"
                     android:lineSpacingExtra="8.5sp"
                     android:text="기초생활수급가구, 차상위계층, 복지사각지대(기초지자체 추천),사회복지시설 등."
@@ -290,7 +287,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:layout_marginTop="43dp"
-                        android:fontFamily="@font/nanum_gothic_coding_bold"
+                        android:fontFamily="@font/nanum_barun_gothic_bold"
                         android:letterSpacing="-0.02"
                         android:lineSpacingExtra="25.8sp"
                         android:text="문의"
@@ -308,7 +305,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="22.5dp"
                     android:layout_marginRight="5dp"
-                    android:fontFamily="@font/nanum_gothic_coding_bold"
+                    android:fontFamily="@font/nanum_barun_gothic_bold"
                     android:letterSpacing="-0.03"
                     android:lineSpacingExtra="8.5sp"
                     android:text="한국에너지재단 (1670-7653)"
@@ -379,7 +376,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:fontFamily="@font/nanum_gothic_coding_bold"
+                android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:letterSpacing="-0.03"
                 android:lineSpacingExtra="39.3sp"
                 android:text="사용자에게 알맞는 복지 지원과 혜택을 알려드립니다."

@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="right"
         android:layout_margin="10dp"
-        android:src="@drawable/close"></ImageView>
+        android:src="@drawable/close" />
 
     <TextView
         android:layout_width="match_parent"
@@ -22,36 +22,49 @@
         android:fontFamily="@font/nanum_barun_gothic_bold"
         android:gravity="center"
         android:padding="20dp"
-        android:text="니가 모르는 혜택들"
-        android:textColor="@color/colorBlack"
-        android:textSize="30sp"></TextView>
+        android:text="너의 혜택은"
+        android:textColor="@color/colorPurple"
+        android:textSize="30sp" />
 
-    <com.psj.welfare.custom.CustomLoginButton
-        android:id="@+id/btn_NLogin"
-        style="@style/LoginButtonStyle"
-        android:layout_gravity="center"
-        app:bg="@drawable/btn_naver"
-        app:symbol="@drawable/login_naver_symbol"
-        app:text="@string/login_naver"
-        app:textColor="@color/colorMainWhite" />
+    <!--    <com.psj.welfare.custom.CustomLoginButton-->
+    <!--        android:id="@+id/btn_NLogin"-->
+    <!--        style="@style/LoginButtonStyle"-->
+    <!--        android:layout_gravity="center"-->
+    <!--        app:bg="@drawable/btn_naver"-->
+    <!--        app:symbol="@drawable/login_naver_symbol"-->
+    <!--        app:text="@string/login_naver"-->
+    <!--        app:textColor="@color/colorMainWhite" />-->
 
-    <com.psj.welfare.custom.CustomLoginButton
-        android:id="@+id/btn_GLogin"
-        style="@style/LoginButtonStyle"
-        android:layout_gravity="center"
-        app:bg="@drawable/btn_google"
-        app:symbol="@drawable/login_google_symbol"
-        app:text="@string/login_google"
-        app:textColor="@color/colorGray_B" />
+    <!--    <com.psj.welfare.custom.CustomLoginButton-->
+    <!--        android:id="@+id/btn_GLogin"-->
+    <!--        style="@style/LoginButtonStyle"-->
+    <!--        android:layout_gravity="center"-->
+    <!--        app:bg="@drawable/btn_google"-->
+    <!--        app:symbol="@drawable/login_google_symbol"-->
+    <!--        app:text="@string/login_google"-->
+    <!--        app:textColor="@color/colorGray_B" />-->
 
-    <com.psj.welfare.custom.CustomLoginButton
-        android:id="@+id/btn_MYLogin"
-        style="@style/LoginButtonStyle"
-        android:layout_gravity="center"
-        app:bg="@drawable/btn_welfare"
-        app:symbol="@drawable/up"
-        app:text="@string/login_welfare"
-        app:textColor="@color/colorMainWhite" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.kakao.usermgmt.LoginButton
+            android:id="@+id/real_kakao"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" />
+
+        <com.psj.welfare.custom.CustomLoginButton
+            android:id="@+id/fake_kakao"
+            style="@style/LoginButtonStyle"
+            android:layout_gravity="center"
+            app:bg="@drawable/btn_kakao"
+            app:symbol="@drawable/login_kakao_symbol"
+            app:text="@string/login_kakao"
+            app:textColor="@color/colorMainWhite" />
+
+    </FrameLayout>
 
 
 </LinearLayout>

@@ -6,21 +6,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.gson.JsonObject;
-import com.psj.welfare.Data.SecondCategoryItem;
 import com.psj.welfare.Data.ThirdCategoryItem;
 import com.psj.welfare.R;
-import com.psj.welfare.adapter.SecondCategoryAdapter;
 import com.psj.welfare.adapter.ThirdCategoryAdapter;
-import com.psj.welfare.api.ApiService;
-import com.psj.welfare.api.RetroClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.custom.OnSingleClickListener;
 
 import org.json.JSONArray;
@@ -158,13 +154,11 @@ public class ThirdCategory extends AppCompatActivity {
 		category_done.setOnClickListener(new OnSingleClickListener() {
 			@Override
 			public void onSingleClick(View v) {
-				// 레트로핏 서버 URL 설정해놓은 객체 생성
-				RetroClient retroClient = new RetroClient();
-				// GET, POST 같은 서버에 데이터를 보내기 위해서 생성합니다
-				ApiService apiService = retroClient.getApiClient().create(ApiService.class);
+				// 레트로핏 서버 URL 설정해놓은 객체 생성 후 GET, POST 같은 서버에 데이터를 보내기 위해서 생성합니다
+				ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
 
 				// 인터페이스 ApiService에 선언한 category3()를 호출합니다
-				Call<String> call = apiService.category3(first_select, second_select, third_select, "3");
+				Call<String> call = apiInterface.category3(first_select, second_select, third_select, "3");
 				call.enqueue(new Callback<String>() {
 					@Override
 					public void onResponse(Call<String> call, Response<String> response) {
