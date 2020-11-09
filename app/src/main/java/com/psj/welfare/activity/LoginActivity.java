@@ -29,8 +29,8 @@ import com.kakao.usermgmt.callback.UnLinkResponseCallback;
 import com.kakao.usermgmt.response.MeV2Response;
 import com.kakao.util.exception.KakaoException;
 import com.psj.welfare.R;
-import com.psj.welfare.api.ApiService;
-import com.psj.welfare.api.RetroClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.custom.CustomLoginButton;
 
 import retrofit2.Call;
@@ -96,13 +96,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 String token = task.getResult().getToken();
                 Log.d(TAG, "FCM 토큰 : " + token);
 
-                // 레트로핏 서버 URL 설정해놓은 객체 생성
-                RetroClient retroClient = new RetroClient();
-                // GET, POST 같은 서버에 데이터를 보내기 위해서 생성합니다
-                ApiService apiService = retroClient.getApiClient().create(ApiService.class);
+                // 레트로핏 서버 URL 설정해놓은 객체 생성 후 GET, POST 같은 서버에 데이터를 보내기 위해서 생성합니다
+                ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
 
                 // 인터페이스 ApiService에 선언한 fcmToken()를 호출합니다
-                Call<String> call = apiService.fcmToken("tkdwns3340@naver.com", token);
+                Call<String> call = apiInterface.fcmToken("tkdwns3340@naver.com", token);
                 call.enqueue(new Callback<String>()
                 {
                     @Override

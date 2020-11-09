@@ -8,9 +8,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 
-public class RetroClient {
+public class ApiClient
+{
 	// 클라이언트가 통신할 서버 URL
-	public static final String ServerIP = "http://3.34.4.196";
+	public static final String BASE_URL = "http://3.34.4.196";
 
 	// 사용자에 대한 인증정보를 매 요청마다 서버로 함께 전달해 주어야 하는 경우가 발생하거나,
 	// 개발 중 요청과 응답에 대한 로깅을 해야되는 경우가 발생합니다
@@ -19,26 +20,24 @@ public class RetroClient {
 	// OkHttpClient 객체를 생성하여, Header정보에 Token정보를 설정해줄 수 있습니다
 	// OkHttpClient client = new OkHttpClient();
 
-
 	// 클라이언트 <-> 서버 통신에 필요한 라이브러리 객체 생성
 	private static Retrofit retrofit;
 
 	// 레트로핏 통신 기능 (서버 URL, 반환 받을 때 변환 형태)
-	public Retrofit getApiClient() {
-
+	public static Retrofit getApiClient()
+	{
 		Gson gson = new GsonBuilder()
 				.setLenient()
 				.create();
 
-		if (retrofit == null) {
+		if (retrofit == null)
+		{
 			retrofit = new Retrofit.Builder()
-					.baseUrl(ServerIP)
+					.baseUrl(BASE_URL)
 					.addConverterFactory(ScalarsConverterFactory.create())
 					.addConverterFactory(GsonConverterFactory.create(gson))
 					.build();
 		}
 		return retrofit;
-	} // getApiClient() 끝
-
-
+	}
 }

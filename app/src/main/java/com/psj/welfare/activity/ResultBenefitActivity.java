@@ -20,8 +20,8 @@ import com.psj.welfare.Data.ResultBenefitItem;
 import com.psj.welfare.R;
 import com.psj.welfare.adapter.RBFAdapter;
 import com.psj.welfare.adapter.RBFTitleAdapter;
-import com.psj.welfare.api.ApiService;
-import com.psj.welfare.api.RetroClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.custom.OnSingleClickListener;
 
 import org.json.JSONArray;
@@ -97,7 +97,7 @@ public class ResultBenefitActivity extends AppCompatActivity
         }
         else
         {
-            Log.i(TAG, "전달 받은 인텐트 값 없어요!");
+            Log.e(TAG, "전달 받은 인텐트 값 없어요!");
         }
 
         // 리사이클러뷰로 구현한 버튼을 클릭하면 로그가 출력되게 하고 싶다
@@ -111,7 +111,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                 if (v.getTag() != null)
                 {
                     int position = (int) obj;
-                    Log.i(TAG, "관심사 버튼을 클릭 했어요 -> " + position);
+                    Log.e(TAG, "관심사 버튼을 클릭 했어요 -> " + position);
                     int btnColor = ((RBFAdapter) RbfBtn_Adapter).getRBF(position).getRBF_btnColor();
                     Log.e(TAG, "내가 선택한 버튼 색상 : " + btnColor);
                     Log.e(TAG, "비교할 버튼 새상 : " + R.drawable.btn_done);
@@ -645,7 +645,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                 if (v.getTag() != null)
                 {
                     int position = (int) obj;
-                    Log.i(TAG, "관심사 버튼을 클릭 했어요 -> " + position);
+                    Log.e(TAG, "관심사 버튼을 클릭 했어요 -> " + position);
                     String title = ((RBFTitleAdapter) RbfTitle_Adapter).getRBFTitle(position).getRBF_Title();
 
                     Intent RBF_intent = new Intent(ResultBenefitActivity.this, DetailBenefitActivity.class);
@@ -670,14 +670,11 @@ public class ResultBenefitActivity extends AppCompatActivity
 
         Log.e(TAG, "리스트값 스트링으로 변환 -> " + favor);
 
-        // 레트로핏 서버 URL 설정해놓은 객체 생성
-        RetroClient retroClient = new RetroClient();
-        // GET, POST 같은 서버에 데이터를 보내기 위해서 생성합니다
-        ApiService apiService = retroClient.getApiClient().create(ApiService.class);
-
+        // 레트로핏 서버 URL 설정해놓은 객체 생성 후 GET, POST 같은 서버에 데이터를 보내기 위해서 생성합니다
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
 
         // 인터페이스 ApiService에 선언한 mainFavor()를 호출합니다
-        Call<String> call = apiService.mainFavor(favor);
+        Call<String> call = apiInterface.mainFavor(favor);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -685,7 +682,7 @@ public class ResultBenefitActivity extends AppCompatActivity
             {
                 if (response.isSuccessful())
                 {
-                    Log.i(TAG, "onResponse 성공 : " + response.body().toString());
+                    Log.e(TAG, "onResponse 성공 : " + response.body().toString());
                     /*
                      * 사용자가 선택한 관심사와 혜택 제목이 서버에서 응답이 온다
                      * 응답은 Json 구조로 응답이 올 것이고 나는 응답 받은 Json 데이터를 파싱할 것이다
@@ -697,7 +694,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                 }
                 else
                 {
-                    Log.i(TAG, "onResponse 실패");
+                    Log.e(TAG, "onResponse 실패");
 
                 }
             }
@@ -705,7 +702,7 @@ public class ResultBenefitActivity extends AppCompatActivity
             @Override
             public void onFailure(Call<String> call, Throwable t)
             {
-                Log.i(TAG, "onFailure : " + t.toString());
+                Log.e(TAG, "onFailure : " + t.toString());
 
 
             }
@@ -758,7 +755,7 @@ public class ResultBenefitActivity extends AppCompatActivity
         {
             JSONObject jsonObject = new JSONObject(favorData);
 
-            Log.i(TAG, "JSON 길이 : " + jsonObject.length());
+            Log.e(TAG, "JSON 길이 : " + jsonObject.length());
 
             // 사용자가 선택한 관심사와 서버에서 받은 관심사를 비교하여 일치하면
             // 혜택 결과 리스트에 추가

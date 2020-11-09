@@ -166,6 +166,7 @@
                         android:text="취업·창업"
                         android:textColor="#000000"
                         android:textSize="16sp" />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -237,6 +238,7 @@
                         android:text="주거"
                         android:textColor="#000000"
                         android:textSize="16sp" />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -267,6 +269,7 @@
                         android:text="육아·임신"
                         android:textColor="#000000"
                         android:textSize="16sp" />
+
                 </LinearLayout>
 
             </LinearLayout>
@@ -308,6 +311,7 @@
                         android:text="아기·어린이"
                         android:textColor="#000000"
                         android:textSize="16sp" />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -338,6 +342,7 @@
                         android:text="문화·생활"
                         android:textColor="#000000"
                         android:textSize="16sp" />
+
                 </LinearLayout>
 
             </LinearLayout>
@@ -379,6 +384,7 @@
                         android:text="기업·자영업자"
                         android:textColor="#000000"
                         android:textSize="16sp" />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -409,7 +415,9 @@
                         android:text="저소득층"
                         android:textColor="#000000"
                         android:textSize="16sp" />
+
                 </LinearLayout>
+
             </LinearLayout>
 
             <LinearLayout
@@ -449,6 +457,7 @@
                         android:text="중장년·노인"
                         android:textColor="#000000"
                         android:textSize="16sp" />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -630,6 +639,7 @@
                         android:text="기타"
                         android:textColor="#000000"
                         android:textSize="16sp" />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -655,6 +665,7 @@
                         android:text=""
                         android:textColor="#000000"
                         android:textSize="16sp" />
+
                 </LinearLayout>
 
 

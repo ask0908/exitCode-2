@@ -32,7 +32,6 @@ import java.util.ArrayList;
  * 앱 실행 시 이 프래그먼트의 화면이 먼저 보이게 한다
  */
 public class MainFragment extends Fragment {
-	/* MainFragment TAG */
 	public static final String TAG = "MainFragment"; // 로그 찍을 때 사용하는 TAG
 
 	// 스크롤뷰

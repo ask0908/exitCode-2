@@ -19,8 +19,8 @@ import com.psj.welfare.Data.SearchItem;
 import com.psj.welfare.R;
 import com.psj.welfare.activity.DetailBenefitActivity;
 import com.psj.welfare.adapter.SearchAdapter;
-import com.psj.welfare.api.ApiService;
-import com.psj.welfare.api.RetroClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.api.ApiClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -103,13 +103,11 @@ public class FragmentSearch extends Fragment {
 		Log.e(TAG, "onActivityCreated 실행!");
 
 		if (search != null) {
-			// 레트로핏 서버 URL 설정해놓은 객체 생성
-			RetroClient retroClient = new RetroClient();
-			// GET, POST 같은 서버에 데이터를 보내기 위해서 생성합니다
-			ApiService apiService = retroClient.getApiClient().create(ApiService.class);
+			// 레트로핏 서버 URL 설정해놓은 객체 생성 후 GET, POST 같은 서버에 데이터를 보내기 위해서 생성합니다
+			ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
 
 			// 인터페이스 ApiService에 선언한 search()를 호출합니다
-			Call<String> call = apiService.search(search);
+			Call<String> call = apiInterface.search(search);
 			call.enqueue(new Callback<String>() {
 				@Override
 				public void onResponse(Call<String> call, Response<String> response) {

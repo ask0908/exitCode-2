@@ -14,15 +14,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.borjabravo.readmoretextview.ReadMoreTextView;
-import com.bumptech.glide.Glide;
 import com.google.gson.JsonObject;
 import com.psj.welfare.Data.DetailBenefitItem;
 import com.psj.welfare.R;
 import com.psj.welfare.adapter.DetailBenefitRecyclerAdapter;
-import com.psj.welfare.api.ApiService;
-import com.psj.welfare.api.RetroClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.custom.OnSingleClickListener;
-import com.psj.welfare.fragment.MainFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,7 +52,6 @@ public class DetailBenefitActivity extends AppCompatActivity {
 	View apply_bottom_view, content_bottom_view;
 
 	// 연관된 혜택 밑의 가로로 버튼들을 넣을 리사이클러뷰
-	// TODO : 어댑터 만들어야 함. 모델 클래스 이상하면 수정하기
 	private RecyclerView detail_benefit_recyclerview;
 	private DetailBenefitRecyclerAdapter adapter;
 	private DetailBenefitRecyclerAdapter.ItemClickListener itemClickListener;
@@ -104,14 +101,11 @@ public class DetailBenefitActivity extends AppCompatActivity {
 			}
 		};
 
-
-		// 레트로핏 서버 URL 설정해놓은 객체 생성
-		RetroClient retroClient = new RetroClient();
-		// GET, POST 같은 서버에 데이터를 보내기 위해서 생성합니다
-		ApiService apiService = retroClient.getApiClient().create(ApiService.class);
+		// 레트로핏 서버 URL 설정해놓은 객체 생성 후 GET, POST 같은 서버에 데이터를 보내기 위해서 생성합니다
+		ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
 		Log.e(TAG, "상세 내용 불러올 정책 제목 : " + detail_data.toString());
 		// 인터페이스 ApiService에 선언한 detailData()를 호출합니다
-		Call<JsonObject> call = apiService.detailData(detail_data);
+		Call<JsonObject> call = apiInterface.detailData(detail_data);
 		call.enqueue(new Callback<JsonObject>() {
 			@Override
 			public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {

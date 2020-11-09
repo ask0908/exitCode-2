@@ -6,23 +6,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.gson.JsonObject;
 import com.psj.welfare.Data.EndCategoryItem;
-import com.psj.welfare.Data.SecondCategoryItem;
-import com.psj.welfare.Data.ThirdCategoryItem;
 import com.psj.welfare.R;
 import com.psj.welfare.adapter.EndCategoryAdapter;
-import com.psj.welfare.adapter.SecondCategoryAdapter;
-import com.psj.welfare.adapter.ThirdCategoryAdapter;
-import com.psj.welfare.api.ApiService;
-import com.psj.welfare.api.RetroClient;
 import com.psj.welfare.custom.OnSingleClickListener;
 
 import org.json.JSONArray;
@@ -30,10 +22,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /*
  * 마지막 카테고리 선택 액티비티는 사용자의 맞춤 혜택을 보여주기 위한 마지막 단계이다

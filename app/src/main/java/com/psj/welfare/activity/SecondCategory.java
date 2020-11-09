@@ -13,14 +13,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.gson.JsonObject;
-import com.psj.welfare.Data.FirstCategoryItem;
 import com.psj.welfare.Data.SecondCategoryItem;
 import com.psj.welfare.R;
-import com.psj.welfare.adapter.FirstCategoryAdapter;
 import com.psj.welfare.adapter.SecondCategoryAdapter;
-import com.psj.welfare.api.ApiService;
-import com.psj.welfare.api.RetroClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.custom.OnSingleClickListener;
 
 import org.json.JSONArray;
@@ -168,13 +165,11 @@ public class SecondCategory extends AppCompatActivity {
 			public void onSingleClick(View v) {
 				Log.i(TAG, "다음단계 버튼 클릭!");
 
-				// 레트로핏 서버 URL 설정해놓은 객체 생성
-				RetroClient retroClient = new RetroClient();
-				// GET, POST 같은 서버에 데이터를 보내기 위해서 생성합니다
-				ApiService apiService = retroClient.getApiClient().create(ApiService.class);
+				// 레트로핏 서버 URL 설정해놓은 객체 생성 후 GET, POST 같은 서버에 데이터를 보내기 위해서 생성합니다
+				ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
 
 				// 인터페이스 ApiService에 선언한 category2()를 호출합니다
-				Call<String> call = apiService.category2(first_select, second_select, "2");
+				Call<String> call = apiInterface.category2(first_select, second_select, "2");
 				call.enqueue(new Callback<String>() {
 					@Override
 					public void onResponse(Call<String> call, Response<String> response) {

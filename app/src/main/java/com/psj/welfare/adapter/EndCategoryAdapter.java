@@ -8,12 +8,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.psj.welfare.Data.EndCategoryItem;
-import com.psj.welfare.Data.SecondCategoryItem;
-import com.psj.welfare.Data.ThirdCategoryItem;
 import com.psj.welfare.R;
 
 import java.util.ArrayList;
