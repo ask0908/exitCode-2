@@ -1,6 +1,7 @@
 package com.psj.welfare.activity.Compatibility;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -18,6 +19,8 @@ import com.psj.welfare.api.ApiInterface;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -29,36 +32,73 @@ public class Compatibility_FirstActivity extends AppCompatActivity
 
     TextView first_question_text;
     ImageView first_question_image;
+    // 버튼 클릭 시 버튼과 연결된 나라 이름을 ArrayList에 추가한다
     Button first_question_fist_btn, first_question_second_btn;
+
+    // 나라 이름을 담고 결과 화면에서 나라 정보를 보여줄 때 활용할 ArrayList
+    ArrayList<String> list = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_compatibility__first);
-
+        Log.e(TAG, "onCreate()");
         getFirstProblem();
+        setContentView(R.layout.activity_compatibility__first);
 
         first_question_text = findViewById(R.id.first_question_text);
         first_question_image = findViewById(R.id.first_question_image);
         first_question_fist_btn = findViewById(R.id.first_question_first_btn);
         first_question_second_btn = findViewById(R.id.first_question_second_btn);
 
-        // 지금은 이미지를 누르면 다음 액티비티로 이동하게 한다
-        first_question_image.setOnClickListener(v -> {
-            Intent intent = new Intent(Compatibility_FirstActivity.this, Compatibility_SecondActivity.class);
-            startActivity(intent);
-        });
-
-        // 버튼을 누르면 어떤 처리를 할지는 아직 미정
-        // 구색만 갖춰 놓는다
+        // 버튼을 누르면 ArrayList에 나라 이름을 넣고 다음 액티비티로 이동한다
         first_question_fist_btn.setOnClickListener(v -> {
-            Toast.makeText(this, "1번 버튼 클릭", Toast.LENGTH_SHORT).show();
+            list.add("미국");
+            Log.e(TAG, "arraylist 값 확인 = " + list.toString());
+            Intent intent = new Intent(Compatibility_FirstActivity.this, Compatibility_SecondActivity.class);
+            intent.putExtra("list", list);
+            startActivityForResult(intent, 1);
         });
 
         first_question_second_btn.setOnClickListener(v -> {
-            Toast.makeText(this, "2번 버튼 클릭", Toast.LENGTH_SHORT).show();
+            list.add("미국");
+            Log.e(TAG, "arraylist 값 확인 = " + list.toString());
+            Intent intent = new Intent(Compatibility_FirstActivity.this, Compatibility_SecondActivity.class);
+            intent.putExtra("list", list);
+            startActivityForResult(intent, 2);
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null)
+        {
+            Log.e(TAG, "1번 값 리턴됨");
+            boolean hasBackPressed = data.getBooleanExtra("hasBackPressed", false);
+            Log.e(TAG, "hasBackPressed = " + hasBackPressed);
+            if (hasBackPressed)
+            {
+                list.remove("미국");
+                Log.e(TAG, "백버튼 눌려서 리스트에서 값 삭제 후 ArrayList : " + list);
+            }
+        }
+        else if (requestCode == 2 && resultCode == RESULT_OK && data != null)
+        {
+            Log.e(TAG, "2번 값 리턴됨");
+            boolean hasBackPressed = data.getBooleanExtra("hasBackPressed", false);
+            Log.e(TAG, "hasBackPressed = " + hasBackPressed);
+            if (hasBackPressed)
+            {
+                list.remove("미국");
+                Log.e(TAG, "백버튼 눌려서 리스트에서 값 삭제 후 ArrayList : " + list);
+            }
+        }
+        else
+        {
+            Log.e(TAG, "RESULT_OK가 아니거나 data가 null");
+        }
     }
 
     // 서버에서 문제와 버튼에 넣을 텍스트를 가져오는 메서드
@@ -111,4 +151,18 @@ public class Compatibility_FirstActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        Log.e(TAG, "onStart()");
+        getFirstProblem();
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        Log.e(TAG, "onResume()");
+    }
 }

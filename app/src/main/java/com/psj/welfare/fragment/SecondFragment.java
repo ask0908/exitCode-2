@@ -2,21 +2,22 @@ package com.psj.welfare.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.psj.welfare.activity.Compatibility.Compatibility_FirstActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.psj.welfare.R;
+import com.psj.welfare.activity.Compatibility.Compatibility_FirstActivity;
 
 public class SecondFragment extends Fragment
 {
+    private final String TAG = "SecondFragment";
     private Button compatibility_btn;
 
     public SecondFragment()
@@ -44,6 +45,7 @@ public class SecondFragment extends Fragment
 
         // 테스트 시작 버튼
         compatibility_btn.setOnClickListener(OnSingleClickListener -> {
+            Log.e(TAG, "클릭됨");
             Intent intent = new Intent(getActivity(), Compatibility_FirstActivity.class);
             startActivity(intent);
         });

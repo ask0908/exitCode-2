@@ -1,61 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:background="#fff"
+    android:orientation="vertical"
     tools:context=".fragment.SecondFragment">
 
     <TextView
         android:id="@+id/compatibility_test_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="복지국가 궁합 테스트"
-        android:textStyle="bold"
-        android:textSize="25sp"
-        android:textColor="#000"
-        android:gravity="center"
         android:layout_marginTop="40dp"
+        android:fontFamily="@font/bazzi"
+        android:gravity="center"
+        android:text="복지국가 궁합 테스트"
+        android:textColor="#000"
+        android:textSize="35sp"
+        android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/compatibility_test_body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/bazzi"
+        android:gravity="center"
         android:text="나는 어떤 나라의 복지와 잘 맞을까?"
         android:textColor="#000"
         android:textSize="17sp"
-        android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/compatibility_test_title"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="10dp"/>
+        app:layout_constraintTop_toBottomOf="@id/compatibility_test_title" />
 
     <ImageView
         android:id="@+id/compatibility_test_image"
         android:layout_width="350dp"
         android:layout_height="350dp"
-        app:layout_constraintTop_toBottomOf="@id/compatibility_test_body"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/compatibility_test"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="20dp"
-        android:src="@drawable/compatibility_test"/>
+        app:layout_constraintTop_toBottomOf="@id/compatibility_test_body" />
 
     <Button
         android:id="@+id/compatibility_btn"
         android:layout_width="300dp"
         android:layout_height="70dp"
-        android:text="테스트 시작"
-        android:textSize="20sp"
-        android:textColor="#fff"
         android:layout_marginTop="100dp"
-        app:layout_constraintTop_toBottomOf="@id/compatibility_test_image"
+        android:background="#3A3A3A"
+        android:fontFamily="@font/paybooc_bold"
+        android:gravity="center"
+        android:text="테스트 시작"
+        android:textColor="#fff"
+        android:textSize="20sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:background="#3A3A3A"/>
+        app:layout_constraintTop_toBottomOf="@id/compatibility_test_image" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

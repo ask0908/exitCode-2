@@ -8,32 +8,57 @@
     android:background="#fff"
     tools:context=".activity.Compatibility.Compatibility_FirstActivity">
 
-    <TextView
-        android:id="@+id/first_question_number"
+    <LinearLayout
+        android:id="@+id/first_question_linear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/jalnan"
-        android:text="Q1."
-        android:textSize="40sp"
-        android:textStyle="bold"
-        android:textColor="#6f52e8"
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="30dp"
-        app:layout_constraintLeft_toLeftOf="parent"
+        android:orientation="horizontal"
+        android:weightSum="1"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/first_question_number"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".30"
+            android:fontFamily="@font/jalnan"
+            android:text="Q1."
+            android:textSize="40sp"
+            android:textStyle="bold"
+            android:textColor="#6f52e8"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="30dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".65"
+            android:fontFamily="@font/jalnan"
+            android:text="1/3"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#000"
+            android:layout_marginLeft="30dp"
+            android:gravity="end"/>
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/first_question_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="문제 텍스트"
+        android:fontFamily="@font/paybooc_bold"
         android:textColor="#000"
         android:textSize="25sp"
         android:layout_marginLeft="30dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/first_question_number"
+        app:layout_constraintTop_toBottomOf="@id/first_question_linear"
         android:layout_marginTop="10dp"/>
 
     <ImageView
@@ -54,9 +79,9 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/first_question_image"
         android:layout_marginTop="30dp"
-        android:text="선택지 1"
+        android:fontFamily="@font/ridibatang"
         android:textSize="25sp"
-        android:background="#1EC800"
+        android:background="#3A3A3A"
         android:textColor="#fff"/>
 
     <Button
@@ -64,12 +89,13 @@
         android:layout_width="330dp"
         android:layout_height="100dp"
         android:layout_marginTop="20dp"
+        android:background="#3A3A3A"
+        android:fontFamily="@font/ridibatang"
+        android:textColor="#fff"
+        android:textSize="25sp"
+        app:layout_constraintHorizontal_bias="0.506"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/first_question_first_btn"
-        android:text="선택지 2"
-        android:textSize="25sp"
-        android:background="#1EC800"
-        android:textColor="#fff"/>
+        app:layout_constraintTop_toBottomOf="@id/first_question_first_btn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

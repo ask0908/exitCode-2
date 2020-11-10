@@ -19,6 +19,9 @@ import com.psj.welfare.api.ApiInterface;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,14 +53,44 @@ public class Compatibility_ResultActivity extends AppCompatActivity
     // 공유하기, 프로필에 유형 등록하기, 닫기 버튼
     Button share_btn, regist_my_type_btn, compatibility_close_btn;
 
+    // 유저가 선택한 나라 이름들을 종합해서 담을 ArrayList. 이 안에 들어있는 나라 이름 문자열의 수를 세서 가장 많은 수의 나라에 대한 정보를 출력한다
+    ArrayList<String> final_list = new ArrayList<>();
+
+    // 나라 이름 문자열의 숫자를 셀 변수. 테스트기 때문에 미국, 러시아, 한국의 3가지 경우에 대해서만 변수를 만들었다
+    int america_num, russia_num, korea_num;
+
+    // 가장 많이 선택된 나라 이름을 담아서 서버로 데이터를 요청할 때 사용할 변수
+    String country_name;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compatibility__result);
 
+        Intent final_intent = getIntent();
+        final_list.addAll((ArrayList<String>)final_intent.getSerializableExtra("third_list"));
+        Log.e(TAG, "결과 화면까지 쌓인 ArrayList 내용물 = " + final_list);
+
+        // 마지막 액티비티까지 가져온 ArrayList의 내용물을 세서 int 변수에 집어넣는다
+        america_num = Collections.frequency(final_list, "미국");
+        russia_num = Collections.frequency(final_list, "러시아");
+        korea_num = Collections.frequency(final_list, "한국");
+
+        Log.e(TAG, "미국 문자열 개수 : " + america_num + "개");
+        Log.e(TAG, "러시아 문자열 개수 : " + russia_num + "개");
+        Log.e(TAG, "한국 문자열 개수 : " + korea_num + "개");
+
+        // 각 변수의 크기를 구하고 가장 숫자가 많은 변수가 의미하는 나라 이름을 서버로 보낸다
+        if (america_num > russia_num && america_num > korea_num)
+        {
+            country_name = "미국";
+        }
+        Log.e(TAG, "서버에 결과 요청할 나라 이름 = " + country_name);
+
         // 서버에서 테스트 결과를 가져오는 메서드
-        getFirstResult();
+        /* 아직 country_name 안에 값이 없어서 백방 에러뜬다 */
+        getFirstResult(country_name);
 
         // findViewById()들을 모아놓은 메서드
         init();
@@ -83,10 +116,10 @@ public class Compatibility_ResultActivity extends AppCompatActivity
     }
 
     /* 서버에서 테스트 결과 텍스트들을 가져오고 각 뷰에 텍스트들을 set하는 메서드 */
-    void getFirstResult()
+    void getFirstResult(String country_name)
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.getFirstResult("미국");
+        Call<String> call = apiInterface.getFirstResult(country_name);
         call.enqueue(new Callback<String>()
         {
             @Override

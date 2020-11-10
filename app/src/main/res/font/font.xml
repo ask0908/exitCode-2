@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <font-family xmlns:android="http://schemas.android.com/apk/res/android">
-
     <font
         android:font="@font/nanum_barun_gothic_bold"
         android:fontStyle="normal"
@@ -10,4 +9,39 @@
         android:font="@font/jalnan"
         android:fontStyle="normal"
         android:fontWeight="400" />
+
+    <font
+        android:font="@font/paybooc_bold"
+        android:fontStyle="normal"
+        android:fontWeight="400" />
+
+    <font
+        android:font="@font/ridibatang"
+        android:fontStyle="normal"
+        android:fontWeight="400" />
+
+    <font
+        android:font="@font/paybooc_medium"
+        android:fontStyle="normal"
+        android:fontWeight="400" />
+
+    <font
+        android:font="@font/lotte_medium"
+        android:fontStyle="normal"
+        android:fontWeight="400" />
+
+    <font
+        android:font="@font/bazzi"
+        android:fontStyle="normal"
+        android:fontWeight="400" />
+    <font
+        android:font="@font/binggrae"
+        android:fontStyle="normal"
+        android:fontWeight="400" />
+
+    <font
+        android:font="@font/cafe24"
+        android:fontStyle="normal"
+        android:fontWeight="400" />
+
 </font-family>
