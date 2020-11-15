@@ -104,19 +104,9 @@
                 android:id="@+id/first_result_hashtag"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight=".32"
+                android:layout_weight="1"
                 android:fontFamily="@font/paybooc_bold"
                 android:text="#방임형_복지"
-                android:textColor="#000"
-                android:textSize="18sp"/>
-
-            <TextView
-                android:id="@+id/second_result_hashtag"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight=".32"
-                android:text="#자식사랑"
-                android:visibility="gone"
                 android:textColor="#000"
                 android:textSize="18sp"/>
 

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.psj.welfare.R;
 import com.psj.welfare.activity.MainTabLayoutActivity;
 import com.psj.welfare.api.ApiClient;
@@ -37,13 +39,14 @@ public class Compatibility_ResultActivity extends AppCompatActivity
     // 아이디를 표시할 텍스트뷰
     TextView user_id;
 
+    TextView compatibility_description_text;
     // 결과로 나온 나라 이름을 표시할 텍스트뷰
     TextView compatibility_result_country;
     // 나라를 대표하는 이미지를 표시할 이미지븊
     ImageView compatibility_result_image;
 
     // 첫번째 해시태그, 두번째 해시태그 텍스트뷰
-    TextView first_result_hashtag, second_result_hashtag;
+    TextView first_result_hashtag;
     // 해시태그 바로 밑에 결과로 나온 나라의 설명이 들어갈 텍스트뷰
     TextView result_description_textview;
 
@@ -57,7 +60,7 @@ public class Compatibility_ResultActivity extends AppCompatActivity
     ArrayList<String> final_list = new ArrayList<>();
 
     // 나라 이름 문자열의 숫자를 셀 변수. 테스트기 때문에 미국, 러시아, 한국의 3가지 경우에 대해서만 변수를 만들었다
-    int america_num, russia_num, korea_num;
+    int denmark_num, america_num;
 
     // 가장 많이 선택된 나라 이름을 담아서 서버로 데이터를 요청할 때 사용할 변수
     String country_name;
@@ -69,27 +72,30 @@ public class Compatibility_ResultActivity extends AppCompatActivity
         setContentView(R.layout.activity_compatibility__result);
 
         Intent final_intent = getIntent();
-        final_list.addAll((ArrayList<String>)final_intent.getSerializableExtra("third_list"));
+        final_list.addAll((ArrayList<String>)final_intent.getSerializableExtra("fourth_list"));
         Log.e(TAG, "결과 화면까지 쌓인 ArrayList 내용물 = " + final_list);
 
         // 마지막 액티비티까지 가져온 ArrayList의 내용물을 세서 int 변수에 집어넣는다
+        denmark_num = Collections.frequency(final_list, "덴마크");
         america_num = Collections.frequency(final_list, "미국");
-        russia_num = Collections.frequency(final_list, "러시아");
-        korea_num = Collections.frequency(final_list, "한국");
 
+        Log.e(TAG, "덴마크 문자열 개수 : " + denmark_num + "개");
         Log.e(TAG, "미국 문자열 개수 : " + america_num + "개");
-        Log.e(TAG, "러시아 문자열 개수 : " + russia_num + "개");
-        Log.e(TAG, "한국 문자열 개수 : " + korea_num + "개");
 
         // 각 변수의 크기를 구하고 가장 숫자가 많은 변수가 의미하는 나라 이름을 서버로 보낸다
-        if (america_num > russia_num && america_num > korea_num)
+        if (denmark_num > america_num)
+        {
+            country_name = "덴마크";
+            Log.e(TAG, "나라 이름 : " + country_name);
+        }
+        else if (america_num > denmark_num)
         {
             country_name = "미국";
+            Log.e(TAG, "나라 이름 : " + country_name);
         }
         Log.e(TAG, "서버에 결과 요청할 나라 이름 = " + country_name);
 
         // 서버에서 테스트 결과를 가져오는 메서드
-        /* 아직 country_name 안에 값이 없어서 백방 에러뜬다 */
         getFirstResult(country_name);
 
         // findViewById()들을 모아놓은 메서드
@@ -147,16 +153,27 @@ public class Compatibility_ResultActivity extends AppCompatActivity
         {
             JSONObject jsonObject_total = new JSONObject(detail);
             // 테이블명을 그대로 변수명으로 쓰기로 했다
-            String snack_country, snack_tag, snack_detail, good_country, bad_country;
+            String snack_country, snack_image, snack_tag, snack_detail, good_country, bad_country, snack_country_detail;
 
             // 문자열에서 각 JSON 키값에 해당하는 value값을 빼 String 변수에 저장한 후
             snack_country = jsonObject_total.getString("snack_country");
+            snack_image = jsonObject_total.getString("snack_image");
             snack_tag = jsonObject_total.getString("snack_tag");
             snack_detail = jsonObject_total.getString("snack_detail");
-            Log.e(TAG, "테스트 결과 화면 - snack_tag :  " + snack_tag + ", snack_detail : " + snack_detail);
-            Log.e(TAG, "테스트 결과 화면 - snack_country : " + snack_country);
+            good_country = jsonObject_total.getString("good_country");
+            bad_country = jsonObject_total.getString("bad_country");
+            snack_country_detail = jsonObject_total.getString("snack_country_detail");
+            Log.e(TAG, "테스트 결과 화면 - snack_tag :  " + snack_tag + ", snack_detail : " + snack_detail + ", snack_country : " + snack_country + ", snack_image : "
+                    + snack_image + ", good_country : " + good_country + ", bad_country : " + bad_country + ", snack_country_detail : " + snack_country_detail);
 
-            // 텍스트뷰들에 set한다
+            // String -> Uri 변환
+            Uri uri = Uri.parse(snack_image);
+
+            // 각 뷰들에 set한다
+            Glide.with(this)
+                    .load(uri)
+                    .into(compatibility_result_image);
+            compatibility_description_text.setText(snack_country_detail);
             compatibility_result_country.setText(snack_country);
             first_result_hashtag.setText(snack_tag);
             result_description_textview.setText(snack_detail);
@@ -172,9 +189,9 @@ public class Compatibility_ResultActivity extends AppCompatActivity
     {
         user_id = findViewById(R.id.compatibility_result_user_id);
         compatibility_result_country = findViewById(R.id.compatibility_result_country);
+        compatibility_description_text = findViewById(R.id.compatibility_description_text);
         compatibility_result_image = findViewById(R.id.compatibility_result_image);
         first_result_hashtag = findViewById(R.id.first_result_hashtag);
-        second_result_hashtag = findViewById(R.id.second_result_hashtag);
         result_description_textview = findViewById(R.id.result_description_textview);
         result_good_image = findViewById(R.id.result_good_image);
         result_bad_image = findViewById(R.id.result_bad_image);
