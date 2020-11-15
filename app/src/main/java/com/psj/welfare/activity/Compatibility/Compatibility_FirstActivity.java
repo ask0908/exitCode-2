@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.psj.welfare.R;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
@@ -53,7 +55,7 @@ public class Compatibility_FirstActivity extends AppCompatActivity
 
         // 버튼을 누르면 ArrayList에 나라 이름을 넣고 다음 액티비티로 이동한다
         first_question_fist_btn.setOnClickListener(v -> {
-            list.add("미국");
+            list.add("덴마크");
             Log.e(TAG, "arraylist 값 확인 = " + list.toString());
             Intent intent = new Intent(Compatibility_FirstActivity.this, Compatibility_SecondActivity.class);
             intent.putExtra("list", list);
@@ -80,7 +82,7 @@ public class Compatibility_FirstActivity extends AppCompatActivity
             Log.e(TAG, "hasBackPressed = " + hasBackPressed);
             if (hasBackPressed)
             {
-                list.remove("미국");
+                list.remove("덴마크");
                 Log.e(TAG, "백버튼 눌려서 리스트에서 값 삭제 후 ArrayList : " + list);
             }
         }
@@ -133,14 +135,25 @@ public class Compatibility_FirstActivity extends AppCompatActivity
         {
             JSONObject jsonObject_total = new JSONObject(detail);
             // 테이블명을 그대로 변수명으로 쓰기로 했다
-            String question, choice_1, choice_2;
+            String question, choice_1, choice_2, snack_image, choice_1_country, choice_2_country;
 
             // 문자열에서 각 JSON 키값에 해당하는 value값을 빼 String 변수에 저장한 후
             question = jsonObject_total.getString("question");
             choice_1 = jsonObject_total.getString("choice_1");
             choice_2 = jsonObject_total.getString("choice_2");
+            choice_1_country = jsonObject_total.getString("choice_1_country");
+            choice_2_country = jsonObject_total.getString("choice_2_country");
+            snack_image = jsonObject_total.getString("snack_image");
+
+            Log.e("2번 화면 결과", "question : " + question + ", choice_1 : " + choice_1 + ", choice_2 : " + choice_2 + ", choice_1_country : " + choice_1_country +
+                    ", choice_2_country : " + choice_2_country + ", snack_image : " + snack_image);
+
+            Uri uri = Uri.parse(snack_image);
 
             // 텍스트뷰와 버튼에 set한다
+            Glide.with(this)
+                    .load(uri)
+                    .into(first_question_image);
             first_question_text.setText(question);
             first_question_fist_btn.setText(choice_1);
             first_question_second_btn.setText(choice_2);
@@ -149,20 +162,5 @@ public class Compatibility_FirstActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    protected void onStart()
-    {
-        super.onStart();
-        Log.e(TAG, "onStart()");
-        getFirstProblem();
-    }
-
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-        Log.e(TAG, "onResume()");
     }
 }

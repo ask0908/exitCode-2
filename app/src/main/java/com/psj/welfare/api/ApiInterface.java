@@ -61,13 +61,46 @@ public interface ApiInterface
 	);
 
 	/**
-	 * 서버에서 문제와 버튼에 넣을 텍스트들을 가져오는 메서드
-	 * @param problemIndex : 문제 번호, 첫 번째 테스트에서 가져올 거니까 1을 넣어야 한다
+	 * 서버에서 1번 문제와 이미지, 버튼에 넣을 텍스트들을 가져오는 메서드
+	 * @param problemIndex : 문제 번호, 1번째 테스트에서 가져올 거니까 1을 넣어야 한다
 	 * @return JSON 형태의 문자열로 리턴값을 받는다
 	 */
 	@FormUrlEncoded
 	@POST("/backend/android/and_snack_contents.php")
 	Call<String> getFirstProblem(
+			@Field("problemIndex") String problemIndex
+	);
+
+	/**
+	 * 서버에서 2번 문제와 이미지, 버튼에 넣을 텍스트들을 가져오는 메서드
+	 * @param problemIndex : 문제 번호, 2번째 테스트에서 가져올 거니까 2를 넣어야 한다
+	 * @return JSON 형태의 문자열로 리턴값을 받는다
+	 */
+	@FormUrlEncoded
+	@POST("/backend/android/and_snack_contents.php")
+	Call<String> getSecondProblem(
+			@Field("problemIndex") String problemIndex
+	);
+
+	/**
+	 * 서버에서 3번 문제와 이미지, 버튼에 넣을 텍스트들을 가져오는 메서드
+	 * @param problemIndex : 문제 번호, 3번째 테스트에서 가져올 거니까 3를 넣어야 한다
+	 * @return JSON 형태의 문자열로 리턴값을 받는다
+	 */
+	@FormUrlEncoded
+	@POST("/backend/android/and_snack_contents.php")
+	Call<String> getThirdProblem(
+			@Field("problemIndex") String problemIndex
+	);
+
+	/**
+	 * 서버에서 3번 문제와 이미지, 버튼에 넣을 텍스트들을 가져오는 메서드
+	 * @param problemIndex : 문제 번호, 3번째 테스트에서 가져올 거니까 3를 넣어야 한다
+	 * @return JSON 형태의 문자열로 리턴값을 받는다
+	 */
+	@FormUrlEncoded
+	@POST("/backend/android/and_snack_contents.php")
+	Call<String> getFourthProblem(
 			@Field("problemIndex") String problemIndex
 	);
 
