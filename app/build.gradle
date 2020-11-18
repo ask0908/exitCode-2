@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'com.google.gms.google-services'
 
 android {
@@ -10,8 +9,8 @@ android {
         applicationId "com.psj.welfare"
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 6
-        versionName "6"
+        versionCode 7
+        versionName "7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -49,6 +48,8 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-auth:4.2.1'
     // 네이버 로그인 API
     implementation files('libs/naveridlogin_android_sdk_4.2.6.aar')
+    // 구글 로그인 api
+    implementation 'com.google.android.gms:play-services-auth:18.0.0'
     implementation 'com.android.support:appcompat-v7:29.0.0'
     implementation 'com.android.support:support-core-utils:29.0.0'
     implementation 'com.android.support:customtabs:29.0.0'
@@ -58,6 +59,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.work:work-runtime:2.2.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -74,5 +76,7 @@ dependencies {
     implementation 'com.borjabravo:readmoretextview:2.1.0'
     // 카카오 SNS 로그인
     implementation 'com.kakao.sdk:usermgmt:1.16.0'
+    // 좋아요 버튼
+    implementation 'com.github.jd-alexander:LikeButton:0.2.3'
 
 }

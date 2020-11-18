@@ -21,4 +21,218 @@
     <string name="login_welfare">니모 로그인하기</string>
     <string name="kakao_app_key">3f7e171f8d9c6549cfa5949a68eb571e</string>
     <string name="login_shared">com.psj.welfare.snsLogin</string>
+
+    <string-array name="nothing">
+        <item>지역을 선택해 주세요</item>
+    </string-array>
+
+    <string-array name="first_spinner_item">
+        <item>시 · 도 선택</item>
+        <item>서울특별시</item>
+        <item>부산광역시</item>
+        <item>대구광역시</item>
+        <item>인천광역시</item>
+        <item>광주광역시</item>
+        <item>대전광역시</item>
+        <item>울산광역시</item>
+        <item>세종시</item>
+        <item>경기도 가평군</item>
+        <item>경기도 고양시</item>
+        <item>경기도 과천시</item>
+        <item>경기도 광명시</item>
+        <item>경기도 광주시</item>
+        <item>경기도 구리시</item>
+        <item>경기도 군포시</item>
+        <item>경기도 남양주시</item>
+        <item>경기도 동두천시</item>
+        <item>경기도 부천시</item>
+        <item>경기도 성남시</item>
+        <item>경기도 수원시</item>
+        <item>경기도 시흥시</item>
+        <item>경기도 안산시</item>
+        <item>경기도 안성시</item>
+        <item>경기도 안양시</item>
+        <item>경기도 양주시</item>
+        <item>경기도 양평군</item>
+        <item>경기도 여주시</item>
+        <item>경기도 연천군</item>
+        <item>경기도 오산시</item>
+        <item>경기도 용인시</item>
+        <item>경기도 의왕시</item>
+        <item>경기도 의정부시</item>
+        <item>경기도 이천시</item>
+        <item>경기도 파주시</item>
+        <item>경기도 평택시</item>
+        <item>경기도 포천시</item>
+        <item>경기도 하남시</item>
+        <item>경기도 화성시</item>
+    </string-array>
+
+    <string-array name="seoul_item">
+        <item>지역을 선택해 주세요</item>
+        <item>강남구</item>
+        <item>강동구</item>
+        <item>강북구</item>
+        <item>강서구</item>
+        <item>관악구</item>
+        <item>광진구</item>
+        <item>구로구</item>
+        <item>금천구</item>
+        <item>노원구</item>
+        <item>도봉구</item>
+        <item>동대문구</item>
+        <item>동작구</item>
+        <item>마포구</item>
+        <item>서대문구</item>
+        <item>서초구</item>
+        <item>성동구</item>
+        <item>성북구</item>
+        <item>송파구</item>
+        <item>양천구</item>
+        <item>영등포구</item>
+        <item>용산구</item>
+        <item>은평구</item>
+        <item>종로구</item>
+        <item>중구</item>
+        <item>중랑구</item>
+    </string-array>
+
+    <string-array name="busan_item">
+        <item>지역을 선택해 주세요</item>
+        <item>강서구</item>
+        <item>금정구</item>
+        <item>기장군</item>
+        <item>남구</item>
+        <item>동구</item>
+        <item>동래구</item>
+        <item>부산진구</item>
+        <item>북구</item>
+        <item>사상구</item>
+        <item>사하구</item>
+        <item>서구</item>
+        <item>수영구</item>
+        <item>연제구</item>
+        <item>영도구</item>
+        <item>중구</item>
+        <item>해운대구</item>
+    </string-array>
+
+    <string-array name="daegu_item">
+        <item>지역을 선택해 주세요</item>
+        <item>남구</item>
+        <item>달서구</item>
+        <item>달성군</item>
+        <item>동구</item>
+        <item>북구</item>
+        <item>서구</item>
+        <item>수성구</item>
+        <item>중구</item>
+    </string-array>
+
+    <string-array name="incheon_item">
+        <item>지역을 선택해 주세요</item>
+        <item>강화군</item>
+        <item>계양구</item>
+        <item>남동구</item>
+        <item>동구</item>
+        <item>미추홀구</item>
+        <item>부평구</item>
+        <item>서구</item>
+        <item>연수구</item>
+        <item>옹진군</item>
+        <item>중구</item>
+    </string-array>
+
+    <string-array name="gwangju_item">
+        <item>지역을 선택해 주세요</item>
+        <item>광산구</item>
+        <item>남구</item>
+        <item>동구</item>
+        <item>북구</item>
+        <item>서구</item>
+    </string-array>
+
+    <string-array name="daejeon_item">
+        .
+        <item>지역을 선택해 주세요</item>
+        <item>대덕구</item>
+        <item>동구</item>
+        <item>서구</item>
+        <item>유성구</item>
+        <item>중구</item>
+    </string-array>
+
+    <string-array name="ulsan_item">
+        <item>지역을 선택해 주세요</item>
+        <item>남구</item>
+        <item>동구</item>
+        <item>북구</item>
+        <item>울주군</item>
+        <item>서구</item>
+    </string-array>
+
+    <string-array name="sejong_item">
+        <item>지역을 선택해 주세요</item>
+        <item>고운동</item>
+        <item>금남면</item>
+        <item>대평동</item>
+        <item>도담동</item>
+        <item>보람동</item>
+        <item>부강면</item>
+        <item>새롬동</item>
+        <item>소담동</item>
+        <item>소정면</item>
+        <item>아름동</item>
+        <item>연기면</item>
+        <item>연동면</item>
+        <item>연서면</item>
+        <item>장군면</item>
+        <item>전동면</item>
+        <item>전의면</item>
+        <item>조치원읍</item>
+        <item>종촌동</item>
+        <item>한솔동</item>
+    </string-array>
+
+    <string-array name="gyongi_goyang_item">
+        <item>지역을 선택해 주세요</item>
+        <item>덕양구</item>
+        <item>일산동구</item>
+        <item>일산서구</item>
+    </string-array>
+
+    <string-array name="gyongi_seongnam_item">
+        <item>지역을 선택해 주세요</item>
+        <item>분당구</item>
+        <item>수정구</item>
+        <item>중원구</item>
+    </string-array>
+
+    <string-array name="gyongi_suwon_item">
+        <item>지역을 선택해 주세요</item>
+        <item>권선구</item>
+        <item>영통구</item>
+        <item>장안구</item>
+        <item>팔달구</item>
+    </string-array>
+
+    <string-array name="gyongi_ansan_item">
+        <item>지역을 선택해 주세요</item>
+        <item>단원구</item>
+        <item>상록구</item>
+    </string-array>
+
+    <string-array name="gyongi_anyang_item">
+        <item>지역을 선택해 주세요</item>
+        <item>동안구</item>
+        <item>만안구</item>
+    </string-array>
+
+    <string-array name="gyongi_yongin_item">
+        <item>지역을 선택해 주세요</item>
+        <item>기흥구</item>
+        <item>수지구</item>
+        <item>처인구</item>
+    </string-array>
+
 </resources>

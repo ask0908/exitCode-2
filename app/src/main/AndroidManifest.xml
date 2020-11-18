@@ -15,7 +15,8 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
-        <activity android:name=".activity.Compatibility.Compatibility_FourthActivity"/>
+        <activity android:name=".activity.PushQuestionActivity"/>
+        <activity android:name=".activity.Compatibility.Compatibility_FourthActivity" />
         <activity android:name=".Test.CompatibilityTestActivity" />
         <activity android:name=".activity.Compatibility.Compatibility_ResultActivity" />
         <activity android:name=".activity.Compatibility.Compatibility_ThirdActivity" />

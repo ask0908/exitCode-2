@@ -1,15 +1,201 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/third_fragment_layout"
+    android:orientation="vertical"
     tools:context=".fragment.ThirdFragment">
 
-    <TextView
+    <LinearLayout
+        android:id="@+id/push_condition_top_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="3번 프래그먼트"
-        android:textSize="40sp"
-        android:gravity="center"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-</FrameLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#6f52e8"
+            android:fontFamily="@font/jalnan"
+            android:gravity="center"
+            android:text="기본 정보"
+            android:textColor="@android:color/white"
+            android:textSize="33sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/push_condition_top_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:fontFamily="@font/jalnan"
+        android:gravity="center"
+        android:text="대상자의 나이, 성별, 지역을 선택해 주세요"
+        android:textColor="@android:color/black"
+        android:textSize="19sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/push_condition_top_layout" />
+
+    <LinearLayout
+        android:id="@+id/push_condition_age_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/push_condition_top_textview">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".20"
+            android:gravity="center"
+            android:fontFamily="@font/jalnan"
+            android:text="만"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/age_edittext"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".50"
+            android:textSize="20sp"
+            android:fontFamily="@font/jalnan"
+            android:inputType="number"
+            android:gravity="center"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".20"
+            android:gravity="center"
+            android:fontFamily="@font/jalnan"
+            android:text="세"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/man_and_woman_img_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/push_condition_age_layout"
+        android:weightSum="1"
+        android:layout_marginTop="30dp">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight=".40"
+            android:src="@drawable/man_img"
+            android:layout_marginLeft="45dp"/>
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight=".40"
+            android:src="@drawable/woman_img"
+            android:layout_marginLeft="120dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/push_condition_gender_layout"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/man_and_woman_img_layout">
+
+        <Button
+            android:id="@+id/man_btn"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight=".40"
+            android:background="@drawable/btn_round"
+            android:fontFamily="@font/jalnan"
+            android:text="남 자"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            app:layout_constraintRight_toLeftOf="@id/center_view"
+            app:layout_constraintTop_toTopOf="@id/push_condition_gender_layout" />
+
+        <View
+            android:id="@+id/center_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".20"
+            app:layout_constraintLeft_toLeftOf="@id/man_btn"
+            app:layout_constraintRight_toLeftOf="@id/woman_btn"
+            app:layout_constraintTop_toTopOf="@id/push_condition_gender_layout" />
+
+        <Button
+            android:id="@+id/woman_btn"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight=".40"
+            android:background="@drawable/btn_round"
+            android:fontFamily="@font/jalnan"
+            android:text="여 자"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/center_view"
+            app:layout_constraintTop_toTopOf="@id/push_condition_gender_layout" />
+
+    </LinearLayout>
+
+    <Spinner
+        android:id="@+id/first_choice_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/custom_spinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/push_condition_gender_layout" />
+
+    <Spinner
+        android:id="@+id/second_choice_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/custom_spinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/first_choice_spinner" />
+
+    <Button
+        android:id="@+id/next_btn"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_weight=".40"
+        android:background="@drawable/btn_purple"
+        android:fontFamily="@font/jalnan"
+        android:text="확 인"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="60dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/second_choice_spinner"
+        android:textSize="30sp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

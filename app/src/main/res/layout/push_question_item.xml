@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/question_layout"
+    android:paddingLeft="10dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/push_question_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/btn_round"
+        android:fontFamily="@font/jalnan"
+        android:layout_marginTop="20dp"
+        android:padding="20dp"
+        android:text="텍스트"
+        android:lineSpacingExtra ="5dp"
+        android:textSize="18sp"/>
+
+</LinearLayout>

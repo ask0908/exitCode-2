@@ -38,13 +38,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
-
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link FourthFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class FourthFragment extends Fragment {
 
 	/* FourthFragment TAG */

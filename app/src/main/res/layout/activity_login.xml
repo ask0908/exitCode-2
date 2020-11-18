@@ -26,24 +26,6 @@
         android:textColor="@color/colorPurple"
         android:textSize="30sp" />
 
-    <!--    <com.psj.welfare.custom.CustomLoginButton-->
-    <!--        android:id="@+id/btn_NLogin"-->
-    <!--        style="@style/LoginButtonStyle"-->
-    <!--        android:layout_gravity="center"-->
-    <!--        app:bg="@drawable/btn_naver"-->
-    <!--        app:symbol="@drawable/login_naver_symbol"-->
-    <!--        app:text="@string/login_naver"-->
-    <!--        app:textColor="@color/colorMainWhite" />-->
-
-    <!--    <com.psj.welfare.custom.CustomLoginButton-->
-    <!--        android:id="@+id/btn_GLogin"-->
-    <!--        style="@style/LoginButtonStyle"-->
-    <!--        android:layout_gravity="center"-->
-    <!--        app:bg="@drawable/btn_google"-->
-    <!--        app:symbol="@drawable/login_google_symbol"-->
-    <!--        app:text="@string/login_google"-->
-    <!--        app:textColor="@color/colorGray_B" />-->
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -66,5 +48,12 @@
 
     </FrameLayout>
 
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/google_login_btn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"/>
 
 </LinearLayout>

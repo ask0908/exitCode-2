@@ -4,12 +4,6 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +13,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.psj.welfare.R;
 import com.psj.welfare.activity.ResultBenefitActivity;
@@ -38,11 +37,14 @@ public class MainFragment extends Fragment {
 	private ScrollView main_ScrollView;
 
 	// 좌상단 메인 로고. 클릭 시 더보기 버튼이 있는 페이지로 화면 전환 효과 없이 이동하게 한다 (main logo)
-	ImageView main_logo, main_job_img, main_student_img, main_living_img, main_pregnancy_img, main_child_img, main_cultural_img, main_company_img, main_homeless_img, main_old_img, main_disorder_img, main_multicultural_img, main_law_img, main_etc_img;
+	ImageView main_logo, main_job_img, main_student_img, main_living_img, main_pregnancy_img, main_child_img, main_cultural_img, main_company_img, main_homeless_img,
+			main_old_img, main_disorder_img, main_multicultural_img, main_law_img, main_etc_img;
 
-	TextView main_move_text, main_job_title, main_student_title, main_living_title, main_pregnancy_title, main_child_title, main_cultural_title, main_company_title, main_homeless_title, main_old_title, main_disorder_title, main_multicultural_title, main_law_title, main_etc_title;
+	TextView main_move_text, main_job_title, main_student_title, main_living_title, main_pregnancy_title, main_child_title, main_cultural_title, main_company_title,
+			main_homeless_title, main_old_title, main_disorder_title, main_multicultural_title, main_law_title, main_etc_title;
 
-	LinearLayout main_job, main_student, main_living, main_pregnancy, main_child, main_cultural, main_company, main_homeless, main_old, main_disorder, main_multicultural, main_law, main_etc;
+	LinearLayout main_job, main_student, main_living, main_pregnancy, main_child, main_cultural, main_company, main_homeless, main_old, main_disorder, main_multicultural,
+			main_law, main_etc;
 
 	// 맨 밑의 조회하기 버튼
 	Button main_done;

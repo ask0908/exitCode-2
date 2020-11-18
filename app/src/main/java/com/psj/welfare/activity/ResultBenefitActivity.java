@@ -663,9 +663,7 @@ public class ResultBenefitActivity extends AppCompatActivity
         String favor = "";
         for (int i = 0; i < favor_data.size(); i++)
         {
-
             favor += favor_data.get(i) + ",";
-
         }
 
         Log.e(TAG, "리스트값 스트링으로 변환 -> " + favor);
