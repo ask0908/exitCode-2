@@ -20,8 +20,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -78,5 +78,6 @@ dependencies {
     implementation 'com.kakao.sdk:usermgmt:1.16.0'
     // 좋아요 버튼
     implementation 'com.github.jd-alexander:LikeButton:0.2.3'
+    implementation 'com.google.code.gson:gson:2.8.6'
 
 }
