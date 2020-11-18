@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.borjabravo.readmoretextview.ReadMoreTextView;
-import com.google.gson.JsonObject;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.psj.welfare.Data.DetailBenefitItem;
@@ -54,6 +53,9 @@ public class DetailBenefitActivity extends AppCompatActivity
     LinearLayout apply_view, content_view;
     View apply_bottom_view, content_bottom_view;
 
+    // 서버에서 온 값을 파싱할 때 사용할 변수
+    String name, target, contents, period, contact;
+
     // 연관된 혜택 밑의 가로로 버튼들을 넣을 리사이클러뷰
     private RecyclerView detail_benefit_recyclerview;
     private DetailBenefitRecyclerAdapter adapter;
@@ -64,8 +66,7 @@ public class DetailBenefitActivity extends AppCompatActivity
     LikeButton favorite_btn;
 
     // 즐겨찾기 저장 시 사용할 이메일, 혜택명, 북마크 여부
-    String email, welf_name;
-	int isBookmark; // 이 변수값에 따라 1 또는 0을 서버로 보내고 받아 유저가 관심사로 등록했는지 여부를 저장, 결정한다
+    String email, welf_name, isBookmark;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -95,16 +96,16 @@ public class DetailBenefitActivity extends AppCompatActivity
 				String message = detail_title.getText().toString();
 				Toast.makeText(DetailBenefitActivity.this, message + " 정책을 내 관심사로 설정했습니다", Toast.LENGTH_SHORT).show();
 
-				// 서버로 이메일, 혜택 이름(welf_name), 북마크 여부(isBookmark)를 보내서 즐겨찾기에 저장한다
+				// 서버로 이메일, 혜택 이름(welf_name)를 보내서 즐겨찾기에 저장한다
                 email = "ne0001912@gmail.com";
                 welf_name = detail_title.getText().toString();
-				isBookmark = 1;
+				isBookmark = "true";
 
                 // 메서드 호출
-                getBookmark(email, welf_name, isBookmark);
+                getBookmark(email, welf_name);
 			}
 
-		@Override
+		    @Override
 			public void unLiked(LikeButton likeButton)
 			{
 				// 회색 하트로 변하면 false를 0으로 치고 서버로 보낸다
@@ -115,13 +116,13 @@ public class DetailBenefitActivity extends AppCompatActivity
 				String message = detail_title.getText().toString();
 				Toast.makeText(DetailBenefitActivity.this, message + " 정책을 내 관심사에서 설정 해제했습니다", Toast.LENGTH_SHORT).show();
 
-                // 서버로 이메일, 혜택 이름(welf_name), 북마크 여부(isBookmark)를 보내서 즐겨찾기에서 삭제한다
+                // 서버로 이메일, 혜택 이름(welf_name)를 보내서 즐겨찾기에서 삭제한다
                 email = "ne0001912@gmail.com";
                 welf_name = detail_title.getText().toString();
-				isBookmark = 0;
+				isBookmark = "false";
 
 				// 메서드 호출
-                getBookmark(email, welf_name, isBookmark);
+                getBookmark(email, welf_name);
 			}
 		});
 
@@ -150,14 +151,16 @@ public class DetailBenefitActivity extends AppCompatActivity
             }
         };
 
-        detailData(detail_data);
+        String email = "ne0001912@gmail.com";
+        detailData(detail_data, email);
 
     } // onCreate() end
 
-    void getBookmark(String email, String welf_name, int isBookmark)
+    // 즐겨찾기 추가
+    void getBookmark(String email, String welf_name)
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.getBookmark(email, welf_name, isBookmark);
+        Call<String> call = apiInterface.getBookmark(email, welf_name);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -165,8 +168,7 @@ public class DetailBenefitActivity extends AppCompatActivity
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    // 즐겨찾기 추가가 완료되면 유저한테 토스트를 띄운다
-                    Toast.makeText(DetailBenefitActivity.this, "즐겨찾기 추가가 완료됐습니다", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "response : " + response.body());
                 }
             }
 
@@ -179,21 +181,21 @@ public class DetailBenefitActivity extends AppCompatActivity
     }
 
 	// 선택한 혜택의 상세정보들을 서버에서 가져오는 메서드
-	void detailData(String detail_data)
+	void detailData(String detail_data, String email)
 	{
 		ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
 		Log.e(TAG, "상세 내용 불러올 정책 제목 : " + detail_data);
-		Call<JsonObject> call = apiInterface.detailData(detail_data);
-		call.enqueue(new Callback<JsonObject>()
+		Call<String> call = apiInterface.detailData(detail_data, email);
+		call.enqueue(new Callback<String>()
 		{
 			@Override
-			public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response)
+			public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
 			{
 				if (response.isSuccessful() && response.body() != null)
 				{
 					// 성공했을 경우 서버에서 정책 제목들을 가져온다
-					Log.e(TAG, "onResponse 성공 : " + response.body().toString());
-					String detail = response.body().toString();
+					Log.e(TAG, "onResponse 성공 : " + response.body());
+					String detail = response.body();
 					jsonParsing(detail);
 				}
 				else
@@ -203,7 +205,7 @@ public class DetailBenefitActivity extends AppCompatActivity
 			}
 
 			@Override
-			public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t)
+			public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
 			{
 				Log.e(TAG, "onFailure : " + t.getMessage());
 			}
@@ -271,16 +273,16 @@ public class DetailBenefitActivity extends AppCompatActivity
     }
 
     // 서버에서 가져온 String 형태의 JSON 값들을 파싱한 뒤, 특수문자를 콤마로 바꿔서 뷰에 set하는 메서드
-    private void jsonParsing(String detail)
-    {
-        try
-        {
+    /* GSON 써서도 해보자 */
+    private void jsonParsing(String detail) {
+
+        try {
             JSONObject jsonObject_total = new JSONObject(detail);
             String retBody_data;
 
             retBody_data = jsonObject_total.getString("retBody");
 
-            Log.e(TAG, "retBody 내용 : " + retBody_data);
+            Log.i(TAG, "retBody 내용 : " + retBody_data);
 
             JSONObject jsonObject_detail = new JSONObject(retBody_data);
 
@@ -289,24 +291,39 @@ public class DetailBenefitActivity extends AppCompatActivity
             String contents;
             String period;
             String contact;
+            String isBookmark;
 
             name = jsonObject_detail.getString("welf_name");
             target = jsonObject_detail.getString("welf_target");
             contents = jsonObject_detail.getString("welf_contents");
             period = jsonObject_detail.getString("welf_period");
             contact = jsonObject_detail.getString("welf_contact");
+            isBookmark = jsonObject_detail.getString("isBookmark");
+
+            // 서버에서 true 값을 가져왔으면 빨간 하트로 표현하고, false 값을 가져왔으면 회색 하트 그대로 둔다
+            if (isBookmark.equals("true"))
+            {
+                // 좋아요 버튼 활성화시킴
+                favorite_btn.setLiked(true);
+            }
+            else
+            {
+                favorite_btn.setLiked(false);
+            }
 
             detail_title.setText(name);
+            detail_target.setText(target);
+            detail_contents.setText(contents);
+            detail_contact.setText(contact);
 
             symbolChange(target, contents, contact);
-        }
-        catch (JSONException e)
-        {
+
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    // 상세 페이지 긴 글을 축소 / 확장 기능
+    // 더보기 기능
     public void setReadMoreText(ReadMoreTextView target, ReadMoreTextView contents)
     {
 

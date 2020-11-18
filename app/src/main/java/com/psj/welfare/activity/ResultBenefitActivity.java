@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -676,16 +677,16 @@ public class ResultBenefitActivity extends AppCompatActivity
         call.enqueue(new Callback<String>()
         {
             @Override
-            public void onResponse(Call<String> call, Response<String> response)
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
             {
-                if (response.isSuccessful())
+                if (response.isSuccessful() && response.body() != null)
                 {
-                    Log.e(TAG, "onResponse 성공 : " + response.body().toString());
+                    Log.e(TAG, "onResponse 성공 : " + response.body());
                     /*
                      * 사용자가 선택한 관심사와 혜택 제목이 서버에서 응답이 온다
                      * 응답은 Json 구조로 응답이 올 것이고 나는 응답 받은 Json 데이터를 파싱할 것이다
                      * */
-                    String favorData = response.body().toString();
+                    String favorData = response.body();
                     jsonParsing(favorData);
 
 
@@ -698,7 +699,7 @@ public class ResultBenefitActivity extends AppCompatActivity
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t)
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
             {
                 Log.e(TAG, "onFailure : " + t.toString());
 
@@ -755,8 +756,7 @@ public class ResultBenefitActivity extends AppCompatActivity
 
             Log.e(TAG, "JSON 길이 : " + jsonObject.length());
 
-            // 사용자가 선택한 관심사와 서버에서 받은 관심사를 비교하여 일치하면
-            // 혜택 결과 리스트에 추가
+            // 사용자가 선택한 관심사와 서버에서 받은 관심사를 비교하여 일치하면 혜택 결과 리스트에 추가
             // 처음 페이지에 접근했을 때 전체 결과를 세팅하는 로직
             position_RBT = 0;
             try

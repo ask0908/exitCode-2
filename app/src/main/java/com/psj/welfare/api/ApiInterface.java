@@ -1,7 +1,5 @@
 package com.psj.welfare.api;
 
-import com.google.gson.JsonObject;
-
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -59,8 +57,9 @@ public interface ApiInterface
 	 */
 	@FormUrlEncoded
 	@POST("/backend/android/and_detail.php")
-	Call<JsonObject> detailData(
-			@Field("be_name") String detail
+	Call<String> detailData(
+			@Field("be_name") String detail,
+			@Field("email") String email
 	);
 
 	/**
@@ -219,15 +218,13 @@ public interface ApiInterface
 	 * 푸시를 누른 시간, 이메일, 상태값을 보내기로 했으나 먼저 이메일만 보낸다
 	 * @param email - 유저 이메일
 	 * @param welf_name - 정책명
-	 * @param isBookmark - 즐겨찾기 여부
 	 * @return
 	 */
 	@FormUrlEncoded
-	@POST("/backend/php/common/benefit_fcm_recv.php")
+	@POST("/backend/android/and_bookmark.php")
 	Call<String> getBookmark(
 			@Field("email") String email,
-			@Field("welf_name") String welf_name,
-			@Field("isBookmark") int isBookmark
+			@Field("welf_name") String welf_name
 	);
 
 }
