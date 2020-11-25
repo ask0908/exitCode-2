@@ -1,7 +1,6 @@
 package com.psj.welfare.fragment;
 
 import android.animation.ObjectAnimator;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -82,7 +81,6 @@ public class MainFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-        Log.e(TAG, "onViewCreated() 호출");
 
         init(view);
 
@@ -461,27 +459,6 @@ public class MainFragment extends Fragment
             }
         });
 
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context)
-    {
-        super.onAttach(context);
-        Log.e(TAG, "onAttach() 실행");
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        Log.e(TAG, "onCreate() 실행");
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState)
-    {
-        super.onActivityCreated(savedInstanceState);
-        Log.e(TAG, "onActivityCreated() 실행");
     }
 
     @Override

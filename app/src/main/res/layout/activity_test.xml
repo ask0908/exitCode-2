@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/review_scrollview"
+    android:id="@+id/m_ScrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorMainWhite">
@@ -167,116 +167,9 @@
         </LinearLayout>
         <!-- 내용, 신청방법, 리뷰 텍스트뷰 있는 그라데이션 구간 끝 -->
 
-        <!-- 리뷰 작성용 화면, 텍스트뷰를 누르면 다른 화면으로 이동해서 작성할 수 있게 한다 -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/all_review_scene"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <!-- 가로로 이미지뷰, 구분선, 세로 리니어 레이아웃을 담는 리니어 레이아웃 -->
-            <LinearLayout
-                android:id="@+id/review_horizontal_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/bottom_only_border"
-                android:weightSum="1"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <!-- 올리브영 리뷰처럼 만든다면 이곳에 상태 이미지가 들어와야 한다 -->
-                <ImageView
-                    android:id="@+id/review_status_image"
-                    android:layout_width="0dp"
-                    android:layout_height="150dp"
-                    android:layout_weight=".35"
-                    android:scaleType="fitXY"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginTop="10dp"
-                    android:padding="10dp"
-                    android:src="@drawable/best"/>
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/colorGray_L"/>
-
-                <!-- 세로로 텍스트뷰 2개, 별점을 표시하는 레이아웃 -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight=".65"
-                    android:layout_margin="20dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/total_textview"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/jalnan"
-                        android:text="이 혜택의 점수는요"
-                        android:textSize="15sp"
-                        android:gravity="center"
-                        android:textColor="@color/colorBlack"/>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/jalnan"
-                        android:text="4.7점"
-                        android:textSize="25sp"
-                        android:gravity="center"
-                        android:layout_marginTop="10dp"
-                        android:textColor="@color/colorBlack"/>
-
-                    <RatingBar
-                        android:id="@+id/review_rating"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:numStars="5"
-                        android:rating="4.7"
-                        android:isIndicator="true"
-                        android:stepSize="0.1"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="10dp"/>
-
-                </LinearLayout>
-                <!-- 세로로 텍스트뷰 2개, 별점을 표시하는 레이아웃 끝 -->
-
-            </LinearLayout>
-            <!-- 가로로 이미지뷰, 구분선, 세로 리니어 레이아웃을 담는 리니어 레이아웃 끝 -->
-
-            <Button
-                android:id="@+id/more_big_scene_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/jalnan"
-                android:gravity="center"
-                android:paddingLeft="10dp"
-                android:text="리뷰를 작성하시려면 여길 눌러 주세요"
-                android:background="@drawable/btn_done"
-                android:textColor="@color/colorMainWhite"
-                android:textSize="20sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/review_horizontal_layout" />
-
-            <!-- 댓글들을 표현할 리사이클러뷰 -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/review_recycler"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/more_big_scene_button"
-                android:layout_marginTop="20dp"/>
-            <!-- 댓글들을 표현할 리사이클러뷰 끝 -->
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <include
+            android:id="@+id/review_include"
+            layout="@layout/activity_review"/>
 
         <LinearLayout
             android:id="@+id/content_apply_layout"
@@ -495,43 +388,42 @@
             </LinearLayout>
             <!-- 지원대상, 지원내용, 기간, 문의 끝 -->
 
-            <!-- 연관된 혜택, 가로 리사이클러뷰 안에 버튼 있는 레이아웃 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="313.5dp"
+        </LinearLayout>
+
+        <!-- 연관된 혜택, 가로 리사이클러뷰 안에 버튼 있는 레이아웃 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="313.5dp"
+            android:layout_marginTop="45dp"
+            android:background="#f1f3fc"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
                 android:layout_marginTop="45dp"
-                android:background="#f1f3fc"
-                android:orientation="vertical">
+                android:fontFamily="@font/jalnan"
+                android:letterSpacing="-0.02"
+                android:lineSpacingExtra="-4.5sp"
+                android:text="연관된 혜택"
+                android:textColor="#000000"
+                android:textSize="20.5sp"
+                android:textStyle="normal" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginTop="45dp"
-                    android:fontFamily="@font/jalnan"
-                    android:letterSpacing="-0.02"
-                    android:lineSpacingExtra="-4.5sp"
-                    android:text="연관된 혜택"
-                    android:textColor="#000000"
-                    android:textSize="20.5sp"
-                    android:textStyle="normal" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/detail_benefit_btn_recyclerview"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginTop="22.5dp"
-                    android:orientation="horizontal" />
-
-            </LinearLayout>
-            <!-- 연관된 혜택, 가로 리사이클러뷰 안에 버튼 있는 레이아웃 끝 -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/detail_benefit_btn_recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="22.5dp"
+                android:orientation="horizontal" />
 
         </LinearLayout>
+        <!-- 연관된 혜택, 가로 리사이클러뷰 안에 버튼 있는 레이아웃 끝 -->
 
         <!-- 레이아웃 footer -->
         <LinearLayout
-            android:id="@+id/footer_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#fbfbfb"

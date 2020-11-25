@@ -167,8 +167,8 @@
         <item>남구</item>
         <item>동구</item>
         <item>북구</item>
-        <item>울주군</item>
         <item>서구</item>
+        <item>울주군</item>
     </string-array>
 
     <string-array name="sejong_item">
@@ -234,5 +234,7 @@
         <item>수지구</item>
         <item>처인구</item>
     </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
