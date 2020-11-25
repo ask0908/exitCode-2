@@ -669,7 +669,6 @@
 
                 </LinearLayout>
 
-
             </LinearLayout>
 
             <Button
@@ -679,9 +678,9 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginRight="20dp"
-                android:background="@drawable/btn_done"
                 android:fontFamily="@font/jalnan"
                 android:text="조회하기"
+                android:background="@drawable/btn_done"
                 android:textColor="@color/colorMainWhite" />
 
         </LinearLayout>

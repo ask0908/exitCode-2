@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "com.psj.welfare"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 29
         versionCode 7
         versionName "7"
@@ -79,5 +79,10 @@ dependencies {
     // 좋아요 버튼
     implementation 'com.github.jd-alexander:LikeButton:0.2.3'
     implementation 'com.google.code.gson:gson:2.8.6'
+    // 퍼미션 허가 관련 라이브러리
+    implementation 'gun0912.ted:tedpermission:2.2.3'
+
+    // Volley
+    implementation 'com.android.volley:volley:1.1.1'
 
 }

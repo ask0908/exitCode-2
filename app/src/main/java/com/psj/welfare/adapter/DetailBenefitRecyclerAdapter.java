@@ -74,7 +74,6 @@ public class DetailBenefitRecyclerAdapter extends RecyclerView.Adapter<DetailBen
         @Override
         public void onClick(View v)
         {
-//            itemClickListener.onItemClick(v, getAdapterPosition());
             Log.e(TAG, "클릭됨");
         }
     }

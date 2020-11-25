@@ -1,9 +1,13 @@
 package com.psj.welfare.api;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 
 /* 레트로핏에 사용되는 메서드들을 모아놓은 인터페이스
 * 언제 어떤 걸 호출하고 어떤 걸 요청하는가? */
@@ -225,6 +229,76 @@ public interface ApiInterface
 	Call<String> getBookmark(
 			@Field("email") String email,
 			@Field("welf_name") String welf_name
+	);
+
+	/**
+	 * 리뷰 데이터를 가져오는 메서드
+	 * 인자로 리뷰를 보고자 하는 정책의 이름, 안드/iOS 중 어떤 타입인지를 명시해서 서버로 넘겨준다
+	 * @param welf_name - 정책명
+	 * @param osType - 안드 or iOS 중 어떤 것인가?
+	 * @return
+	 */
+	@FormUrlEncoded
+	@POST("/backend/php/common/review_list.php")
+	Call<String> getReview(
+			@Field("welf_name") String welf_name,
+			@Field("osType") String osType
+	);
+
+	/**
+	 * 리뷰 작성 화면에서 작성한 제목, 내용 등의 데이터를 서버로 보내 저장하는 메서드
+	 * 이미지는 아직 넣지 않는다
+	 * @param welf_name - 리뷰를 작성하는 정책 이름
+	 * @param content - 유저가 작성한 리뷰 내용
+	 * @param writer - 유저 이름
+	 * @param email - 유저 이메일
+	 * @param like_count - 좋아요 수
+	 * @param bad_count - 싫어요 수
+	 * @param star_count - 별점 수
+	 * @return
+	 */
+	@FormUrlEncoded
+	@POST("/backend/php/common/review_register.php")
+	Call<String> sendReview(
+			@Field("welf_name") String welf_name,
+			@Field("content") String content,
+			@Field("writer") String writer,
+			@Field("email") String email,
+			@Field("like_count") String like_count,
+			@Field("bad_count") String bad_count,
+			@Field("star_count") String star_count
+	);
+
+	/**
+	 * 이미지, 텍스트 전송
+	 */
+	@Multipart
+	@POST("/backend/php/common/review_register.php")
+	Call<String> sendReviewImage(
+			@Field("welf_name") String welf_name,
+			@Field("content") String content,
+			@Field("writer") String writer,
+			@Field("email") String email,
+			@Field("like_count") String like_count,
+			@Field("bad_count") String bad_count,
+			@Field("star_count") String star_count,
+			@Part("fileName") RequestBody fileName,
+			@Part MultipartBody.Part file
+	);
+
+	//part는 filed와 달리 데이터를 직렬화하여 전송한다.
+	@Multipart
+	@POST("/backend/php/common/review_register.php")
+	Call<String> uploadReview(
+			@Part("welf_name") String welf_name,
+			@Part("content") String content,
+			@Part("writer") String writer,
+			@Part("email") String email,
+			@Part("like_count") String like_count,
+			@Part("bad_count")  String bad_count,
+			@Part("star_count") String star_count,
+			@Part("imageFile") RequestBody imageReqBody,
+			@Part MultipartBody.Part imageFile
 	);
 
 }

@@ -39,7 +39,7 @@
             android:paddingTop="5dp"
             android:text="관심사 선택"
             android:textColor="@android:color/white"
-            android:textSize="34sp" />
+            android:textSize="22sp" />
 
     </LinearLayout>
 
