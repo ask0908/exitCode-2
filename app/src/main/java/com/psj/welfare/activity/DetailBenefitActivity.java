@@ -34,6 +34,8 @@ import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.OnSingleClickListener;
 
+import org.eazegraph.lib.charts.BarChart;
+import org.eazegraph.lib.models.BarModel;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -103,6 +105,8 @@ public class DetailBenefitActivity extends AppCompatActivity
     // 클릭 시 리뷰 위로 스크롤을 올리기 위한 boolean 변수
     boolean isClicked = false;
 
+    private BarChart chart;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -112,6 +116,63 @@ public class DetailBenefitActivity extends AppCompatActivity
         /* findViewById() 모아놓은 메서드 */
         init();
         layout.setVisibility(View.GONE);
+
+        /* BarChart */
+        chart.clearChart();
+
+        chart.addBar(new BarModel("5점", 50, 0xFF56B7F1));
+        chart.addBar(new BarModel("4점", 40, 0xFF56B7F1));
+        chart.addBar(new BarModel("3점", 10, 0xFF56B7F1));
+        chart.addBar(new BarModel("2점", 10, 0xFF56B7F1));
+        chart.addBar(new BarModel("1점", 5, 0xFF56B7F1));
+
+        chart.startAnimation();
+
+        /* 가로 MPAndroidChart 처리 */
+//        chart.setMaxVisibleValueCount(60);
+//        chart.setPinchZoom(false);
+//        chart.setDrawGridBackground(false);
+//
+//        MyXAxisValueFormatter formatter = new MyXAxisValueFormatter();
+//
+//        BarDataSet set1;
+//        set1 = new BarDataSet(formatter.getDataSet(), "The year 2017");
+//
+//        set1.setColors(Color.parseColor("#F78B5D"),
+//                Color.parseColor("#FCB232"),
+//                Color.parseColor("#FDD930"),
+//                Color.parseColor("#ADD137"),
+//                Color.parseColor("#A0C25A")
+//        );
+//
+//        ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+//        dataSets.add(set1);
+//
+//        BarData data = new BarData(dataSets);
+//
+//        // hide Y-axis
+//        YAxis left = chart.getAxisLeft();
+//        left.setDrawLabels(false);
+//
+//        // custom X-axis labels
+//        String[] values = new String[] { "1 star", "2 stars", "3 stars", "4 stars", "5 stars"};
+//        XAxis xAxis = chart.getXAxis();
+//        chart.getXAxis().setDrawGridLines(false);   // 구분선(Grid Lines) 제거
+//        chart.setDrawGridBackground(false);
+//        xAxis.setValueFormatter(new MyXAxisValueFormatter(values));
+//
+//        chart.setData(data);
+//
+//        // custom description
+//        Description description = new Description();
+//        description.setText("");
+//        chart.setDescription(description);
+//
+//        // hide legend
+//        chart.getLegend().setEnabled(false);
+//
+//        chart.animateY(1000);
+//        chart.invalidate();
 
         // 리사이클러뷰 처리
         review_recycler = findViewById(R.id.review_recycler);
@@ -206,6 +267,7 @@ public class DetailBenefitActivity extends AppCompatActivity
         if (requestCode == 1 && resultCode == RESULT_OK && data != null)
         {
             // 조건에 맞춰 리뷰를 작성하고 작성 버튼을 누르면 이 곳으로 돌아와서, 서버에서 리뷰 데이터를 가져오는 메서드를 호출해 갱신 효과를 낸다
+            getReview();
         }
     }
 
@@ -291,9 +353,11 @@ public class DetailBenefitActivity extends AppCompatActivity
 
         content_apply_layout = findViewById(R.id.content_apply_layout);
 
-        review_status_image = findViewById(R.id.review_status_image);
+//        review_status_image = findViewById(R.id.review_status_image);
         review_rating = findViewById(R.id.review_rating);
         more_big_scene_button = findViewById(R.id.more_big_scene_button);
+
+        chart = findViewById(R.id.review_chart);
     }
 
     @Override
@@ -515,6 +579,7 @@ public class DetailBenefitActivity extends AppCompatActivity
                 value.setContent(content);
                 value.setCreate_date(create_date);
                 value.setImage_url(image_url);
+                value.setStar_count(Float.parseFloat(star_count));  // String으로 오기 때문에 float로 캐스팅해야 함
 //                value.setStar_count(Float.parseFloat(star_count));
 //                item.id = id;
 //                item.content = content;

@@ -12,6 +12,7 @@ android {
         versionCode 7
         versionName "7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -84,5 +85,19 @@ dependencies {
 
     // Volley
     implementation 'com.android.volley:volley:1.1.1'
+
+    // 원형 이미지뷰
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+
+    // 커스텀 RatingBar
+    implementation 'com.hedgehog.ratingbar:app:1.1.2'
+
+    // 가로 막대 그래프
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    implementation 'com.github.blackfizz:eazegraph:1.2.2@aar'
+    implementation 'com.nineoldandroids:library:2.4.0'
+
+    // Cannot fit requested classes in a single dex file (# methods: 67991 > 65536) 에러로 추가함
+    implementation 'com.android.support:multidex:1.0.3'
 
 }

@@ -7,10 +7,10 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 
 import com.psj.welfare.fragment.FifthFragment;
-import com.psj.welfare.fragment.FourthFragment;
+import com.psj.welfare.fragment.SearchFragment;
 import com.psj.welfare.fragment.MainFragment;
-import com.psj.welfare.fragment.SecondFragment;
-import com.psj.welfare.fragment.ThirdFragment;
+import com.psj.welfare.fragment.MatchTestFragment;
+import com.psj.welfare.fragment.InterestBenefitFragment;
 
 
 import java.util.ArrayList;
@@ -25,9 +25,9 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter
     {
         super(fm);
         list.add(new MainFragment());
-        list.add(new SecondFragment());
-        list.add(new ThirdFragment());
-        list.add(new FourthFragment());
+        list.add(new MatchTestFragment());
+        list.add(new InterestBenefitFragment());
+        list.add(new SearchFragment());
         list.add(new FifthFragment());
     }
 

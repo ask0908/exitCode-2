@@ -37,7 +37,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class FourthFragment extends Fragment
+/* 혜택 이름 검색하는 프래그먼트 */
+public class SearchFragment extends Fragment
 {
     /* FourthFragment TAG */
     public static final String TAG = "FourthFragment"; // 로그 찍을 때 사용하는 TAG
@@ -55,7 +56,7 @@ public class FourthFragment extends Fragment
     int position_Search = 0;
     String search;
 
-    public FourthFragment()
+    public SearchFragment()
     {
         // Required empty public constructor
     }
@@ -69,7 +70,7 @@ public class FourthFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        return inflater.inflate(R.layout.fragment_fourth, container, false);
+        return inflater.inflate(R.layout.fragment_search, container, false);
     }
 
     @Override

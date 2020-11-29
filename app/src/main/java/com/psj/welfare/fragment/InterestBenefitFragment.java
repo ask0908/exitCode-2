@@ -26,7 +26,7 @@ import com.psj.welfare.activity.PushQuestionActivity;
 
 import java.util.ArrayList;
 
-public class ThirdFragment extends Fragment
+public class InterestBenefitFragment extends Fragment
 {
     private ConstraintLayout third_fragment_layout;
     private final String TAG = "ThirdFragment";
@@ -43,7 +43,7 @@ public class ThirdFragment extends Fragment
     // 성별, 나이, 지역을 담을 변수. 질문지 액티비티로 이동 시 같이 가져간다
     String gender, age, area;
 
-    public ThirdFragment()
+    public InterestBenefitFragment()
     {
         // Required empty public constructor
     }
@@ -57,7 +57,7 @@ public class ThirdFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        return inflater.inflate(R.layout.fragment_third, container, false);
+        return inflater.inflate(R.layout.fragment_interest_benefit, container, false);
     }
 
     @SuppressLint("ClickableViewAccessibility")
