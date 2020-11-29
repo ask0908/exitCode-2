@@ -15,12 +15,13 @@ import androidx.fragment.app.Fragment;
 import com.psj.welfare.R;
 import com.psj.welfare.activity.Compatibility.Compatibility_FirstActivity;
 
-public class SecondFragment extends Fragment
+/* 복지국가 궁합 테스트 */
+public class MatchTestFragment extends Fragment
 {
     private final String TAG = "SecondFragment";
     private Button compatibility_btn;
 
-    public SecondFragment()
+    public MatchTestFragment()
     {
         // Required empty public constructor
     }
@@ -34,7 +35,7 @@ public class SecondFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        return inflater.inflate(R.layout.fragment_second, container, false);
+        return inflater.inflate(R.layout.fragment_match_test, container, false);
     }
 
     @Override

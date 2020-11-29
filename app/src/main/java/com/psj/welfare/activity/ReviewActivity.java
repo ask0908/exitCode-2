@@ -360,7 +360,7 @@ public class ReviewActivity extends AppCompatActivity
         RequestBody imageDescription = RequestBody.create(MediaType.parse("text/plain"), "image-type");
 
         // 이미지를 업로드하는 레트로핏 객체를 생성
-        Call<String> call = apiInterface.uploadReview("test", "test", "writerTest", "gmail@gmail.com", "0", "0",
+        Call<String> call = apiInterface.uploadReview("test", review_content_edit.getText().toString(), "writerTest", "gmail@gmail.com", "0", "0",
                 "3.5", imageDescription, imagePart);
         call.enqueue(new Callback<String>()
         {

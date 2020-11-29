@@ -6,13 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.hedgehog.ratingbar.RatingBar;
 import com.psj.welfare.Data.ReviewItem;
 import com.psj.welfare.R;
 
@@ -44,7 +44,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     @Override
     public ReviewAdapter.ReviewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        View view = LayoutInflater.from(context).inflate(R.layout.review_item, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.review_item_test, parent, false);
         return new ReviewViewHolder(view);
     }
 
@@ -58,18 +58,20 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
                 .into(holder.review_image);
         holder.review_content.setText(item.getContent());
         holder.review_date.setText(item.getCreate_date());
+        float count = item.getStar_count();
         Log.e("adapter", "getId() : " + item.getId());
+        Log.e("adapter", "별점 : " + item.getStar_count());
         if (item.getStar_count() != 0.0)
         {
             Log.e("별점", "rate = " + item.getStar_count());
-            holder.review_rate.setRating(item.getStar_count());
+            holder.review_rate.setStar(3.0f);
         }
         else
         {
             Log.e("별점", "rate = 0.0");
         }
 
-        //시간 정보 가져오는 객체 생성 후 저장
+        // 시간 정보 가져오는 객체 생성 후 저장
         // 참고: https://krksap.tistory.com/1158
         // 참고: https://heowc.dev/2018/03/18/java8-time-package/
         // 참고: https://howtodoinjava.com/java/date-time/zoneddatetime-parse/
@@ -94,17 +96,17 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             if (diffTime < SEC)
             {
                 // Log.d(TAG, diffTime + " 초전");
-                holder.review_date.setText(diffTime + " 초전");
+                holder.review_date.setText(diffTime + "초전");
             }
             else if ((diffTime /= SEC) < MIN)
             {
                 // Log.d(TAG, diffTime + " 분전");
-                holder.review_date.setText(diffTime + " 분전");
+                holder.review_date.setText(diffTime + "분전");
             }
             else if ((diffTime /= MIN) < HOUR)
             {
                 // Log.d(TAG, diffTime + " 시간전");
-                holder.review_date.setText(diffTime + " 시간전");
+                holder.review_date.setText(diffTime + "시간전");
             }
             else if ((diffTime /= HOUR) < DAY)
             {

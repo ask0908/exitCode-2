@@ -4,7 +4,7 @@
     package="com.psj.welfare">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -12,16 +12,20 @@
         android:allowBackup="true"
         android:icon="@drawable/launcher_image"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@drawable/launcher_image"
         android:supportsRtl="true"
-        android:requestLegacyExternalStorage="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
-        <activity android:name=".activity.ReviewActivity"
-            android:theme="@style/ReviewTheme"
-            android:parentActivityName=".activity.DetailBenefitActivity"/>
-        <activity android:name=".activity.TestActivity"/>
+        <activity android:name=".activity.MapDetailActivity"/>
+        <activity android:name=".activity.MapActivity"
+            android:theme="@style/ReviewTheme"/>
+        <activity
+            android:name=".activity.ReviewActivity"
+            android:parentActivityName=".activity.DetailBenefitActivity"
+            android:theme="@style/ReviewTheme" />
+        <activity android:name=".activity.TestActivity" />
         <activity android:name=".activity.PushQuestionActivity" />
         <activity android:name=".activity.Compatibility.Compatibility_FourthActivity" />
         <activity android:name=".Test.CompatibilityTestActivity" />
@@ -41,18 +45,20 @@
         <activity android:name=".activity.EndCategory" />
         <activity android:name=".activity.ResultBenefitActivity" />
         <activity android:name=".activity.LoginActivity">
-<!--             <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--             </intent-filter>-->
-        </activity>
-        <activity android:name=".activity.DetailBenefitActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".activity.DetailBenefitActivity">
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
 
         <service

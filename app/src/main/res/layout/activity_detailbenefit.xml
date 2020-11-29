@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bar="http://schemas.android.com/tools"
     android:id="@+id/review_scrollview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -46,6 +47,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/selector_view"
             android:layout_width="match_parent"
             android:layout_height="210dp"
             android:layout_marginTop="20dp"
@@ -68,6 +70,7 @@
 
             <!-- 내용, 신청방법, 리뷰 탭들이 가로로 배열된 레이아웃 -->
             <LinearLayout
+                android:id="@+id/content_and_others_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight=".60"
@@ -167,47 +170,29 @@
         </LinearLayout>
         <!-- 내용, 신청방법, 리뷰 텍스트뷰 있는 그라데이션 구간 끝 -->
 
-        <!-- 리뷰 작성용 화면, 텍스트뷰를 누르면 다른 화면으로 이동해서 작성할 수 있게 한다 -->
+        <!-- 리뷰 작성용 화면, 텍스트뷰를 누르면 다른 화면으로 이동해서 작성할 수 있게 한다
+         평소엔 gone이었다가 리뷰를 누르면 visible로 바뀌면서 보여지게 한다. 이 때 다른 뷰들을 gone으로 돌린다-->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/all_review_scene"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- 가로로 이미지뷰, 구분선, 세로 리니어 레이아웃을 담는 리니어 레이아웃 -->
+            <!-- 세로로 텍스트뷰 2개, 별점을 표시하는 레이아웃 -->
             <LinearLayout
-                android:id="@+id/review_horizontal_layout"
+                android:id="@+id/review_data_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight=".65"
                 android:orientation="horizontal"
-                android:background="@drawable/bottom_only_border"
-                android:weightSum="1"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                app:layout_constraintTop_toTopOf="parent">
 
-                <!-- 올리브영 리뷰처럼 만든다면 이곳에 상태 이미지가 들어와야 한다 -->
-                <ImageView
-                    android:id="@+id/review_status_image"
-                    android:layout_width="0dp"
-                    android:layout_height="150dp"
-                    android:layout_weight=".35"
-                    android:scaleType="fitXY"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginTop="10dp"
-                    android:padding="10dp"
-                    android:src="@drawable/best"/>
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/colorGray_L"/>
-
-                <!-- 세로로 텍스트뷰 2개, 별점을 표시하는 레이아웃 -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight=".65"
-                    android:layout_margin="20dp"
+                    android:layout_weight=".40"
+                    android:gravity="center"
                     android:orientation="vertical">
 
                     <TextView
@@ -215,54 +200,75 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/jalnan"
-                        android:text="이 혜택의 점수는요"
-                        android:textSize="15sp"
                         android:gravity="center"
-                        android:textColor="@color/colorBlack"/>
+                        android:text="총 98,765건"
+                        android:textColor="@color/colorBlack"
+                        android:layout_marginTop="10dp"
+                        android:textSize="20sp" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/jalnan"
-                        android:text="4.7점"
-                        android:textSize="25sp"
-                        android:gravity="center"
                         android:layout_marginTop="10dp"
-                        android:textColor="@color/colorBlack"/>
+                        android:fontFamily="@font/jalnan"
+                        android:gravity="center"
+                        android:text="4.7점"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="35sp" />
 
                     <RatingBar
                         android:id="@+id/review_rating"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        style="?android:attr/ratingBarStyleIndicator"
+                        android:isIndicator="true"
                         android:numStars="5"
                         android:rating="4.7"
-                        android:isIndicator="true"
-                        android:stepSize="0.1"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="10dp"/>
+                        android:stepSize="0.1" />
 
                 </LinearLayout>
-                <!-- 세로로 텍스트뷰 2개, 별점을 표시하는 레이아웃 끝 -->
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".40"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/more_big_scene_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:fontFamily="@font/jalnan"
+                        android:gravity="center"
+                        android:text="리뷰 작성하러 가기"
+                        android:background="@drawable/btn_done"
+                        android:textColor="@color/colorMainWhite"
+                        android:textSize="18sp"/>
+
+                    <org.eazegraph.lib.charts.BarChart
+                        android:id="@+id/review_chart"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:layout_marginTop="5dp"
+                        app:egBarWidth="15dp"
+                        app:egEnableScroll="true"
+                        app:egFixedBarWidth="true"
+                        app:egLegendHeight="30dp"
+                        app:egShowDecimal="false"/>
+
+                </LinearLayout>
+
+                <!--                <com.github.mikephil.charting.charts.HorizontalBarChart-->
+                <!--                    android:id="@+id/review_horizontal_chart"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="80dp"-->
+                <!--                    android:background="@android:color/white"/>-->
 
             </LinearLayout>
-            <!-- 가로로 이미지뷰, 구분선, 세로 리니어 레이아웃을 담는 리니어 레이아웃 끝 -->
-
-            <Button
-                android:id="@+id/more_big_scene_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/jalnan"
-                android:gravity="center"
-                android:paddingLeft="10dp"
-                android:text="리뷰를 작성하시려면 여길 눌러 주세요"
-                android:background="@drawable/btn_done"
-                android:textColor="@color/colorMainWhite"
-                android:textSize="20sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/review_horizontal_layout" />
+            <!-- 세로로 텍스트뷰 2개, 별점을 표시하는 레이아웃 끝 -->
 
             <!-- 댓글들을 표현할 리사이클러뷰 -->
             <androidx.recyclerview.widget.RecyclerView
@@ -272,7 +278,7 @@
                 android:orientation="vertical"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/more_big_scene_button"
+                app:layout_constraintTop_toBottomOf="@id/review_data_layout"
                 android:layout_marginTop="20dp"/>
             <!-- 댓글들을 표현할 리사이클러뷰 끝 -->
 

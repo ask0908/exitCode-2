@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.psj.welfare.R;
+import com.psj.welfare.activity.MapActivity;
 import com.psj.welfare.activity.ResultBenefitActivity;
 import com.psj.welfare.custom.CustomResultBenefitDialog;
 import com.psj.welfare.custom.OnSingleClickListener;
@@ -48,6 +49,9 @@ public class MainFragment extends Fragment
 
     // 맨 밑의 조회하기 버튼
     Button main_done;
+
+    // 지도 버튼
+    Button map_btn;
 
     // 더보기 버튼을 눌렀는지 확인할 때 사용할 boolean 변수. true일 경우에만 로고 클릭 이벤트를 발동시킨다
     boolean isClicked = false;
@@ -429,7 +433,7 @@ public class MainFragment extends Fragment
             }
         });
 
-        // 혜택 조회하러 가기 클릭 했을 때
+        // 혜택 조회하러 가기 클릭 리스너
         main_move_text.setOnClickListener(new OnSingleClickListener()
         {
             @Override
@@ -454,9 +458,15 @@ public class MainFragment extends Fragment
                             ObjectAnimator.ofInt(main_ScrollView, "scrollY", main_content.getTop()).setDuration(500).start();
                         }
 
-                    } // run end
-                }); // post end
+                    }
+                });
             }
+        });
+
+        // 지도 버튼 클릭 리스너
+        map_btn.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), MapActivity.class);
+            startActivity(intent);
         });
 
     }
@@ -581,6 +591,7 @@ public class MainFragment extends Fragment
         main_homeless_title = view.findViewById(R.id.main_homeless_title);
         main_etc_title = view.findViewById(R.id.main_etc_title);
 
-    } // init end
+        map_btn = view.findViewById(R.id.map_btn);
+    }
 
-} // MainFragment class end
+}

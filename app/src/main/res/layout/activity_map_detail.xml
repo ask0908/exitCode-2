@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context=".activity.MapDetailActivity">
+
+    <!-- 숫자 부분에는 spannable을 적용해 빨간색으로 강조한다 -->
+    <TextView
+        android:id="@+id/map_result_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/jalnan"
+        android:text="서울 지역에서 검색된 혜택,\n총 300개입니다"
+        android:textSize="20sp"
+        android:textColor="@color/colorBlack"
+        android:lineSpacingExtra="7dp"
+        android:gravity="start"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/result_keyword_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/map_result_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"/>
+
+</LinearLayout>
