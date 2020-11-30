@@ -5,6 +5,10 @@ public class MapResultItem
     private String benefit_name;
     private String benefit_btn_text;
 
+    public MapResultItem()
+    {
+    }
+
     public MapResultItem(String benefit_name, String benefit_btn_text)
     {
         this.benefit_name = benefit_name;

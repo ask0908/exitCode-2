@@ -27,20 +27,48 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-<!--    <Button-->
-<!--        android:id="@+id/sejong_and_daejeon_benefit_btn"-->
-<!--        android:layout_width="60dp"-->
-<!--        android:layout_height="60dp"-->
-<!--        android:layout_marginTop="304dp"-->
-<!--        android:background="@drawable/sejong_daejeon_oval"-->
-<!--        android:gravity="center"-->
-<!--        android:fontFamily="@font/jalnan"-->
-<!--        android:text="세종\n대전\n(79)"-->
-<!--        android:textSize="15sp"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.4"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/map_toolbar" />-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:background="#fff"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/map_toolbar"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
+
+        <TextView
+            android:id="@+id/area_textview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".40"
+            android:fontFamily="@font/jalnan"
+            android:text="현재 위치 : 부산"
+            android:textSize="17sp"
+            android:textColor="@color/colorBlack"
+            android:paddingLeft="10dp"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight=".30"/>
+
+        <TextView
+            android:id="@+id/change_area"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".30"
+            android:fontFamily="@font/jalnan"
+            android:layout_gravity="center_vertical"
+            android:text="지역변경"
+            android:textSize="17sp"
+            android:textColor="@color/colorBlack"
+            android:gravity="end"
+            android:paddingRight="20dp"/>
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/jeonnam_benefit_btn"
@@ -206,5 +234,18 @@
         app:layout_constraintHorizontal_bias="0.595"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/map_toolbar"/>
+
+    <TextView
+        android:id="@+id/map_bottom_textview"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#80000000"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:gravity="center"
+        android:fontFamily="@font/jalnan"
+        android:textSize="15sp"
+        android:textColor="@color/colorMainWhite"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

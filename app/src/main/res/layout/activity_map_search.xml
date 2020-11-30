@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.MapSearchActivity">
+
+    <ImageView
+        android:id="@+id/loginClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/close" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/jalnan"
+        android:lineSpacingExtra="6sp"
+        android:text="지번, 도로명, 건물명을\n입력해서 지역을 설정해보세요."
+        android:textColor="@color/colorBlack"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/search_area_edittext"
+        android:layout_width="350dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/round_edittext"
+        android:drawableRight="@drawable/search_black"
+        android:fontFamily="@font/jalnan"
+        android:hint="예) 신림동132"
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        android:paddingStart="10dp"
+        android:paddingRight="10dp"
+        android:textColor="@color/colorBlack"
+        android:textColorHint="@color/colorBlack" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="40dp"
+        android:fontFamily="@font/jalnan"
+        android:text="관심지역"
+        android:textColor="@color/colorBlack"
+        android:textSize="17sp" />
+
+    <View
+        android:layout_width="370dp"
+        android:layout_height="1dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:background="@color/colorGray_B" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/map_search_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="20dp"
+        android:orientation="vertical" />
+
+</LinearLayout>
