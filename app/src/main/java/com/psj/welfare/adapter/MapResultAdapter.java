@@ -1,7 +1,6 @@
 package com.psj.welfare.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +20,18 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
     private final String TAG = "MapResultAdapter";
     private Context context;
     private List<MapResultItem> lists;
+    private ItemClickListener itemClickListener;
 
-    public MapResultAdapter(Context context, List<MapResultItem> lists)
+    public void setOnItemClickListener(ItemClickListener itemClickListener)
+    {
+        this.itemClickListener = itemClickListener;
+    }
+
+    public MapResultAdapter(Context context, List<MapResultItem> lists, ItemClickListener itemClickListener)
     {
         this.context = context;
         this.lists = lists;
+        this.itemClickListener = itemClickListener;
     }
 
     @NonNull
@@ -33,7 +39,7 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
     public MapResultAdapter.MapResultViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         View view = LayoutInflater.from(context).inflate(R.layout.map_result_item, parent, false);
-        return new MapResultViewHolder(view);
+        return new MapResultViewHolder(view, itemClickListener);
     }
 
     @Override
@@ -41,12 +47,7 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
     {
         MapResultItem item = lists.get(position);
         holder.map_result_benefit_name.setText(item.getBenefit_name());
-        holder.map_result_benefit_btn.setText(item.getBenefit_btn_text());
-        holder.map_result_benefit_btn.setOnClickListener(v -> {
-            // 여기서도 버튼 클릭 리스너가 먹히나?
-            int pos = position;
-            Log.e(TAG, "pos = " + pos);
-        });
+        holder.map_result_benefit_btn.setText("더보기");
     }
 
     @Override
@@ -55,17 +56,37 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
         return lists.size();
     }
 
-    public class MapResultViewHolder extends RecyclerView.ViewHolder
+    public class MapResultViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         TextView map_result_benefit_name;
         Button map_result_benefit_btn;
+        ItemClickListener itemClickListener;
 
-        public MapResultViewHolder(@NonNull View view)
+        public MapResultViewHolder(@NonNull View view, ItemClickListener itemClickListener)
         {
             super(view);
 
             map_result_benefit_name = view.findViewById(R.id.map_result_benefit_name);
             map_result_benefit_btn = view.findViewById(R.id.map_result_benefit_btn);
+
+            this.itemClickListener = itemClickListener;
+            map_result_benefit_btn.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v)
+        {
+            int pos = getAdapterPosition();
+            if (pos != RecyclerView.NO_POSITION && itemClickListener != null)
+            {
+                itemClickListener.onItemClick(v, pos);
+            }
         }
     }
+
+    public interface ItemClickListener
+    {
+        void onItemClick(View view, int position);
+    }
+
 }

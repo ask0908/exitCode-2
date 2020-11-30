@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:id="@+id/map_search_layout"
+    android:weightSum="1">
+
+    <TextView
+        android:id="@+id/search_item_textview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight=".90"
+        android:fontFamily="@font/jalnan"
+        android:text="서울 서초구 효령도 164"
+        android:paddingBottom="10dp"
+        android:textSize="20sp"
+        android:textColor="@color/colorBlack"/>
+
+    <ImageView
+        android:id="@+id/search_close_imageview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight=".10"
+        android:src="@drawable/close"
+        android:layout_gravity="end"/>
+
+</LinearLayout>

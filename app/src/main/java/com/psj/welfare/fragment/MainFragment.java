@@ -1,7 +1,11 @@
 package com.psj.welfare.fragment;
 
+import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,19 +16,28 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
 import com.psj.welfare.R;
 import com.psj.welfare.activity.MapActivity;
 import com.psj.welfare.activity.ResultBenefitActivity;
 import com.psj.welfare.custom.CustomResultBenefitDialog;
 import com.psj.welfare.custom.OnSingleClickListener;
+import com.psj.welfare.util.GpsTracker;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import static android.content.Context.LOCATION_SERVICE;
 
 /**
  * MainActivity를 대체하는 프래그먼트
@@ -66,6 +79,18 @@ public class MainFragment extends Fragment
     // 스크롤 수정
     LinearLayout main_content;
 
+    String user_area;
+    // 유저의 현 위치를 가져와 주소로 변환하는 처리를 하는 클래스
+    private GpsTracker gpsTracker;
+
+    private static final int GPS_ENABLE_REQUEST_CODE = 100;
+    private static final int PERMISSIONS_REQUEST_CODE = 200;
+
+    String[] REQUIRED_PERMISSIONS = {
+            Manifest.permission.ACCESS_FINE_LOCATION,   // 앱이 정확한 위치에 액세스하도록 허용하는 권한
+            Manifest.permission.ACCESS_COARSE_LOCATION  // 앱이 대략적인 위치에 액세스하도록 허용하는 권한, ACCESS_FINE_LOCATION을 대체재로 쓸 수 있다
+    };
+
     public MainFragment()
     {
         // 프래그먼트 사용 시 있어야 하는 디폴트 생성자
@@ -76,7 +101,6 @@ public class MainFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        Log.e(TAG, "onCreateView() 호출");
         return (ViewGroup) inflater.inflate(R.layout.fragment_main, container, false);
     }
 
@@ -85,7 +109,34 @@ public class MainFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
+        // 위치 권한 설정 처리
+        PermissionListener permissionListener = new PermissionListener()
+        {
+            @Override
+            public void onPermissionGranted()
+            {
+                //
+            }
 
+            @Override
+            public void onPermissionDenied(List<String> deniedPermissions)
+            {
+                //
+            }
+        };
+
+        if (!checkLocationServicesStatus())
+        {
+            //
+        }
+        else
+        {
+            TedPermission.with(getActivity())
+                    .setRationaleMessage("너의 혜택은 서비스를 이용하시려면 위치 정보 권한 설정이 필요합니다")
+                    .setPermissionListener(permissionListener)
+                    .setPermissions(REQUIRED_PERMISSIONS)
+                    .check();
+        }
         init(view);
 
         /* 더보기 버튼을 누르면 더보기 버튼이 사라지고 다른 4가지 버튼들이 나오게 한다 */
@@ -161,7 +212,7 @@ public class MainFragment extends Fragment
                 m_favorList.remove("아기·어린이");
                 main_child_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.child));
                 main_child_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.i(TAG, "버튼 클릭 상태 비활성화");
+                Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_child.setSelected(!main_child.isSelected());
             }
             else
@@ -169,7 +220,7 @@ public class MainFragment extends Fragment
                 m_favorList.add("아기·어린이");
                 main_child_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.child_after));
                 main_child_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.i(TAG, "버튼 클릭 활성화!!");
+                Log.e(TAG, "버튼 클릭 활성화!!");
                 main_child.setSelected(true);
             }
         });
@@ -184,7 +235,7 @@ public class MainFragment extends Fragment
                 m_favorList.remove("학생·청년");
                 main_student_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.student));
                 main_student_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.i(TAG, "버튼 클릭 상태 비활성화");
+                Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_student.setSelected(!main_student.isSelected());
             }
             else
@@ -192,7 +243,7 @@ public class MainFragment extends Fragment
                 m_favorList.add("학생·청년");
                 main_student_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.student_after));
                 main_student_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.i(TAG, "버튼 클릭 활성화!!");
+                Log.e(TAG, "버튼 클릭 활성화!!");
                 main_student.setSelected(true);
             }
         });
@@ -207,7 +258,7 @@ public class MainFragment extends Fragment
                 m_favorList.remove("중장년·노인");
                 main_old_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.old));
                 main_old_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.i(TAG, "버튼 클릭 상태 비활성화");
+                Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_old.setSelected(!main_old.isSelected());
             }
             else
@@ -215,7 +266,7 @@ public class MainFragment extends Fragment
                 m_favorList.add("중장년·노인");
                 main_old_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.old_after));
                 main_old_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.i(TAG, "버튼 클릭 활성화!!");
+                Log.e(TAG, "버튼 클릭 활성화!!");
                 main_old.setSelected(true);
             }
         });
@@ -230,7 +281,7 @@ public class MainFragment extends Fragment
                 m_favorList.remove("육아·임신");
                 main_pregnancy_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.pregnancy));
                 main_pregnancy_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.i(TAG, "버튼 클릭 상태 비활성화");
+                Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_pregnancy.setSelected(!main_pregnancy.isSelected());
             }
             else
@@ -238,7 +289,7 @@ public class MainFragment extends Fragment
                 m_favorList.add("육아·임신");
                 main_pregnancy_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.pregnancy_after));
                 main_pregnancy_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.i(TAG, "버튼 클릭 활성화!!");
+                Log.e(TAG, "버튼 클릭 활성화!!");
                 main_pregnancy.setSelected(true);
             }
         });
@@ -252,7 +303,7 @@ public class MainFragment extends Fragment
                 m_favorList.remove("장애인");
                 main_disorder_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.disorder));
                 main_disorder_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.i(TAG, "버튼 클릭 상태 비활성화");
+                Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_disorder.setSelected(!main_disorder.isSelected());
             }
             else
@@ -260,7 +311,7 @@ public class MainFragment extends Fragment
                 m_favorList.add("장애인");
                 main_disorder_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.disorder_after));
                 main_disorder_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.i(TAG, "버튼 클릭 활성화!!");
+                Log.e(TAG, "버튼 클릭 활성화!!");
                 main_disorder.setSelected(true);
             }
         });
@@ -273,7 +324,7 @@ public class MainFragment extends Fragment
                 m_favorList.remove("문화·생활");
                 main_cultural_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.cultural));
                 main_cultural_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.i(TAG, "버튼 클릭 상태 비활성화");
+                Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_cultural.setSelected(!main_cultural.isSelected());
             }
             else
@@ -281,7 +332,7 @@ public class MainFragment extends Fragment
                 m_favorList.add("문화·생활");
                 main_cultural_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.cultural_after));
                 main_cultural_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.i(TAG, "버튼 클릭 활성화!!");
+                Log.e(TAG, "버튼 클릭 활성화!!");
                 main_cultural.setSelected(true);
             }
         });
@@ -294,7 +345,7 @@ public class MainFragment extends Fragment
                 m_favorList.remove("다문화");
                 main_multicultural_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.multicultural));
                 main_multicultural_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.i(TAG, "버튼 클릭 상태 비활성화");
+                Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_multicultural.setSelected(!main_multicultural.isSelected());
             }
             else
@@ -302,7 +353,7 @@ public class MainFragment extends Fragment
                 m_favorList.add("다문화");
                 main_multicultural_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.multicultural_after));
                 main_multicultural_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.i(TAG, "버튼 클릭 활성화!!");
+                Log.e(TAG, "버튼 클릭 활성화!!");
                 main_multicultural.setSelected(true);
             }
         });
@@ -315,7 +366,7 @@ public class MainFragment extends Fragment
                 m_favorList.remove("기업·자영업자");
                 main_company_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.company));
                 main_company_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.i(TAG, "버튼 클릭 상태 비활성화");
+                Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_company.setSelected(!main_company.isSelected());
             }
             else
@@ -323,7 +374,7 @@ public class MainFragment extends Fragment
                 m_favorList.add("기업·자영업자");
                 main_company_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.company_after));
                 main_company_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.i(TAG, "버튼 클릭 활성화!!");
+                Log.e(TAG, "버튼 클릭 활성화!!");
                 main_company.setSelected(true);
             }
         });
@@ -336,7 +387,7 @@ public class MainFragment extends Fragment
                 m_favorList.remove("법률");
                 main_law_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.law));
                 main_law_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.i(TAG, "버튼 클릭 상태 비활성화");
+                Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_law.setSelected(!main_law.isSelected());
             }
             else
@@ -344,7 +395,7 @@ public class MainFragment extends Fragment
                 m_favorList.add("법률");
                 main_law_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.law_after));
                 main_law_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.i(TAG, "버튼 클릭 활성화!!");
+                Log.e(TAG, "버튼 클릭 활성화!!");
                 main_law.setSelected(true);
             }
         });
@@ -357,7 +408,7 @@ public class MainFragment extends Fragment
                 m_favorList.remove("주거");
                 main_living_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.living));
                 main_living_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.i(TAG, "버튼 클릭 상태 비활성화");
+                Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_living.setSelected(!main_living.isSelected());
             }
             else
@@ -365,7 +416,7 @@ public class MainFragment extends Fragment
                 m_favorList.add("주거");
                 main_living_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.living_after));
                 main_living_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.i(TAG, "버튼 클릭 활성화!!");
+                Log.e(TAG, "버튼 클릭 활성화!!");
                 main_living.setSelected(true);
             }
         });
@@ -378,7 +429,7 @@ public class MainFragment extends Fragment
                 m_favorList.remove("취업·창업");
                 main_job_title.setTextColor(getResources().getColor(R.color.colorBlack));
                 main_job_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.job));
-                Log.i(TAG, "버튼 클릭 상태 비활성화");
+                Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_job.setSelected(!main_job.isSelected());
             }
             else
@@ -386,7 +437,7 @@ public class MainFragment extends Fragment
                 m_favorList.add("취업·창업");
                 main_job_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.job_after));
                 main_job_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.i(TAG, "버튼 클릭 활성화!!");
+                Log.e(TAG, "버튼 클릭 활성화!!");
                 main_job.setSelected(true);
             }
         });
@@ -399,7 +450,7 @@ public class MainFragment extends Fragment
                 m_favorList.remove("저소득층");
                 main_homeless_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.homeless));
                 main_homeless_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.i(TAG, "버튼 클릭 상태 비활성화");
+                Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_homeless.setSelected(!main_homeless.isSelected());
             }
             else
@@ -407,7 +458,7 @@ public class MainFragment extends Fragment
                 m_favorList.add("저소득층");
                 main_homeless_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.homeless_after));
                 main_homeless_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.i(TAG, "버튼 클릭 활성화!!");
+                Log.e(TAG, "버튼 클릭 활성화!!");
                 main_homeless.setSelected(true);
             }
         });
@@ -420,7 +471,7 @@ public class MainFragment extends Fragment
                 m_favorList.remove("기타");
                 main_etc_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.etc));
                 main_etc_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.i(TAG, "버튼 클릭 상태 비활성화");
+                Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_etc.setSelected(!main_etc.isSelected());
             }
             else
@@ -428,7 +479,7 @@ public class MainFragment extends Fragment
                 m_favorList.add("기타");
                 main_etc_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.etc_after));
                 main_etc_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.i(TAG, "버튼 클릭 활성화!!");
+                Log.e(TAG, "버튼 클릭 활성화!!");
                 main_etc.setSelected(true);
             }
         });
@@ -439,7 +490,7 @@ public class MainFragment extends Fragment
             @Override
             public void onSingleClick(View v)
             {
-                Log.i(TAG, "혜택 조회하러 가기 클릭!");
+                Log.e(TAG, "혜택 조회하러 가기 클릭!");
 
                 // 스크롤 0.5초만에 Y축 main_content 머리로 이동
                 main_ScrollView.post(new Runnable()
@@ -465,17 +516,112 @@ public class MainFragment extends Fragment
 
         // 지도 버튼 클릭 리스너
         map_btn.setOnClickListener(v -> {
+            gpsTracker = new GpsTracker(getActivity());
+
+            // 유저의 위치에서 위도, 경도값을 가져와 변수에 저장
+            double latitude = gpsTracker.getLatitude();
+            double longitude = gpsTracker.getLongitude();
+
+            // 위도, 경도값으로 주소를 만들어 String 변수에 저장
+            String address = getCurrentAddress(latitude, longitude);
+            Log.e(TAG, "address = " + address);
+            // 아직 서울 데이터가 없기 때문에 부산으로 한다
+            if (address.contains("서울특별시"))
+            {
+                user_area = "부산";
+            }
             Intent intent = new Intent(getActivity(), MapActivity.class);
+            intent.putExtra("user_area", user_area);
             startActivity(intent);
         });
+    }
 
+    /* 사용자가 위치 권한을 허용했는지 확인하는 메서드 */
+//    void checkRunTimePermission()
+//    {
+//        // 런타임 퍼미션 처리
+//        // 1. 위치 퍼미션을 가지고 있는지 체크
+//        int hasFineLocationPermission = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
+//        int hasCoarseLocationPermission = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION);
+//
+//        // 권한 2개를 다 허용했다면 아무 처리도 하지 않는다
+//        if (hasFineLocationPermission == PackageManager.PERMISSION_GRANTED && hasCoarseLocationPermission == PackageManager.PERMISSION_GRANTED)
+//        {
+//            // 2. 이미 퍼미션을 가지고 있다면
+//            // (안드로이드 6.0 이하 버전은 런타임 퍼미션이 필요없기 때문에 이미 허용된 걸로 인식함)
+//            // 3. 위치 값을 가져올 수 있음
+//        }
+//        else
+//        {  // 2. 퍼미션 요청을 허용한 적이 없다면 퍼미션 요청이 필요하다. 2가지 경우(3-1, 4-1)가 있다
+//
+//            // 3-1. 사용자가 퍼미션 거부를 한 적이 있는 경우
+//            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), REQUIRED_PERMISSIONS[0]))
+//            {
+//                // 3-2. 요청을 진행하기 전에 사용자가에게 퍼미션이 필요한 이유를 설명한다
+//                Toast.makeText(getActivity(), "내 주변 혜택 찾기 기능을 이용하시려면 위치 접근 권한이 필요합니다.", Toast.LENGTH_LONG).show();
+//                // 3-3. 사용자게에 퍼미션 요청을 한다. 요청 결과는 onRequestPermissionResult에서 수신된다
+//                ActivityCompat.requestPermissions(getActivity(), REQUIRED_PERMISSIONS, PERMISSIONS_REQUEST_CODE);
+//            }
+//            else
+//            {
+//                // 4-1. 사용자가 퍼미션 거부를 한 적이 없는 경우에는 퍼미션 요청을 바로 한다
+//                // 요청 결과는 onRequestPermissionResult에서 수신된다
+//                ActivityCompat.requestPermissions(getActivity(), REQUIRED_PERMISSIONS, PERMISSIONS_REQUEST_CODE);
+//            }
+//        }
+//    }
+
+    // 위도, 경도를 받아서 주소를 만들어내는 메서드
+    public String getCurrentAddress(double latitude, double longitude)
+    {
+        // 지오코더를 통해 GPS 값을 주소로 변환한다
+        Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
+        List<Address> addresses;
+
+        try
+        {
+            addresses = geocoder.getFromLocation(
+                    latitude,
+                    longitude,
+                    7);
+        }
+        catch (IOException ioException)
+        {
+            // 네트워크 문제
+            Toast.makeText(getActivity(), "지오코더 서비스 사용불가", Toast.LENGTH_LONG).show();
+            return "지오코더 서비스 사용불가";
+        }
+        catch (IllegalArgumentException illegalArgumentException)
+        {
+            Toast.makeText(getActivity(), "잘못된 GPS 좌표입니다", Toast.LENGTH_LONG).show();
+            return "잘못된 GPS 좌표";
+        }
+
+        if (addresses == null || addresses.size() == 0)
+        {
+            Toast.makeText(getActivity(), "주소가 발견되지 않았습니다", Toast.LENGTH_LONG).show();
+            return "주소 미발견";
+        }
+
+        Log.e(TAG, "addresses 리스트 = " + addresses.toString());
+        Address address = addresses.get(0);
+        return address.getAddressLine(0).toString() + "\n";
+    }
+
+    public boolean checkLocationServicesStatus()
+    {
+        /* LocationManager : 시스템 위치 서비스에 대한 액세스 제공 */
+        // Context의 위치(location) 정보를 LocationManager 객체에 저장한다
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
+
+        /* isProviderEnabled() : 지정된 provider의 현재 활성화 / 비활성화 상태를 리턴하는 메서드 */
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
     @Override
     public void onStart()
     {
         super.onStart();
-        Log.e(TAG, "onStart() 실행");
         // 조회하기 버튼만 누르고 이동했다가 다시 돌아온 후, 다시 조회하기 버튼을 누르면 전체가 여러 개 찍히는 현상이 있다
         // 이 현상을 없애기 위해서 ArrayList.clear()로 리스트를 싹 비운다
         m_favorList.clear();

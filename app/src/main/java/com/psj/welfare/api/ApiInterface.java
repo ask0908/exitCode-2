@@ -5,9 +5,11 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Query;
 
 /* 레트로핏에 사용되는 메서드들을 모아놓은 인터페이스
 * 언제 어떤 걸 호출하고 어떤 걸 요청하는가? */
@@ -286,7 +288,20 @@ public interface ApiInterface
 			@Part MultipartBody.Part file
 	);
 
-	//part는 filed와 달리 데이터를 직렬화하여 전송한다.
+	/**
+	 * 이미지, 리뷰 텍스트를 서버로 보내 저장하는 메서드
+	 * @param welf_name - 리뷰가 쓰인 혜택 이름
+	 * @param content - 리뷰 내용
+	 * @param writer - 리뷰 작성자
+	 * @param email - 리뷰 작성자의 이메일
+	 * @param like_count - 좋아요 수
+	 * @param bad_count - 싫어요 수
+	 * @param star_count - 별점
+	 * @param imageReqBody - 이미지 요청 시 넘겨야 하는 RequestBody
+	 * @param imageFile - 리뷰에 첨부한 이미지 파일
+	 * @return
+	 */
+	// part는 filed와 달리 데이터를 직렬화하여 전송한다
 	@Multipart
 	@POST("/backend/php/common/review_register.php")
 	Call<String> uploadReview(
@@ -299,6 +314,18 @@ public interface ApiInterface
 			@Part("star_count") String star_count,
 			@Part("imageFile") RequestBody imageReqBody,
 			@Part MultipartBody.Part imageFile
+	);
+
+	/**
+	 * MainFragment 하단의 내 주변 혜택 찾기 버튼 클릭 시, 지역별 혜택 개수들을 가져오는 메서드
+	 * @param local - 지역명(지금은 부산으로 대체)
+	 * @param page_number - 1번째 지도 화면, 2번째 지도 화면 구분을 위한 숫자
+	 * @return
+	 */
+	@GET("http://www.urbene-fit.com/map")
+	Call<String> getNumberOfBenefit(
+			@Query("local") String local,
+			@Query("page_number") String page_number
 	);
 
 }
