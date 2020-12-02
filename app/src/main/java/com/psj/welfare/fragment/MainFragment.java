@@ -34,6 +34,7 @@ import com.psj.welfare.util.GpsTracker;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -85,6 +86,12 @@ public class MainFragment extends Fragment
 
     private static final int GPS_ENABLE_REQUEST_CODE = 100;
     private static final int PERMISSIONS_REQUEST_CODE = 200;
+
+    // split() 후 문자열들을 담을 리스트
+    List<String> split_list;
+
+    // split() 후 결과를 담을 변수. OO시, OO구 정보를 담는다
+    String city, district;
 
     String[] REQUIRED_PERMISSIONS = {
             Manifest.permission.ACCESS_FINE_LOCATION,   // 앱이 정확한 위치에 액세스하도록 허용하는 권한
@@ -525,13 +532,89 @@ public class MainFragment extends Fragment
             // 위도, 경도값으로 주소를 만들어 String 변수에 저장
             String address = getCurrentAddress(latitude, longitude);
             Log.e(TAG, "address = " + address);
-            // 아직 서울 데이터가 없기 때문에 부산으로 한다
+
+            // String 변수 안의 값을 " "을 기준으로 split해서 'OO구' 글자를 빼낸다
+            split_list = new ArrayList<>();
+            String[] result = address.split(" ");
+            split_list.addAll(Arrays.asList(result));
+            Log.e(TAG, "split_list = " + split_list);
+
+            // OO시, OO구에 대한 정보를 각각 변수에 집어넣는다
+            city = split_list.get(1);
+            district = split_list.get(2);
+
             if (address.contains("서울특별시"))
+            {
+                user_area = "서울";
+            }
+            if (address.contains("인천광역시"))
+            {
+                user_area = "인천";
+            }
+            if (address.contains("강원도"))
+            {
+                user_area = "강원";
+            }
+            if (address.contains("경기"))
+            {
+                user_area = "경기";
+            }
+            if (address.contains("충청북도"))
+            {
+                user_area = "충북";
+            }
+            if (address.contains("충청남도"))
+            {
+                user_area = "충남";
+            }
+            if (address.contains("세종시"))
+            {
+                user_area = "세종시";
+            }
+            if (address.contains("대전시"))
+            {
+                user_area = "대전시";
+            }
+            if (address.contains("경상북도"))
+            {
+                user_area = "경북";
+            }
+            if (address.contains("울산"))
+            {
+                user_area = "울산";
+            }
+            if (address.contains("대구"))
+            {
+                user_area = "대구";
+            }
+            if (address.contains("부산광역시"))
             {
                 user_area = "부산";
             }
+            if (address.contains("경상남도"))
+            {
+                user_area = "경남";
+            }
+            if (address.contains("전라북도"))
+            {
+                user_area = "전북";
+            }
+            if (address.contains("광주광역시"))
+            {
+                user_area = "광주";
+            }
+            if (address.contains("전라남도"))
+            {
+                user_area = "전남";
+            }
+            if (address.contains("제주도"))
+            {
+                user_area = "제주";
+            }
             Intent intent = new Intent(getActivity(), MapActivity.class);
             intent.putExtra("user_area", user_area);
+            intent.putExtra("city", city);
+            intent.putExtra("district", district);
             startActivity(intent);
         });
     }

@@ -13,6 +13,7 @@
     <color name="colorGray_B">#bdbdbd</color>
     <color name="colorRed">#ff0d00</color>
     <color name="colorPurple">#6f52e8</color>
+    <color name="colorPink">#FF33FF</color>
     <color name="detail_benefit_background_color">#ffecbc</color>
 
 </resources>

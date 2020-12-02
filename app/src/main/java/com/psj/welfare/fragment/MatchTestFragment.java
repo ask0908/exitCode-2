@@ -23,7 +23,6 @@ public class MatchTestFragment extends Fragment
 
     public MatchTestFragment()
     {
-        // Required empty public constructor
     }
 
     @Override

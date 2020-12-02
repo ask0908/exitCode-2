@@ -62,14 +62,26 @@
             android:textSize="20sp"
             android:textColor="@color/colorBlack"
             android:gravity="center"
-            android:layout_marginTop="20dp"/>
+            android:layout_marginTop="10dp"/>
 
         <EditText
             android:id="@+id/review_content_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
+            android:ems="10"
+            android:maxLength="125"
+            android:ellipsize="end"
             android:lines="15" />
+
+        <TextView
+            android:id="@+id/restrict_word_number_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="글자수 제한"
+            android:textColor="@color/colorBlack"
+            android:gravity="end"
+            android:layout_marginRight="20dp"/>
 
         <TextView
             android:layout_width="match_parent"

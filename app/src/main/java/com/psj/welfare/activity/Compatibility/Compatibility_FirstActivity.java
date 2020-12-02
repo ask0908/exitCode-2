@@ -1,9 +1,5 @@
 package com.psj.welfare.activity.Compatibility;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,7 +7,10 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.psj.welfare.R;
@@ -163,4 +162,7 @@ public class Compatibility_FirstActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
+
+    /* 백버튼 클릭 시 지금 테스트를 종료하면 결과가 저장되지 않는다는 경고 커스텀 다이얼로그를 띄운다 (메인 기능이 아니라 우선순위는 나중으로 둔다) */
+
 }

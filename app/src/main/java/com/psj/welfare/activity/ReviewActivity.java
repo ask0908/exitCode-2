@@ -1,10 +1,12 @@
 package com.psj.welfare.activity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -15,6 +17,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
@@ -23,6 +27,7 @@ import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -81,6 +86,8 @@ public class ReviewActivity extends AppCompatActivity
 
     File file;
 
+    TextView restrict_word_number_textview;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -91,6 +98,42 @@ public class ReviewActivity extends AppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         init();
+
+        // 리뷰 내용 작성 시 글자수 제한은 125자로 한다
+        review_content_edit.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after)
+            {
+                //
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count)
+            {
+                String input_text = review_content_edit.getText().toString();
+                restrict_word_number_textview.setText(input_text.length() + " / 125 글자 수");
+                if (review_content_edit.getText().toString().getBytes().length >= 125)
+                {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ReviewActivity.this);
+                    builder.setMessage("리뷰 내용 글자수 제한은 125자까지입니다!");
+                    builder.setPositiveButton("확인", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            dialog.dismiss();
+                        }
+                    }).show();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s)
+            {
+                //
+            }
+        });
 
         // 이미지를 추가하려면 앨범에 접근해야 하기 때문에 이를 위한 권한 처리기 생성
         PermissionListener permissionListener = new PermissionListener()
@@ -253,6 +296,7 @@ public class ReviewActivity extends AppCompatActivity
         review_rate_edit = findViewById(R.id.review_rate_edit);
         review_content_edit = findViewById(R.id.review_content_edit);
         review_photo = findViewById(R.id.review_photo);
+        restrict_word_number_textview = findViewById(R.id.restrict_word_number_textview);
     }
 
     @Override
