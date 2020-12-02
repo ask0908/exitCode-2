@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/push_gather_item_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    android:layout_marginBottom="10dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:layout_weight=".10"
+            android:src="@drawable/news_icon_focus" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_weight=".70"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/push_gather_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/jalnan"
+                android:lineSpacingExtra="5sp"
+                android:text="버팀목 전세자금 대출을 신청하셨군요!"
+                android:textColor="@color/colorBlack" />
+
+            <TextView
+                android:id="@+id/push_gather_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/jalnan"
+                android:lineSpacingExtra="5sp"
+                android:text="버팀목 전세자금 대출을 신청하셨군요!"
+                android:textColor="@color/colorGray_B"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/push_gather_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight=".20"
+            android:fontFamily="@font/jalnan"
+            android:gravity="center"
+            android:text="1분 전"
+            android:textColor="@color/colorBlack" />
+
+    </LinearLayout>
+
+</LinearLayout>

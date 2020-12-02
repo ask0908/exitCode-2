@@ -74,12 +74,6 @@ public class SearchFragment extends Fragment
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState)
-    {
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
@@ -93,7 +87,7 @@ public class SearchFragment extends Fragment
         search_frame_title = view.findViewById(R.id.search_frame_title);
 
         searchList = new ArrayList<>();
-        search_frame_recycler = (RecyclerView) view.findViewById(R.id.search_frame_recycler);
+        search_frame_recycler = view.findViewById(R.id.search_frame_recycler);
         search_frame_recycler.setHasFixedSize(true);
         search_frame_adapter = new SearchAdapter(getActivity(), searchList, new View.OnClickListener()
         {

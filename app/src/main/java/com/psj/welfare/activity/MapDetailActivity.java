@@ -65,7 +65,7 @@ public class MapDetailActivity extends AppCompatActivity
         Log.e(TAG, "받아온 지역명 = " + area + ", 혜택 개수 = " + welf_count);
 
         /* 서버에서 지역별 혜택 개수 받아오는 메서드 */
-        getUNumberOfBenefit();
+        getNumberOfBenefit();
 
         map_result_textview = findViewById(R.id.map_result_textview);
         // 전체, 학생 등 카테고리를 가로로 보여주는 리사이클러뷰
@@ -105,58 +105,78 @@ public class MapDetailActivity extends AppCompatActivity
         {
             map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
         }
-        else if (area.equals("인천"))
+        if (area.equals("인천"))
         {
             map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
         }
-        else if (area.equals("강원"))
+        if (area.equals("강원"))
         {
             map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
         }
-        else if (area.equals("경기"))
+        if (area.equals("경기"))
         {
             map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
         }
-        else if (area.equals("충남"))
+        if (area.equals("충남"))
         {
             map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
         }
-        else if (area.equals("충북"))
+        if (area.equals("충북"))
         {
             map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
         }
-        else if (area.equals("경북"))
+        if (area.equals("경북"))
         {
             map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
         }
-        else if (area.equals("세종, 대전"))
-        {
-            map_result_textview.setText("세종, 대전 지역에서 검색된 혜택,\n총 300개입니다");
-        }
-        else if (area.equals("전북"))
+        if (area.equals("세종"))
         {
             map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
         }
-        else if (area.equals("전남"))
+        if (area.equals("전북"))
         {
             map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
         }
-        else if (area.equals("경남"))
+        if (area.equals("전남"))
         {
             map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
         }
-        else if (area.equals("제주"))
+        if (area.equals("경남"))
         {
             map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
         }
-        else if (area.equals("부산"))
+        if (area.equals("제주"))
         {
             map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+        }
+        if (area.equals("부산"))
+        {
+            map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+        }
+        if (area.equals("대구"))
+        {
+            map_result_textview.setText(area + "지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+        }
+        if (area.equals("울산"))
+        {
+            map_result_textview.setText(area + "지역에서 검색된 혜택,\n총 "+ welf_count + "개입니다");
+        }
+        if (area.equals("대전"))
+        {
+            map_result_textview.setText(area + "지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+        }
+        if (area.equals("전국"))
+        {
+            map_result_textview.setText(area + "에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+        }
+        if (area.equals("광주"))
+        {
+            map_result_textview.setText(area + "지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
         }
     }
 
     /* 서버에서 지역별 혜택 개수 받아오는 메서드 */
-    void getUNumberOfBenefit()
+    void getNumberOfBenefit()
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Call<String> call = apiInterface.getNumberOfBenefit(area, "2");

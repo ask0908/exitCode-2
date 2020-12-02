@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 
-import com.psj.welfare.fragment.FifthFragment;
+import com.psj.welfare.fragment.PushGatherFragment;
 import com.psj.welfare.fragment.SearchFragment;
 import com.psj.welfare.fragment.MainFragment;
 import com.psj.welfare.fragment.MatchTestFragment;
@@ -28,7 +28,7 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter
         list.add(new MatchTestFragment());
         list.add(new InterestBenefitFragment());
         list.add(new SearchFragment());
-        list.add(new FifthFragment());
+        list.add(new PushGatherFragment());
     }
 
     @NonNull

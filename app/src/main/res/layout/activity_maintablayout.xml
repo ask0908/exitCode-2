@@ -5,10 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".activity.MainActivity">
-
-
-   <!-- 다른방 -->
+    tools:context=".activity.MainTabLayoutActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
