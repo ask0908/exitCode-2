@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -178,9 +179,9 @@ public class SecondCategory extends AppCompatActivity
                 call.enqueue(new Callback<String>()
                 {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response)
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
                     {
-                        if (response.isSuccessful())
+                        if (response.isSuccessful() && response.body() != null)
                         {
                             Log.e(TAG, "onResponse 성공 : " + response.body());
                             String category = response.body();
@@ -194,7 +195,7 @@ public class SecondCategory extends AppCompatActivity
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t)
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
                     {
                         Log.e(TAG, "onFailure : " + t.toString());
                     }

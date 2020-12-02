@@ -26,7 +26,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/* SecondFragment에서 테스트 시작 버튼을 누르면 가장 먼저 나타나는 문제 화면 */
+/* mbti 테스트 1번째 문제 화면, MatchTestFragment에서 시작하기 버튼을 누르면 이곳으로 이동한다 */
 public class Compatibility_FirstActivity extends AppCompatActivity
 {
     private final String TAG = this.getClass().getName();

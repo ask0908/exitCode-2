@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "com.psj.welfare"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 7
         versionName "7"
@@ -25,6 +25,9 @@ android {
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
     }
     compileOptions {
         sourceCompatibility = "1.8"
@@ -99,5 +102,10 @@ dependencies {
 
     // Cannot fit requested classes in a single dex file (# methods: 67991 > 65536) 에러로 추가함
     implementation 'com.android.support:multidex:1.0.3'
+
+    // 카카오 링크(공유기능에 사용)
+    implementation group: 'com.kakao.sdk', name: 'kakaolink', version:'1.16.0'
+
+    implementation 'com.orhanobut:logger:2.2.0'
 
 }

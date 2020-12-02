@@ -78,6 +78,7 @@
             android:id="@+id/restrict_word_number_textview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:text="글자수 제한"
             android:textColor="@color/colorBlack"
             android:gravity="end"

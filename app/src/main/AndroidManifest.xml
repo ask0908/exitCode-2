@@ -20,7 +20,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
-        <activity android:name=".activity.MapSearchActivity"></activity>
+        <activity android:name=".activity.MapSearchActivity"/>
         <activity android:name=".activity.MapDetailActivity" />
         <activity
             android:name=".activity.MapActivity"
@@ -33,7 +33,16 @@
         <activity android:name=".activity.PushQuestionActivity" />
         <activity android:name=".activity.Compatibility.Compatibility_FourthActivity" />
         <activity android:name=".Test.CompatibilityTestActivity" />
-        <activity android:name=".activity.Compatibility.Compatibility_ResultActivity" />
+        <activity android:name=".activity.Compatibility.Compatibility_ResultActivity">
+            <intent-filter>
+                <action android:name="android:intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="@string/kakaolink_host"
+                    android:scheme="@string/kakao_scheme" />
+            </intent-filter>
+        </activity>
         <activity android:name=".activity.Compatibility.Compatibility_ThirdActivity" />
         <activity android:name=".activity.Compatibility.Compatibility_SecondActivity" />
         <activity android:name=".activity.Compatibility.Compatibility_FirstActivity" />

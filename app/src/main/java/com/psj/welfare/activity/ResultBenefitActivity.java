@@ -42,7 +42,6 @@ import retrofit2.Response;
  * */
 public class ResultBenefitActivity extends AppCompatActivity
 {
-
     public static final String TAG = "ResultBenefitActivity"; // 로그 찍을 때 사용하는 TAG
 
     // 리사이클러뷰 객체 선언
@@ -683,7 +682,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                 {
                     Log.e(TAG, "onResponse 성공 : " + response.body());
                     /*
-                     * 사용자가 선택한 관심사와 혜택 제목이 서버에서 응답이 온다
+                     * 사용자가 선택한 관심사와 혜택 제목을 서버에서 받는다
                      * 응답은 Json 구조로 응답이 올 것이고 나는 응답 받은 Json 데이터를 파싱할 것이다
                      * */
                     String favorData = response.body();
