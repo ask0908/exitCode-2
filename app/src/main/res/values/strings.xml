@@ -20,6 +20,8 @@
     <string name="login_google">구글로 로그인하기</string>
     <string name="login_welfare">니모 로그인하기</string>
     <string name="kakao_app_key">3f7e171f8d9c6549cfa5949a68eb571e</string>
+    <string name="kakao_scheme">kakao3f7e171f8d9c6549cfa5949a68eb571e</string>
+    <string name="kakaolink_host">kakaolink</string>
     <string name="login_shared">com.psj.welfare.snsLogin</string>
 
     <string-array name="nothing">

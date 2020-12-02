@@ -43,6 +43,8 @@ import com.kakao.usermgmt.response.MeV2Response;
 import com.kakao.util.exception.KakaoException;
 import com.nhn.android.naverlogin.OAuthLogin;
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton;
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.Logger;
 import com.psj.welfare.R;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
@@ -96,6 +98,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        Logger.addLogAdapter(new AndroidLogAdapter());
 
         google_login_btn = findViewById(R.id.google_login_btn);
         // 구글 로그인 버튼에 써진 텍스트를 변경한다
@@ -440,7 +444,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void onSuccess(MeV2Response result)
                 {
-                    Log.e("onSuccess() 내부", "result : " + result);
+//                    Log.e("onSuccess() 내부", "result : " + result);
+                    Logger.e("result = " + result);
                     // 카카오 로그인 성공 시 실행할 처리
                     Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
                     intent.putExtra("name", result.getNickname());

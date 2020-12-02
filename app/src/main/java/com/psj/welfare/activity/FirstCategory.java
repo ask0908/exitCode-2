@@ -8,16 +8,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.Logger;
 import com.psj.welfare.Data.FirstCategoryItem;
 import com.psj.welfare.R;
 import com.psj.welfare.adapter.FirstCategoryAdapter;
-import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.OnSingleClickListener;
 
 import org.json.JSONException;
@@ -59,7 +62,7 @@ public class FirstCategory extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_firstcategory);
-        Log.e(TAG, "onCreate 실행!");
+        Logger.addLogAdapter(new AndroidLogAdapter());
 
         FirstCategory_List = new ArrayList<FirstCategoryItem>();
 
@@ -217,24 +220,23 @@ public class FirstCategory extends AppCompatActivity
                 call.enqueue(new Callback<String>()
                 {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response)
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
                     {
-                        if (response.isSuccessful())
+                        if (response.isSuccessful() && response.body() != null)
                         {
-                            Log.i(TAG, "onResponse 성공 : " + response.body().toString());
-                            String category = response.body().toString();
+                            Log.i(TAG, "onResponse 성공 : " + response.body());
+                            String category = response.body();
                             jsonParsing(category);
 
                         }
                         else
                         {
-                            Log.i(TAG, "onResponse 실패" + response.body().toString());
-
+                            Log.i(TAG, "onResponse 실패" + response.body());
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t)
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
                     {
                         Log.i(TAG, "onFailure : " + t.toString());
 

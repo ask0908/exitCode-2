@@ -1,12 +1,9 @@
 package com.psj.welfare.activity;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -80,10 +77,6 @@ public class ReviewActivity extends AppCompatActivity
     // 갤러리에서 가져온 이미지를 서버로 보내 저장하기 전 담는 변수
     String encodeImageString;
 
-    // Volley로 이미지 + 텍스트를 서버로 저장할 때 사용할 API 주소가 담긴 변수
-
-    ProgressDialog progressDialog;
-
     File file;
 
     TextView restrict_word_number_textview;
@@ -112,20 +105,7 @@ public class ReviewActivity extends AppCompatActivity
             public void onTextChanged(CharSequence s, int start, int before, int count)
             {
                 String input_text = review_content_edit.getText().toString();
-                restrict_word_number_textview.setText(input_text.length() + " / 125 글자 수");
-                if (review_content_edit.getText().toString().getBytes().length >= 125)
-                {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ReviewActivity.this);
-                    builder.setMessage("리뷰 내용 글자수 제한은 125자까지입니다!");
-                    builder.setPositiveButton("확인", new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            dialog.dismiss();
-                        }
-                    }).show();
-                }
+                /* 띄어쓰기 제외 125자로 입력수를 제한하려면 어떻게 하나? */
             }
 
             @Override

@@ -1,8 +1,5 @@
 package com.psj.welfare.activity.Compatibility;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,6 +7,9 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.psj.welfare.R;
@@ -25,6 +25,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/* mbti 테스트 마지막 문제 화면 */
 public class Compatibility_FourthActivity extends AppCompatActivity
 {
     private final String TAG = this.getClass().getName();
