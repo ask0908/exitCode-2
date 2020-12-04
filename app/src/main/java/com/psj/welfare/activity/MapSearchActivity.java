@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/* 지도 화면에서 우상단의 지역변경 텍스트를 누르면 이동하는 검색 화면
+* 서초구, 성동구, 강남구 등을 입력했을 때 이 지역이 서울인지 경기인지 등을 판단해야 하는데, 이 작업은 구현하기엔 무리가 있을 것 같아 다르게 접근하는 건? */
 public class MapSearchActivity extends AppCompatActivity
 {
     private final String TAG = this.getClass().getName();

@@ -120,12 +120,12 @@ public class FragmentSearch extends Fragment
             call.enqueue(new Callback<String>()
             {
                 @Override
-                public void onResponse(Call<String> call, Response<String> response)
+                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
                 {
-                    if (response.isSuccessful())
+                    if (response.isSuccessful() && response.body() != null)
                     {
-                        Log.i(TAG, "onResponse 성공 : " + response.body().toString());
-                        String searchData = response.body().toString();
+                        Log.i(TAG, "onResponse 성공 : " + response.body());
+                        String searchData = response.body();
                         jsonParsing(searchData);
 
                     }
@@ -136,7 +136,7 @@ public class FragmentSearch extends Fragment
                 }
 
                 @Override
-                public void onFailure(Call<String> call, Throwable t)
+                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
                 {
                     Log.i(TAG, "onFailure : " + t.toString());
 

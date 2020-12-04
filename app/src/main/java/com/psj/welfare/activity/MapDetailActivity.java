@@ -1,16 +1,21 @@
 package com.psj.welfare.activity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.Logger;
 import com.psj.welfare.Data.MapResultItem;
 import com.psj.welfare.Data.ResultKeywordItem;
 import com.psj.welfare.R;
@@ -59,6 +64,8 @@ public class MapDetailActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_detail);
 
+        Logger.addLogAdapter(new AndroidLogAdapter());
+
         Intent intent = getIntent();
         area = intent.getStringExtra("area");
         welf_count = intent.getStringExtra("welf_count");
@@ -76,7 +83,7 @@ public class MapDetailActivity extends AppCompatActivity
         // 복지혜택 이름들을 세로로 보여주는 리사이클러뷰
         map_result_recyclerview = findViewById(R.id.map_result_recyclerview);
         map_result_recyclerview.setHasFixedSize(true);
-        map_result_recyclerview.addItemDecoration(new DividerItemDecoration(MapDetailActivity.this, DividerItemDecoration.VERTICAL));
+//        map_result_recyclerview.addItemDecoration(new DividerItemDecoration(MapDetailActivity.this, DividerItemDecoration.VERTICAL));
         map_result_recyclerview.setLayoutManager(new LinearLayoutManager(this));
 
         list = new ArrayList<>();
@@ -101,77 +108,351 @@ public class MapDetailActivity extends AppCompatActivity
         });
         result_keyword_recyclerview.setAdapter(adapter);
 
+        // end 값이 25인 것은 1자리 숫자기 때문에 그 숫자만 색깔을 바꾸게 하기 위한 처리다.
         if (area.equals("서울"))
         {
-            map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+            map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 " + welf_count + "개입니다");
+            // welf_count가 String이라서 부등호가 안 먹히기 때문에 int로 캐스팅한다
+            int changed_count = Integer.parseInt(welf_count);
+
+            // int로 캐스팅된 값이 10 미만이라면 24~25 영역만 색을 바꾸도록 한다
+            if (changed_count < 10)
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
+            else
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
         }
         if (area.equals("인천"))
         {
-            map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+            map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 " + welf_count + "개입니다");
+            // welf_count가 String이라서 부등호가 안 먹히기 때문에 int로 캐스팅한다
+            int changed_count = Integer.parseInt(welf_count);
+
+            // int로 캐스팅된 값이 10 미만이라면 24~25 영역만 색을 바꾸도록 한다
+            if (changed_count < 10)
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
+            else
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
         }
         if (area.equals("강원"))
         {
-            map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+            map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 " + welf_count + "개입니다");
+
+            // welf_count가 String이라서 부등호가 안 먹히기 때문에 int로 캐스팅한다
+            int changed_count = Integer.parseInt(welf_count);
+            Logger.e("changed_count = " + changed_count);
+
+            // int로 캐스팅된 값이 10 미만이라면 24~25 영역만 색을 바꾸도록 한다
+            if (changed_count < 10)
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
+            else
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
         }
         if (area.equals("경기"))
         {
-            map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+            map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 " + welf_count + "개입니다");
+
+            // welf_count가 String이라서 부등호가 안 먹히기 때문에 int로 캐스팅한다
+            int changed_count = Integer.parseInt(welf_count);
+            Logger.e("changed_count = " + changed_count);
+
+            // int로 캐스팅된 값이 10 미만이라면 24~25 영역만 색을 바꾸도록 한다
+            if (changed_count < 10)
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
+            else
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
         }
         if (area.equals("충남"))
         {
-            map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+            map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 " + welf_count + "개입니다");
+            // welf_count가 String이라서 부등호가 안 먹히기 때문에 int로 캐스팅한다
+            int changed_count = Integer.parseInt(welf_count);
+
+            // int로 캐스팅된 값이 10 미만이라면 24~25 영역만 색을 바꾸도록 한다
+            if (changed_count < 10)
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
+            else
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
         }
         if (area.equals("충북"))
         {
-            map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+            map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 " + welf_count + "개입니다");
+            // welf_count가 String이라서 부등호가 안 먹히기 때문에 int로 캐스팅한다
+            int changed_count = Integer.parseInt(welf_count);
+
+            // int로 캐스팅된 값이 10 미만이라면 24~25 영역만 색을 바꾸도록 한다
+            if (changed_count < 10)
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
+            else
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
         }
         if (area.equals("경북"))
         {
-            map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+            map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 " + welf_count + "개입니다");
+            // welf_count가 String이라서 부등호가 안 먹히기 때문에 int로 캐스팅한다
+            int changed_count = Integer.parseInt(welf_count);
+
+            // int로 캐스팅된 값이 10 미만이라면 24~25 영역만 색을 바꾸도록 한다
+            if (changed_count < 10)
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
+            else
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
         }
         if (area.equals("세종"))
         {
-            map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+            map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 " + welf_count + "개입니다");
+            // welf_count가 String이라서 부등호가 안 먹히기 때문에 int로 캐스팅한다
+            int changed_count = Integer.parseInt(welf_count);
+
+            // int로 캐스팅된 값이 10 미만이라면 24~25 영역만 색을 바꾸도록 한다
+            if (changed_count < 10)
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
+            else
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
         }
         if (area.equals("전북"))
         {
-            map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+            map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 " + welf_count + "개입니다");
+            // welf_count가 String이라서 부등호가 안 먹히기 때문에 int로 캐스팅한다
+            int changed_count = Integer.parseInt(welf_count);
+
+            // int로 캐스팅된 값이 10 미만이라면 24~25 영역만 색을 바꾸도록 한다
+            if (changed_count < 10)
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
+            else
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
         }
         if (area.equals("전남"))
         {
-            map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+            map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 " + welf_count + "개입니다");
+            // welf_count가 String이라서 부등호가 안 먹히기 때문에 int로 캐스팅한다
+            int changed_count = Integer.parseInt(welf_count);
+
+            // int로 캐스팅된 값이 10 미만이라면 24~25 영역만 색을 바꾸도록 한다
+            if (changed_count < 10)
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
+            else
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
         }
         if (area.equals("경남"))
         {
-            map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+            map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 " + welf_count + "개입니다");
+            // welf_count가 String이라서 부등호가 안 먹히기 때문에 int로 캐스팅한다
+            int changed_count = Integer.parseInt(welf_count);
+
+            // int로 캐스팅된 값이 10 미만이라면 24~25 영역만 색을 바꾸도록 한다
+            if (changed_count < 10)
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
+            else
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
         }
         if (area.equals("제주"))
         {
-            map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+            map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 " + welf_count + "개입니다");
+            // welf_count가 String이라서 부등호가 안 먹히기 때문에 int로 캐스팅한다
+            int changed_count = Integer.parseInt(welf_count);
+
+            // int로 캐스팅된 값이 10 미만이라면 24~25 영역만 색을 바꾸도록 한다
+            if (changed_count < 10)
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
+            else
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
         }
         if (area.equals("부산"))
         {
-            map_result_textview.setText(area + " 지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+            map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 " + welf_count + "개입니다");
+            // welf_count가 String이라서 부등호가 안 먹히기 때문에 int로 캐스팅한다
+            int changed_count = Integer.parseInt(welf_count);
+
+            // int로 캐스팅된 값이 10 미만이라면 24~25 영역만 색을 바꾸도록 한다
+            if (changed_count < 10)
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
+            else
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
         }
         if (area.equals("대구"))
         {
-            map_result_textview.setText(area + "지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+            map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 " + welf_count + "개입니다");
+            // welf_count가 String이라서 부등호가 안 먹히기 때문에 int로 캐스팅한다
+            int changed_count = Integer.parseInt(welf_count);
+
+            // int로 캐스팅된 값이 10 미만이라면 24~25 영역만 색을 바꾸도록 한다
+            if (changed_count < 10)
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
+            else
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
         }
         if (area.equals("울산"))
         {
-            map_result_textview.setText(area + "지역에서 검색된 혜택,\n총 "+ welf_count + "개입니다");
+            map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 "+ welf_count + "개입니다");
+            // welf_count가 String이라서 부등호가 안 먹히기 때문에 int로 캐스팅한다
+            int changed_count = Integer.parseInt(welf_count);
+
+            // int로 캐스팅된 값이 10 미만이라면 24~25 영역만 색을 바꾸도록 한다
+            if (changed_count < 10)
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
+            else
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
         }
         if (area.equals("대전"))
         {
-            map_result_textview.setText(area + "지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
-        }
-        if (area.equals("전국"))
-        {
-            map_result_textview.setText(area + "에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+            map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 " + welf_count + "개입니다");
+            // welf_count가 String이라서 부등호가 안 먹히기 때문에 int로 캐스팅한다
+            int changed_count = Integer.parseInt(welf_count);
+
+            // int로 캐스팅된 값이 10 미만이라면 24~25 영역만 색을 바꾸도록 한다
+            if (changed_count < 10)
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
+            else
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
         }
         if (area.equals("광주"))
         {
-            map_result_textview.setText(area + "지역에서 검색된 혜택,\n총 " + welf_count + "개입니다");
+            map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 " + welf_count + "개입니다");
+            // welf_count가 String이라서 부등호가 안 먹히기 때문에 int로 캐스팅한다
+            int changed_count = Integer.parseInt(welf_count);
+
+            // int로 캐스팅된 값이 10 미만이라면 24~25 영역만 색을 바꾸도록 한다
+            if (changed_count < 10)
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
+            // 10 미만이 아니라면 두자리 수 이상의 숫자기 때문에 24~26 영역만 색을 바꾸도록 한다
+            else
+            {
+                SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                map_result_textview.setText(spannableString);
+            }
         }
     }
 

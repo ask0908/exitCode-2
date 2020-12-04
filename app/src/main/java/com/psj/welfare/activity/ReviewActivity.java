@@ -70,6 +70,7 @@ public class ReviewActivity extends AppCompatActivity
 
     private Bitmap bitmap;
     Uri filePath;
+    String file_path;
 
     // 이미지 절대 경로
     String absolute;
@@ -80,6 +81,7 @@ public class ReviewActivity extends AppCompatActivity
     File file;
 
     TextView restrict_word_number_textview;
+    private static final int PICK_PHOTO = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -142,10 +144,13 @@ public class ReviewActivity extends AppCompatActivity
         // 카메라 이미지를 누르면 갤러리로 이동해서 파일을 가져온다
         review_photo.setOnClickListener(v ->
         {
-            Intent intent = new Intent();
-            intent.setType("image/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(Intent.createChooser(intent, "Select Image"), 1);
+            Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, PICK_PHOTO);
+
+//            Intent intent = new Intent();
+//            intent.setType("image/*");
+//            intent.setAction(Intent.ACTION_GET_CONTENT);
+//            startActivityForResult(Intent.createChooser(intent, "Select Image"), 1);
         });
 
     }
@@ -155,11 +160,27 @@ public class ReviewActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null)
+        if (requestCode == PICK_PHOTO && resultCode == RESULT_OK && data != null && data.getData() != null)
         {
+            /* 따로 공부한 예제에서 가져온 코드들 */
+//            Uri imageUri = data.getData();
+//            try
+//            {
+//                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+//            }
+//            catch (IOException e)
+//            {
+//                e.printStackTrace();
+//            }
+//
+//            // 비트맵 압축
+//            Bitmap compressed = compressBitmap(bitmap);
+//            bitmap.recycle();
+//
+//            file_path = getPath(imageUri);
+//            review_photo.setImageBitmap(compressed);
+
             filePath = data.getData();
-//            absolute = Environment.getExternalStorageDirectory().getAbsolutePath();
-//            absolute = getRealPathFromURI(filePath);
             try
             {
                 absolute = getPath(this, filePath);
@@ -195,6 +216,26 @@ public class ReviewActivity extends AppCompatActivity
                 e.printStackTrace();
             }
         }
+    }
+
+    /* 따로 확인한 예제에서 가져온 메서드 */
+    private Bitmap compressBitmap(Bitmap bitmap)
+    {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream);
+        byte[] byteArray = stream.toByteArray();
+        Bitmap compressedBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+        return compressedBitmap;
+    }
+
+    /* 따로 확인한 예제에서 가져온 메서드 */
+    private String getPath(Uri uri)
+    {
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = managedQuery(uri, projection, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
     }
 
     private String getRealPathFromURI(Uri contentUri)
@@ -242,34 +283,6 @@ public class ReviewActivity extends AppCompatActivity
         encodeImageString = Base64.encodeToString(bytesOfImage, Base64.DEFAULT);
     }
 
-    /* 이미지 없이 텍스트 리뷰들만 서버로 보내는 레트로핏 메서드 */
-//    void sendReview()
-//    {
-//        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-////        review_content = review_content_edit.getText().toString();
-//        String star_count = String.valueOf(review_rate_edit.getRating());
-//        /* 이미지 검증 후 인자로 추가해야 함(나중에) */
-//        Call<String> call = apiInterface.sendReview("test", review_content, "writer 테스트", "testgmail@gmail.com", "0",
-//                "0", star_count);
-//        call.enqueue(new Callback<String>()
-//        {
-//            @Override
-//            public void onResponse(Call<String> call, Response<String> response)
-//            {
-//                if (response.isSuccessful() && response.body() != null)
-//                {
-//                    Log.e(TAG, "response = " + response.body());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<String> call, Throwable t)
-//            {
-//                Log.e("sendReview()", "에러 : " + t.getMessage());
-//            }
-//        });
-//    }
-
     private void init()
     {
         review_rate_edit = findViewById(R.id.review_rate_edit);
@@ -286,76 +299,14 @@ public class ReviewActivity extends AppCompatActivity
         return true;
     }
 
-//    void uploadReview()
-//    {
-//        StringRequest request = new StringRequest(Request.Method.POST, URL_UPLOAD, new com.android.volley.Response.Listener<String>()
-//        {
-//            @Override
-//            public void onResponse(String response)
-//            {
-//                Log.e("uploadReview()", response);
-//                try
-//                {
-//                    JSONObject jsonObject = new JSONObject(response);
-//                    String success = jsonObject.getString("success");
-//                    // 서버에 저장되면 PHP 파일에서 "1"을 리턴한다
-//                    if (success.equals("1"))
-//                    {
-//                        Log.e(TAG, "success = " + success);
-//                        Toast.makeText(ReviewActivity.this, "소중한 리뷰 감사합니다", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//                catch (JSONException e)
-//                {
-//                    e.printStackTrace();
-//                    Log.e("uploadReview()", "에러 : " + e.toString());
-//                }
-//            }
-//        }, new com.android.volley.Response.ErrorListener()
-//        {
-//            @Override
-//            public void onErrorResponse(VolleyError e)
-//            {
-//                Log.e("uploadReview()", "에러 : " + e.toString());
-//            }
-//        })
-//        {
-//            @Override
-//            protected Map<String, String> getParams() throws AuthFailureError
-//            {
-//                review_content = review_content_edit.getText().toString();
-//                Map<String, String> params = new HashMap<>();
-//                params.put("welf_name", "test");
-//                params.put("content", review_content);
-//                params.put("writer", "아이디는최대10자만");
-//                params.put("email", "gmail@gmail.com");
-//                params.put("like_count", "0");
-//                params.put("bad_count", "0");
-//                params.put("star_count", "3.0");
-//                params.put("osType", "android");
-//                params.put("fileName", encodeImageString);
-//                return params;
-//            }
-//        };
-//
-//        RequestQueue requestQueue = Volley.newRequestQueue(this);
-//        requestQueue.add(request);
-//
-//    }
-
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
         switch (item.getItemId())
         {
             case R.id.review_done:
-                // 서버에 저장하는 메서드 호출. 서버로 보낼 때 Uri는 String으로 바꿔서 보낸다?
-//                String photo_uri = String.valueOf(uri);
-//                Log.e(TAG, "photo_uri = " + photo_uri);
-//                sendReview();
-//                uploadReview();
                 /* 이미지 전송 메서드 호출 */
-                uploadReview(absolute);
+                uploadReview(file_path);
                 Toast.makeText(this, "소중한 리뷰가 등록되었어요", Toast.LENGTH_SHORT).show();
                 finish();
                 break;
@@ -389,10 +340,10 @@ public class ReviewActivity extends AppCompatActivity
         call.enqueue(new Callback<String>()
         {
             @Override
-            public void onResponse(Call<String> call, Response<String> response)
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
             {
                 Log.e(TAG, "응답메소드 호출");
-                if (response.isSuccessful())
+                if (response.isSuccessful() && response.body() != null)
                 {
                     Log.e(TAG, "response = " + response);
                     Toast.makeText(getApplicationContext(), "전송됨", Toast.LENGTH_SHORT).show();
@@ -405,7 +356,7 @@ public class ReviewActivity extends AppCompatActivity
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t)
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
             {
                 Log.e("tag", t.toString());
                 Log.e(TAG, "fail");

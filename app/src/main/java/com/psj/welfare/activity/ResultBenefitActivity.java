@@ -8,7 +8,6 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,12 +16,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.Logger;
 import com.psj.welfare.Data.ResultBenefitItem;
 import com.psj.welfare.R;
 import com.psj.welfare.adapter.RBFAdapter;
 import com.psj.welfare.adapter.RBFTitleAdapter;
-import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.OnSingleClickListener;
 
 import org.json.JSONArray;
@@ -36,13 +37,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 /*
- * 메인 페이지에서 관심사 선택 후 보여주는 혜택 결과 페이지는 양이 많은 결과 데이터를 사용자에게
- * 직관성있게 보여주어야 한다
+ * 메인 페이지에서 관심사 선택 후 보여주는 혜택 결과 페이지는 양이 많은 결과 데이터를 사용자에게 직관성있게 보여주어야 한다
  * 그리고 사용자가 맞춤 혜택을 찾을 수 있는 흐름도 보여주어야 한다
  * */
 public class ResultBenefitActivity extends AppCompatActivity
 {
-    public static final String TAG = "ResultBenefitActivity"; // 로그 찍을 때 사용하는 TAG
+    public static final String TAG = "ResultBenefitActivity";
 
     // 리사이클러뷰 객체 선언
     private RecyclerView RbfBtn_recycler, RbfTitle_recycler;
@@ -50,7 +50,6 @@ public class ResultBenefitActivity extends AppCompatActivity
 
     TextView RB_title; // 혜택 결과 개수 타이틀
     ImageView RBF_back; // 뒤로가기 버튼 이미지
-    Button select_go;
     int position_RB = 1; // 관심사 버튼 넘버
     int position_RBT = 0; // 관심사 타이틀 넘버
 
@@ -58,8 +57,10 @@ public class ResultBenefitActivity extends AppCompatActivity
     private ArrayList<ResultBenefitItem> RBFTitle_ListSet; // 관심사 타이틀 리스트
     ArrayList<String> favor_data; // 관심사 버튼 문자열
 
-    // 서버에서 응답 받은 JSON 구조를 파싱하기 위한 변수들
+    // 서버에서 응답 받은 JSON 구조를 파싱하기 위한 JSONArray 변수들
     JSONArray child, student, law, old, pregnancy, disorder, cultural, multicultural, company, living, job, homeless, etc;
+
+    String body;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -67,9 +68,10 @@ public class ResultBenefitActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_resultbenefit);
 
+        Logger.addLogAdapter(new AndroidLogAdapter());
+
         RB_title = findViewById(R.id.RB_title);
         RBF_back = findViewById(R.id.RBF_back);
-        select_go = findViewById(R.id.select_go);
         RbfBtn_recycler = findViewById(R.id.RbfBtn_recycler);
         RbfTitle_recycler = findViewById(R.id.RbfTitle_recycler);
 
@@ -100,7 +102,6 @@ public class ResultBenefitActivity extends AppCompatActivity
             Log.e(TAG, "전달 받은 인텐트 값 없어요!");
         }
 
-        // 리사이클러뷰로 구현한 버튼을 클릭하면 로그가 출력되게 하고 싶다
         RbfBtn_recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         RbfBtn_Adapter = new RBFAdapter(getApplicationContext(), RBF_ListSet, new View.OnClickListener()
         {
@@ -280,7 +281,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                             {
                                 e.printStackTrace();
                             }
-                        } // 전체 버튼 클릭 기능 끝
+                        }
 
                         // 아기·어린이 버튼 클릭 기능 시작
                         try
@@ -306,7 +307,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         catch (JSONException e)
                         {
                             e.printStackTrace();
-                        } // 아기·어린이 버튼 클릭 기능 끝
+                        }
 
                         // 학생·청년 버튼 클릭 기능 시작
                         try
@@ -334,7 +335,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         catch (JSONException e)
                         {
                             e.printStackTrace();
-                        } // 학생·청년 버튼 클릭 기능 끝
+                        }
 
                         // 중장년·노인 버튼 클릭 기능 시작
                         try
@@ -348,7 +349,6 @@ public class ResultBenefitActivity extends AppCompatActivity
                                 Log.e(TAG, "중장년·노인 혜택 결과 길이 -> " + old.length());
                                 for (int j = 0; j < old.length(); j++)
                                 {
-
                                     Log.e(TAG, "중장년·노인 혜택 결과 리스트 세팅 시작");
                                     RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(old.getString(j)));
                                     position_RBT++;
@@ -360,7 +360,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         catch (JSONException e)
                         {
                             e.printStackTrace();
-                        } // 중장년·노인 버튼 클릭 기능 끝
+                        }
 
                         // 육아·임신 버튼 클릭 기능 시작
                         try
@@ -386,7 +386,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         catch (JSONException e)
                         {
                             e.printStackTrace();
-                        } // 육아·임신 버튼 클릭 기능 끝
+                        }
 
                         // 장애인 버튼 클릭 기능 시작
                         try
@@ -412,7 +412,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         catch (JSONException e)
                         {
                             e.printStackTrace();
-                        } // 장애인 버튼 클릭 기능 끝
+                        }
 
                         // 문화·생활 버튼 클릭 기능 시작
                         try
@@ -438,7 +438,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         catch (JSONException e)
                         {
                             e.printStackTrace();
-                        } // 문화·생활 버튼 클릭 기능 끝
+                        }
 
                         // 다문화 버튼 클릭 기능 시작
                         try
@@ -464,7 +464,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         catch (JSONException e)
                         {
                             e.printStackTrace();
-                        } // 다문화 버튼 클릭 기능 끝
+                        }
 
                         // 기업·자영업자 버튼 클릭 기능 시작
                         try
@@ -478,7 +478,6 @@ public class ResultBenefitActivity extends AppCompatActivity
                                 Log.e(TAG, "기업·자영업자 혜택 결과 길이 -> " + company.length());
                                 for (int j = 0; j < company.length(); j++)
                                 {
-
                                     Log.e(TAG, "기업·자영업자 혜택 결과 리스트 세팅 시작");
                                     RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(company.getString(j)));
                                     position_RBT++;
@@ -490,7 +489,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         catch (JSONException e)
                         {
                             e.printStackTrace();
-                        } // 기업·자영업자 버튼 클릭 기능 끝
+                        }
 
                         // 법률 버튼 클릭 기능 시작
                         try
@@ -516,7 +515,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         catch (JSONException e)
                         {
                             e.printStackTrace();
-                        } // 법률 버튼 클릭 기능 끝
+                        }
 
                         // 주거 버튼 클릭 기능 시작
                         try
@@ -542,7 +541,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         catch (JSONException e)
                         {
                             e.printStackTrace();
-                        } // 주거 버튼 클릭 기능 끝
+                        }
 
                         // 취업·창업 버튼 클릭 기능 시작
                         try
@@ -568,7 +567,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         catch (JSONException e)
                         {
                             e.printStackTrace();
-                        } // 취업·창업 버튼 클릭 기능 끝
+                        }
 
                         // 저소득층 버튼 클릭 기능 시작
                         try
@@ -579,10 +578,9 @@ public class ResultBenefitActivity extends AppCompatActivity
                                 RbfTitle_Adapter.notifyItemRangeRemoved(0, position_RBT);
                                 position_RBT = 0;
                                 RBFTitle_ListSet.clear();
-                                Log.e(TAG, "저소득층 혜택 결과 길이 -> " + homeless.length());
+                                Log.e(TAG, "저소득층 혜택 결과 길이 -> " + homeless.length());    // homeless.length() 부분이 null값이다
                                 for (int j = 0; j < homeless.length(); j++)
                                 {
-
                                     Log.e(TAG, "저소득층 혜택 결과 리스트 세팅 시작");
                                     RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(homeless.getString(j)));
                                     position_RBT++;
@@ -594,7 +592,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         catch (JSONException e)
                         {
                             e.printStackTrace();
-                        } // 저소득층 버튼 클릭 기능 끝
+                        }
 
                         // 기타 버튼 클릭 기능 시작
                         try
@@ -620,21 +618,20 @@ public class ResultBenefitActivity extends AppCompatActivity
                         catch (JSONException e)
                         {
                             e.printStackTrace();
-                        } // 기타 버튼 클릭 기능 끝
+                        }
 
                     }
                     else
                     {
                         Log.e(TAG, "선택한 버튼 입니다!");
-                    } // 버튼 활성화 or 비활성화 체크 끝
+                    }
 
-                } // 리사이클러뷰 포지션 값 체크 끝
-            } // 리사이클러뷰 클릭 기능 끝
-        }); // 어댑터 세팅 기능 끝
+                }
+            }
+        });
         RbfBtn_recycler.setAdapter(RbfBtn_Adapter);
         RbfBtn_recycler.setHasFixedSize(true);
 
-        // 리사이클러뷰로 구현한 버튼을 클릭하면 로그가 출력되게 하고 싶다
         RbfTitle_recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         RbfTitle_Adapter = new RBFTitleAdapter(getApplicationContext(), RBFTitle_ListSet, new View.OnClickListener()
         {
@@ -667,11 +664,13 @@ public class ResultBenefitActivity extends AppCompatActivity
         }
 
         Log.e(TAG, "리스트값 스트링으로 변환 -> " + favor);
+        mainFavor(favor);
+    }
 
-        // 레트로핏 서버 URL 설정해놓은 객체 생성 후 GET, POST 같은 서버에 데이터를 보내기 위해서 생성합니다
+    /* 선택한 정책의 정보들을 가져와 뷰에 set하는 메서드 */
+    void mainFavor(String favor)
+    {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-
-        // 인터페이스 ApiService에 선언한 mainFavor()를 호출합니다
         Call<String> call = apiInterface.mainFavor(favor);
         call.enqueue(new Callback<String>()
         {
@@ -680,40 +679,29 @@ public class ResultBenefitActivity extends AppCompatActivity
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    Log.e(TAG, "onResponse 성공 : " + response.body());
-                    /*
-                     * 사용자가 선택한 관심사와 혜택 제목을 서버에서 받는다
-                     * 응답은 Json 구조로 응답이 올 것이고 나는 응답 받은 Json 데이터를 파싱할 것이다
-                     * */
+                    Logger.e("mainFavor()", "onResponse 성공 : " + response.body());
+                    // 서버에서 String으로 넘어온 JSON 파싱
                     String favorData = response.body();
                     jsonParsing(favorData);
-
-
                 }
                 else
                 {
-                    Log.e(TAG, "onResponse 실패");
-
+                    Log.e("mainFavor()", "onResponse 실패");
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
             {
-                Log.e(TAG, "onFailure : " + t.toString());
-
-
+                Logger.e("mainFavor() - onFailure() : " + t.getMessage());
             }
-        }); // call enqueue end
-
-
-    } // onCreate end
+        });
+    }
 
     @Override
     protected void onResume()
     {
         super.onResume();
-
         RBF_back.setOnClickListener(new OnSingleClickListener()
         {
             @Override
@@ -724,24 +712,10 @@ public class ResultBenefitActivity extends AppCompatActivity
                 finish();
             }
         });
-
-        // 1차 카테고리 선택을 하기 위한 페이지 이동
-        select_go.setOnClickListener(new OnSingleClickListener()
-        {
-            @Override
-            public void onSingleClick(View v)
-            {
-                Intent RBF_intent = new Intent(ResultBenefitActivity.this, FirstCategory.class);
-                startActivity(RBF_intent);
-                finish();
-            }
-        });
-
-    } // onResume end
+    }
 
     private void jsonParsing(String favorData)
     {
-
         /*
          * 파라미터로 받은 Json 구조를 파싱할 것이다
          * ex) 아기·어린이 혜택이라면 해당 혜택과 관련된 결과들을 ArrayList 에 저장할 것이다
@@ -770,8 +744,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         {
                             RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(child.getString(j)));
                             position_RBT++;
-
-                        } // 아기·어린이 세팅 끝
+                        }
                     }
                     else if (favor_data.get(i).equals("학생·청년"))
                     {
@@ -781,8 +754,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         {
                             RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(student.getString(j)));
                             position_RBT++;
-
-                        } // 학생·청년 세팅 끝
+                        }
                     }
                     else if (favor_data.get(i).equals("법률"))
                     {
@@ -792,8 +764,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         {
                             RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(law.getString(j)));
                             position_RBT++;
-
-                        } // 법률 세팅 끝
+                        }
                     }
                     else if (favor_data.get(i).equals("중장년·노인"))
                     {
@@ -803,8 +774,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         {
                             RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(old.getString(j)));
                             position_RBT++;
-
-                        } // 중장년·노인 세팅 끝
+                        }
                     }
                     else if (favor_data.get(i).equals("육아·임신"))
                     {
@@ -814,8 +784,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         {
                             RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(pregnancy.getString(j)));
                             position_RBT++;
-
-                        } // 육아·임신 세팅 끝
+                        }
                     }
                     else if (favor_data.get(i).equals("장애인"))
                     {
@@ -825,8 +794,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         {
                             RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(disorder.getString(j)));
                             position_RBT++;
-
-                        } // 장애인 세팅 끝
+                        }
                     }
                     else if (favor_data.get(i).equals("문화·생활"))
                     {
@@ -836,8 +804,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         {
                             RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(cultural.getString(j)));
                             position_RBT++;
-
-                        } // 문화·생활 세팅 끝
+                        }
                     }
                     else if (favor_data.get(i).equals("다문화"))
                     {
@@ -847,19 +814,18 @@ public class ResultBenefitActivity extends AppCompatActivity
                         {
                             RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(multicultural.getString(j)));
                             position_RBT++;
-
-                        } // 다문화 세팅 끝
+                        }
                     }
                     else if (favor_data.get(i).equals("기업·자영업자"))
                     {
                         company = jsonObject.getJSONArray("기업·자영업자");
+                        Logger.json("company = " + company);
                         Log.e(TAG, "기업·자영업자 혜택 결과 길이 -> " + company.length());
                         for (int j = 0; j < company.length(); j++)
                         {
                             RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(company.getString(j)));
                             position_RBT++;
-
-                        } // 기업·자영업자 세팅 끝
+                        }
                     }
                     else if (favor_data.get(i).equals("취업·창업"))
                     {
@@ -869,8 +835,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         {
                             RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(job.getString(j)));
                             position_RBT++;
-
-                        } // 취업·창업 세팅 끝
+                        }
                     }
                     else if (favor_data.get(i).equals("주거"))
                     {
@@ -880,8 +845,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         {
                             RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(living.getString(j)));
                             position_RBT++;
-
-                        } // 주거 세팅 끝
+                        }
                     }
                     else if (favor_data.get(i).equals("저소득층"))
                     {
@@ -891,8 +855,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                         {
                             RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(homeless.getString(j)));
                             position_RBT++;
-
-                        } // 저소득층 세팅 끝
+                        }
                     }
                     else if (favor_data.get(i).equals("기타"))
                     {
@@ -902,22 +865,19 @@ public class ResultBenefitActivity extends AppCompatActivity
                         {
                             RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(etc.getString(j)));
                             position_RBT++;
-
-                        } // 기타 세팅 끝
+                        }
                     }
-                } // 관심사 반복문 끝
+                }
                 Log.e(TAG, "리사이클러뷰 포지션 크기 -> " + position_RBT);
 
                 // 메인 문구 색상 변경 시작
-                RB_title.setText("복지 혜택 결과가 '" + position_RBT + "' 개가 검색되었습니다.");
+                RB_title.setText("혜택 결과가 '" + position_RBT + "'개\n검색되었습니다.");
                 String m_word = RB_title.getText().toString();
                 SpannableString spannableString = new SpannableString(m_word);
 
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 10, 14, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 8, 10, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
                 RB_title.setText(spannableString);
-                // 메인 문구 색상 변경 끝
-
                 RbfTitle_Adapter.notifyDataSetChanged();
             }
             catch (JSONException e)
@@ -930,6 +890,6 @@ public class ResultBenefitActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
-    } // jsonParsing end
+    }
 
-} // ResultBenefitActivity class end
+}

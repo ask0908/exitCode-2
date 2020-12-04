@@ -17,6 +17,7 @@ public interface ApiInterface
 {
 	/**
 	 * LoginActivity에서 구글 로그인 시 로그인할 때 어떤 플랫폼으로 로그인하는지 등의 정보를 서버로 보내 저장하는 메서드
+	 * 카톡 회원탈퇴 처리 후 테스트 결과 정상 작동 확인
 	 * @param userPlatform - GOOGLE 문자열을 서버로 보낸다
 	 * @param userEmail - 구글 로그인할 때 사용하는 이메일
 	 * @param userName - 유저 이름
@@ -34,7 +35,7 @@ public interface ApiInterface
 
 	/**
 	 * 구글 로그인 후 로그아웃 시 다시 로그인을 시도하는 메서드
-	 * 서버로 유저 이메일, 구글 계정 토큰을 보내 일치하면 로그인시킨다
+	 * 서버로 유저 이메일, 구글 계정 토큰을 보내 일치하면 로그인시킴. 현재 쓰이지 않음
 	 * @param userEmail - 유저 이메일
 	 * @param userToken - 구글 계정 토큰
 	 * @return - 구글 로그인을 통한 재로그인 성공 여부
@@ -86,6 +87,7 @@ public interface ApiInterface
 
 	/**
 	 * 사용자가 입력한 키워드와 일치하는 정책을 서버에서 찾아 가져오는 메서드
+	 * 현재 작동하지 않음
 	 * @param search - 정책 이름
 	 * @return - 검색한 키워드에 속하는 정책 제목들을 서버에서 리턴값으로 받는다.
 	 */

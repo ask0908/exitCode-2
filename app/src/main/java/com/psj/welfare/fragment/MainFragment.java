@@ -2,6 +2,7 @@ package com.psj.welfare.fragment;
 
 import android.Manifest;
 import android.animation.ObjectAnimator;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -20,11 +21,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
+import com.kakao.network.ErrorResult;
+import com.kakao.usermgmt.UserManagement;
+import com.kakao.usermgmt.callback.UnLinkResponseCallback;
 import com.psj.welfare.R;
 import com.psj.welfare.activity.MapActivity;
 import com.psj.welfare.activity.ResultBenefitActivity;
@@ -47,6 +52,9 @@ import static android.content.Context.LOCATION_SERVICE;
 public class MainFragment extends Fragment
 {
     public static final String TAG = "MainFragment"; // 로그 찍을 때 사용하는 TAG
+
+    // 구글 로그인 테스트 위한 카톡 탈퇴 버튼
+    Button kakao_unlink_btn, google_logout_btn;
 
     // 스크롤뷰
     private ScrollView main_ScrollView;
@@ -146,13 +154,58 @@ public class MainFragment extends Fragment
         }
         init(view);
 
+        /* 카톡 회원탈퇴 버튼. 구글 로그인 테스트 위해 집어넣었음 */
+        kakao_unlink_btn = view.findViewById(R.id.kakao_unlink_btn);
+        kakao_unlink_btn.setOnClickListener(v -> {
+            final String appendMessage = getString(R.string.com_kakao_confirm_unlink);
+            new AlertDialog.Builder(getActivity()).setMessage(appendMessage).setPositiveButton(getString(R.string.com_kakao_ok_button), new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    UserManagement.getInstance().requestUnlink(new UnLinkResponseCallback()
+                    {
+                        @Override
+                        public void onFailure(ErrorResult errorResult)
+                        {
+                            Log.e("다이얼로그 안", "회원탈퇴 실패");
+                        }
+
+                        @Override
+                        public void onSessionClosed(ErrorResult errorResult)
+                        {
+                            Log.e("다이얼로그 안", "onSessionClosed");
+                        }
+
+                        @Override
+                        public void onNotSignedUp()
+                        {
+                            Log.e("다이얼로그 안", "onNotSignedUp");
+                        }
+
+                        @Override
+                        public void onSuccess(Long userId)
+                        {
+                            Log.e("다이얼로그 안", "onSuccess");
+                        }
+                    });
+                    dialog.dismiss();
+                    getActivity().finish();
+                }
+            }).setNegativeButton(getString(R.string.com_kakao_cancel_button), new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    dialog.dismiss();
+                }
+            }).show();
+        });
+
         /* 더보기 버튼을 누르면 더보기 버튼이 사라지고 다른 4가지 버튼들이 나오게 한다 */
         more_layout.setOnClickListener(OnSingleClickListener ->
         {
             isClicked = true;
-            Log.e(TAG, "isClicked 상태 : " + isClicked);
-            Log.e(TAG, "더보기 버튼 클릭됨");
-
             // 더보기 버튼이 있는 레이아웃은 아예 안 보이게 한다
             more_layout.setVisibility(View.GONE);
 
@@ -169,7 +222,6 @@ public class MainFragment extends Fragment
             if (isClicked)
             {
                 isClicked = false;
-                Log.e(TAG, "isClicked 상태 : " + isClicked);
                 // 화면 전환 효과 없이 더보기 버튼이 있는 페이지로 이동하게 한다 = VISIBLE 상태가 되었던 버튼들을 다시 GONE 상태로 되돌린다
                 more_layout.setVisibility(View.VISIBLE);
                 multi_law_layout.setVisibility(View.GONE);
@@ -200,13 +252,6 @@ public class MainFragment extends Fragment
                 m_intent.putStringArrayListExtra("favor_btn", m_favorList);
                 startActivity(m_intent);
             }
-//			m_favorList.add(0, "전체");
-//			for (int i = 0; i < m_favorList.size(); i++) {
-//				Log.e(TAG, "m_favorList : " + m_favorList);
-//			}
-//			Intent m_intent = new Intent(getActivity(), ResultBenefitActivity.class);
-//			m_intent.putStringArrayListExtra("favor_btn", m_favorList);
-//			startActivity(m_intent);
         });
 
         /* 아기·어린이 혜택 버튼 */

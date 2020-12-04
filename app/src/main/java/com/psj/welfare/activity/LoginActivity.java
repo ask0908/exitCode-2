@@ -138,9 +138,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 token = task.getResult().getToken();
                 Log.e(TAG, "FCM 토큰 : " + token);
                 String osType = "android";
-                // 레트로핏 서버 URL 설정해놓은 객체 생성 후 GET, POST 같은 서버에 데이터를 보내기 위해서 생성합니다
                 ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                // 인터페이스 ApiService에 선언한 fcmToken()를 호출합니다
                 Call<String> call = apiInterface.fcmToken("tkdwns3340@naver.com", token, osType);
                 call.enqueue(new Callback<String>()
                 {
@@ -149,20 +147,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     {
                         if (response.isSuccessful() && response.body() != null)
                         {
-                            Log.i(TAG, "onResponse FCM 토큰 전달 성공 : " + response.body());
-
+                            Logger.e("onResponse FCM 토큰 전달 성공 : " + response.body());
                         }
                         else
                         {
-                            Log.i(TAG, "onResponse 실패");
+                            Logger.e("onResponse FCM 토큰 전달 실패 : " + response.body());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
                     {
-                        Log.i(TAG, "onFailure : " + t.toString());
-
+                        Log.e(TAG, "onFailure : " + t.toString());
                     }
                 });
             }
@@ -188,8 +184,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 //        editor.remove("snsToken");
 //        editor.commit();
 
-        // 구글 로그인 버튼을 눌렀을 때 동작하는 옵션들 설정
-//        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
         /* 구글 로그인 */
         GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -257,7 +251,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         @Override
                         public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
                         {
-                            if (response.isSuccessful())
+                            if (response.isSuccessful() && response.body() != null)
                             {
                                 Log.e(TAG, "onResponse 구글 성공 : " + response.body());
                                 String googleInfo = response.body();
@@ -281,10 +275,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 }
                                 else
                                 {
-                                    Log.e(TAG, "and_register.php 전송");
                                     // 처음으로 구글 sns 로그인을 시도해서 and_register.php 경로로 전송하는 로직
                                     jsonParsing(googleInfo, email);
-
                                     Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
                                     startActivity(intent);
                                     finish();
@@ -534,14 +526,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // 구글 로그인 액티비티에서 넘어온 경우일 때 실행
         if (requestCode == REQ_SIGN_GOOGLE)
         {
-//            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             // 인증결과가 성공적일 때
             if (googleSignInResult.isSuccess())
             {
-                // googleSignInAccount 라는 데이터는 구글로그인 정보를 담고있습니다 (닉네임, 프로필사진Url, 이메일주소 ..등)
+                // googleSignInAccount는 구글 로그인 정보를 담고 있다 (닉네임, 프로필사진Url, 이메일주소 등)
                 GoogleSignInAccount googleSignInAccount = googleSignInResult.getSignInAccount();
-                // 로그인 결과 값 출력 수행 기능
+                // 로그인 결과 값 출력
                 resultLogin(googleSignInAccount);
             }
         }
@@ -614,7 +605,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     // 로그인 응답 내용이 json 구조라서 파싱을 하기 위한 기능
     private void jsonParsing(String login, String email)
     {
-
         try
         {
             JSONObject login_total = new JSONObject(login);
@@ -629,8 +619,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Log.e(TAG, "token 내용 : " + token_data);
 
                 loginSharedSave(token_data, email);
-
-
             }
             else if (retCode_data.equals("406"))
             {
@@ -643,21 +631,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     } // jsonParsing end
 
-    /* 다시 구글 로그인할 때 사용하는 메서드. 잠시 주석 처리 */
+    /* 다시 구글 로그인할 때 사용하는 메서드 */
     public void reLogin(String email, String token)
     {
+        Log.e(TAG, "reLogin() 진입");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Log.e(TAG, "이메일 : " + email + "\n토큰 : " + token);
         Call<String> call = apiInterface.ReUser(email, token);
         call.enqueue(new Callback<String>()
         {
             @Override
-            public void onResponse(@NonNull Call<String> call, Response<String> response)
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
                     Log.e(TAG, "onResponse 재로그인 성공 : " + response.body());
-                    String relogin = response.body().toString();
+                    String relogin = response.body();
                     try
                     {
                         JSONObject login_total = new JSONObject(relogin);
@@ -688,7 +677,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t)
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
             {
                 Log.e(TAG, "onFailure : " + t.toString());
 

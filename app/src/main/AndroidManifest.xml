@@ -52,10 +52,6 @@
             android:value="@string/kakao_app_key" />
 
         <activity android:name=".activity.MainTabLayoutActivity" />
-        <activity android:name=".activity.FirstCategory" />
-        <activity android:name=".activity.SecondCategory" />
-        <activity android:name=".activity.ThirdCategory" />
-        <activity android:name=".activity.EndCategory" />
         <activity android:name=".activity.ResultBenefitActivity" />
         <activity android:name=".activity.LoginActivity">
             <intent-filter>

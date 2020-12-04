@@ -2,15 +2,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:padding="20dp"
+    android:padding="5dp"
     android:orientation="vertical">
 
-    <TextView
+    <Button
         android:id="@+id/keyword_category"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
         android:fontFamily="@font/jalnan"
-        android:text="전체"
+        android:background="@drawable/keyword_round_textview"
+        android:gravity="center"
+        android:text="육아 임신"
         android:textSize="15sp"
         android:textColor="@color/colorBlack"/>
 
