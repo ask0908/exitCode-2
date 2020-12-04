@@ -4,7 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -47,7 +47,7 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
     {
         MapResultItem item = lists.get(position);
         holder.map_result_benefit_name.setText(item.getBenefit_name());
-        holder.map_result_benefit_btn.setText("더보기");
+//        holder.map_result_benefit_btn.setText("더보기");
     }
 
     @Override
@@ -56,10 +56,10 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
         return lists.size();
     }
 
-    public class MapResultViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
+    public static class MapResultViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         TextView map_result_benefit_name;
-        Button map_result_benefit_btn;
+        ImageView map_result_benefit_btn;
         ItemClickListener itemClickListener;
 
         public MapResultViewHolder(@NonNull View view, ItemClickListener itemClickListener)

@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.Logger;
 import com.psj.welfare.Data.PushQuestionItem;
 import com.psj.welfare.R;
 import com.psj.welfare.adapter.PushQuestionAdapter;
@@ -40,6 +42,8 @@ public class PushQuestionActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_push_question);
+
+        Logger.addLogAdapter(new AndroidLogAdapter());
 
         Intent intent = getIntent();
         String age = intent.getStringExtra("age");
@@ -172,20 +176,21 @@ public class PushQuestionActivity extends AppCompatActivity
                 if (response.isSuccessful() && response.body() != null)
                 {
                     // 서버로 키워드 2개와 이메일 보내는 게 성공했을 경우
-                    Toast.makeText(PushQuestionActivity.this, "키워드 전송 성공", Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, "response : " + response.body());
+                    Toast.makeText(PushQuestionActivity.this, "관심사가 성공적으로 등록되었어요!", Toast.LENGTH_SHORT).show();
+                    Logger.e("response : " + response.body());
                 }
                 else
                 {
                     // 서버로 전송 실패했을 경우
-                    Toast.makeText(PushQuestionActivity.this, "서버로 키워드 전송 실패", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PushQuestionActivity.this, "관심사 등록 중 문제가 발생했습니다.\n다시 한 번 시도해 주세요", Toast.LENGTH_SHORT).show();
+                    Logger.e(response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
             {
-                Toast.makeText(PushQuestionActivity.this, "에러 : " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Logger.e("에러 : " + t.getMessage());
             }
         });
     }

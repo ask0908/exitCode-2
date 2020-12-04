@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#fff"
     android:padding="10dp"
     tools:context=".activity.MapDetailActivity">
 
@@ -19,10 +20,20 @@
         android:lineSpacingExtra="7dp"
         android:gravity="start"/>
 
+    <EditText
+        android:id="@+id/map_detail_search_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:hint="혜택 이름으로 검색해 보세요"
+        android:background="@drawable/edittext_rectangle"
+        android:drawableLeft="@drawable/search_black"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/result_keyword_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
         android:orientation="horizontal"/>
 
     <androidx.recyclerview.widget.RecyclerView

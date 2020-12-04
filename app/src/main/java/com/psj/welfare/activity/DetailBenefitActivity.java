@@ -23,8 +23,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.borjabravo.readmoretextview.ReadMoreTextView;
+import com.kakao.kakaolink.v2.KakaoLinkResponse;
+import com.kakao.kakaolink.v2.KakaoLinkService;
+import com.kakao.message.template.ButtonObject;
+import com.kakao.message.template.ContentObject;
+import com.kakao.message.template.FeedTemplate;
+import com.kakao.message.template.LinkObject;
+import com.kakao.message.template.SocialObject;
+import com.kakao.network.ErrorResult;
+import com.kakao.network.callback.ResponseCallback;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.Logger;
 import com.psj.welfare.Data.DetailBenefitItem;
 import com.psj.welfare.Data.ReviewItem;
 import com.psj.welfare.R;
@@ -33,6 +44,7 @@ import com.psj.welfare.adapter.ReviewAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.OnSingleClickListener;
+import com.psj.welfare.util.AESUtils;
 
 import org.eazegraph.lib.charts.BarChart;
 import org.eazegraph.lib.models.BarModel;
@@ -41,7 +53,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -54,9 +68,8 @@ import retrofit2.Response;
 public class DetailBenefitActivity extends AppCompatActivity
 {
     private ConstraintLayout layout;
-    private LinearLayout footer_layout;
     private ScrollView review_scrollview;
-    public final String TAG = this.getClass().getName(); // 로그 찍을 때 사용하는 TAG
+    public final String TAG = this.getClass().getName();
 
     private String detail_data; // 상세 페이지 타이틀
 
@@ -95,17 +108,20 @@ public class DetailBenefitActivity extends AppCompatActivity
     private RatingBar review_rating;
     private RecyclerView review_recycler;
     private Button more_big_scene_button;
-
     ReviewAdapter review_adapter;
-//    List<ReviewItem> list = new ArrayList<>();
-
-    // 리뷰 내용을 담을 변수, 정책 이름을 담을 변수
-    String review_content;
 
     // 클릭 시 리뷰 위로 스크롤을 올리기 위한 boolean 변수
     boolean isClicked = false;
 
+    // 막대그래프
     private BarChart chart;
+
+    // 혜택 내용을 타인에게 공유할 때 사용할 이미지뷰
+    ImageView review_share_imageview;
+
+    // 혜택 이미지를 담은 url (암호화 해야 함)
+    String benefit_image_url = "http://3.34.64.143/images/reviews/조제분유.jpg";
+    String encrypted_email, decrypted_email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -113,13 +129,16 @@ public class DetailBenefitActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailbenefit);
 
+        Logger.addLogAdapter(new AndroidLogAdapter());
+
         /* findViewById() 모아놓은 메서드 */
         init();
         layout.setVisibility(View.GONE);
 
-        /* BarChart */
+        /* BarChart로 가로 막대그래프 만들기 */
         chart.clearChart();
 
+        // 지금은 데이터가 없어서 하드코딩
         chart.addBar(new BarModel("5점", 50, 0xFF56B7F1));
         chart.addBar(new BarModel("4점", 40, 0xFF56B7F1));
         chart.addBar(new BarModel("3점", 10, 0xFF56B7F1));
@@ -127,52 +146,6 @@ public class DetailBenefitActivity extends AppCompatActivity
         chart.addBar(new BarModel("1점", 5, 0xFF56B7F1));
 
         chart.startAnimation();
-
-        /* 가로 MPAndroidChart 처리 */
-//        chart.setMaxVisibleValueCount(60);
-//        chart.setPinchZoom(false);
-//        chart.setDrawGridBackground(false);
-//
-//        MyXAxisValueFormatter formatter = new MyXAxisValueFormatter();
-//
-//        BarDataSet set1;
-//        set1 = new BarDataSet(formatter.getDataSet(), "The year 2017");
-//
-//        set1.setColors(Color.parseColor("#F78B5D"),
-//                Color.parseColor("#FCB232"),
-//                Color.parseColor("#FDD930"),
-//                Color.parseColor("#ADD137"),
-//                Color.parseColor("#A0C25A")
-//        );
-//
-//        ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
-//        dataSets.add(set1);
-//
-//        BarData data = new BarData(dataSets);
-//
-//        // hide Y-axis
-//        YAxis left = chart.getAxisLeft();
-//        left.setDrawLabels(false);
-//
-//        // custom X-axis labels
-//        String[] values = new String[] { "1 star", "2 stars", "3 stars", "4 stars", "5 stars"};
-//        XAxis xAxis = chart.getXAxis();
-//        chart.getXAxis().setDrawGridLines(false);   // 구분선(Grid Lines) 제거
-//        chart.setDrawGridBackground(false);
-//        xAxis.setValueFormatter(new MyXAxisValueFormatter(values));
-//
-//        chart.setData(data);
-//
-//        // custom description
-//        Description description = new Description();
-//        description.setText("");
-//        chart.setDescription(description);
-//
-//        // hide legend
-//        chart.getLegend().setEnabled(false);
-//
-//        chart.animateY(1000);
-//        chart.invalidate();
 
         // 리사이클러뷰 처리
         review_recycler = findViewById(R.id.review_recycler);
@@ -188,19 +161,38 @@ public class DetailBenefitActivity extends AppCompatActivity
             {
                 // 빨간색 하트로 변하면 true를 1로 치고 서버로 보낸다
                 boolean isClicked = favorite_btn.isLiked();
-                Log.e(TAG, "즐찾 버튼 클릭 상태 : " + isClicked);
+                Logger.e("즐찾 버튼 클릭 상태 : " + isClicked);
 
                 // 토스트로 관심사에 등록됐다는 내용을 보낸다
                 String message = detail_title.getText().toString();
                 Toast.makeText(DetailBenefitActivity.this, message + " 정책을 내 관심사로 설정했습니다", Toast.LENGTH_SHORT).show();
 
-                // 서버로 이메일, 혜택 이름(welf_name)를 보내서 즐겨찾기에 저장한다
+                // 서버로 이메일, 혜택 이름(welf_name)를 보내서 즐겨찾기에 저장한다. 지금은 이메일을 하드코딩해 사용하지만 암호화를 해서 저장해야 한다
                 email = "ne0001912@gmail.com";
+                try
+                {
+                    encrypted_email = AESUtils.encrypt(email);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+                try
+                {
+                    decrypted_email = AESUtils.decrypt(encrypted_email);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                Logger.e("encrypted_email = " + encrypted_email);
+                Logger.e("decrypted_email = " + decrypted_email);
                 welf_name = detail_title.getText().toString();
                 isBookmark = "true";
 
                 // 메서드 호출
-                getBookmark(email, welf_name);
+                getBookmark(decrypted_email, welf_name);
             }
 
             @Override
@@ -208,7 +200,7 @@ public class DetailBenefitActivity extends AppCompatActivity
             {
                 // 회색 하트로 변하면 false를 0으로 치고 서버로 보낸다
                 boolean isClicked = favorite_btn.isLiked();
-                Log.e(TAG, "즐찾 버튼 클릭 상태 : " + isClicked);
+                Logger.e("즐찾 버튼 클릭 상태 : " + isClicked);
 
                 // 토스트로 관심사에서 등록 해제됐다는 내용을 보낸다
                 String message = detail_title.getText().toString();
@@ -230,7 +222,7 @@ public class DetailBenefitActivity extends AppCompatActivity
             Intent RBF_intent = getIntent();
             detail_data = RBF_intent.getStringExtra("RBF_title");
 
-            Log.e(TAG, "상세 페이지에서 보여줄 타이틀 : " + detail_data);
+            Logger.e("상세 페이지에서 보여줄 타이틀 : " + detail_data);
         }
 
         // 리사이클러뷰 처리
@@ -240,22 +232,60 @@ public class DetailBenefitActivity extends AppCompatActivity
         detail_benefit_recyclerview.setAdapter(adapter);
 
         // 리사이클러뷰 어댑터 안의 클릭 리스너를 액티비티 위에 만든다
-        itemClickListener = new DetailBenefitRecyclerAdapter.ItemClickListener()
-        {
-            @Override
-            public void onItemClick(View view, int position)
-            {
-                Log.e(TAG, "pos = " + position);
-            }
-        };
+        itemClickListener = (view, position) -> Logger.e("pos = " + position);
 
         String email = "ne0001912@gmail.com";
-        detailData("test", email);
+        detailData(detail_data, email);
 
         // 리뷰 작성 화면으로 이동
         more_big_scene_button.setOnClickListener(v -> {
             Intent intent = new Intent(DetailBenefitActivity.this, ReviewActivity.class);
             startActivityForResult(intent, 1);
+        });
+
+        // 공유 모양 이미지뷰 클릭 리스너
+        review_share_imageview.setOnClickListener(v -> {
+            FeedTemplate params = FeedTemplate
+                    // 제목, 이미지 url, 이미지 클릭 시 이동하는 위치?를 입력한다
+                    // 이미지 url을 사용자 정의 파라미터로 전달하면 최대 2MB 이미지를 메시지에 담아 보낼 수 있다
+                    .newBuilder(ContentObject.newBuilder("똑똑~ 혜택 정보가 도착했어요~♥", benefit_image_url,
+                            LinkObject.newBuilder().setMobileWebUrl("'https://developers.kakao.com").build())
+                            .setDescrption("지금 바로 " + detail_title.getText().toString() + " 혜택의 정보를 확인해 보세요!")  // 제목 밑의 본문
+                            .build())
+                    .setSocial(SocialObject.newBuilder().build()).addButton(new ButtonObject("앱에서 보기", LinkObject.newBuilder()
+                            .setWebUrl("'https://developers.kakao.com")
+                            .setMobileWebUrl("'https://developers.kakao.com")
+                            .setAndroidExecutionParams("key1=value1")
+                            .setIosExecutionParams("key1=value1")
+                            .build()))
+                    .setSocial(SocialObject.newBuilder().build()).addButton(new ButtonObject("웹에서 보기", LinkObject.newBuilder()
+                            .setWebUrl("https://developers.kakao.com")
+                            .setMobileWebUrl("https://developers.kakao.com")
+                            .setAndroidExecutionParams("key1=value1")
+                            .setIosExecutionParams("key1=value1")
+                            .build()))
+                    .setSocial(SocialObject.newBuilder().setLikeCount(10).setCommentCount(20).setSharedCount(30).build())   // 좋아요 수, 댓글(리뷰) 수, 공유된 회수 더미
+                    .build();
+
+            Map<String, String> serverCallbackArgs = new HashMap<>();
+            serverCallbackArgs.put("user_id", "${current_user_id}");
+            serverCallbackArgs.put("product_id", "${shared_product_id}");
+
+            KakaoLinkService.getInstance().sendDefault(this, params, serverCallbackArgs, new ResponseCallback<KakaoLinkResponse>()
+            {
+                @Override
+                public void onFailure(ErrorResult errorResult)
+                {
+                    Logger.e(errorResult.toString());
+                }
+
+                @Override
+                public void onSuccess(KakaoLinkResponse result)
+                {
+                    // 템플릿 밸리데이션과 쿼터 체크가 성공적으로 끝남. 톡에서 정상적으로 보내졌는지 보장은 할 수 없다. 전송 성공 유무는 서버콜백 기능을 이용해야 한다.
+                    Logger.e(result.toString());
+                }
+            });
         });
 
     } // onCreate() end
@@ -283,14 +313,14 @@ public class DetailBenefitActivity extends AppCompatActivity
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    Log.e(TAG, "response : " + response.body());
+                    Logger.e("getBookmark()의 success 부분 = " + response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
             {
-                Log.e(TAG, "getBookmark() 에러 : " + t.getMessage());
+                Logger.e("getBookmark() 에러 : " + t.getMessage());
             }
         });
     }
@@ -310,6 +340,7 @@ public class DetailBenefitActivity extends AppCompatActivity
                 {
                     // 성공했을 경우 서버에서 정책 제목들을 가져온다
 //					Log.e(TAG, "onResponse 성공 : " + response.body());
+                    Logger.e("detailData() - onResponse() = " + response.body());
                     String detail = response.body();
                     jsonParsing(detail);
                 }
@@ -331,7 +362,6 @@ public class DetailBenefitActivity extends AppCompatActivity
     private void init()
     {
         layout = findViewById(R.id.all_review_scene);
-        footer_layout = findViewById(R.id.footer_layout);
         review_scrollview = findViewById(R.id.review_scrollview);
 
         detail_logo = findViewById(R.id.detail_logo);
@@ -353,11 +383,11 @@ public class DetailBenefitActivity extends AppCompatActivity
 
         content_apply_layout = findViewById(R.id.content_apply_layout);
 
-//        review_status_image = findViewById(R.id.review_status_image);
         review_rating = findViewById(R.id.review_rating);
         more_big_scene_button = findViewById(R.id.more_big_scene_button);
 
         chart = findViewById(R.id.review_chart);
+        review_share_imageview = findViewById(R.id.review_share_imageview);
     }
 
     @Override
@@ -388,7 +418,6 @@ public class DetailBenefitActivity extends AppCompatActivity
                 apply_bottom_view.setVisibility(View.GONE);
                 review_bottom_view.setVisibility(View.GONE);
                 layout.setVisibility(View.GONE);
-                footer_layout.setVisibility(View.VISIBLE);
             }
         });
 
@@ -403,7 +432,6 @@ public class DetailBenefitActivity extends AppCompatActivity
                 content_bottom_view.setVisibility(View.GONE);
                 review_bottom_view.setVisibility(View.GONE);
                 layout.setVisibility(View.GONE);
-                footer_layout.setVisibility(View.VISIBLE);
             }
         });
 
@@ -420,7 +448,6 @@ public class DetailBenefitActivity extends AppCompatActivity
                 content_bottom_view.setVisibility(View.GONE);
                 apply_bottom_view.setVisibility(View.GONE);
                 layout.setVisibility(View.VISIBLE);
-                footer_layout.setVisibility(View.GONE);
                 // 리뷰를 누르면 리뷰 위로 스크롤이 자동으로 올라가게 한다
                 review_scrollview.post(new Runnable()
                 {
@@ -454,8 +481,6 @@ public class DetailBenefitActivity extends AppCompatActivity
 
             retBody_data = jsonObject_total.getString("retBody");
 
-            Log.e(TAG, "retBody 내용 : " + retBody_data);
-
             JSONObject jsonObject_detail = new JSONObject(retBody_data);
 
             benefit_no = jsonObject_detail.getString("benefit_no");
@@ -484,7 +509,6 @@ public class DetailBenefitActivity extends AppCompatActivity
             detail_contact.setText(contact);
 
             symbolChange(target, contents, contact);
-
         }
         catch (JSONException e)
         {
@@ -580,11 +604,6 @@ public class DetailBenefitActivity extends AppCompatActivity
                 value.setCreate_date(create_date);
                 value.setImage_url(image_url);
                 value.setStar_count(Float.parseFloat(star_count));  // String으로 오기 때문에 float로 캐스팅해야 함
-//                value.setStar_count(Float.parseFloat(star_count));
-//                item.id = id;
-//                item.content = content;
-//                item.create_date = create_date;
-//                item.image_url = image_url;
                 list.add(value);
             }
         }

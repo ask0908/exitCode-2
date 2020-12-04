@@ -4,9 +4,10 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.psj.welfare.Data.ResultKeywordItem;
@@ -45,6 +46,20 @@ public class ResultKeywordAdapter extends RecyclerView.Adapter<ResultKeywordAdap
     {
         ResultKeywordItem item = lists.get(position);
         holder.keyword_category.setText(item.getKeyword_category());
+        holder.keyword_category.setOnClickListener(OnSingleClickListener -> {
+            if (OnSingleClickListener.isSelected())
+            {
+                holder.keyword_category.setBackground(ContextCompat.getDrawable(context, R.drawable.keyword_round_textview_purple));
+                holder.keyword_category.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+                holder.keyword_category.setSelected(!holder.keyword_category.isSelected());
+            }
+            else
+            {
+                holder.keyword_category.setBackground(ContextCompat.getDrawable(context, R.drawable.keyword_round_textview));
+                holder.keyword_category.setTextColor(ContextCompat.getColor(context, R.color.colorBlack));
+                holder.keyword_category.setSelected(true);
+            }
+        });
     }
 
     @Override
@@ -55,7 +70,7 @@ public class ResultKeywordAdapter extends RecyclerView.Adapter<ResultKeywordAdap
 
     public class ResultKeywordViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
-        TextView keyword_category;
+        Button keyword_category;
         ItemClickListener itemClickListener;
 
         public ResultKeywordViewHolder(@NonNull View view, ItemClickListener itemClickListener)
