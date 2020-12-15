@@ -65,6 +65,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 {
     public static final String TAG = "LoginActivity";
     SharedPreferences preferences;
+    SharedPreferences app_pref;
 
     public LoginActivity loginContext;
 
@@ -93,6 +94,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     // 구글 로그인 버튼
     SignInButton google_login_btn;
 
+    // 로그인 시 서버에서 주는 토큰
+    String server_token;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
@@ -103,7 +107,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         google_login_btn = findViewById(R.id.google_login_btn);
         // 구글 로그인 버튼에 써진 텍스트를 변경한다
-        setGooglePlusButtonText(google_login_btn, "구글로 로그인하기");
+        setGooglePlusButtonText(google_login_btn, getString(R.string.login_google));
 
         /* 앱 실행 시 카카오 서버의 로그인 토큰이 있으면 자동으로 로그인 수행  */
         // 카카오 SDK를 쓰기 위해 SessionCallback 객체화
@@ -136,31 +140,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     return;
                 }
                 token = task.getResult().getToken();
-                Log.e(TAG, "FCM 토큰 : " + token);
-                String osType = "android";
-                ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                Call<String> call = apiInterface.fcmToken("tkdwns3340@naver.com", token, osType);
-                call.enqueue(new Callback<String>()
-                {
-                    @Override
-                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
-                    {
-                        if (response.isSuccessful() && response.body() != null)
-                        {
-                            Logger.e("onResponse FCM 토큰 전달 성공 : " + response.body());
-                        }
-                        else
-                        {
-                            Logger.e("onResponse FCM 토큰 전달 실패 : " + response.body());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
-                    {
-                        Log.e(TAG, "onFailure : " + t.toString());
-                    }
-                });
+                Log.e(TAG, "FCM token = " + token);
             }
         });
 
@@ -174,16 +154,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // 카카오 로그인 시작. onClick(View v) 참고
         fake_kakao.setOnClickListener(this);
 
-        /* 쉐어드에서 데이터 삭제하는 코드. 필요없어서 주석 처리 */
-//        SharedPreferences preferences = getSharedPreferences(getString(R.string.login_shared), MODE_PRIVATE);
-//        SharedPreferences.Editor editor = preferences.edit();
-//
-//        editor.remove("state");
-//        editor.remove("serverToken");
-//        editor.remove("email");
-//        editor.remove("snsToken");
-//        editor.commit();
-
         /* 구글 로그인 */
         GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -194,22 +164,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         firebaseAuth = FirebaseAuth.getInstance();
 
         // 구글 로그인 버튼 클릭
-        google_login_btn.setOnClickListener(new View.OnClickListener()
+        google_login_btn.setOnClickListener(v ->
         {
-            @Override
-            public void onClick(View v)
-            {
-                Log.e(TAG, "구글 로그인 버튼 클릭");
-                Intent l_intent = googleSignInClient.getSignInIntent();
-                startActivityForResult(l_intent, REQ_SIGN_GOOGLE);
-            }
+            Intent google_intent = googleSignInClient.getSignInIntent();
+            startActivityForResult(google_intent, REQ_SIGN_GOOGLE);
         });
 
-    } // onCreate() end
+    }
 
     void setGooglePlusButtonText(SignInButton signInButton, String buttonText)
     {
-        // Find the TextView that is inside of the SignInButton and set its text
         for (int i = 0; i < signInButton.getChildCount(); i++)
         {
             View v = signInButton.getChildAt(i);
@@ -277,7 +241,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 {
                                     // 처음으로 구글 sns 로그인을 시도해서 and_register.php 경로로 전송하는 로직
                                     jsonParsing(googleInfo, email);
-                                    Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
+                                    /* 사용자 정보(나이, 성별, 닉네임)를 입력받기 위해 액티비티 이동. 기존에 입력했던 정보가 있다면 MainTablayoutActivity로 이동한다 */
+//                                    Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
+                                    Intent intent = new Intent(LoginActivity.this, GetUserInformationActivity.class);
                                     startActivity(intent);
                                     finish();
                                 }
@@ -294,7 +260,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             Log.e(TAG, "onFailure : " + t.toString());
 
                         }
-                    }); // call enqueue end
+                    });
 
                 }
                 else
@@ -303,7 +269,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 }
             }
         });
-    } // resultLogin end
+    }
 
     /* 카카오 커스텀 로그인 버튼 클릭 리스너. 여기에서 카카오 로그인 로직이 실행된다 */
     @Override
@@ -433,21 +399,48 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     Toast.makeText(getApplicationContext(), "세션이 닫혔습니다. 다시 시도해 주세요 : " + errorResult.getErrorMessage(), Toast.LENGTH_SHORT).show();
                 }
 
+                // 로그인 성공 시
                 @Override
                 public void onSuccess(MeV2Response result)
                 {
-//                    Log.e("onSuccess() 내부", "result : " + result);
-                    Logger.e("result = " + result);
+                    app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
+                    SharedPreferences.Editor editor = app_pref.edit();
+                    Log.e(TAG, "result = " + result);
+                    String age = app_pref.getString("age", "");
+                    String area = app_pref.getString("area", "");
+                    String gender = app_pref.getString("gender", "");
+                    String user_nickname = app_pref.getString("user_nickname", "");
+                    Log.e(TAG, "쉐어드의 age = " + age + ", 지역 = " + area + ", 성별 = " + gender + ", 닉네임 = " + user_nickname);
                     // 카카오 로그인 성공 시 실행할 처리
-                    Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
-                    intent.putExtra("name", result.getNickname());
-                    intent.putExtra("profile", result.getProfileImagePath());
-                    intent.putExtra("email", result.getKakaoAccount().getEmail());
-                    Log.e("onSuccess() 내부", "닉네임 : " + result.getNickname());
-                    Log.e("onSuccess() 내부", "프로필 이미지 : " + result.getProfileImagePath());
-                    Log.e("onSuccess() 내부", "이메일 : " + result.getKakaoAccount().getEmail());
-                    startActivity(intent);
-                    finish();
+//                    Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
+                    /* 사용자 정보(나이, 성별, 지역, 닉네임)를 입력받기 위해 이동한다. 기존에 입력된 정보가 있으면 MainTabLayoutActivity로 이동한다 */
+                    if (app_pref.getString("user_age", "").equals("") && app_pref.getString("user_area", "").equals("") &&
+                    app_pref.getString("user_gender", "").equals("") && app_pref.getString("user_nickname", "").equals(""))
+                    {
+                        // 기존 정보가 없을 경우
+                        Intent intent = new Intent(LoginActivity.this, GetUserInformationActivity.class);
+                        startActivity(intent);
+                    }
+                    else
+                    {
+                        Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
+                        editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
+                        editor.putString(getString(R.string.get_kakao_name), result.getNickname());
+                        editor.apply();
+                        intent.putExtra("name", result.getNickname());
+                        intent.putExtra("profile", result.getProfileImagePath());
+                        intent.putExtra("email", result.getKakaoAccount().getEmail());
+                        if (result.getKakaoAccount().needsScopeAccountEmail())
+                        {
+                            // 현재 이메일에 체크하지 않아서(이메일 정보 제공에 동의하지 않아서) true가 나온다
+                            String email_result = result.getKakaoAccount().getEmail();
+                            Logger.e("email_result = " + email_result);
+                        }
+                        /* 서버로 osType, platform, FCM 토큰값 정보를 보내는 메서드 */
+                        sendUserTypeAndPlatform();
+                        startActivity(intent);
+                        finish();
+                    }
                 }
             });
         }
@@ -458,6 +451,38 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         {
             Toast.makeText(getApplicationContext(), "로그인 도중 세션 오류가 발생했습니다. 인터넷 연결을 확인해주세요: " + e.toString(), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /* 서버로 osType, platform, FCM 토큰값 정보를 보내는 메서드 */
+    void sendUserTypeAndPlatform()
+    {
+        String osType = getString(R.string.login_os);
+        String platform = getString(R.string.main_platform);
+        String fcm_token = token;
+        String email = getString(R.string.email2);
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        Call<String> call = apiInterface.sendUserTypeAndPlatform(osType, platform, fcm_token, email);
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    tokenParsing(response.body());
+                }
+                else
+                {
+                    Logger.e("onResponse() 실패 = " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
+            {
+                Logger.e("에러 = " + t.getMessage());
+            }
+        });
     }
 
     class GoogleLogOut extends Thread
@@ -479,7 +504,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // 구글 서버 토큰 존재하는지 확인
         currentUser = firebaseAuth.getCurrentUser();
         Log.e(TAG, "G_currentUser(구글 서버 토큰) : " + currentUser);
-    } // onStart end
+    }
 
     @Override
     protected void onResume()
@@ -498,7 +523,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 finish();
             }
         });
-    } // onResume end
+    }
 
     @Override
     protected void onDestroy()
@@ -507,7 +532,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // 카카오 로그인 후 액티비티 꺼질 때 필요한 처리
         // 현재 액티비티 제거 시 콜백도 같이 제거
         Session.getCurrentSession().removeCallback(sessionCallback);
-    } // onDestroy end
+    }
 
     // 구글 로그인 인증을 요청 했을 때 결과 값을 되돌려 받는 곳
     @Override
@@ -537,7 +562,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
         }
 
-    } // onActivityResult end
+    }
 
     /* 첫 로그인, 다시 로그인한 사람을 구분하는 로직. 필요없어서 주석 처리 */
     // 로그인 후 서버에서 난독화된 토큰값을 쉐어드에 저장하는 기능
@@ -571,7 +596,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    /* 로그인 상태를 확인하기 위한 쉐어드에 저장된 토큰값 불러오기 기능, 잠시 주석 처리 */
     // 로그인 상태를 확인하기 위한 쉐어드에 저장된 토큰값 불러오기 기능
     private void loginSharedGet()
     {
@@ -590,7 +614,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         else if (!result_server.equals("NoServerToken") && !result_email.equals("NoEmail"))
         {
             Log.e(TAG, "로그인 되어있는 사용자 입니다!");
-//			tokenCheck(result_email, result_server);
             Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
             startActivity(intent);
             finish();
@@ -599,9 +622,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         {
             Log.e(TAG, "로그아웃 한 사용자 입니다!\n서버 토큰 값을 다시 요청해야 합니다!");
         }
-    } // loginSharedGet end
+    }
 
-    /* json 파싱하는 메서드. 잠시 주석 처리 */
     // 로그인 응답 내용이 json 구조라서 파싱을 하기 위한 기능
     private void jsonParsing(String login, String email)
     {
@@ -629,7 +651,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         {
             e.printStackTrace();
         }
-    } // jsonParsing end
+    }
+
+    private void tokenParsing(String data)
+    {
+        app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
+        SharedPreferences.Editor editor = app_pref.edit();
+
+        try
+        {
+            JSONObject token_object = new JSONObject(data);
+            server_token = token_object.getString("Token");
+            editor.putString("token", server_token);
+            editor.commit();
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        Logger.e("token = " + server_token);
+    }
 
     /* 다시 구글 로그인할 때 사용하는 메서드 */
     public void reLogin(String email, String token)

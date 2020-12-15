@@ -83,7 +83,8 @@ public class MainFragment extends Fragment
     // 장애인, 다문화, 법률, 기타 버튼 있는 레이아웃
     LinearLayout multi_law_layout, etc_layout;
 
-    ArrayList<String> m_favorList = new ArrayList<>();  // 유저에게 제공할 혜택들을 담을 ArrayList
+    // 유저에게 제공할 혜택들을 담을 ArrayList
+    ArrayList<String> m_favorList = new ArrayList<>();
 
     // 스크롤 수정
     LinearLayout main_content;
@@ -234,7 +235,6 @@ public class MainFragment extends Fragment
         // 조회하기 버튼
         main_done.setOnClickListener(OnSingleClickListener ->
         {
-            Log.e("main_done 버튼 클릭", "m_favorList 크기 = " + m_favorList.size());
             // 관심사 선택이 1개라도 안돼 있으면 커스텀 다이얼로그를 띄운다
             if (m_favorList.size() == 0)
             {
@@ -248,6 +248,7 @@ public class MainFragment extends Fragment
                 {
                     Log.e(TAG, "m_favorList : " + m_favorList);
                 }
+                // 선택한 모든 카테고리 이름을 인텐트에 넣어서 보낸다
                 Intent m_intent = new Intent(getActivity(), ResultBenefitActivity.class);
                 m_intent.putStringArrayListExtra("favor_btn", m_favorList);
                 startActivity(m_intent);
@@ -261,18 +262,18 @@ public class MainFragment extends Fragment
 
             if (OnSingleClickListener.isSelected())
             {
+                Log.e(TAG, "OnSingleClickListener.isSelected() = " + OnSingleClickListener.isSelected());
                 m_favorList.remove("아기·어린이");
                 main_child_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.child));
                 main_child_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_child.setSelected(!main_child.isSelected());
             }
             else
             {
+                Log.e(TAG, "OnSingleClickListener.isSelected() = " + OnSingleClickListener.isSelected());
                 m_favorList.add("아기·어린이");
                 main_child_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.child_after));
                 main_child_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.e(TAG, "버튼 클릭 활성화!!");
                 main_child.setSelected(true);
             }
         });
@@ -733,7 +734,7 @@ public class MainFragment extends Fragment
 
         Log.e(TAG, "addresses 리스트 = " + addresses.toString());
         Address address = addresses.get(0);
-        return address.getAddressLine(0).toString() + "\n";
+        return address.getAddressLine(0)+ "\n";
     }
 
     public boolean checkLocationServicesStatus()

@@ -12,67 +12,125 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.psj.welfare.Data.SearchItem;
 import com.psj.welfare.R;
 
-import java.util.ArrayList;
+import java.util.List;
 
-public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
+public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchViewHolder>
+{
+    private Context context;
+    private List<SearchItem> lists;
+    private ItemClickListener itemClickListener;
 
-	// item class(MainItem)를 정의해 놓았음
-	public Context searchContext;
-	private ArrayList<SearchItem> searchData;
-	private View.OnClickListener onClickListener;
+    public void setOnItemClickListener(ItemClickListener itemClickListener)
+    {
+        this.itemClickListener = itemClickListener;
+    }
 
-	// 생성자
-	public SearchAdapter(Context SearchContext, ArrayList<SearchItem> SearchDataSet, View.OnClickListener OnClickListener) {
-		this.searchContext = SearchContext;
-		this.searchData = SearchDataSet;
-		this.onClickListener = OnClickListener;
-	}
+    public SearchAdapter(Context context, List<SearchItem> lists, ItemClickListener itemClickListener)
+    {
+        this.context = context;
+        this.lists = lists;
+        this.itemClickListener = itemClickListener;
+    }
 
-	public class ViewHolder extends RecyclerView.ViewHolder {
+    @NonNull
+    @Override
+    public SearchAdapter.SearchViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+    {
+        View view = LayoutInflater.from(context).inflate(R.layout.item_search, parent, false);
+        return new SearchViewHolder(view, itemClickListener);
+    }
 
-		public TextView search_title;
-		public View rootView;
+    @Override
+    public void onBindViewHolder(@NonNull SearchAdapter.SearchViewHolder holder, int position)
+    {
+        SearchItem item = lists.get(position);
+        holder.search_title.setText(item.getWelf_name());
+    }
 
-		public ViewHolder(@NonNull View itemView) {
-			super(itemView);
+    @Override
+    public int getItemCount()
+    {
+        return lists.size();
+    }
 
-			search_title = itemView.findViewById(R.id.search_title);
-			rootView = itemView;
+    public class SearchViewHolder extends RecyclerView.ViewHolder
+    {
+        TextView search_title;
+        ItemClickListener itemClickListener;
 
-			itemView.setClickable(true);
-			itemView.setEnabled(true);
-			itemView.setOnClickListener(onClickListener);
-		}
-	}
+        public SearchViewHolder(@NonNull View view, ItemClickListener itemClickListener)
+        {
+            super(view);
 
-	@NonNull
-	@Override
-	public SearchAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		// create a new view
-		View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_search, parent, false);
-		// set the view's size, margins, paddings and layout parameters
+            search_title = view.findViewById(R.id.search_title);
+            this.itemClickListener = itemClickListener;
+            search_title.setOnClickListener(v -> {
+                int pos = getAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION && itemClickListener != null)
+                {
+                    itemClickListener.onItemClick(v, pos);
+                }
+            });
+        }
+    }
 
-		ViewHolder viewholder = new ViewHolder(view);
-		return viewholder;
-	}
+    public interface ItemClickListener
+    {
+        void onItemClick(View view, int position);
+    }
 
-	@Override
-	public void onBindViewHolder(@NonNull SearchAdapter.ViewHolder viewHolder, int position) {
 
-		viewHolder.search_title.setText(searchData.get(position).getSearchTitle());
-
-		// Tag - Label 을 달아준다
-		viewHolder.rootView.setTag(position);
-	}
-
-	@Override
-	public int getItemCount() {
-		return searchData.size();
-	}
-
-	public SearchItem getSearch(int position) {
-		return searchData != null ? searchData.get(position) : null;
-	}
-
+//    public Context searchContext;
+//    private ArrayList<SearchItem> searchData;
+//    private View.OnClickListener onClickListener;
+//
+//    public SearchAdapter(Context SearchContext, ArrayList<SearchItem> SearchDataSet, View.OnClickListener OnClickListener)
+//    {
+//        this.searchContext = SearchContext;
+//        this.searchData = SearchDataSet;
+//        this.onClickListener = OnClickListener;
+//    }
+//
+//    public class ViewHolder extends RecyclerView.ViewHolder
+//    {
+//
+//        public TextView search_title;
+//        public View rootView;
+//
+//        public ViewHolder(@NonNull View view)
+//        {
+//            super(view);
+//
+//            search_title = view.findViewById(R.id.search_title);
+//            rootView = view;
+//
+//            view.setClickable(true);
+//            view.setEnabled(true);
+//            view.setOnClickListener(onClickListener);
+//        }
+//    }
+//
+//    @NonNull
+//    @Override
+//    public SearchAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+//    {
+//        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_search, parent, false);
+//        ViewHolder viewholder = new ViewHolder(view);
+//        return viewholder;
+//    }
+//
+//    @Override
+//    public void onBindViewHolder(@NonNull SearchAdapter.ViewHolder viewHolder, int position)
+//    {
+//        viewHolder.search_title.setText(searchData.get(position).getSearchTitle());
+//        // Tag - Label 을 달아준다
+//        viewHolder.rootView.setTag(position);
+//    }
+//
+//    @Override
+//    public int getItemCount()
+//    {
+//        return searchData.size();
+//    }
 
 }

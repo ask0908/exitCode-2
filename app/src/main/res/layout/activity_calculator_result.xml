@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#fff"
+    android:padding="20dp"
+    tools:context=".activity.CalculatorResultActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/jalnan"
+        android:text="여성장애인 출산비용 지원"
+        android:textSize="20sp"
+        android:textColor="@color/colorBlack"/>
+
+    <TextView
+        android:id="@+id/result_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/jalnan"
+        android:layout_marginTop="10dp"
+        android:text="조회하신 결과는 단순 참고용으로만 사용해 주세요"
+        android:textSize="15sp"
+        android:textColor="@color/colorBlack"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorGray_L"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/jalnan"
+        android:text="모의계산 결과"
+        android:textSize="17sp"
+        android:textColor="@color/colorBlack"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:id="@+id/result_body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/jalnan"
+        android:lineSpacingExtra="5sp"
+        android:gravity="center"
+        android:text="귀하가 입력하신 정보를 토대로 계산한 결과\n소득인정액은 10만원이며,\n기초 단독가구 1,400만원 이하로
+수급대상자로 선정될 가능성이 있습니다"
+        android:textSize="15sp"
+        android:textColor="@color/colorBlack" />
+
+    <TextView
+        android:id="@+id/result_body2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/jalnan"
+        android:lineSpacingExtra="5sp"
+        android:text="이는 귀하가 입력하신 정보를 기초로 모의계산한 것이며, 실제 신청 후 결과와는 다를
+수 있습니다.\n자세한 사항은 주소지 관할 주민센터로 상담해주세요"
+        android:textColor="@color/colorBlack" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/btn_done"
+        android:fontFamily="@font/jalnan"
+        android:text="다시하기"
+        android:textColor="@color/colorMainWhite"
+        android:textSize="20sp"
+        android:layout_marginTop="16dp"/>
+
+</LinearLayout>

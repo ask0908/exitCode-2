@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:theme="@style/ToolbarTheme"
+    tools:context=".activity.PushSettingActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/push_setting_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/jalnan"
+        android:text="알림"
+        android:textSize="30sp"
+        android:textColor="@color/colorBlack"
+        android:paddingStart="20dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/jalnan"
+        android:text="맞춤 혜택 알림, 관심사 알림 등 '너의 혜택은'에서\n제공하는 알림 수신 관련 설정입니다"
+        android:lineSpacingExtra="5sp"
+        android:textSize="17sp"
+        android:textColor="@color/colorBlack"
+        android:layout_marginTop="5dp"
+        android:paddingStart="20dp"/>
+
+    <Switch
+        android:id="@+id/push_noti_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/jalnan"
+        android:text="푸시 알림"
+        android:textSize="22sp"
+        android:layout_marginTop="40dp"
+        android:padding="20dp"/>
+
+</LinearLayout>

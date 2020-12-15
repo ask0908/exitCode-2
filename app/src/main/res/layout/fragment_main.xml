@@ -30,8 +30,8 @@
             android:id="@+id/kakao_unlink_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             android:text="카톡 회원탈퇴"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.161"
             app:layout_constraintStart_toEndOf="@id/main_logo"
@@ -693,6 +693,16 @@
                 android:text="혜택 조회하러 가기"
                 android:background="@drawable/btn_done"
                 android:textColor="@color/colorMainWhite" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/jalnan"
+                android:text="유튜버들의 혜택 리뷰!"
+                android:textSize="15sp"
+                android:textColor="@color/colorMainWhite"
+                android:layout_marginTop="10dp"
+                android:padding="30dp"
 
             <Button
                 android:id="@+id/map_btn"

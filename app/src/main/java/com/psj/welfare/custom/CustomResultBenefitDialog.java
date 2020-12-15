@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.psj.welfare.R;
 
+/* MainFragment에서 관심사를 선택하지 않고 '조회하러 가기' 버튼을 눌렀을 때 띄울 커스텀 다이얼로그 */
 public class CustomResultBenefitDialog
 {
     private Context context;

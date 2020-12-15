@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "com.psj.welfare"
-        minSdkVersion 21
+        minSdkVersion 26
         targetSdkVersion 29
         versionCode 7
         versionName "7"
@@ -23,7 +23,7 @@ android {
         debug {
             minifyEnabled false
             shrinkResources false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro', 'proguard-gson.pro'
         }
     }
     sourceSets {
@@ -107,5 +107,7 @@ dependencies {
     implementation group: 'com.kakao.sdk', name: 'kakaolink', version:'1.16.0'
 
     implementation 'com.orhanobut:logger:2.2.0'
+
+    implementation 'org.greenrobot:eventbus:3.1.1'
 
 }

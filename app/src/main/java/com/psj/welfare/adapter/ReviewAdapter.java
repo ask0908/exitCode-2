@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -23,10 +24,17 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/* DetailBenefitActivity에서 리뷰 목록을 보여줄 때 사용하는 어댑터 */
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder>
 {
     private Context context;
     private List<ReviewItem> list;
+    private ItemClickListener itemClickListener;
+
+    public void setOnItemClickListener(ItemClickListener itemClickListener)
+    {
+        this.itemClickListener = itemClickListener;
+    }
 
     public static final int SEC = 60;
     public static final int MIN = 60;
@@ -34,10 +42,11 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     public static final int DAY = 30;
     public static final int MONTH = 12;
 
-    public ReviewAdapter(Context context, List<ReviewItem> list)
+    public ReviewAdapter(Context context, List<ReviewItem> list, ItemClickListener itemClickListener)
     {
         this.context = context;
         this.list = list;
+        this.itemClickListener = itemClickListener;
     }
 
     @NonNull
@@ -45,7 +54,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     public ReviewAdapter.ReviewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         View view = LayoutInflater.from(context).inflate(R.layout.review_item_test, parent, false);
-        return new ReviewViewHolder(view);
+        return new ReviewViewHolder(view, itemClickListener);
     }
 
     @Override
@@ -59,17 +68,19 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         holder.review_content.setText(item.getContent());
         holder.review_date.setText(item.getCreate_date());
         float count = item.getStar_count();
-        Log.e("adapter", "getId() : " + item.getId());
-        Log.e("adapter", "별점 : " + item.getStar_count());
-        if (item.getStar_count() != 0.0)
-        {
-            Log.e("별점", "rate = " + item.getStar_count());
-            holder.review_rate.setStar(3.0f);
-        }
-        else
-        {
-            Log.e("별점", "rate = 0.0");
-        }
+        Log.e("ReviewAdapter", "getId() : " + item.getId());  // 닉네임이 출력된다
+        Log.e("ReviewAdapter", "getImage_url() : " + item.getImage_url());
+        Log.e("ReviewAdapter", "getContent() : " + item.getContent());
+//        Log.e("ReviewAdapter", "별점 : " + item.getStar_count());
+//        if (item.getStar_count() != 0.0)
+//        {
+//            Log.e("ReviewAdapter", "rate = " + item.getStar_count());
+//            holder.review_rate.setStar(3.0f);
+//        }
+//        else
+//        {
+//            Log.e("ReviewAdapter", "rate = 0.0");
+//        }
 
         // 시간 정보 가져오는 객체 생성 후 저장
         // 참고: https://krksap.tistory.com/1158
@@ -85,8 +96,8 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             // String -> LocalDateTime 로 타입 변경
             LocalDateTime localDateTime = LocalDateTime.parse(item.getCreate_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-            Log.e("adapter", " LocalDateTime 로 변경한 현재 시간 값: " + currentDateTime);
-            Log.e("adapter", " LocalDateTime 로 변경한 글 등록 시간 값: " + localDateTime);
+//            Log.e("ReviewAdapter", " LocalDateTime 로 변경한 현재 시간 값: " + currentDateTime);
+//            Log.e("ReviewAdapter", " LocalDateTime 로 변경한 글 등록 시간 값: " + localDateTime);
 
             // 글 등록시간, 현재 시간 비교
             Duration duration = null;
@@ -135,19 +146,36 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
     public static class ReviewViewHolder extends RecyclerView.ViewHolder
     {
+        private ConstraintLayout review_item_layout;
         private ImageView review_image;
         private TextView review_id, review_date, review_content;
         private RatingBar review_rate;
+        ItemClickListener itemClickListener;
 
-        public ReviewViewHolder(@NonNull View view)
+        public ReviewViewHolder(@NonNull View view, ItemClickListener itemClickListener)
         {
             super(view);
 
+            review_item_layout = view.findViewById(R.id.review_item_layout);
             review_image = view.findViewById(R.id.review_image);
             review_id = view.findViewById(R.id.review_id);
             review_date = view.findViewById(R.id.review_date);
             review_content = view.findViewById(R.id.review_content);
             review_rate = view.findViewById(R.id.review_rate);
+
+            this.itemClickListener = itemClickListener;
+            review_item_layout.setOnClickListener(v -> {
+                int pos = getAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION && itemClickListener != null)
+                {
+                    itemClickListener.onItemClick(v, pos);
+                }
+            });
         }
+    }
+
+    public interface ItemClickListener
+    {
+        void onItemClick(View view, int position);
     }
 }

@@ -16,71 +16,59 @@ import com.psj.welfare.R;
 
 import java.util.ArrayList;
 
-public class FirstCategoryAdapter extends RecyclerView.Adapter<FirstCategoryAdapter.ViewHolder> {
+public class FirstCategoryAdapter extends RecyclerView.Adapter<FirstCategoryAdapter.FirstCategoryViewHolder>
+{
+    public Context categoryContext;
+    private ArrayList<FirstCategoryItem> categoryData;
+    private View.OnClickListener onClickListener;
 
-	// item class(MainItem)를 정의해 놓았음
-	public Context categoryContext;
-	private ArrayList<FirstCategoryItem> categoryData;
-	private View.OnClickListener onClickListener;
+    public FirstCategoryAdapter(Context CategoryContext, ArrayList<FirstCategoryItem> CategoryDataSet, View.OnClickListener OnClickListener)
+    {
+        this.categoryContext = CategoryContext;
+        this.categoryData = CategoryDataSet;
+        this.onClickListener = OnClickListener;
+    }
 
-	// 생성자
-	public FirstCategoryAdapter(Context CategoryContext, ArrayList<FirstCategoryItem> CategoryDataSet, View.OnClickListener OnClickListener) {
-		this.categoryContext = CategoryContext;
-		this.categoryData = CategoryDataSet;
-		this.onClickListener = OnClickListener;
-	}
+    public class FirstCategoryViewHolder extends RecyclerView.ViewHolder
+    {
+        private TextView firstCategory_Title;
+        public LinearLayout firstCategory_line;
+        public View rootView;
 
+        public FirstCategoryViewHolder(@NonNull View view)
+        {
+            super(view);
+            firstCategory_Title = view.findViewById(R.id.firstCategory_Title);
+            firstCategory_line = view.findViewById(R.id.firstCategory_line);
+            rootView = view;
 
-	public class ViewHolder extends RecyclerView.ViewHolder {
+            view.setClickable(true);
+            view.setEnabled(true);
+            view.setOnClickListener(onClickListener);
+        }
+    }
 
-		private TextView firstCategory_Title;
-		public LinearLayout firstCategory_line;
-		public View rootView;
+    @NonNull
+    @Override
+    public FirstCategoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+    {
+    	View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_firstcategory, parent, false);
+        return new FirstCategoryViewHolder(view);
+    }
 
-		public ViewHolder(@NonNull View itemView) {
-			super(itemView);
-			firstCategory_Title = itemView.findViewById(R.id.firstCategory_Title);
-			firstCategory_line = itemView.findViewById(R.id.firstCategory_line);
-			rootView = itemView;
+    @Override
+    public void onBindViewHolder(@NonNull FirstCategoryViewHolder firstCategoryViewHolder, int position)
+    {
+        firstCategoryViewHolder.firstCategory_Title.setText(categoryData.get(position).getCategoryTitle());
+        firstCategoryViewHolder.firstCategory_line.setBackgroundColor(categoryData.get(position).getCategoryBg());
+        // Tag - Label 을 달아준다
+        firstCategoryViewHolder.rootView.setTag(position);
+    }
 
-			itemView.setClickable(true);
-			itemView.setEnabled(true);
-			itemView.setOnClickListener(onClickListener);
-
-		}
-	}
-
-
-	@NonNull
-	@Override
-	public FirstCategoryAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		// create a new view
-		View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_firstcategory, parent, false);
-		// set the view's size, margins, paddings and layout parameters
-
-		ViewHolder viewholder = new ViewHolder(view);
-		return viewholder;
-	}
-
-	@Override
-	public void onBindViewHolder(@NonNull FirstCategoryAdapter.ViewHolder viewHolder, int position) {
-
-		viewHolder.firstCategory_Title.setText(categoryData.get(position).getCategoryTitle());
-		viewHolder.firstCategory_line.setBackgroundColor(categoryData.get(position).getCategoryBg());
-
-
-		// Tag - Label 을 달아준다
-		viewHolder.rootView.setTag(position);
-	}
-
-	@Override
-	public int getItemCount() {
-		return categoryData.size();
-	}
-
-	public FirstCategoryItem getCategory(int position) {
-		return categoryData != null ? categoryData.get(position) : null;
-	}
-
+    @Override
+    public int getItemCount()
+    {
+        return categoryData.size();
+    }
 
 }

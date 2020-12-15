@@ -20,7 +20,12 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 -keepattributes LineNumberTable,SourceFile
+-adaptclassstrings
 # 카카오 SDK를 제외하고 코드 축소, 난독화, 최적화 진행
 # https://developers.kakao.com/docs/latest/ko/getting-started/sdk-android#select-module
--keep class com.kakao.sdk.**.model.* { <fields>; }
--keep class * extends com.google.gson.TypeAdapter
+#-keep class com.kakao.sdk.**.model.* { <fields>; }
+#-keep class * extends com.google.gson.TypeAdapter
+
+-keepclasseswithmembers public class * {
+    public static void main(java.lang.String[]);
+}

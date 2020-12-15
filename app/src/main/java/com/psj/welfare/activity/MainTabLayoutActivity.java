@@ -16,6 +16,7 @@ import java.util.ArrayList;
 /*
  * 메인 테스트 액티비티는 구현해 놓은 메인 액티비티를 수정이 필요할 때
  * 수정된 화면을 미리보기 할 때 사용한다
+ * 2번째 탭(스낵컨텐츠)을 삭제한다
  * */
 public class MainTabLayoutActivity extends AppCompatActivity
 {
@@ -33,8 +34,6 @@ public class MainTabLayoutActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maintablayout);
 
-//		UserManagement.getInstance().requestLogout(logoutCallbak);
-
         viewPager = findViewById(R.id.main_viewpager);
         MainViewPagerAdapter adapter = new MainViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
@@ -46,10 +45,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
             @Override
             public void onTabSelected(TabLayout.Tab tab)
             {
-                Log.e(TAG, "onTabSelected() 호출");
-
                 int position = tab.getPosition();
-                Log.e(TAG, "onTabSelected() position -> " + position); // 탭 포지션 확인 로그
 
                 if (position == 0)
                 {
@@ -57,17 +53,13 @@ public class MainTabLayoutActivity extends AppCompatActivity
                 }
                 else if (position == 1)
                 {
-                    tab.setIcon(R.drawable.news_icon_focus);
+                    tab.setIcon(R.drawable.alarm_icon_focus);
                 }
                 else if (position == 2)
                 {
-                    tab.setIcon(R.drawable.alarm_icon_focus);
-                }
-                else if (position == 3)
-                {
                     tab.setIcon(R.drawable.search_icon_focus);
                 }
-                else if (position == 4)
+                else if (position == 3)
                 {
                     tab.setIcon(R.drawable.my_profile_icon_focus);
                 }
@@ -87,17 +79,13 @@ public class MainTabLayoutActivity extends AppCompatActivity
                 }
                 else if (position == 1)
                 {
-                    tab.setIcon(R.drawable.second_icon_gray);
+                    tab.setIcon(R.drawable.alarm_icon_gray);
                 }
                 else if (position == 2)
                 {
-                    tab.setIcon(R.drawable.alarm_icon_gray);
-                }
-                else if (position == 3)
-                {
                     tab.setIcon(R.drawable.search_icon_gray);
                 }
-                else if (position == 4)
+                else if (position == 3)
                 {
                     tab.setIcon(R.drawable.my_profile_icon_gray);
                 }
@@ -113,7 +101,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
         // 탭에 이미지 추가
         ArrayList<Integer> image = new ArrayList<>();
         image.add(R.drawable.home_icon_focus);
-        image.add(R.drawable.second_icon_gray);
+//        image.add(R.drawable.second_icon_gray);
         image.add(R.drawable.alarm_icon_gray);
         image.add(R.drawable.search_icon_gray);
         image.add(R.drawable.my_profile_icon_gray);

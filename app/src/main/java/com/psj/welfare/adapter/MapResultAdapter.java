@@ -47,7 +47,6 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
     {
         MapResultItem item = lists.get(position);
         holder.map_result_benefit_name.setText(item.getBenefit_name());
-//        holder.map_result_benefit_btn.setText("더보기");
     }
 
     @Override

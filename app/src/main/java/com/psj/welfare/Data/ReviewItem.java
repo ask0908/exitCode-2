@@ -2,10 +2,11 @@ package com.psj.welfare.Data;
 
 public class ReviewItem
 {
-    public String id;
-    public String content;
-    public String create_date;
+    private String id;
+    private String content;
+    private String create_date;
     private String image_url;
+    private String writer;
     private float star_count;
 
     public ReviewItem()
@@ -60,5 +61,15 @@ public class ReviewItem
     public void setStar_count(float star_count)
     {
         this.star_count = star_count;
+    }
+
+    public String getWriter()
+    {
+        return writer;
+    }
+
+    public void setWriter(String writer)
+    {
+        this.writer = writer;
     }
 }

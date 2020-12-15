@@ -8,6 +8,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
 
@@ -79,23 +80,11 @@ public interface ApiInterface
 	 * @param mainFavor - 사용자가 선택한 정책명
 	 * @return - 사용자가 선택한 관심사에 속한 혜택 제목들. JSON 형태의 문자열 형태로 오기 때문에 파싱해서 사용한다
 	 */
-	@FormUrlEncoded
-	@POST("/backend/android/and_category_result.php")
-	Call<String> mainFavor(
-			@Field("reqBody") String mainFavor
-	);
-
-	/**
-	 * 사용자가 입력한 키워드와 일치하는 정책을 서버에서 찾아 가져오는 메서드
-	 * 현재 작동하지 않음
-	 * @param search - 정책 이름
-	 * @return - 검색한 키워드에 속하는 정책 제목들을 서버에서 리턴값으로 받는다.
-	 */
-	@FormUrlEncoded
-	@POST("/backend/android/and_search.php")
-	Call<String> search(
-			@Field("reqBody") String search
-	);
+//	@FormUrlEncoded
+//	@POST("/backend/android/and_category_result.php")
+//	Call<String> mainFavor(
+//			@Field("reqBody") String mainFavor
+//	);
 
 	/**
 	 * 1번째로 선택하는 관심사
@@ -147,18 +136,18 @@ public interface ApiInterface
 
 	/**
 	 * 유저 이메일과 토큰을 서버에 저장하는 메서드
-	 * LoginActivity에서 사용
+	 * LoginActivity에서 사용했지만 지금은 쓰지 않아 주석 처리
 	 * @param userEmail - 유저의 이메일
 	 * @param fcm_token - fcm 토큰
 	 * @return
 	 */
-	@FormUrlEncoded
-	@POST("/backend/android/and_fcm_token_save.php")
-	Call<String> fcmToken(
-			@Field("userEmail") String userEmail,
-			@Field("fcm_token") String fcm_token,
-			@Field("osType") String osType
-	);
+//	@FormUrlEncoded
+//	@POST("/backend/android/and_fcm_token_save.php")
+//	Call<String> fcmToken(
+//			@Field("userEmail") String userEmail,
+//			@Field("fcm_token") String fcm_token,
+//			@Field("osType") String osType
+//	);
 
 	/**
 	 * 서버에서 1번 문제와 이미지, 버튼에 넣을 텍스트들을 가져오는 메서드
@@ -252,100 +241,96 @@ public interface ApiInterface
 			@Field("welf_name") String welf_name
 	);
 
+	/* 리뷰 관련 메서드 */
 	/**
-	 * 서버에 저장된 리뷰 데이터를 가져오는 메서드
+	 * 서버에 저장된 혜택 리뷰 목록을 조회하는 기능
 	 * 인자로 리뷰를 보고자 하는 정책의 이름, 안드/iOS 중 어떤 타입인지를 명시해서 서버로 넘겨준다
 	 * DetailBenefitActivity에서 사용
-	 * @param welf_name - 정책명
-	 * @param osType - 안드 or iOS 중 어떤 것인가?
-	 * @return - JSON 형태의 문자열. 클라에선 파싱한 뒤 for문 안에서 문자열 안의 Key 개수만큼 아이템을 만들어 리사이클러뷰에 set한다
+	 * @param type - list
+	 * @param welf_id - 혜택 id 정보
+	 * @return - {
+	 * "Status":"200",
+	 * "Message":[
+	 * {
+	 * "id":3,
+	 * "content":"testtest1",
+	 * "writer":"17번학생",
+	 * "email":null,
+	 * "like_count":"0",
+	 * "star_count":"0",
+	 * "image_url":"https:\/\/www.urbene-fit.com\/images\/reviews\/캡처.PNG",
+	 * "create_date":"2020-12-13 17:36:03"
+	 * }
+	 * ],
+	 * "TotalCount":3
 	 */
-	@FormUrlEncoded
-	@POST("/backend/php/common/review_list.php")
+	@GET("review")
 	Call<String> getReview(
-			@Field("welf_name") String welf_name,
-			@Field("osType") String osType
+			@Query("type") String type,
+			@Query("welf_id") String welf_id
 	);
 
-	/**
-	 * 리뷰 작성 화면에서 작성한 제목, 내용 등의 데이터를 서버로 보내 저장하는 메서드
-	 * 이미지는 아직 넣지 않는다. 현재 사용되지 않는 메서드
-	 * @param welf_name - 리뷰를 작성하는 정책 이름
-	 * @param content - 유저가 작성한 리뷰 내용
-	 * @param writer - 유저 이름
-	 * @param email - 유저 이메일
-	 * @param like_count - 좋아요 수
-	 * @param bad_count - 싫어요 수
-	 * @param star_count - 별점 수
-	 * @return
-	 */
-	@FormUrlEncoded
-	@POST("/backend/php/common/review_register.php")
-	Call<String> sendReview(
-			@Field("welf_name") String welf_name,
-			@Field("content") String content,
-			@Field("writer") String writer,
-			@Field("email") String email,
-			@Field("like_count") String like_count,
-			@Field("bad_count") String bad_count,
-			@Field("star_count") String star_count
-	);
-
-	/**
-	 * 서버로 리뷰 내용, 유저가 첨부한 이미지 등을 보내 저장하는 메서드
-	 * 현재 사용되지 않음
-	 * @param welf_name - 리뷰를 작성하는 정책의 이름 (리뷰 작성 대상)
-	 * @param content - 유저가 작성한 리뷰 내용
-	 * @param writer - 글쓴이(=유저)
-	 * @param email - 유저 이메일
-	 * @param like_count - 좋아요 수
-	 * @param bad_count - 싫어요 수
-	 * @param star_count - 별점
-	 * @param fileName - 서버로 업로드되는 파일 이름
-	 * @param file - 서버로 업로드되는 이미지 파일
-	 * @return
-	 */
-	@Multipart
-	@POST("/backend/php/common/review_register.php")
-	Call<String> sendReviewImage(
-			@Field("welf_name") String welf_name,
-			@Field("content") String content,
-			@Field("writer") String writer,
-			@Field("email") String email,
-			@Field("like_count") String like_count,
-			@Field("bad_count") String bad_count,
-			@Field("star_count") String star_count,
-			@Part("fileName") RequestBody fileName,
-			@Part MultipartBody.Part file
-	);
-
+	/* 레트로핏을 통해 서버로 이미지를 보낼 때 무조건 첫 어노테이션은 @Multipart여야 한다 */
 	/**
 	 * 이미지, 리뷰 텍스트를 서버로 보내 저장하는 메서드
 	 * ReviewActivity에서 사용. 현재 카메라로 촬영 후 앨범에 저장한 이미지를 등록할 수 없는 에러 있음(이유 : 용량이 너무 커서)
-	 * @param welf_name - 리뷰가 쓰인 혜택 이름
-	 * @param content - 리뷰 내용
-	 * @param writer - 리뷰 작성자
-	 * @param email - 리뷰 작성자의 이메일
-	 * @param like_count - 좋아요 수
-	 * @param bad_count - 싫어요 수
-	 * @param star_count - 별점
-	 * @param imageReqBody - 이미지 요청 시 넘겨야 하는 RequestBody
-	 * @param imageFile - 리뷰에 첨부한 이미지 파일
+	 * 이미지가 없어도 리뷰를 업로드할 수 있어야 한다
+	 * @param login_token - 유저의 로그인 토큰
+	 * @param welf_id - 혜택 id 정보
+	 * @param content - 리뷰 내용 정보
+	 * @param imageReqBody - 이미지 파일 정보
+	 * @param imageFile - 이미지 파일
 	 * @return
 	 */
-	// part는 filed와 달리 데이터를 직렬화하여 전송한다
 	@Multipart
-	@POST("/backend/php/common/review_register.php")
+	@POST("review")
 	Call<String> uploadReview(
-			@Part("welf_name") String welf_name,
+			@Part("login_token") String login_token,
+			@Part("welf_id") int welf_id,
 			@Part("content") String content,
-			@Part("writer") String writer,
-			@Part("email") String email,
-			@Part("like_count") String like_count,
-			@Part("bad_count")  String bad_count,
-			@Part("star_count") String star_count,
-			@Part("imageFile") RequestBody imageReqBody,
+			@Part("file") RequestBody imageReqBody,
 			@Part MultipartBody.Part imageFile
+	);
+
+	/**
+	 * 리뷰 수정하는 메서드
+	 * ReviewUpdateActivity에서 사용
+	 * @param login_token - 유저의 로그인 토큰
+	 * @param review_id - 리뷰 id 정보
+	 * @param content - 수정한 리뷰 내용
+	 * @param imageReqBody - 이미지 파일 정보
+	 * @param imageFile - 이미지 파일
+	 * @return
+	 */
+	@Multipart
+	@POST("https://www.urbene-fit.com/review")
+	Call<String> updateReview(
+			@Part("login_token") String login_token,
+			@Part("review_id") int review_id,
+			@Part("content") String content,
+			@Part("file") RequestBody imageReqBody,
+			@Part MultipartBody.Part imageFile
+	);
+
+	/**
+	 * 리뷰 삭제하는 메서드, @DELETE가 먹히지 않아서 @POST로 변경
+	 * ReviewUpdateActivity에서 사용
+	 * @param login_token - 유저의 로그인 토큰
+	 * @param review_id - 리뷰 id 정보
+	 * @param type - delete
+	 * @return - {
+	 * "Status":"200",
+	 * "Message":"리뷰 삭제가 완료되었습니다."
+	 * }
+	 */
+//	@DELETE("review/{login_token}/{review_id}")
+//	@DELETE("review/login_token={login_token}?review_id={review_id}")
+	@FormUrlEncoded
+	@POST("review")
+	Call<String> deleteReview(
+			@Field("login_token") String login_token,
+			@Field("review_id") int review_id,
+			@Field("type") String type
 	);
 
 	/**
@@ -355,10 +340,139 @@ public interface ApiInterface
 	 * @param page_number - 1번째 지도 화면, 2번째 지도 화면 구분을 위한 숫자
 	 * @return - 1로 요청했으면 전국 지역별 정책 개수, 2로 요청했으면 선택한 지역의 정책 제목들을 받는다. 받은 데이터는 파싱해서 뷰에 뿌려준다
 	 */
-	@GET("http://www.urbene-fit.com/map")
+	@GET("map")
 	Call<String> getNumberOfBenefit(
 			@Query("local") String local,
 			@Query("page_number") String page_number
+	);
+
+	/**
+	 * LoginActivity에서 카카오 로그인 시 서버로 OS 이름, 플랫폼, fcm 토큰값, 유저 이메일 정보를 보내 저장하는 메서드
+	 * LoginActivity에서 사용
+	 * @param osType - android
+	 * @param platform - kakao
+	 * @param fcm_token - 로그로 확인한 FCM 토큰값
+	 * @param email - 유저의 이메일. 카톡 로그인 시 받을 수 있게 처리해야 함
+	 * @return - 처리 성공 시 200 + 로그인에 성공하셨습니다 + 토큰값을 JSON 꼴로 리턴받는다. 비밀번호 불일치 시 400, 필수 요청값이 비어있으면 404, DB 연결 오류면 500을 리턴한다
+	 */
+	@FormUrlEncoded
+	@POST("https://www.urbene-fit.com/login")
+	Call<String> sendUserTypeAndPlatform(
+			@Field("osType") String osType,
+			@Field("platform") String platform,
+			@Field("fcm_token") String fcm_token,
+			@Field("email") String email
+	);
+
+	/**
+	 * 유저 정보를 보내면 서버에서 질문지와 키워드 정보를 받는 메서드
+	 * @param nickname - 유저 닉네임
+	 * @param age - 유저 나이
+	 * @param gender - 유저 성별
+	 * @param city - 유저 거주 도시
+	 * @param platform - kakao
+	 * @param email - 유저 이메일
+	 * @return
+	 */
+	@FormUrlEncoded
+	@POST("https://www.urbene-fit.com/user")
+	Call<String> sendKeyword(
+			@Field("nickName") String nickname,
+			@Field("age") String age,
+			@Field("gender") String gender,
+			@Field("city") String city,
+			@Field("platform") String platform,
+			@Field("email") String email
+	);
+
+	/**
+	 * 로그인 시 서버에서 받는 토큰을 넘겨 푸시 알림 데이터들을 받아오는 메서드
+	 * @param login_token - 로그인 시 서버에서 생성되는 토큰
+	 * @return - JSON 형태의 혜택 제목, 푸시 제목, 푸시 body, 푸시를 받은 날짜가 문자열 꼴로 나온다
+	 */
+	@GET("https://www.urbene-fit.com/push")
+	Call<String> getPushData(
+			@Query("login_token") String login_token
+	);
+
+	/**
+	 * 내 정보를 클릭했을 때 서버에서 사용자 정보를 조회해서 가져오는 메서드
+	 * @param login_token - 로그인 시 서버에서 생성되는 토큰
+	 * @return - {"Status":"200","Message":"","is_push":"false"}
+	 */
+	@GET("https://www.urbene-fit.com/user")
+	Call<String> getUserInfo(
+			@Query("login_token") String login_token
+	);
+
+	/**
+	 * 유저가 푸시알림설정 스위치를 on으로 두면 true, off로 두면 false를 서버로 보내 기존 값을 수정해 저장하는 메서드
+	 * @param login_token - 로그인 시 서버에서 생성되는 토큰
+	 * @param is_push - 스위치의 T/F 값
+	 * @return - 알림 설정 값이 같으면 : {"Status":"200","Message":"유저 정보가 동일합니다."}
+	 * 			 알림 설정 값이 다르면 : {"Status":"200","Message":"유저 정보 수정이 완료되었습니다.","is_push":"false"}
+	 */
+	@FormUrlEncoded
+	@PUT("https://www.urbene-fit.com/user")
+	Call<String> putPushSetting(
+			@Field("login_token") String login_token,
+			@Field("is_push") String is_push
+	);
+
+	/**
+	 * 키워드와 일치하는 복지혜택들의 데이터를 서버에서 가져오는 메서드
+	 * SearchFragment에서 사용
+	 * @param type - search(키워드 기반 검색 요청을 의미하는 검색 타입)
+	 * @param keyword - 유저가 입력한 검색 키워드
+	 * @return - {
+	 *     "Status": "200",
+	 *     "Message": [
+	 *         {
+	 *             "welf_name": "출산양육지원금",
+	 *             "welf_local": "충북",
+	 *             "parent_category": "육아·임신",
+	 *             "welf_category": "현금 지원",
+	 *             "tag": "출산;; 다자녀"
+	 *         },..중략..],
+	 *         "TotalCount":13
+	 *         }
+	 */
+	@GET("https://www.urbene-fit.com/welf")
+	Call<String> searchWelfare(
+			@Query("type") String type,
+			@Query("keyword") String keyword
+	);
+
+	/**
+	 * MainFragment에서 사용자가 선택한 카테고리에 속하는 혜택 데이터들을 가져오는 메서드
+	 * ResultBenefitActivity에서 사용
+	 * @param type - category_search(카테고리 기반 검색 요청을 의미하는 검색 타입)
+	 * @param category_keyword - 유저가 선택한 카테고리, 중복 선택 가능하며 구분자는 "|"로 구분함
+	 * @return - "중장년·노인|저소득층"으로 검색이 성공한 경우)
+	 * 	   "Status": "200",
+	 *     "Message": [
+	 *         {
+	 *             "welf_name": "저소득층 기저귀·조제분유 지원",
+	 *             "welf_category": "현물 지원",
+	 *             "tag": "저소득층;;장애인;;다자녀;;분유;;육아",
+	 *             "welf_local": "전국"
+	 *         },...(중략)...],
+	 *     "TotalCount": 12
+	 */
+	@GET("https://www.urbene-fit.com/welf")
+	Call<String> searchWelfareCategory(
+			@Query("type") String type,
+			@Query("keyword") String category_keyword
+	);
+
+	@FormUrlEncoded
+	@POST("https://www.urbene-fit.com/user")
+	Call<String> registerUserInfo(
+			@Field("login_token") String login_token,
+			@Field("nickName") String user_nickname,
+			@Field("age") String age,
+			@Field("gender") String gender,
+			@Field("city") String city
 	);
 
 }

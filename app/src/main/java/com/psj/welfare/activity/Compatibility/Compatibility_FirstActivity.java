@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.psj.welfare.R;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.custom.CustomAlertDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -164,5 +165,11 @@ public class Compatibility_FirstActivity extends AppCompatActivity
     }
 
     /* 백버튼 클릭 시 지금 테스트를 종료하면 결과가 저장되지 않는다는 경고 커스텀 다이얼로그를 띄운다 (메인 기능이 아니라 우선순위는 나중으로 둔다) */
-
+    @Override
+    public void onBackPressed()
+    {
+        // 지금 종료하면 지금까지 진행한 상황은 저장되지 않는다는 커스텀 경고 다이얼로그를 띄운다
+        CustomAlertDialog dialog = new CustomAlertDialog(Compatibility_FirstActivity.this);
+        dialog.showAlertDialog();
+    }
 }

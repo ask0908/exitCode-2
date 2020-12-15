@@ -470,7 +470,7 @@ public class MapDetailActivity extends AppCompatActivity
                 {
                     number_of_benefit = response.body();
                     Log.e(TAG, "number_of_benefit = " + number_of_benefit);
-                    jsonParsing(number_of_benefit);
+                    jsonParse(number_of_benefit);
                 }
             }
 
@@ -480,6 +480,41 @@ public class MapDetailActivity extends AppCompatActivity
                 Log.e(TAG, "getUNumberOfBenefit() 에러 : " + t.getMessage());
             }
         });
+    }
+
+    private void jsonParse(String number_of_benefit)
+    {
+        item_list = new ArrayList<>();
+        try
+        {
+            JSONObject jsonObject = new JSONObject(number_of_benefit);
+            JSONArray jsonArray = jsonObject.getJSONArray("Message");
+            for (int i = 0; i < jsonArray.length(); i++)
+            {
+                JSONObject inner_json = jsonArray.getJSONObject(i);
+                name = inner_json.getString("welf_name");
+                MapResultItem item = new MapResultItem();
+                item.setBenefit_name(name);
+                // 혜택 이름들을 보여주는 리사이클러뷰의 어댑터에 쓰일 List에 for문이 반복된 만큼 생성된 DTO 객체들을 넣는다
+                item_list.add(item);
+            }
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        // 어댑터 초기화, 이 때 for문 안에서 값이 들어간 List를 인자로 넣는다
+        map_adapter = new MapResultAdapter(MapDetailActivity.this, item_list, itemClickListener);
+        // 더보기 버튼 클릭 시 해당 혜택의 상세보기 화면으로 이동한다
+        map_adapter.setOnItemClickListener((view, position) ->
+        {
+            String name = item_list.get(position).getBenefit_name();
+            Log.e(TAG, "혜택 이름 = " + name);
+            Intent see_detail_intent = new Intent(MapDetailActivity.this, DetailBenefitActivity.class);
+            see_detail_intent.putExtra("name", name);
+            startActivity(see_detail_intent);
+        });
+        map_result_recyclerview.setAdapter(map_adapter);
     }
 
     /* 서버에서 넘어온 JSONArray 안의 값들을 파싱해서 리사이클러뷰에 보여주는 메서드 */

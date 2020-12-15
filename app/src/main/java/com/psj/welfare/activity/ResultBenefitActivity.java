@@ -1,11 +1,7 @@
 package com.psj.welfare.activity;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,10 +14,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
+import com.psj.welfare.Data.CategorySearchResultItem;
 import com.psj.welfare.Data.ResultBenefitItem;
+import com.psj.welfare.Data.SelectedButtonItem;
 import com.psj.welfare.R;
+import com.psj.welfare.adapter.CategorySearchResultAdapter;
 import com.psj.welfare.adapter.RBFAdapter;
 import com.psj.welfare.adapter.RBFTitleAdapter;
+import com.psj.welfare.adapter.SelectedCategoryAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.OnSingleClickListener;
@@ -31,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,22 +46,37 @@ public class ResultBenefitActivity extends AppCompatActivity
     public static final String TAG = "ResultBenefitActivity";
 
     // 리사이클러뷰 객체 선언
-    private RecyclerView RbfBtn_recycler, RbfTitle_recycler;
+    private RecyclerView category_recycler, result_title_recycler;
+    private CategorySearchResultAdapter adapter;
+    private CategorySearchResultAdapter.ItemClickListener itemClickListener;
+    private SelectedCategoryAdapter selectedCategoryAdapter;
+    private SelectedCategoryAdapter.ItemClickListener selected_itemClickListener;
+    List<SelectedButtonItem> selected_list;
+    List<CategorySearchResultItem> list;
+
     private RecyclerView.Adapter RbfBtn_Adapter, RbfTitle_Adapter;
 
-    TextView RB_title; // 혜택 결과 개수 타이틀
+    // 유저가 선택한 카테고리에 속하는 모든 정책 개수를 담을 변수
+    String countOfWelf;
+
+
+    TextView result_benefit_title; // 혜택 결과 개수 타이틀
     ImageView RBF_back; // 뒤로가기 버튼 이미지
     int position_RB = 1; // 관심사 버튼 넘버
     int position_RBT = 0; // 관심사 타이틀 넘버
 
-    private ArrayList<ResultBenefitItem> RBF_ListSet; // 관심사 버튼 리스트
-    private ArrayList<ResultBenefitItem> RBFTitle_ListSet; // 관심사 타이틀 리스트
+    private ArrayList<ResultBenefitItem> RBF_ListSet;       // 관심사 버튼 리스트
+    private ArrayList<ResultBenefitItem> RBFTitle_ListSet;  // 복지혜택 이름을 리사이클러뷰에 보여줄 때 해당 리사이클러뷰의 어댑터에 사용할 리스트
     ArrayList<String> favor_data; // 관심사 버튼 문자열
 
     // 서버에서 응답 받은 JSON 구조를 파싱하기 위한 JSONArray 변수들
     JSONArray child, student, law, old, pregnancy, disorder, cultural, multicultural, company, living, job, homeless, etc;
 
-    String body;
+    // 검색 api 리뉴얼로 추가한 변수
+    String welf_name, welf_category, tag, welf_local;
+
+    String category, last_category;
+    StringBuffer sb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -68,12 +84,14 @@ public class ResultBenefitActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_resultbenefit);
 
+        list = new ArrayList<>();
+
         Logger.addLogAdapter(new AndroidLogAdapter());
 
-        RB_title = findViewById(R.id.RB_title);
+        result_benefit_title = findViewById(R.id.result_benefit_title);
         RBF_back = findViewById(R.id.RBF_back);
-        RbfBtn_recycler = findViewById(R.id.RbfBtn_recycler);
-        RbfTitle_recycler = findViewById(R.id.RbfTitle_recycler);
+        category_recycler = findViewById(R.id.category_recycler);           // 위의 가로 리사이클러뷰(카테고리 이름들 출력)
+        result_title_recycler = findViewById(R.id.result_title_recycler);   // 아래의 세로 리사이클러뷰(혜택 이름들 출력)
 
         RBF_ListSet = new ArrayList<>();
         RBFTitle_ListSet = new ArrayList<>();
@@ -84,15 +102,15 @@ public class ResultBenefitActivity extends AppCompatActivity
         {
             Intent RB_intent = getIntent();
             favor_data = RB_intent.getStringArrayListExtra("favor_btn");
-            Log.i(TAG, "리스트 형태 관심사 정보 -> " + favor_data.toString());
-            // 메인에서 전달받은 리스트 첫번째 정보는 '전체'인데 이것을 포커싱 상태로 변환하는 로직이다
             RBF_ListSet.add(0, new ResultBenefitItem(favor_data.get(0), R.drawable.rbf_btn_after));
+            Log.e(TAG, "리스트 형태 관심사 정보 -> " + favor_data.toString());
 
-            // 메인에서 전달받은 리스트 첫번째를 제외한 나머지 정보는 포커싱 상태를 해제하기 위한 로직이다
+            // 메인에서 전달받은 리스트의 1번 요소를 제외한 나머지 정보는 포커싱 상태를 해제
             for (int i = 1; i < favor_data.size(); i++)
             {
-                Log.i(TAG, "리스트 형태 관심사 버튼 반복문 -> " + favor_data.get(i));
+                Log.e(TAG, "리스트 형태 관심사 버튼 반복문 -> " + favor_data.get(i));
                 RBF_ListSet.add(position_RB, new ResultBenefitItem(favor_data.get(i), R.drawable.rbf_btn_before));
+                Log.e(TAG, "for문 안 position_RB = " + position_RB);
                 position_RB++;
             }
 
@@ -102,8 +120,37 @@ public class ResultBenefitActivity extends AppCompatActivity
             Log.e(TAG, "전달 받은 인텐트 값 없어요!");
         }
 
-        RbfBtn_recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        RbfBtn_Adapter = new RBFAdapter(getApplicationContext(), RBF_ListSet, new View.OnClickListener()
+        /* MainFragment에서 유저가 선택한 카테고리들에 구분자를 붙여서 변수에 저장한다 */
+        for (int i = 0; i < favor_data.size(); i++)
+        {
+            category += favor_data.get(i) + "|";   // api 내용 수정으로 ,에서 |로 구분자 변경
+            Log.e(TAG, "for문 안 favor_data = " + category);
+            if (category.contains("null전체|"))
+            {
+                category = category.replace("null전체|", "");
+            }
+        }
+        if (category.length() > 0)
+        {
+            sb = new StringBuffer(category);
+            sb.deleteCharAt(category.length() - 1);
+            last_category = sb.toString();
+            Log.e(TAG, "sb = " + sb);
+        }
+        Log.e(TAG, "리스트값 스트링으로 변환 -> " + last_category);
+        // "null전체|" 문자열을 삭제한 문자열로 DB에서 데이터를 검색
+        searchWelfareCategory(last_category);
+
+        category_recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        selected_list = new ArrayList<>();
+        selectedCategoryAdapter = new SelectedCategoryAdapter(ResultBenefitActivity.this, selected_list, selected_itemClickListener);
+        selectedCategoryAdapter.setOnItemClickListener(((view, position) -> {
+            String name = selected_list.get(position).getButton_title();
+            Log.e(TAG, "이름 출력 테스트 = " + name);
+        }));
+        category_recycler.setAdapter(selectedCategoryAdapter);
+        /* 상단 리사이클러뷰(유저가 선택한 카테고리들 나오는 리사이클러뷰) */
+        RbfBtn_Adapter = new RBFAdapter(ResultBenefitActivity.this, RBF_ListSet, new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -112,528 +159,141 @@ public class ResultBenefitActivity extends AppCompatActivity
                 if (v.getTag() != null)
                 {
                     int position = (int) obj;
-                    Log.e(TAG, "관심사 버튼을 클릭 했어요 -> " + position);
+//                    Log.e(TAG, "관심사 버튼 클릭 " + position);
                     int btnColor = ((RBFAdapter) RbfBtn_Adapter).getRBF(position).getRBF_btnColor();
-                    Log.e(TAG, "내가 선택한 버튼 색상 : " + btnColor);
-                    Log.e(TAG, "비교할 버튼 새상 : " + R.drawable.btn_done);
+//                    Log.e(TAG, "내가 선택한 버튼 색상 : " + btnColor);
+//                    Log.e(TAG, "비교할 버튼 새상 : " + R.drawable.btn_done);
 
+                    // 선택하지 않았던 버튼을 선택할 경우 색을 바꾸고
                     if (btnColor != R.drawable.rbf_btn_after)
                     {
-                        Log.e(TAG, "선택하지 않은 버튼 입니다!");
+                        for (int i = 0; i < favor_data.size(); i++)
+                        {
+                            Log.e(TAG, "favor_data = " + favor_data.get(i));
+                        }
+//                        Log.e(TAG, "선택하지 않은 버튼 입니다!");
                         for (int i = 0; i < favor_data.size(); i++)
                         {
                             RBF_ListSet.set(i, new ResultBenefitItem(favor_data.get(i), R.drawable.rbf_btn_before));
                         }
                         RBF_ListSet.set(position, new ResultBenefitItem(favor_data.get(position), R.drawable.rbf_btn_after));
-
                         RbfBtn_Adapter.notifyItemRangeChanged(0, favor_data.size());
 
-                        // 전체 버튼 클릭 기능 시작
                         if (favor_data.get(position).equals("전체"))
                         {
-                            Log.e(TAG, "전체 혜택 세팅 전 포지션 값 -> " + position_RBT);
-                            // 어댑터에 연결되어 있던 리스트 값을 전부 삭제한다
-                            // 왜냐하면, IndexOutOfBoundException 에러가 발생하는데
-                            // 전에 세팅되어 있던 어댑터에 데이터가 남아있는 상태로 다시 세팅을 했을 때
-                            // 사이즈가 달라 생기는 문제라서 이렇게 해결해 보았다
-                            RbfTitle_Adapter.notifyItemRangeRemoved(0, position_RBT);
-                            position_RBT = 0;
-                            RBFTitle_ListSet.clear();
-                            try
-                            {
-                                for (int i = 0; i < favor_data.size(); i++)
-                                {
-                                    if (favor_data.get(i).equals("아기·어린이"))
-                                    {
-                                        Log.e(TAG, "아기·어린이 혜택 결과 길이 -> " + child.length());
-                                        for (int j = 0; j < child.length(); j++)
-                                        {
-                                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(child.getString(j)));
-                                            position_RBT++;
-
-                                        } // 아기·어린이 세팅 끝
-                                    }
-                                    else if (favor_data.get(i).equals("학생·청년"))
-                                    {
-                                        Log.e(TAG, "학생·청년 혜택 결과 길이 -> " + student.length());
-                                        for (int j = 0; j < student.length(); j++)
-                                        {
-                                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(student.getString(j)));
-                                            position_RBT++;
-
-                                        } // 학생·청년 세팅 끝
-                                    }
-                                    else if (favor_data.get(i).equals("법률"))
-                                    {
-                                        Log.e(TAG, "학생·청년 혜택 결과 길이 -> " + law.length());
-                                        for (int j = 0; j < law.length(); j++)
-                                        {
-                                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(law.getString(j)));
-                                            position_RBT++;
-
-                                        } // 법률 세팅 끝
-                                    }
-                                    else if (favor_data.get(i).equals("중장년·노인"))
-                                    {
-                                        Log.e(TAG, "중장년·노인 혜택 결과 길이 -> " + old.length());
-                                        for (int j = 0; j < old.length(); j++)
-                                        {
-                                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(old.getString(j)));
-                                            position_RBT++;
-
-                                        } // 중장년·노인 세팅 끝
-                                    }
-                                    else if (favor_data.get(i).equals("육아·임신"))
-                                    {
-                                        Log.e(TAG, "육아·임신 혜택 결과 길이 -> " + pregnancy.length());
-                                        for (int j = 0; j < pregnancy.length(); j++)
-                                        {
-                                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(pregnancy.getString(j)));
-                                            position_RBT++;
-
-                                        } // 육아·임신 세팅 끝
-                                    }
-                                    else if (favor_data.get(i).equals("장애인"))
-                                    {
-                                        Log.e(TAG, "장애인 혜택 결과 길이 -> " + disorder.length());
-                                        for (int j = 0; j < disorder.length(); j++)
-                                        {
-                                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(disorder.getString(j)));
-                                            position_RBT++;
-
-                                        } // 장애인 세팅 끝
-                                    }
-                                    else if (favor_data.get(i).equals("문화·생활"))
-                                    {
-                                        Log.e(TAG, "문화·생활 혜택 결과 길이 -> " + cultural.length());
-                                        for (int j = 0; j < cultural.length(); j++)
-                                        {
-                                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(cultural.getString(j)));
-                                            position_RBT++;
-
-                                        } // 문화·생활 세팅 끝
-                                    }
-                                    else if (favor_data.get(i).equals("다문화"))
-                                    {
-                                        Log.e(TAG, "다문화 혜택 결과 길이 -> " + multicultural.length());
-                                        for (int j = 0; j < multicultural.length(); j++)
-                                        {
-                                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(multicultural.getString(j)));
-                                            position_RBT++;
-
-                                        } // 다문화 세팅 끝
-                                    }
-                                    else if (favor_data.get(i).equals("기업·자영업자"))
-                                    {
-                                        Log.e(TAG, "기업·자영업자 혜택 결과 길이 -> " + company.length());
-                                        for (int j = 0; j < company.length(); j++)
-                                        {
-                                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(company.getString(j)));
-                                            position_RBT++;
-
-                                        } // 기업·자영업자 세팅 끝
-                                    }
-                                    else if (favor_data.get(i).equals("취업·창업"))
-                                    {
-                                        Log.e(TAG, "취업·창업 혜택 결과 길이 -> " + job.length());
-                                        for (int j = 0; j < job.length(); j++)
-                                        {
-                                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(job.getString(j)));
-                                            position_RBT++;
-
-                                        } // 취업·창업 세팅 끝
-                                    }
-                                    else if (favor_data.get(i).equals("주거"))
-                                    {
-                                        Log.e(TAG, "주거 혜택 결과 길이 -> " + living.length());
-                                        for (int j = 0; j < living.length(); j++)
-                                        {
-                                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(living.getString(j)));
-                                            position_RBT++;
-
-                                        } // 주거 세팅 끝
-                                    }
-                                    else if (favor_data.get(i).equals("기초생활수급자"))
-                                    {
-                                        Log.e(TAG, "기초생활수급자 혜택 결과 길이 -> " + homeless.length());
-                                        for (int j = 0; j < homeless.length(); j++)
-                                        {
-                                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(homeless.getString(j)));
-                                            position_RBT++;
-
-                                        } // 기초생활수급자 세팅 끝
-                                    }
-                                    else if (favor_data.get(i).equals("기타"))
-                                    {
-                                        Log.e(TAG, "기타 혜택 결과 길이 -> " + etc.length());
-                                        for (int j = 0; j < etc.length(); j++)
-                                        {
-                                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(etc.getString(j)));
-                                            position_RBT++;
-
-                                        } // 기타 세팅 끝
-                                    }
-                                } // 관심사 반복문 끝
-                                Log.e(TAG, "전체 혜택 세팅 후 리사이클러뷰 포지션 크기 -> " + position_RBT);
-
-                            }
-                            catch (JSONException e)
-                            {
-                                e.printStackTrace();
-                            }
+                            Log.e(TAG, "데이터 확인 = " + favor_data.get(position));
+                            Log.e(TAG, "전체 클릭");
+                            RbfBtn_Adapter.notifyDataSetChanged();
+                            list.clear();
+                            Log.e(TAG, "전체 눌렀을 때 검색할 키워드 = " + sb);
+                            searchWelfareCategory(last_category);
                         }
-
-                        // 아기·어린이 버튼 클릭 기능 시작
-                        try
+                        else if (favor_data.get(position).equals("취업·창업"))
                         {
-                            if (favor_data.get(position).equals("아기·어린이"))
-                            {
-                                Log.e(TAG, "아기·어린이 혜택 세팅 전 포지션 값 -> " + position_RBT);
-                                RbfTitle_Adapter.notifyItemRangeRemoved(0, position_RBT);
-                                position_RBT = 0;
-                                RBFTitle_ListSet.clear();
-                                Log.e(TAG, "아기·어린이 혜택 결과 길이 -> " + child.length());
-                                for (int j = 0; j < child.length(); j++)
-                                {
-
-                                    Log.e(TAG, "아기·어린이 혜택 결과 리스트 세팅 시작");
-                                    RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(child.getString(j)));
-                                    position_RBT++;
-                                    RbfTitle_Adapter.notifyItemInserted(position_RBT);
-                                }
-                                Log.e(TAG, "아기·어린이 혜택 세팅 후 리사이클러뷰 포지션 크기 -> " + position_RBT);
-                            }
+                            Log.e(TAG, "취업·창업 클릭");
+                            RbfBtn_Adapter.notifyDataSetChanged();
+                            list.clear();
+                            searchWelfareCategory("취업·창업");
                         }
-                        catch (JSONException e)
+                        else if (favor_data.get(position).equals("학생·청년"))
                         {
-                            e.printStackTrace();
+                            Log.e(TAG, "학생·청년 클릭");
+                            RbfBtn_Adapter.notifyDataSetChanged();
+                            list.clear();
+                            searchWelfareCategory("청년");
                         }
-
-                        // 학생·청년 버튼 클릭 기능 시작
-                        try
+                        else if (favor_data.get(position).equals("주거"))
                         {
-                            if (favor_data.get(position).equals("학생·청년"))
-                            {
-                                Log.e(TAG, "학생·청년 혜택 세팅 전 포지션 값 -> " + position_RBT);
-                                RbfTitle_Adapter.notifyItemRangeRemoved(0, position_RBT);
-                                position_RBT = 0;
-                                RBFTitle_ListSet.clear();
-                                Log.e(TAG, "학생·청년 혜택 결과 길이 -> " + student.length());
-                                for (int j = 0; j < student.length(); j++)
-                                {
-
-                                    Log.e(TAG, "학생·청년 혜택 결과 리스트 세팅 시작");
-                                    RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(student.getString(j)));
-                                    position_RBT++;
-                                    RbfTitle_Adapter.notifyItemInserted(position_RBT);
-                                }
-                                Log.e(TAG, "학생·청년 혜택 세팅 후 리사이클러뷰 포지션 크기 -> " + position_RBT);
-
-
-                            }
+                            Log.e(TAG, "주거 클릭");
+                            RbfBtn_Adapter.notifyDataSetChanged();
+                            list.clear();
+                            searchWelfareCategory("주거");
                         }
-                        catch (JSONException e)
+                        else if (favor_data.get(position).equals("육아·임신"))
                         {
-                            e.printStackTrace();
+                            Log.e(TAG, "육아·임신 클릭");
+                            RbfBtn_Adapter.notifyDataSetChanged();
+                            list.clear();
+                            searchWelfareCategory("육아·임신");
                         }
-
-                        // 중장년·노인 버튼 클릭 기능 시작
-                        try
+                        else if (favor_data.get(position).equals("아기·어린이"))
                         {
-                            if (favor_data.get(position).equals("중장년·노인"))
-                            {
-                                Log.e(TAG, "중장년·노인 혜택 세팅 전 포지션 값 -> " + position_RBT);
-                                RbfTitle_Adapter.notifyItemRangeRemoved(0, position_RBT);
-                                position_RBT = 0;
-                                RBFTitle_ListSet.clear();
-                                Log.e(TAG, "중장년·노인 혜택 결과 길이 -> " + old.length());
-                                for (int j = 0; j < old.length(); j++)
-                                {
-                                    Log.e(TAG, "중장년·노인 혜택 결과 리스트 세팅 시작");
-                                    RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(old.getString(j)));
-                                    position_RBT++;
-                                    RbfTitle_Adapter.notifyItemInserted(position_RBT);
-                                }
-                                Log.e(TAG, "중장년·노인 혜택 세팅 후 리사이클러뷰 포지션 크기 -> " + position_RBT);
-                            }
+                            Log.e(TAG, "아기·어린이 클릭");
+                            RbfBtn_Adapter.notifyDataSetChanged();
+                            list.clear();
+                            searchWelfareCategory("아기·어린이");
                         }
-                        catch (JSONException e)
+                        else if (favor_data.get(position).equals("문화·생활"))
                         {
-                            e.printStackTrace();
+                            Log.e(TAG, "문화·생활 클릭");
+                            RbfBtn_Adapter.notifyDataSetChanged();
+                            list.clear();
+                            searchWelfareCategory("문화·생활");
                         }
-
-                        // 육아·임신 버튼 클릭 기능 시작
-                        try
+                        else if (favor_data.get(position).equals("기업·자영업자"))
                         {
-                            if (favor_data.get(position).equals("육아·임신"))
-                            {
-                                Log.e(TAG, "육아·임신 혜택 세팅 전 포지션 값 -> " + position_RBT);
-                                RbfTitle_Adapter.notifyItemRangeRemoved(0, position_RBT);
-                                position_RBT = 0;
-                                RBFTitle_ListSet.clear();
-                                Log.e(TAG, "육아·임신 혜택 결과 길이 -> " + pregnancy.length());
-                                for (int j = 0; j < pregnancy.length(); j++)
-                                {
-
-                                    Log.e(TAG, "육아·임신 혜택 결과 리스트 세팅 시작");
-                                    RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(pregnancy.getString(j)));
-                                    position_RBT++;
-                                    RbfTitle_Adapter.notifyItemInserted(position_RBT);
-                                }
-                                Log.e(TAG, "육아·임신 혜택 세팅 후 리사이클러뷰 포지션 크기 -> " + position_RBT);
-                            }
+                            Log.e(TAG, "기업·자영업자 클릭");
+                            RbfBtn_Adapter.notifyDataSetChanged();
+                            list.clear();
+                            searchWelfareCategory("기업·자영업자");
                         }
-                        catch (JSONException e)
+                        else if (favor_data.get(position).equals("저소득층"))
                         {
-                            e.printStackTrace();
+                            Log.e(TAG, "저소득층 클릭");
+                            RbfBtn_Adapter.notifyDataSetChanged();
+                            list.clear();
+                            searchWelfareCategory("저소득층");
                         }
-
-                        // 장애인 버튼 클릭 기능 시작
-                        try
+                        else if (favor_data.get(position).equals("중장년·노인"))
                         {
-                            if (favor_data.get(position).equals("장애인"))
-                            {
-                                Log.e(TAG, "장애인 혜택 세팅 전 포지션 값 -> " + position_RBT);
-                                RbfTitle_Adapter.notifyItemRangeRemoved(0, position_RBT);
-                                position_RBT = 0;
-                                RBFTitle_ListSet.clear();
-                                Log.e(TAG, "장애인 혜택 결과 길이 -> " + disorder.length());
-                                for (int j = 0; j < disorder.length(); j++)
-                                {
-
-                                    Log.e(TAG, "장애인 혜택 결과 리스트 세팅 시작");
-                                    RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(disorder.getString(j)));
-                                    position_RBT++;
-                                    RbfTitle_Adapter.notifyItemInserted(position_RBT);
-                                }
-                                Log.e(TAG, "장애인 혜택 세팅 후 리사이클러뷰 포지션 크기 -> " + position_RBT);
-                            }
+                            Log.e(TAG, "중장년·노인 클릭");
+                            RbfBtn_Adapter.notifyDataSetChanged();
+                            list.clear();
+                            searchWelfareCategory("중장년·노인");
                         }
-                        catch (JSONException e)
+                        else if (favor_data.get(position).equals("장애인"))
                         {
-                            e.printStackTrace();
+                            Log.e(TAG, "장애인 클릭");
+                            RbfBtn_Adapter.notifyDataSetChanged();
+                            list.clear();
+                            searchWelfareCategory("장애인");
                         }
-
-                        // 문화·생활 버튼 클릭 기능 시작
-                        try
+                        else if (favor_data.get(position).equals("다문화"))
                         {
-                            if (favor_data.get(position).equals("문화·생활"))
-                            {
-                                Log.e(TAG, "문화·생활 혜택 세팅 전 포지션 값 -> " + position_RBT);
-                                RbfTitle_Adapter.notifyItemRangeRemoved(0, position_RBT);
-                                position_RBT = 0;
-                                RBFTitle_ListSet.clear();
-                                Log.e(TAG, "문화·생활 혜택 결과 길이 -> " + cultural.length());
-                                for (int j = 0; j < cultural.length(); j++)
-                                {
-
-                                    Log.e(TAG, "문화·생활 혜택 결과 리스트 세팅 시작");
-                                    RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(cultural.getString(j)));
-                                    position_RBT++;
-                                    RbfTitle_Adapter.notifyItemInserted(position_RBT);
-                                }
-                                Log.e(TAG, "문화·생활 혜택 세팅 후 리사이클러뷰 포지션 크기 -> " + position_RBT);
-                            }
+                            Log.e(TAG, "다문화 클릭");
+                            RbfBtn_Adapter.notifyDataSetChanged();
+                            list.clear();
+                            searchWelfareCategory("다문화");
                         }
-                        catch (JSONException e)
+                        else if (favor_data.get(position).equals("법률"))
                         {
-                            e.printStackTrace();
+                            Log.e(TAG, "법률 클릭");
+                            RbfBtn_Adapter.notifyDataSetChanged();
+                            list.clear();
+                            searchWelfareCategory("법률");
                         }
-
-                        // 다문화 버튼 클릭 기능 시작
-                        try
+                        else if (favor_data.get(position).equals("기타"))
                         {
-                            if (favor_data.get(position).equals("다문화"))
-                            {
-                                Log.e(TAG, "다문화 혜택 세팅 전 포지션 값 -> " + position_RBT);
-                                RbfTitle_Adapter.notifyItemRangeRemoved(0, position_RBT);
-                                position_RBT = 0;
-                                RBFTitle_ListSet.clear();
-                                Log.e(TAG, "다문화 혜택 결과 길이 -> " + multicultural.length());
-                                for (int j = 0; j < multicultural.length(); j++)
-                                {
-
-                                    Log.e(TAG, "다문화 혜택 결과 리스트 세팅 시작");
-                                    RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(multicultural.getString(j)));
-                                    position_RBT++;
-                                    RbfTitle_Adapter.notifyItemInserted(position_RBT);
-                                }
-                                Log.e(TAG, "다문화 혜택 세팅 후 리사이클러뷰 포지션 크기 -> " + position_RBT);
-                            }
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-
-                        // 기업·자영업자 버튼 클릭 기능 시작
-                        try
-                        {
-                            if (favor_data.get(position).equals("기업·자영업자"))
-                            {
-                                Log.e(TAG, "기업·자영업자 혜택 세팅 전 포지션 값 -> " + position_RBT);
-                                RbfTitle_Adapter.notifyItemRangeRemoved(0, position_RBT);
-                                position_RBT = 0;
-                                RBFTitle_ListSet.clear();
-                                Log.e(TAG, "기업·자영업자 혜택 결과 길이 -> " + company.length());
-                                for (int j = 0; j < company.length(); j++)
-                                {
-                                    Log.e(TAG, "기업·자영업자 혜택 결과 리스트 세팅 시작");
-                                    RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(company.getString(j)));
-                                    position_RBT++;
-                                    RbfTitle_Adapter.notifyItemInserted(position_RBT);
-                                }
-                                Log.e(TAG, "기업·자영업자 혜택 세팅 후 리사이클러뷰 포지션 크기 -> " + position_RBT);
-                            }
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-
-                        // 법률 버튼 클릭 기능 시작
-                        try
-                        {
-                            if (favor_data.get(position).equals("법률"))
-                            {
-                                Log.e(TAG, "법률 혜택 세팅 전 포지션 값 -> " + position_RBT);
-                                RbfTitle_Adapter.notifyItemRangeRemoved(0, position_RBT);
-                                position_RBT = 0;
-                                RBFTitle_ListSet.clear();
-                                Log.e(TAG, "법률 혜택 결과 길이 -> " + law.length());
-                                for (int j = 0; j < law.length(); j++)
-                                {
-
-                                    Log.e(TAG, "법률 혜택 결과 리스트 세팅 시작");
-                                    RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(law.getString(j)));
-                                    position_RBT++;
-                                    RbfTitle_Adapter.notifyItemInserted(position_RBT);
-                                }
-                                Log.e(TAG, "법률 혜택 세팅 후 리사이클러뷰 포지션 크기 -> " + position_RBT);
-                            }
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-
-                        // 주거 버튼 클릭 기능 시작
-                        try
-                        {
-                            if (favor_data.get(position).equals("주거"))
-                            {
-                                Log.e(TAG, "주거 혜택 세팅 전 포지션 값 -> " + position_RBT);
-                                RbfTitle_Adapter.notifyItemRangeRemoved(0, position_RBT);
-                                position_RBT = 0;
-                                RBFTitle_ListSet.clear();
-                                Log.e(TAG, "주거 혜택 결과 길이 -> " + living.length());
-                                for (int j = 0; j < living.length(); j++)
-                                {
-
-                                    Log.e(TAG, "주거 혜택 결과 리스트 세팅 시작");
-                                    RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(living.getString(j)));
-                                    position_RBT++;
-                                    RbfTitle_Adapter.notifyItemInserted(position_RBT);
-                                }
-                                Log.e(TAG, "주거 혜택 세팅 후 리사이클러뷰 포지션 크기 -> " + position_RBT);
-                            }
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-
-                        // 취업·창업 버튼 클릭 기능 시작
-                        try
-                        {
-                            if (favor_data.get(position).equals("취업·창업"))
-                            {
-                                Log.e(TAG, "취업·창업 혜택 세팅 전 포지션 값 -> " + position_RBT);
-                                RbfTitle_Adapter.notifyItemRangeRemoved(0, position_RBT);
-                                position_RBT = 0;
-                                RBFTitle_ListSet.clear();
-                                Log.e(TAG, "취업·창업 혜택 결과 길이 -> " + job.length());
-                                for (int j = 0; j < job.length(); j++)
-                                {
-
-                                    Log.e(TAG, "취업·창업 혜택 결과 리스트 세팅 시작");
-                                    RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(job.getString(j)));
-                                    position_RBT++;
-                                    RbfTitle_Adapter.notifyItemInserted(position_RBT);
-                                }
-                                Log.e(TAG, "취업·창업 혜택 세팅 후 리사이클러뷰 포지션 크기 -> " + position_RBT);
-                            }
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-
-                        // 저소득층 버튼 클릭 기능 시작
-                        try
-                        {
-                            if (favor_data.get(position).equals("저소득층"))
-                            {
-                                Log.e(TAG, "저소득층 혜택 세팅 전 포지션 값 -> " + position_RBT);
-                                RbfTitle_Adapter.notifyItemRangeRemoved(0, position_RBT);
-                                position_RBT = 0;
-                                RBFTitle_ListSet.clear();
-                                Log.e(TAG, "저소득층 혜택 결과 길이 -> " + homeless.length());    // homeless.length() 부분이 null값이다
-                                for (int j = 0; j < homeless.length(); j++)
-                                {
-                                    Log.e(TAG, "저소득층 혜택 결과 리스트 세팅 시작");
-                                    RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(homeless.getString(j)));
-                                    position_RBT++;
-                                    RbfTitle_Adapter.notifyItemInserted(position_RBT);
-                                }
-                                Log.e(TAG, "저소득층 혜택 세팅 후 리사이클러뷰 포지션 크기 -> " + position_RBT);
-                            }
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-
-                        // 기타 버튼 클릭 기능 시작
-                        try
-                        {
-                            if (favor_data.get(position).equals("기타"))
-                            {
-                                Log.e(TAG, "기타 혜택 세팅 전 포지션 값 -> " + position_RBT);
-                                RbfTitle_Adapter.notifyItemRangeRemoved(0, position_RBT);
-                                position_RBT = 0;
-                                RBFTitle_ListSet.clear();
-                                Log.e(TAG, "기타 혜택 결과 길이 -> " + etc.length());
-                                for (int j = 0; j < etc.length(); j++)
-                                {
-
-                                    Log.e(TAG, "기타 혜택 결과 리스트 세팅 시작");
-                                    RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(etc.getString(j)));
-                                    position_RBT++;
-                                    RbfTitle_Adapter.notifyItemInserted(position_RBT);
-                                }
-                                Log.e(TAG, "기타 혜택 세팅 후 리사이클러뷰 포지션 크기 -> " + position_RBT);
-                            }
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
+                            Log.e(TAG, "기타 클릭");
+                            RbfBtn_Adapter.notifyDataSetChanged();
+                            list.clear();
+                            searchWelfareCategory("기타");
                         }
 
                     }
                     else
                     {
-                        Log.e(TAG, "선택한 버튼 입니다!");
+                        Log.e(TAG, "선택한 버튼입니다!");
                     }
-
                 }
             }
         });
-        RbfBtn_recycler.setAdapter(RbfBtn_Adapter);
-        RbfBtn_recycler.setHasFixedSize(true);
+        category_recycler.setAdapter(RbfBtn_Adapter);
+        category_recycler.setHasFixedSize(true);
 
-        RbfTitle_recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        RbfTitle_Adapter = new RBFTitleAdapter(getApplicationContext(), RBFTitle_ListSet, new View.OnClickListener()
+        /* 하단 리사이클러뷰(혜택들 제목 나오는 리사이클러뷰) */
+        result_title_recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        RbfTitle_Adapter = new RBFTitleAdapter(ResultBenefitActivity.this, RBFTitle_ListSet, new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -649,29 +309,20 @@ public class ResultBenefitActivity extends AppCompatActivity
                     RBF_intent.putExtra("RBF_title", title);
                     startActivity(RBF_intent);
                     finish();
-
                 }
-
             }
         });
-        RbfTitle_recycler.setAdapter(RbfTitle_Adapter);
-        RbfTitle_recycler.setHasFixedSize(true);
-
-        String favor = "";
-        for (int i = 0; i < favor_data.size(); i++)
-        {
-            favor += favor_data.get(i) + ",";
-        }
-
-        Log.e(TAG, "리스트값 스트링으로 변환 -> " + favor);
-        mainFavor(favor);
+        result_title_recycler.setAdapter(RbfTitle_Adapter);
+        result_title_recycler.setHasFixedSize(true);
     }
 
     /* 선택한 정책의 정보들을 가져와 뷰에 set하는 메서드 */
-    void mainFavor(String favor)
+    void searchWelfareCategory(String category)
     {
+        Log.e(TAG, "searchWelf() 호출됨");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.mainFavor(favor);
+        Log.e(TAG, "검색 키워드 = " + category);
+        Call<String> call = apiInterface.searchWelfareCategory("category_search", category);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -679,23 +330,62 @@ public class ResultBenefitActivity extends AppCompatActivity
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    Logger.e("mainFavor()", "onResponse 성공 : " + response.body());
-                    // 서버에서 String으로 넘어온 JSON 파싱
-                    String favorData = response.body();
-                    jsonParsing(favorData);
+                    String category_result = response.body();
+                    jsonParse(category_result);
                 }
                 else
                 {
-                    Log.e("mainFavor()", "onResponse 실패");
+                    Log.e(TAG, "실패 : " + response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
             {
-                Logger.e("mainFavor() - onFailure() : " + t.getMessage());
+                Log.e(TAG, "에러 : " + t.getMessage());
             }
         });
+    }
+
+    /* 서버에서 받은 JSON 값들을 파싱해 리스트에 담고, 이걸 리사이클러뷰 어댑터에 추가하는 메서드 */
+    private void jsonParse(String category_result)
+    {
+        Log.e(TAG, "jsonParse() 호출됨");
+        try
+        {
+            JSONObject jsonObject = new JSONObject(category_result);
+            JSONArray jsonArray = jsonObject.getJSONArray("Message");
+            for (int i = 0; i < jsonArray.length(); i++)
+            {
+                JSONObject inner_obj = jsonArray.getJSONObject(i);
+                welf_name = inner_obj.getString("welf_name");
+                welf_category = inner_obj.getString("welf_category");
+                tag = inner_obj.getString("tag");
+                welf_local = inner_obj.getString("welf_local");
+                CategorySearchResultItem item = new CategorySearchResultItem();
+                item.setWelf_name(welf_name);
+                item.setWelf_category(welf_category);
+                item.setTag(tag);
+                item.setWelf_local(welf_local);
+                list.add(item);
+            }
+            countOfWelf = jsonObject.getString("TotalCount");
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        adapter = new CategorySearchResultAdapter(ResultBenefitActivity.this, list, itemClickListener);
+        adapter.setOnItemClickListener(((view, position) -> {
+            String name = list.get(position).getWelf_name();
+            Log.e(TAG, "선택한 이름 : " + name);
+            Intent intent = new Intent(ResultBenefitActivity.this, DetailBenefitActivity.class);
+            intent.putExtra("RBF_title", name);
+            startActivity(intent);
+        }));
+        Log.e(TAG, "Totalcount 값 확인 = " + countOfWelf);
+        result_title_recycler.setAdapter(adapter);
+        result_benefit_title.setText("당신이 놓치고 있는 혜택,\n총 " + countOfWelf + "개 입니다");
     }
 
     @Override
@@ -712,184 +402,6 @@ public class ResultBenefitActivity extends AppCompatActivity
                 finish();
             }
         });
-    }
-
-    private void jsonParsing(String favorData)
-    {
-        /*
-         * 파라미터로 받은 Json 구조를 파싱할 것이다
-         * ex) 아기·어린이 혜택이라면 해당 혜택과 관련된 결과들을 ArrayList 에 저장할 것이다
-         * ArrayList 에 저장한 값은 리사이클러뷰로 위에서 구현된 혜택 버튼의 문자열과 비교하여 일치한다면
-         * 해당 리스트를 출력해 줄 것이다
-         * 리스트의 값이 2개 이상일 경우를 위해서 ArrayList 0번째 인자에는 혜택 제목(아기·어린이 혜택)을 저장할 것이다
-         * */
-        try
-        {
-            JSONObject jsonObject = new JSONObject(favorData);
-
-            Log.e(TAG, "JSON 길이 : " + jsonObject.length());
-
-            // 사용자가 선택한 관심사와 서버에서 받은 관심사를 비교하여 일치하면 혜택 결과 리스트에 추가
-            // 처음 페이지에 접근했을 때 전체 결과를 세팅하는 로직
-            position_RBT = 0;
-            try
-            {
-                for (int i = 0; i < favor_data.size(); i++)
-                {
-                    if (favor_data.get(i).equals("아기·어린이"))
-                    {
-                        child = jsonObject.getJSONArray("아기·어린이");
-                        Log.e(TAG, "아기·어린이 혜택 결과 길이 -> " + child.length());
-                        for (int j = 0; j < child.length(); j++)
-                        {
-                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(child.getString(j)));
-                            position_RBT++;
-                        }
-                    }
-                    else if (favor_data.get(i).equals("학생·청년"))
-                    {
-                        student = jsonObject.getJSONArray("학생·청년");
-                        Log.e(TAG, "학생·청년 혜택 결과 길이 -> " + student.length());
-                        for (int j = 0; j < student.length(); j++)
-                        {
-                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(student.getString(j)));
-                            position_RBT++;
-                        }
-                    }
-                    else if (favor_data.get(i).equals("법률"))
-                    {
-                        law = jsonObject.getJSONArray("법률");
-                        Log.e(TAG, "학생·청년 혜택 결과 길이 -> " + law.length());
-                        for (int j = 0; j < law.length(); j++)
-                        {
-                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(law.getString(j)));
-                            position_RBT++;
-                        }
-                    }
-                    else if (favor_data.get(i).equals("중장년·노인"))
-                    {
-                        old = jsonObject.getJSONArray("중장년·노인");
-                        Log.e(TAG, "중장년·노인 혜택 결과 길이 -> " + old.length());
-                        for (int j = 0; j < old.length(); j++)
-                        {
-                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(old.getString(j)));
-                            position_RBT++;
-                        }
-                    }
-                    else if (favor_data.get(i).equals("육아·임신"))
-                    {
-                        pregnancy = jsonObject.getJSONArray("육아·임신");
-                        Log.e(TAG, "육아·임신 혜택 결과 길이 -> " + pregnancy.length());
-                        for (int j = 0; j < pregnancy.length(); j++)
-                        {
-                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(pregnancy.getString(j)));
-                            position_RBT++;
-                        }
-                    }
-                    else if (favor_data.get(i).equals("장애인"))
-                    {
-                        disorder = jsonObject.getJSONArray("장애인");
-                        Log.e(TAG, "장애인 혜택 결과 길이 -> " + disorder.length());
-                        for (int j = 0; j < disorder.length(); j++)
-                        {
-                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(disorder.getString(j)));
-                            position_RBT++;
-                        }
-                    }
-                    else if (favor_data.get(i).equals("문화·생활"))
-                    {
-                        cultural = jsonObject.getJSONArray("문화·생활");
-                        Log.e(TAG, "문화·생활 혜택 결과 길이 -> " + cultural.length());
-                        for (int j = 0; j < cultural.length(); j++)
-                        {
-                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(cultural.getString(j)));
-                            position_RBT++;
-                        }
-                    }
-                    else if (favor_data.get(i).equals("다문화"))
-                    {
-                        multicultural = jsonObject.getJSONArray("다문화");
-                        Log.e(TAG, "다문화 혜택 결과 길이 -> " + multicultural.length());
-                        for (int j = 0; j < multicultural.length(); j++)
-                        {
-                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(multicultural.getString(j)));
-                            position_RBT++;
-                        }
-                    }
-                    else if (favor_data.get(i).equals("기업·자영업자"))
-                    {
-                        company = jsonObject.getJSONArray("기업·자영업자");
-                        Logger.json("company = " + company);
-                        Log.e(TAG, "기업·자영업자 혜택 결과 길이 -> " + company.length());
-                        for (int j = 0; j < company.length(); j++)
-                        {
-                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(company.getString(j)));
-                            position_RBT++;
-                        }
-                    }
-                    else if (favor_data.get(i).equals("취업·창업"))
-                    {
-                        job = jsonObject.getJSONArray("취업·창업");
-                        Log.e(TAG, "취업·창업 혜택 결과 길이 -> " + job.length());
-                        for (int j = 0; j < job.length(); j++)
-                        {
-                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(job.getString(j)));
-                            position_RBT++;
-                        }
-                    }
-                    else if (favor_data.get(i).equals("주거"))
-                    {
-                        living = jsonObject.getJSONArray("주거");
-                        Log.e(TAG, "주거 혜택 결과 길이 -> " + living.length());
-                        for (int j = 0; j < living.length(); j++)
-                        {
-                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(living.getString(j)));
-                            position_RBT++;
-                        }
-                    }
-                    else if (favor_data.get(i).equals("저소득층"))
-                    {
-                        homeless = jsonObject.getJSONArray("저소득층");
-                        Log.e(TAG, "저소득층 혜택 결과 길이 -> " + homeless.length());
-                        for (int j = 0; j < homeless.length(); j++)
-                        {
-                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(homeless.getString(j)));
-                            position_RBT++;
-                        }
-                    }
-                    else if (favor_data.get(i).equals("기타"))
-                    {
-                        etc = jsonObject.getJSONArray("기타");
-                        Log.e(TAG, "기타 혜택 결과 길이 -> " + etc.length());
-                        for (int j = 0; j < etc.length(); j++)
-                        {
-                            RBFTitle_ListSet.add(position_RBT, new ResultBenefitItem(etc.getString(j)));
-                            position_RBT++;
-                        }
-                    }
-                }
-                Log.e(TAG, "리사이클러뷰 포지션 크기 -> " + position_RBT);
-
-                // 메인 문구 색상 변경 시작
-                RB_title.setText("혜택 결과가 '" + position_RBT + "'개\n검색되었습니다.");
-                String m_word = RB_title.getText().toString();
-                SpannableString spannableString = new SpannableString(m_word);
-
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 8, 10, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-                RB_title.setText(spannableString);
-                RbfTitle_Adapter.notifyDataSetChanged();
-            }
-            catch (JSONException e)
-            {
-                e.printStackTrace();
-            }
-
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
     }
 
 }
