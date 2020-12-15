@@ -20,7 +20,16 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
-        <activity android:name=".activity.MapSearchActivity"/>
+        <activity android:name=".YoutubeActivity"></activity>
+        <activity android:name=".activity.ChangeUserInformationActivity" />
+        <activity android:name=".activity.ReviewUpdateActivity" />
+        <activity android:name=".activity.GetUserInformationActivity" />
+        <activity android:name=".activity.CalculatorResultActivity" />
+        <activity
+            android:name=".activity.MyInfoUpdateActivity"
+            android:theme="@style/ToolbarTheme" />
+        <activity android:name=".activity.PushSettingActivity" />
+        <activity android:name=".activity.MapSearchActivity" />
         <activity android:name=".activity.MapDetailActivity" />
         <activity
             android:name=".activity.MapActivity"
@@ -36,10 +45,12 @@
         <activity android:name=".activity.Compatibility.Compatibility_ResultActivity">
             <intent-filter>
                 <action android:name="android:intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:host="@string/kakaolink_host"
+                <data
+                    android:host="@string/kakaolink_host"
                     android:scheme="@string/kakao_scheme" />
             </intent-filter>
         </activity>
@@ -60,15 +71,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.DetailBenefitActivity">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
-        </activity>
+        <activity android:name=".activity.DetailBenefitActivity" />
 
         <service
             android:name=".api.MyFirebaseMessagingService"

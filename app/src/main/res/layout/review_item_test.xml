@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:hedgehog="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/review_item_layout"
     android:padding="20dp">
 
     <!-- 리뷰 조회 화면에서 보여줄 리사이클러뷰 아이템의 레이아웃. 가로로 만들어서 캐릭터 프사, 아이디, 별점 뷰를 갖는다 -->

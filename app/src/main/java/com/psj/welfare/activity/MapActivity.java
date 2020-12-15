@@ -109,22 +109,18 @@ public class MapActivity extends AppCompatActivity
         });
     }
 
+    /* PHP 파일 보완으로 서버에서 전송되는 값이 바뀌어 JSON 파싱 함수 재구성 */
     private void jsonParsing(String number_of_benefit)
     {
         try
         {
-            JSONArray jsonArray = new JSONArray(number_of_benefit);
+            JSONObject jsonObject = new JSONObject(number_of_benefit);
+            JSONArray jsonArray = jsonObject.getJSONArray("Message");
             for (int i = 0; i < jsonArray.length(); i++)
             {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                district_list.add(jsonObject.getString("local"));
-                count_list.add(jsonObject.getString("welf_count"));
-//                get_area = jsonObject.getString("local");
-//                count_of_benefit = jsonObject.getString("welf_count");
-//                Log.e(TAG, "local = " + get_area + ", welf_count = " + count_of_benefit);
-                /* number_of_benefit = [{"local":"전국","welf_count":417},{"local":"강원","welf_count":9},{"local":"경기","welf_count":16},{"local":"경남","welf_count":54},
-                {"local":"경북","welf_count":88},{"local":"광주","welf_count":9},{"local":"대구","welf_count":7},{"local":"대전","welf_count":9},{"local":"부산","welf_count":9}]
-                 위와 같은 형태로 올 때는 위처럼 local, welf_count 안의 값을 담을 변수를 따로 만들어서 거기에 넣는 게 낫다 */
+                JSONObject inner_json = jsonArray.getJSONObject(i);
+                district_list.add(inner_json.getString("local"));
+                count_list.add(inner_json.getString("welf_count"));
             }
         }
         catch (JSONException e)
@@ -237,7 +233,6 @@ public class MapActivity extends AppCompatActivity
             count = String.valueOf(count_list.get(17));
             map_bottom_textview.setText("내 주변 혜택 보기 " + count_list.get(17) + "개 >");
         }
-
     }
 
     /* 버튼 클릭 리스너들 모아놓은 메서드 */

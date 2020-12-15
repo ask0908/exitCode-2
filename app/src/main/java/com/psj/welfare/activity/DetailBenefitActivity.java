@@ -2,6 +2,7 @@ package com.psj.welfare.activity;
 
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -61,10 +62,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/*
- * 상세 액티비티는 사용자가 자세한 혜택의 내용을 확인할 수 있어야 한다
- * 자세한 내용일지라도 사용자의 피로도를 줄여줄 수 있는 방법이 적용돼야 한다
- * */
+/* 혜택 상세보기 화면, 리뷰 화면도 존재함 */
 public class DetailBenefitActivity extends AppCompatActivity
 {
     private ConstraintLayout layout;
@@ -78,15 +76,16 @@ public class DetailBenefitActivity extends AppCompatActivity
     // 타이틀과 연관된 이미지 View
     private ImageView detail_logo;
 
-    // 지원대상, 지원내용, 리뷰
+    // 내용, 신청방법, 리뷰
     LinearLayout apply_view, content_view, review_view;
+    // 내용, 신청방법, 리뷰 밑의 노란 가로 바
     View apply_bottom_view, content_bottom_view, review_bottom_view;
 
     // 서버에서 온 값을 파싱할 때 사용할 변수
     String name, target, contents, period, contact, benefit_no, welf_apply;
 
     // 리뷰 데이터를 조회해서 서버에서 온 값을 파싱할 때 사용할 변수 (email은 85번 줄에 이미 있어서 안 씀)
-    String id, content, writer, create_date, email2, like_count, bad_count, star_count, image_url;
+    String id, content, writer, create_date, email2, like_count, star_count, image_url;
 
     // 연관된 혜택 밑의 가로로 버튼들을 넣을 리사이클러뷰
     private RecyclerView detail_benefit_recyclerview;
@@ -108,7 +107,12 @@ public class DetailBenefitActivity extends AppCompatActivity
     private RatingBar review_rating;
     private RecyclerView review_recycler;
     private Button more_big_scene_button;
+
     ReviewAdapter review_adapter;
+    ReviewAdapter.ItemClickListener review_clickListener;
+
+    // 리뷰 수정, 삭제 시 작성자와 유저 닉네임이 일치하는지 확인할 때 사용할 쉐어드
+    SharedPreferences sharedPreferences;
 
     // 클릭 시 리뷰 위로 스크롤을 올리기 위한 boolean 변수
     boolean isClicked = false;
@@ -130,6 +134,7 @@ public class DetailBenefitActivity extends AppCompatActivity
         setContentView(R.layout.activity_detailbenefit);
 
         Logger.addLogAdapter(new AndroidLogAdapter());
+        sharedPreferences = getSharedPreferences("app_pref", 0);
 
         /* findViewById() 모아놓은 메서드 */
         init();
@@ -159,16 +164,12 @@ public class DetailBenefitActivity extends AppCompatActivity
             @Override
             public void liked(LikeButton likeButton)
             {
-                // 빨간색 하트로 변하면 true를 1로 치고 서버로 보낸다
-                boolean isClicked = favorite_btn.isLiked();
-                Logger.e("즐찾 버튼 클릭 상태 : " + isClicked);
-
                 // 토스트로 관심사에 등록됐다는 내용을 보낸다
                 String message = detail_title.getText().toString();
                 Toast.makeText(DetailBenefitActivity.this, message + " 정책을 내 관심사로 설정했습니다", Toast.LENGTH_SHORT).show();
 
                 // 서버로 이메일, 혜택 이름(welf_name)를 보내서 즐겨찾기에 저장한다. 지금은 이메일을 하드코딩해 사용하지만 암호화를 해서 저장해야 한다
-                email = "ne0001912@gmail.com";
+                email = getString(R.string.email);
                 try
                 {
                     encrypted_email = AESUtils.encrypt(email);
@@ -245,6 +246,7 @@ public class DetailBenefitActivity extends AppCompatActivity
 
         // 공유 모양 이미지뷰 클릭 리스너
         review_share_imageview.setOnClickListener(v -> {
+            /* 카카오 링크 적용 */
             FeedTemplate params = FeedTemplate
                     // 제목, 이미지 url, 이미지 클릭 시 이동하는 위치?를 입력한다
                     // 이미지 url을 사용자 정의 파라미터로 전달하면 최대 2MB 이미지를 메시지에 담아 보낼 수 있다
@@ -288,7 +290,7 @@ public class DetailBenefitActivity extends AppCompatActivity
             });
         });
 
-    } // onCreate() end
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
@@ -325,6 +327,7 @@ public class DetailBenefitActivity extends AppCompatActivity
         });
     }
 
+    /* 리뉴얼된 혜택 상세정보들을 가져오는 메서드드 */
     // 선택한 혜택의 상세정보들을 서버에서 가져오는 메서드
     void detailData(String detail_data, String email)
     {
@@ -338,8 +341,6 @@ public class DetailBenefitActivity extends AppCompatActivity
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    // 성공했을 경우 서버에서 정책 제목들을 가져온다
-//					Log.e(TAG, "onResponse 성공 : " + response.body());
                     Logger.e("detailData() - onResponse() = " + response.body());
                     String detail = response.body();
                     jsonParsing(detail);
@@ -493,7 +494,7 @@ public class DetailBenefitActivity extends AppCompatActivity
             isBookmark = jsonObject_detail.getString("isBookmark");
 
             // 서버에서 true 값을 가져왔으면 빨간 하트로 표현하고, false 값을 가져왔으면 회색 하트 그대로 둔다
-            if (isBookmark.equals("true"))
+            if (isBookmark.equals(getString(R.string.is_true)))
             {
                 // 좋아요 버튼 활성화시킴
                 favorite_btn.setLiked(true);
@@ -519,7 +520,6 @@ public class DetailBenefitActivity extends AppCompatActivity
     // 더보기 기능
     public void setReadMoreText(ReadMoreTextView target, ReadMoreTextView contents)
     {
-
         target.setTrimCollapsedText("더보기");
         target.setTrimExpandedText("\t...간략히");
         target.setTrimLength(20);
@@ -552,11 +552,12 @@ public class DetailBenefitActivity extends AppCompatActivity
         detail_contact.setText(contact_comma);
     }
 
-    // 리뷰를 보고자 하는 정책의 이름, 운영체제 이름을 서버로 넘겨 리뷰들을 가져오는 메서드
+    // list 문자열, review_id(혜택 id 정보)를 서버로 넘겨 리뷰들을 가져오는 메서드
     void getReview()
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.getReview("test", "android");
+        /* review_id에는 리뷰의 idx를 가져와서 넣어야 한다 */
+        Call<String> call = apiInterface.getReview("list", "1019");
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -565,7 +566,6 @@ public class DetailBenefitActivity extends AppCompatActivity
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String detail = response.body();
-                    Log.e(TAG, "response = " + response.body());
                     jsonParse(detail);
                 }
             }
@@ -585,7 +585,7 @@ public class DetailBenefitActivity extends AppCompatActivity
         try
         {
             JSONObject jsonObject_total = new JSONObject(detail);
-            JSONArray jsonArray = jsonObject_total.getJSONArray("retBody");
+            JSONArray jsonArray = jsonObject_total.getJSONArray("Message");
             for (int i = 0; i < jsonArray.length(); i++)
             {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -599,10 +599,11 @@ public class DetailBenefitActivity extends AppCompatActivity
                 image_url = jsonObject.getString("image_url");
                 /* 아래 처리를 하지 않으면 아이템 개수는 정상적으로 서버에서 가져온 만큼 생성되지만, 표시될 땐 마지막으로 받은 데이터만 표시된다!!! */
                 ReviewItem value = new ReviewItem();
-                value.setId(writer);    // id -> writer 변경
+                value.setId(id);    // id -> writer 변경
                 value.setContent(content);
                 value.setCreate_date(create_date);
                 value.setImage_url(image_url);
+                value.setWriter(writer);
                 value.setStar_count(Float.parseFloat(star_count));  // String으로 오기 때문에 float로 캐스팅해야 함
                 list.add(value);
             }
@@ -611,7 +612,32 @@ public class DetailBenefitActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
-        review_adapter = new ReviewAdapter(DetailBenefitActivity.this, list);
+        review_adapter = new ReviewAdapter(DetailBenefitActivity.this, list, review_clickListener);
+        review_adapter.setOnItemClickListener(new ReviewAdapter.ItemClickListener()
+        {
+            @Override
+            public void onItemClick(View view, int position)
+            {
+                // 쉐어드에서 가져온 user_nickname 값과 writer 값을 가져와서 비교한 다음 일치하면 수정, 삭제를 할 수 있게 한다
+                String user_nickname = sharedPreferences.getString("user_nickname", "");
+                String writer_nickname = list.get(position).getWriter();
+                String review_content = list.get(position).getContent();
+                String posting_id = list.get(position).getId();
+                Log.e(TAG, "작성자 = " + writer_nickname);
+                Log.e(TAG, "리뷰 내용 = " + review_content);
+                Log.e(TAG, "글 id = " + posting_id);
+                if (user_nickname.equals(writer_nickname))
+                {
+                    // 인텐트로 값들을 갖고 이동해 삭제할 수 있게 한다
+                    String image_url = list.get(position).getImage_url();
+                    Intent intent = new Intent(DetailBenefitActivity.this, ReviewUpdateActivity.class);
+                    intent.putExtra("image_url", image_url);
+                    intent.putExtra("content", review_content);
+                    intent.putExtra("id", posting_id);
+                    startActivity(intent);
+                }
+            }
+        });
         review_recycler.setAdapter(review_adapter);
     }
 

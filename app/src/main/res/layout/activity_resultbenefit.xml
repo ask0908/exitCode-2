@@ -34,28 +34,27 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
-            android:id="@+id/RB_title"
+            android:id="@+id/result_benefit_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:fontFamily="@font/jalnan"
-            android:gravity="center"
             android:letterSpacing="0.02"
             android:lineSpacingExtra="13.3sp"
-            android:padding="20dp"
-            android:text="잠시만 기다려 주세요..."
+            android:text="당신이 놓치고 있는 혜택\n총 13개 입니다"
+            android:padding="10dp"
             android:textColor="@color/colorBlack"
             android:textSize="30sp" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/RbfBtn_recycler"
+            android:id="@+id/category_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="30dp"
             android:scrollbars="none" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/RbfTitle_recycler"
+            android:id="@+id/result_title_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="30dp"

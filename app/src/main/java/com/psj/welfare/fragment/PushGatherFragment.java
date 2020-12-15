@@ -1,5 +1,7 @@
 package com.psj.welfare.fragment;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,21 +17,36 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.psj.welfare.Data.PushGatherItem;
 import com.psj.welfare.R;
+import com.psj.welfare.activity.DetailBenefitActivity;
 import com.psj.welfare.adapter.PushGatherAdapter;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/* 받았던 푸시 알림들을 모아서 볼 수 있는 화면 */
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+/* 받았던 알림들을 확인할 수 있는 프래그먼트 */
 public class PushGatherFragment extends Fragment
 {
-    private final String TAG = "PushGatherFragment";
+    private final String TAG = "InterestBenefitFragment";
 
     RecyclerView push_layout_recycler;
     PushGatherAdapter adapter;
     PushGatherAdapter.ItemClickListener itemClickListener;
 
     List<PushGatherItem> list;
+
+    SharedPreferences app_pref;
+
+    String welf_name, push_title, push_body, push_date, token;
 
     public PushGatherFragment()
     {
@@ -52,36 +69,81 @@ public class PushGatherFragment extends Fragment
     {
         super.onViewCreated(view, savedInstanceState);
 
+        app_pref = getActivity().getSharedPreferences("app_pref", 0);
+        token = app_pref.getString("token", "");
+        Log.e(TAG, "onViewCreated() 쉐어드에 저장된 서버 토큰값 = " + token);
+
+        getPushData();
+
         push_layout_recycler = view.findViewById(R.id.push_layout_recycler);
         push_layout_recycler.setHasFixedSize(true);
         push_layout_recycler.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         push_layout_recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+    }
 
-        // 아래 하드코딩한 내용들은 서버에서 데이터를 받을 수 있게 되면 파싱해서 그 내용으로 나오도록 수정한다
-        list = new ArrayList<>();
-        list.add(new PushGatherItem("버팀목 전세자금 대출을 신청하셨군요!", "버팀목 전세자금 대출을 신청하셨군요!", "1일 전"));
-        list.add(new PushGatherItem("학교 우유급식을 신청하셨군요!", "학교 우유급식을 신청하셨군요!", "1일 전"));
-        list.add(new PushGatherItem("한부모가족 아동 양육비 지원을 신청하셨군요!", "한부모가족 아동 양육비 지원을 신청하셨군요!", "3일 전"));
-        list.add(new PushGatherItem("어린이 국가예방접종 지원사업을 신청하셨군요!", "어린이 국가예방접종 지원사업을 신청하셨군요!", "4일 전"));
-        list.add(new PushGatherItem("장애친화 건강검진을 신청하셨군요!", "장애친화 건강검진을 신청하셨군요!", "5일 전"));
-        list.add(new PushGatherItem("장애인 직업재활시설 이용을 신청하셨군요!", "장애인 직업재활시설 이용을 신청하셨군요!", "1주일 전"));
-        list.add(new PushGatherItem("장애대학생 교육활동 지원 사업을 신청하셨군요!", "장애대학생 교육활동 지원 사업을 신청하셨군요!", "5주일 전"));
-        list.add(new PushGatherItem("장애아 방과후 보육료 지원을 신청하셨군요!", "장애아 방과후 보육료 지원을 신청하셨군요!", "6주일 전"));
-        list.add(new PushGatherItem("아동수당을 신청하셨군요!", "아동수당을 신청하셨군요!", "1달 전"));
-        list.add(new PushGatherItem("아이돌봄서비스를 신청하셨군요!", "아이돌봄서비스를 신청하셨군요!", "1달 전"));
-        list.add(new PushGatherItem("어린이 불소 도포를 신청하셨군요!", "어린이 불소 도포를 신청하셨군요!", "2달 전"));
-        list.add(new PushGatherItem("소아 암환자 의료비 지원을 신청하셨군요!", "소아 암환자 의료비 지원을 신청하셨군요!", "2달 전"));
-        list.add(new PushGatherItem("선천성 난청검사 및 보청기 지원을 신청하셨군요!", "선천성 난청검사 및 보청기 지원을 신청하셨군요!", "3달 전"));
-        list.add(new PushGatherItem("다함께 돌봄 사업을 신청하셨군요!", "다함께 돌봄 사업을 신청하셨군요!", "4달 전"));
-        list.add(new PushGatherItem("희망복지지원단 통합사례관리사업을 신청하셨군요!", "희망복지지원단 통합사례관리사업을 신청하셨군요!", "4달 전"));
+    /* 서버에 저장된 푸시 데이터들을 가져오는 메서드 */
+    void getPushData()
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        Call<String> call = apiInterface.getPushData(token);
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    Log.e(TAG, "쉐어드에 저장된 서버 토큰으로 뽑은 결과 = " + response.body());
+                    messageParsing(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
+            {
+                Log.e("getPushData()", "에러 = " + t.getMessage());
+            }
+        });
+    }
+
+    /* 서버에서 받은 값들을 파싱해서 리사이클러뷰에 뿌리는 메서드 */
+    void messageParsing(String response)
+    {
+        List<PushGatherItem> list = new ArrayList<>();
+        try
+        {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("Message");
+            for (int i = 0; i < jsonArray.length(); i++)
+            {
+                JSONObject push_object = jsonArray.getJSONObject(i);
+                welf_name = push_object.getString("welf_name");
+                push_title = push_object.getString("title");
+                push_body = push_object.getString("content");
+                push_date = push_object.getString("update_date");
+                PushGatherItem item = new PushGatherItem();
+                item.setWelf_name(welf_name);
+                item.setPush_gather_title(push_title);
+                item.setPush_gather_desc(push_body);
+                item.setPush_gather_date(push_date);
+                list.add(item);
+            }
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
         adapter = new PushGatherAdapter(getActivity(), list, itemClickListener);
         adapter.setOnItemClickListener(new PushGatherAdapter.ItemClickListener()
         {
             @Override
             public void onItemClick(View view, int position)
             {
-                String push_name = list.get(position).getPush_gather_title();
-                Log.e(TAG, "선택한 푸시 제목 = " + push_name + ", position = " + position);
+                String welf_name = list.get(position).getWelf_name();
+                // 혜택 이름을 뽑고 푸시를 클릭하면 해당 액티비티로 이동하도록 한다
+                Intent intent = new Intent(getActivity(), DetailBenefitActivity.class);
+                intent.putExtra("RBF_title", welf_name);
+                startActivity(intent);
             }
         });
         push_layout_recycler.setAdapter(adapter);

@@ -18,11 +18,22 @@
     <string name="login_naver">네이버로 로그인하기</string>
     <string name="login_kakao">카카오로 로그인하기</string>
     <string name="login_google">구글로 로그인하기</string>
-    <string name="login_welfare">니모 로그인하기</string>
     <string name="kakao_app_key">3f7e171f8d9c6549cfa5949a68eb571e</string>
     <string name="kakao_scheme">kakao3f7e171f8d9c6549cfa5949a68eb571e</string>
     <string name="kakaolink_host">kakaolink</string>
     <string name="login_shared">com.psj.welfare.snsLogin</string>
+
+    <string name="get_kakao_image">image</string>
+    <string name="get_kakao_name">nickname</string>
+    <string name="set_kakao_account">카카오 계정</string>
+    <string name="not_yet">준비중인 서비스입니다</string>
+    <string name="push_value">is_push</string>
+    <string name="is_true">true</string>
+    <string name="email">ne0001912@gmail.com</string>
+    <string name="email2">android@test.com</string>
+    <string name="main_platform">kakao</string>
+    <string name="login_os">android</string>
+    <string name="shared_name">app_pref</string>
 
     <string-array name="nothing">
         <item>지역을 선택해 주세요</item>
@@ -236,7 +247,5 @@
         <item>수지구</item>
         <item>처인구</item>
     </string-array>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

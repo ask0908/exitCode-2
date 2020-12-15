@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_marginStart="20dp"
+    tools:context=".activity.MyInfoUpdateActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/info_update_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="이메일"
+        android:textSize="18sp"/>
+
+    <EditText
+        android:id="@+id/info_update_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="android@test.com"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="이름"
+        android:textSize="18sp"/>
+
+    <EditText
+        android:id="@+id/info_update_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="홍길동"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="생년월일"
+        android:textSize="18sp"/>
+
+    <EditText
+        android:id="@+id/info_update_birth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="2000-01-01"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="휴대전화번호"
+        android:textSize="18sp"/>
+
+    <EditText
+        android:id="@+id/info_update_phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="010-1234-5678"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="40dp"
+        android:gravity="center"
+        android:weightSum="1">
+
+        <TextView
+            android:id="@+id/logout_textview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".30"
+            android:gravity="center_horizontal"
+            android:text="로그아웃"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight=".001"
+            android:background="@color/colorBlack"/>
+
+        <TextView
+            android:id="@+id/break_away_textview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".30"
+            android:gravity="center_horizontal"
+            android:text="회원탈퇴"/>
+
+    </LinearLayout>
+
+</LinearLayout>

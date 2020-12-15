@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -65,12 +66,8 @@ public class ReviewActivity extends AppCompatActivity
     private EditText review_content_edit;
     private ImageView review_photo;
 
-    // editText에 작성한 내용을 담을 변수
-    String review_content;
-
     private Bitmap bitmap;
     Uri filePath;
-    String file_path;
 
     // 이미지 절대 경로
     String absolute;
@@ -146,11 +143,6 @@ public class ReviewActivity extends AppCompatActivity
         {
             Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(intent, PICK_PHOTO);
-
-//            Intent intent = new Intent();
-//            intent.setType("image/*");
-//            intent.setAction(Intent.ACTION_GET_CONTENT);
-//            startActivityForResult(Intent.createChooser(intent, "Select Image"), 1);
         });
 
     }
@@ -162,24 +154,6 @@ public class ReviewActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_PHOTO && resultCode == RESULT_OK && data != null && data.getData() != null)
         {
-            /* 따로 공부한 예제에서 가져온 코드들 */
-//            Uri imageUri = data.getData();
-//            try
-//            {
-//                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-//            }
-//            catch (IOException e)
-//            {
-//                e.printStackTrace();
-//            }
-//
-//            // 비트맵 압축
-//            Bitmap compressed = compressBitmap(bitmap);
-//            bitmap.recycle();
-//
-//            file_path = getPath(imageUri);
-//            review_photo.setImageBitmap(compressed);
-
             filePath = data.getData();
             try
             {
@@ -202,53 +176,18 @@ public class ReviewActivity extends AppCompatActivity
                 InputStream inputStream = getContentResolver().openInputStream(filePath);
                 bitmap = BitmapFactory.decodeStream(inputStream);
                 // 갤러리에서 가져온 이미지를 비트맵 객체에 넣고 Glide로 이미지뷰에 set한다
-//                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
                 Glide.with(this)
                         .load(bitmap)
                         .into(review_photo);
                 encodeBitmapImage(bitmap);
                 /* 촬영한 이미지를 이미지뷰에 set할 때 90도 회전되서 set되므로 setRotation()으로 90도 회전시켜서 이미지뷰에 들어가게 한다 */
 //                review_photo.setRotation(90);
-                // 유저가 이미지뷰에 붙여넣은 이미지의 확장자를 가져온다
             }
             catch (Exception e)
             {
                 e.printStackTrace();
             }
         }
-    }
-
-    /* 따로 확인한 예제에서 가져온 메서드 */
-    private Bitmap compressBitmap(Bitmap bitmap)
-    {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream);
-        byte[] byteArray = stream.toByteArray();
-        Bitmap compressedBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-        return compressedBitmap;
-    }
-
-    /* 따로 확인한 예제에서 가져온 메서드 */
-    private String getPath(Uri uri)
-    {
-        String[] projection = {MediaStore.Images.Media.DATA};
-        Cursor cursor = managedQuery(uri, projection, null, null, null);
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(column_index);
-    }
-
-    private String getRealPathFromURI(Uri contentUri)
-    {
-        int column_index = 0;
-        String[] proj = {MediaStore.Images.Media.DATA};
-        Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
-        if (cursor.moveToFirst())
-        {
-            column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        }
-
-        return cursor.getString(column_index);
     }
 
     // 파일 확장자 알아내는 메서드(나중에 고도화할 때 사용)
@@ -286,7 +225,6 @@ public class ReviewActivity extends AppCompatActivity
     private void init()
     {
         review_rate_edit = findViewById(R.id.review_rate_edit);
-        review_rate_edit = findViewById(R.id.review_rate_edit);
         review_content_edit = findViewById(R.id.review_content_edit);
         review_photo = findViewById(R.id.review_photo);
         restrict_word_number_textview = findViewById(R.id.restrict_word_number_textview);
@@ -306,7 +244,7 @@ public class ReviewActivity extends AppCompatActivity
         {
             case R.id.review_done:
                 /* 이미지 전송 메서드 호출 */
-                uploadReview(file_path);
+                uploadReview();
                 Toast.makeText(this, "소중한 리뷰가 등록되었어요", Toast.LENGTH_SHORT).show();
                 finish();
                 break;
@@ -321,8 +259,12 @@ public class ReviewActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    void uploadReview(String filePath)
+    /* 리뷰 이미지, 텍스트를 같이 서버에 업로드하는 메서드
+    * 이미지가 없어도 텍스트만 올라갈 수 있어야 한다 */
+    void uploadReview()
     {
+        SharedPreferences sharedPreferences = getSharedPreferences("app_pref", 0);
+        String token = sharedPreferences.getString("token", "");
         Retrofit retrofit = ApiClient.getApiClient();
         ApiInterface apiInterface = retrofit.create(ApiInterface.class);
         Log.e("aaa", "file = " + file);
@@ -331,22 +273,21 @@ public class ReviewActivity extends AppCompatActivity
         // 이미지 파일을 만들고(thumbnailFile)
         RequestBody imageReqBody = RequestBody.create(MediaType.parse("image/*"), file);
         MultipartBody.Part imagePart = MultipartBody.Part.createFormData("file", "test.png", imageReqBody); // 2번 인자 file.getName()에서 String으로 수정
-
         RequestBody imageDescription = RequestBody.create(MediaType.parse("text/plain"), "image-type");
 
+        /* 리뷰 쓰는 조건 = 사용자가 정보를 등록해야 함(나이, 성별, 닉네임) */
         // 이미지를 업로드하는 레트로핏 객체를 생성
-        Call<String> call = apiInterface.uploadReview("test", review_content_edit.getText().toString(), "writerTest", "gmail@gmail.com", "0", "0",
-                "3.5", imageDescription, imagePart);
+        Call<String> call = apiInterface.uploadReview(token, 1019, review_content_edit.getText().toString(), imageDescription, imagePart);
         call.enqueue(new Callback<String>()
         {
             @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
+            public void onResponse(Call<String> call, Response<String> response)
             {
-                Log.e(TAG, "응답메소드 호출");
+                Log.e(TAG, "uploadReview() 호출");
                 if (response.isSuccessful() && response.body() != null)
                 {
                     Log.e(TAG, "response = " + response);
-                    Toast.makeText(getApplicationContext(), "전송됨", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "소중한 리뷰가 등록되었어요", Toast.LENGTH_SHORT).show();
                     finish();
                 }
                 else
@@ -356,7 +297,7 @@ public class ReviewActivity extends AppCompatActivity
             }
 
             @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
+            public void onFailure(Call<String> call, Throwable t)
             {
                 Log.e("tag", t.toString());
                 Log.e(TAG, "fail");
@@ -370,7 +311,7 @@ public class ReviewActivity extends AppCompatActivity
     @SuppressLint("NewApi")
     public static String getPath(Context context, Uri uri) throws URISyntaxException
     {
-        Log.i(TAG, "getpath메소드 실행");
+        Log.i(TAG, "getPath() 실행");
         final boolean needToCheckUri = Build.VERSION.SDK_INT >= 19;
         String selection = null;
         String[] selectionArgs = null;

@@ -15,68 +15,66 @@ import com.psj.welfare.R;
 
 import java.util.ArrayList;
 
-public class SecondCategoryAdapter extends RecyclerView.Adapter<SecondCategoryAdapter.ViewHolder> {
+public class SecondCategoryAdapter extends RecyclerView.Adapter<SecondCategoryAdapter.ViewHolder>
+{
+    public Context categoryContext;
+    private ArrayList<SecondCategoryItem> categoryData;
+    private View.OnClickListener onClickListener;
 
-	// item class(MainItem)를 정의해 놓았음
-	public Context categoryContext;
-	private ArrayList<SecondCategoryItem> categoryData;
-	private View.OnClickListener onClickListener;
+    public SecondCategoryAdapter(Context CategoryContext, ArrayList<SecondCategoryItem> CategoryDataSet, View.OnClickListener OnClickListener)
+    {
+        this.categoryContext = CategoryContext;
+        this.categoryData = CategoryDataSet;
+        this.onClickListener = OnClickListener;
+    }
 
-	// 생성자
-	public SecondCategoryAdapter(Context CategoryContext, ArrayList<SecondCategoryItem> CategoryDataSet, View.OnClickListener OnClickListener) {
-		this.categoryContext = CategoryContext;
-		this.categoryData = CategoryDataSet;
-		this.onClickListener = OnClickListener;
-	}
+    public class ViewHolder extends RecyclerView.ViewHolder
+    {
+        private TextView secondCategory_Title;
+        private LinearLayout secondCategory_line;
+        public View rootView;
 
+        public ViewHolder(@NonNull View itemView)
+        {
+            super(itemView);
+            secondCategory_Title = itemView.findViewById(R.id.secondCategory_Title);
+            secondCategory_line = itemView.findViewById(R.id.secondCategory_line);
+            rootView = itemView;
 
-	public class ViewHolder extends RecyclerView.ViewHolder {
+            itemView.setClickable(true);
+            itemView.setEnabled(true);
+            itemView.setOnClickListener(onClickListener);
+        }
+    }
 
-		private TextView secondCategory_Title;
-		private LinearLayout secondCategory_line;
-		public View rootView;
+    @NonNull
+    @Override
+    public SecondCategoryAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+    {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_secondcategory, parent, false);
+        ViewHolder viewholder = new ViewHolder(view);
+        return viewholder;
+    }
 
-		public ViewHolder(@NonNull View itemView) {
-			super(itemView);
-			secondCategory_Title = itemView.findViewById(R.id.secondCategory_Title);
-			secondCategory_line = itemView.findViewById(R.id.secondCategory_line);
-			rootView = itemView;
+    @Override
+    public void onBindViewHolder(@NonNull SecondCategoryAdapter.ViewHolder viewHolder, int position)
+    {
+        viewHolder.secondCategory_Title.setText(categoryData.get(position).getCategoryTitle());
+        viewHolder.secondCategory_line.setBackgroundColor(categoryData.get(position).getcategoryBg());
 
-			itemView.setClickable(true);
-			itemView.setEnabled(true);
-			itemView.setOnClickListener(onClickListener);
-		}
-	}
+        // Tag - Label 을 달아준다
+        viewHolder.rootView.setTag(position);
+    }
 
+    @Override
+    public int getItemCount()
+    {
+        return categoryData.size();
+    }
 
-	@NonNull
-	@Override
-	public SecondCategoryAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		// create a new view
-		View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_secondcategory, parent, false);
-		// set the view's size, margins, paddings and layout parameters
-
-		ViewHolder viewholder = new ViewHolder(view);
-		return viewholder;
-	}
-
-	@Override
-	public void onBindViewHolder(@NonNull SecondCategoryAdapter.ViewHolder viewHolder, int position) {
-
-		viewHolder.secondCategory_Title.setText(categoryData.get(position).getCategoryTitle());
-		viewHolder.secondCategory_line.setBackgroundColor(categoryData.get(position).getcategoryBg());
-
-		// Tag - Label 을 달아준다
-		viewHolder.rootView.setTag(position);
-	}
-
-	@Override
-	public int getItemCount() {
-		return categoryData.size();
-	}
-
-	public SecondCategoryItem getCategory(int position) {
-		return categoryData != null ? categoryData.get(position) : null;
-	}
+    public SecondCategoryItem getCategory(int position)
+    {
+        return categoryData != null ? categoryData.get(position) : null;
+    }
 
 }

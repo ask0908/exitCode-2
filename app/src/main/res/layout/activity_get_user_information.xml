@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".fragment.InterestBenefitFragment">
+    tools:context=".activity.GetUserInformationActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/third_fragment_layout"
@@ -56,7 +56,7 @@
             android:fontFamily="@font/jalnan"
             android:gravity="center"
             android:lineSpacingExtra="7dp"
-            android:text="당신의 나이, 성별, 거주지역을\n입력해 주세요"
+            android:text="당신의 나이, 성별, 거주지역, 닉네임을\n입력해 주세요"
             android:textColor="@android:color/black"
             android:textSize="19sp"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -189,31 +189,33 @@
             android:id="@+id/first_choice_spinner"
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:layout_marginTop="20dp"
             android:theme="@style/DefaultNumberPickerTheme"
             android:background="@drawable/custom_spinner"
-            android:layout_margin="50dp"
+            android:layout_margin="30dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/push_condition_gender_layout" />
 
-        <NumberPicker
-            android:id="@+id/second_choice_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:layout_marginTop="20dp"
-            android:visibility="gone"
-            android:theme="@style/DefaultNumberPickerTheme"
-            android:background="@drawable/custom_spinner"
-            app:layout_constraintEnd_toEndOf="parent"
+        <EditText
+            android:id="@+id/nickname_edittext"
+            android:layout_width="230dp"
+            android:layout_height="50dp"
+            android:background="@drawable/edittext_rectangle"
+            android:fontFamily="@font/jalnan"
+            android:hint="닉네임"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:layout_marginTop="30dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/first_choice_spinner" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/first_choice_spinner"/>
 
         <Button
             android:id="@+id/next_btn"
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:layout_marginTop="70dp"
+            android:layout_marginTop="40dp"
             android:layout_weight=".20"
             android:background="@drawable/btn_purple"
             android:fontFamily="@font/jalnan"
@@ -222,7 +224,7 @@
             android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/first_choice_spinner" />
+            app:layout_constraintTop_toBottomOf="@id/nickname_edittext"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

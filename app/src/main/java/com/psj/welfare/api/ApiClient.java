@@ -12,7 +12,8 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 public class ApiClient
 {
 	// 클라이언트가 통신할 서버 URL
-	public static final String BASE_URL = "http://3.34.64.143/";
+//	public static final String BASE_URL = "https://3.34.64.143/";
+	public static final String BASE_URL = "https://www.urbene-fit.com/";
 
 	// 사용자에 대한 인증정보를 매 요청마다 서버로 함께 전달해 주어야 하는 경우가 발생하거나,
 	// 개발 중 요청과 응답에 대한 로깅을 해야되는 경우가 발생합니다

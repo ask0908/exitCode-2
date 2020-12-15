@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:orientation="vertical"
+    android:theme="@style/ToolbarTheme"
+    tools:context=".fragment.MyPageFragment">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/mypage_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:weightSum="1">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/kakao_profile_image"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight=".20" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight=".65"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/kakao_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/jalnan"
+                android:text="유저 이름"
+                android:textColor="@color/colorBlack"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/account_platform_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/jalnan"
+                android:text="카카오 계정 or 구글 계정"
+                android:textSize="17sp" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/move_update_personal_imageview"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight=".20"
+            android:src="@drawable/right_black" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="380dp"
+        android:layout_height="1dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:background="@color/colorGray_L" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:orientation="horizontal"
+        android:paddingStart="20dp"
+        android:weightSum="1">
+
+        <Button
+            android:id="@+id/account_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".80"
+            android:background="@color/fui_transparent"
+            android:fontFamily="@font/jalnan"
+            android:gravity="start|center"
+            android:text="계정설정"
+            android:textColor="@color/colorBlack"
+            android:textSize="22sp" />
+
+        <ImageView
+            android:id="@+id/account_imageview"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight=".20"
+            android:src="@drawable/right_black" />
+
+    </LinearLayout>
+
+    <Switch
+        android:id="@+id/push_noti_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="20dp"
+        android:background="@color/fui_transparent"
+        android:fontFamily="@font/jalnan"
+        android:gravity="start"
+        android:paddingStart="20dp"
+        android:text="푸쉬알림설정"
+        android:textColor="@color/colorBlack"
+        android:textSize="22sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal"
+        android:paddingStart="20dp"
+        android:weightSum="1">
+
+        <Button
+            android:id="@+id/benefit_type_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".80"
+            android:background="@color/fui_transparent"
+            android:fontFamily="@font/jalnan"
+            android:gravity="start|center"
+            android:text="혜택유형"
+            android:textColor="@color/colorBlack"
+            android:textSize="22sp" />
+
+        <ImageView
+            android:id="@+id/benefit_type_imageview"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight=".20"
+            android:src="@drawable/right_black" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal"
+        android:paddingStart="20dp"
+        android:weightSum="1">
+
+        <Button
+            android:id="@+id/terms_location_based_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".80"
+            android:background="@color/fui_transparent"
+            android:fontFamily="@font/jalnan"
+            android:gravity="start|center"
+            android:text="위치기반 서비스 이용약관"
+            android:textColor="@color/colorBlack"
+            android:textSize="22sp" />
+
+        <ImageView
+            android:id="@+id/terms_location_based_imageview"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight=".20"
+            android:src="@drawable/right_black" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal"
+        android:paddingStart="20dp"
+        android:weightSum="1">
+
+        <Button
+            android:id="@+id/privacy_policy_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".80"
+            android:background="@color/fui_transparent"
+            android:fontFamily="@font/jalnan"
+            android:gravity="start|center"
+            android:text="개인정보처리방침"
+            android:textColor="@color/colorBlack"
+            android:textSize="22sp" />
+
+        <ImageView
+            android:id="@+id/privacy_policy_imageview"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight=".20"
+            android:src="@drawable/right_black" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".30"
+            android:fontFamily="@font/jalnan"
+            android:text="버전정보"
+            android:textColor="@color/colorBlack"
+            android:textSize="22sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_weight=".70"
+            android:gravity="end"
+            android:text="1.24.0" />
+
+    </LinearLayout>
+
+</LinearLayout>
