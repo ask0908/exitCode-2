@@ -5,7 +5,7 @@
     android:layout_marginLeft="10dp"
     android:layout_marginTop="20dp"
     android:layout_marginRight="10dp"
-    android:background="@drawable/btn_google"
+    android:background="@drawable/btn_select"
     android:orientation="horizontal"
     android:padding="20dp">
 

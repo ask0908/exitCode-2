@@ -1,7 +1,11 @@
 package com.psj.welfare.activity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,7 +23,6 @@ import com.psj.welfare.Data.ResultBenefitItem;
 import com.psj.welfare.Data.SelectedButtonItem;
 import com.psj.welfare.R;
 import com.psj.welfare.adapter.CategorySearchResultAdapter;
-import com.psj.welfare.adapter.RBFAdapter;
 import com.psj.welfare.adapter.RBFTitleAdapter;
 import com.psj.welfare.adapter.SelectedCategoryAdapter;
 import com.psj.welfare.api.ApiClient;
@@ -43,9 +46,8 @@ import retrofit2.Response;
  * */
 public class ResultBenefitActivity extends AppCompatActivity
 {
-    public static final String TAG = "ResultBenefitActivity";
+    public final String TAG = this.getClass().getName();
 
-    // 리사이클러뷰 객체 선언
     private RecyclerView category_recycler, result_title_recycler;
     private CategorySearchResultAdapter adapter;
     private CategorySearchResultAdapter.ItemClickListener itemClickListener;
@@ -59,7 +61,6 @@ public class ResultBenefitActivity extends AppCompatActivity
     // 유저가 선택한 카테고리에 속하는 모든 정책 개수를 담을 변수
     String countOfWelf;
 
-
     TextView result_benefit_title; // 혜택 결과 개수 타이틀
     ImageView RBF_back; // 뒤로가기 버튼 이미지
     int position_RB = 1; // 관심사 버튼 넘버
@@ -69,11 +70,8 @@ public class ResultBenefitActivity extends AppCompatActivity
     private ArrayList<ResultBenefitItem> RBFTitle_ListSet;  // 복지혜택 이름을 리사이클러뷰에 보여줄 때 해당 리사이클러뷰의 어댑터에 사용할 리스트
     ArrayList<String> favor_data; // 관심사 버튼 문자열
 
-    // 서버에서 응답 받은 JSON 구조를 파싱하기 위한 JSONArray 변수들
-    JSONArray child, student, law, old, pregnancy, disorder, cultural, multicultural, company, living, job, homeless, etc;
-
     // 검색 api 리뉴얼로 추가한 변수
-    String welf_name, welf_category, tag, welf_local;
+    String welf_name, parent_category, welf_category, tag, welf_local;
 
     String category, last_category;
     StringBuffer sb;
@@ -95,6 +93,9 @@ public class ResultBenefitActivity extends AppCompatActivity
 
         RBF_ListSet = new ArrayList<>();
         RBFTitle_ListSet = new ArrayList<>();
+
+        favor_data = new ArrayList<>();
+        favor_data.clear();
 
         // 메인에서 전달받은 인텐트를 검사하는 곳
         // 선택한 관심사를 현재 페이지에서 버튼으로 표현하기 위한 데이터
@@ -138,158 +139,160 @@ public class ResultBenefitActivity extends AppCompatActivity
             Log.e(TAG, "sb = " + sb);
         }
         Log.e(TAG, "리스트값 스트링으로 변환 -> " + last_category);
+
         // "null전체|" 문자열을 삭제한 문자열로 DB에서 데이터를 검색
         searchWelfareCategory(last_category);
 
         category_recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         selected_list = new ArrayList<>();
-        selectedCategoryAdapter = new SelectedCategoryAdapter(ResultBenefitActivity.this, selected_list, selected_itemClickListener);
-        selectedCategoryAdapter.setOnItemClickListener(((view, position) -> {
-            String name = selected_list.get(position).getButton_title();
-            Log.e(TAG, "이름 출력 테스트 = " + name);
-        }));
-        category_recycler.setAdapter(selectedCategoryAdapter);
+//        selectedCategoryAdapter = new SelectedCategoryAdapter(ResultBenefitActivity.this, selected_list, selected_itemClickListener);
+//        selectedCategoryAdapter.setOnItemClickListener(((view, position) -> {
+//            String name = selected_list.get(position).getWelf_category();
+//            Log.e(TAG, "이름 출력 테스트 = " + name);
+//        }));
+//        category_recycler.setHasFixedSize(true);
+//        category_recycler.setAdapter(selectedCategoryAdapter);
         /* 상단 리사이클러뷰(유저가 선택한 카테고리들 나오는 리사이클러뷰) */
-        RbfBtn_Adapter = new RBFAdapter(ResultBenefitActivity.this, RBF_ListSet, new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Object obj = v.getTag();
-                if (v.getTag() != null)
-                {
-                    int position = (int) obj;
-//                    Log.e(TAG, "관심사 버튼 클릭 " + position);
-                    int btnColor = ((RBFAdapter) RbfBtn_Adapter).getRBF(position).getRBF_btnColor();
-//                    Log.e(TAG, "내가 선택한 버튼 색상 : " + btnColor);
-//                    Log.e(TAG, "비교할 버튼 새상 : " + R.drawable.btn_done);
-
-                    // 선택하지 않았던 버튼을 선택할 경우 색을 바꾸고
-                    if (btnColor != R.drawable.rbf_btn_after)
-                    {
-                        for (int i = 0; i < favor_data.size(); i++)
-                        {
-                            Log.e(TAG, "favor_data = " + favor_data.get(i));
-                        }
-//                        Log.e(TAG, "선택하지 않은 버튼 입니다!");
-                        for (int i = 0; i < favor_data.size(); i++)
-                        {
-                            RBF_ListSet.set(i, new ResultBenefitItem(favor_data.get(i), R.drawable.rbf_btn_before));
-                        }
-                        RBF_ListSet.set(position, new ResultBenefitItem(favor_data.get(position), R.drawable.rbf_btn_after));
-                        RbfBtn_Adapter.notifyItemRangeChanged(0, favor_data.size());
-
-                        if (favor_data.get(position).equals("전체"))
-                        {
-                            Log.e(TAG, "데이터 확인 = " + favor_data.get(position));
-                            Log.e(TAG, "전체 클릭");
-                            RbfBtn_Adapter.notifyDataSetChanged();
-                            list.clear();
-                            Log.e(TAG, "전체 눌렀을 때 검색할 키워드 = " + sb);
-                            searchWelfareCategory(last_category);
-                        }
-                        else if (favor_data.get(position).equals("취업·창업"))
-                        {
-                            Log.e(TAG, "취업·창업 클릭");
-                            RbfBtn_Adapter.notifyDataSetChanged();
-                            list.clear();
-                            searchWelfareCategory("취업·창업");
-                        }
-                        else if (favor_data.get(position).equals("학생·청년"))
-                        {
-                            Log.e(TAG, "학생·청년 클릭");
-                            RbfBtn_Adapter.notifyDataSetChanged();
-                            list.clear();
-                            searchWelfareCategory("청년");
-                        }
-                        else if (favor_data.get(position).equals("주거"))
-                        {
-                            Log.e(TAG, "주거 클릭");
-                            RbfBtn_Adapter.notifyDataSetChanged();
-                            list.clear();
-                            searchWelfareCategory("주거");
-                        }
-                        else if (favor_data.get(position).equals("육아·임신"))
-                        {
-                            Log.e(TAG, "육아·임신 클릭");
-                            RbfBtn_Adapter.notifyDataSetChanged();
-                            list.clear();
-                            searchWelfareCategory("육아·임신");
-                        }
-                        else if (favor_data.get(position).equals("아기·어린이"))
-                        {
-                            Log.e(TAG, "아기·어린이 클릭");
-                            RbfBtn_Adapter.notifyDataSetChanged();
-                            list.clear();
-                            searchWelfareCategory("아기·어린이");
-                        }
-                        else if (favor_data.get(position).equals("문화·생활"))
-                        {
-                            Log.e(TAG, "문화·생활 클릭");
-                            RbfBtn_Adapter.notifyDataSetChanged();
-                            list.clear();
-                            searchWelfareCategory("문화·생활");
-                        }
-                        else if (favor_data.get(position).equals("기업·자영업자"))
-                        {
-                            Log.e(TAG, "기업·자영업자 클릭");
-                            RbfBtn_Adapter.notifyDataSetChanged();
-                            list.clear();
-                            searchWelfareCategory("기업·자영업자");
-                        }
-                        else if (favor_data.get(position).equals("저소득층"))
-                        {
-                            Log.e(TAG, "저소득층 클릭");
-                            RbfBtn_Adapter.notifyDataSetChanged();
-                            list.clear();
-                            searchWelfareCategory("저소득층");
-                        }
-                        else if (favor_data.get(position).equals("중장년·노인"))
-                        {
-                            Log.e(TAG, "중장년·노인 클릭");
-                            RbfBtn_Adapter.notifyDataSetChanged();
-                            list.clear();
-                            searchWelfareCategory("중장년·노인");
-                        }
-                        else if (favor_data.get(position).equals("장애인"))
-                        {
-                            Log.e(TAG, "장애인 클릭");
-                            RbfBtn_Adapter.notifyDataSetChanged();
-                            list.clear();
-                            searchWelfareCategory("장애인");
-                        }
-                        else if (favor_data.get(position).equals("다문화"))
-                        {
-                            Log.e(TAG, "다문화 클릭");
-                            RbfBtn_Adapter.notifyDataSetChanged();
-                            list.clear();
-                            searchWelfareCategory("다문화");
-                        }
-                        else if (favor_data.get(position).equals("법률"))
-                        {
-                            Log.e(TAG, "법률 클릭");
-                            RbfBtn_Adapter.notifyDataSetChanged();
-                            list.clear();
-                            searchWelfareCategory("법률");
-                        }
-                        else if (favor_data.get(position).equals("기타"))
-                        {
-                            Log.e(TAG, "기타 클릭");
-                            RbfBtn_Adapter.notifyDataSetChanged();
-                            list.clear();
-                            searchWelfareCategory("기타");
-                        }
-
-                    }
-                    else
-                    {
-                        Log.e(TAG, "선택한 버튼입니다!");
-                    }
-                }
-            }
-        });
-        category_recycler.setAdapter(RbfBtn_Adapter);
-        category_recycler.setHasFixedSize(true);
+//        RbfBtn_Adapter = new RBFAdapter(ResultBenefitActivity.this, RBF_ListSet, new View.OnClickListener()
+//        {
+//            @Override
+//            public void onClick(View v)
+//            {
+//                Object obj = v.getTag();
+//                if (v.getTag() != null)
+//                {
+//                    int position = (int) obj;
+////                    Log.e(TAG, "관심사 버튼 클릭 " + position);
+//                    int btnColor = ((RBFAdapter) RbfBtn_Adapter).getRBF(position).getRBF_btnColor();
+////                    Log.e(TAG, "내가 선택한 버튼 색상 : " + btnColor);
+////                    Log.e(TAG, "비교할 버튼 새상 : " + R.drawable.btn_done);
+//
+//                    // 선택하지 않았던 버튼을 선택할 경우 색을 바꾸고
+//                    if (btnColor != R.drawable.rbf_btn_after)
+//                    {
+//                        for (int i = 0; i < favor_data.size(); i++)
+//                        {
+//                            Log.e(TAG, "favor_data = " + favor_data.get(i));
+//                        }
+//                        for (int i = 0; i < favor_data.size(); i++)
+//                        {
+//                            RBF_ListSet.set(i, new ResultBenefitItem(favor_data.get(i), R.drawable.rbf_btn_before));
+//                        }
+//                        RBF_ListSet.set(position, new ResultBenefitItem(favor_data.get(position), R.drawable.rbf_btn_after));
+//                        RbfBtn_Adapter.notifyItemRangeChanged(0, favor_data.size());
+//
+//                        if (favor_data.get(position).equals("전체"))
+//                        {
+//                            Log.e(TAG, "데이터 확인 = " + favor_data.get(position));
+//                            Log.e(TAG, "전체 클릭");
+//                            RbfTitle_Adapter.notifyItemRangeRemoved(0, position_RBT);
+//                            position_RBT = 0;
+//                            RBFTitle_ListSet.clear();
+//                            list.clear();
+//                            Log.e(TAG, "전체 눌렀을 때 검색할 키워드 = " + sb);
+//                            searchWelfareCategory(last_category);
+//                        }
+//                        else if (favor_data.get(position).equals("취업·창업"))
+//                        {
+//                            Log.e(TAG, "취업·창업 클릭");
+//                            RbfBtn_Adapter.notifyDataSetChanged();
+//                            list.clear();
+//                            searchWelfareCategory("취업·창업");
+//                        }
+//                        else if (favor_data.get(position).equals("청년"))
+//                        {
+//                            Log.e(TAG, "학생·청년 클릭");
+//                            RbfBtn_Adapter.notifyDataSetChanged();
+//                            list.clear();
+//                            searchWelfareCategory("청년");
+//                        }
+//                        else if (favor_data.get(position).equals("주거"))
+//                        {
+//                            Log.e(TAG, "주거 클릭");
+//                            RbfBtn_Adapter.notifyDataSetChanged();
+//                            list.clear();
+//                            searchWelfareCategory("주거");
+//                        }
+//                        else if (favor_data.get(position).equals("육아·임신"))
+//                        {
+//                            Log.e(TAG, "육아·임신 클릭");
+//                            RbfBtn_Adapter.notifyDataSetChanged();
+//                            list.clear();
+//                            searchWelfareCategory("육아·임신");
+//                        }
+//                        else if (favor_data.get(position).equals("아기·어린이"))
+//                        {
+//                            Log.e(TAG, "아기·어린이 클릭");
+//                            RbfBtn_Adapter.notifyDataSetChanged();
+//                            list.clear();
+//                            searchWelfareCategory("아기·어린이");
+//                        }
+//                        else if (favor_data.get(position).equals("문화·생활"))
+//                        {
+//                            Log.e(TAG, "문화·생활 클릭");
+//                            RbfBtn_Adapter.notifyDataSetChanged();
+//                            list.clear();
+//                            searchWelfareCategory("문화·생활");
+//                        }
+//                        else if (favor_data.get(position).equals("기업·자영업자"))
+//                        {
+//                            Log.e(TAG, "기업·자영업자 클릭");
+//                            RbfBtn_Adapter.notifyDataSetChanged();
+//                            list.clear();
+//                            searchWelfareCategory("기업·자영업자");
+//                        }
+//                        else if (favor_data.get(position).equals("저소득층"))
+//                        {
+//                            Log.e(TAG, "저소득층 클릭");
+//                            RbfBtn_Adapter.notifyDataSetChanged();
+//                            list.clear();
+//                            searchWelfareCategory("저소득층");
+//                        }
+//                        else if (favor_data.get(position).equals("중장년·노인"))
+//                        {
+//                            Log.e(TAG, "중장년·노인 클릭");
+//                            RbfBtn_Adapter.notifyDataSetChanged();
+//                            list.clear();
+//                            searchWelfareCategory("중장년·노인");
+//                        }
+//                        else if (favor_data.get(position).equals("장애인"))
+//                        {
+//                            Log.e(TAG, "장애인 클릭");
+//                            RbfBtn_Adapter.notifyDataSetChanged();
+//                            list.clear();
+//                            searchWelfareCategory("장애인");
+//                        }
+//                        else if (favor_data.get(position).equals("다문화"))
+//                        {
+//                            Log.e(TAG, "다문화 클릭");
+//                            RbfBtn_Adapter.notifyDataSetChanged();
+//                            list.clear();
+//                            searchWelfareCategory("다문화");
+//                        }
+//                        else if (favor_data.get(position).equals("법률"))
+//                        {
+//                            Log.e(TAG, "법률 클릭");
+//                            RbfBtn_Adapter.notifyDataSetChanged();
+//                            list.clear();
+//                            searchWelfareCategory("법률");
+//                        }
+//                        else if (favor_data.get(position).equals("기타"))
+//                        {
+//                            Log.e(TAG, "기타 클릭");
+//                            RbfBtn_Adapter.notifyDataSetChanged();
+//                            list.clear();
+//                            searchWelfareCategory("기타");
+//                        }
+//
+//                    }
+//                    else
+//                    {
+//                        Log.e(TAG, "선택한 버튼입니다!");
+//                    }
+//                }
+//            }
+//        });
+//        category_recycler.setAdapter(RbfBtn_Adapter);
 
         /* 하단 리사이클러뷰(혜택들 제목 나오는 리사이클러뷰) */
         result_title_recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -316,10 +319,9 @@ public class ResultBenefitActivity extends AppCompatActivity
         result_title_recycler.setHasFixedSize(true);
     }
 
-    /* 선택한 정책의 정보들을 가져와 뷰에 set하는 메서드 */
+    /* 선택한 정책의 정보들을 가져와 뷰에 set하는 메서드 (혜택 상위 카테고리 검색) */
     void searchWelfareCategory(String category)
     {
-        Log.e(TAG, "searchWelf() 호출됨");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Log.e(TAG, "검색 키워드 = " + category);
         Call<String> call = apiInterface.searchWelfareCategory("category_search", category);
@@ -359,11 +361,13 @@ public class ResultBenefitActivity extends AppCompatActivity
             {
                 JSONObject inner_obj = jsonArray.getJSONObject(i);
                 welf_name = inner_obj.getString("welf_name");
+                parent_category = inner_obj.getString("parent_category");
                 welf_category = inner_obj.getString("welf_category");
                 tag = inner_obj.getString("tag");
                 welf_local = inner_obj.getString("welf_local");
                 CategorySearchResultItem item = new CategorySearchResultItem();
                 item.setWelf_name(welf_name);
+                item.setParent_category(parent_category);
                 item.setWelf_category(welf_category);
                 item.setTag(tag);
                 item.setWelf_local(welf_local);
@@ -375,6 +379,15 @@ public class ResultBenefitActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
+
+        selectedCategoryAdapter = new SelectedCategoryAdapter(ResultBenefitActivity.this, list, selected_itemClickListener);
+        selectedCategoryAdapter.setOnItemClickListener(((view, position) -> {
+            String name = selected_list.get(position).getWelf_category();
+            Log.e(TAG, "이름 출력 테스트 = " + name);
+        }));
+        category_recycler.setHasFixedSize(true);
+        category_recycler.setAdapter(selectedCategoryAdapter);
+
         adapter = new CategorySearchResultAdapter(ResultBenefitActivity.this, list, itemClickListener);
         adapter.setOnItemClickListener(((view, position) -> {
             String name = list.get(position).getWelf_name();
@@ -385,7 +398,20 @@ public class ResultBenefitActivity extends AppCompatActivity
         }));
         Log.e(TAG, "Totalcount 값 확인 = " + countOfWelf);
         result_title_recycler.setAdapter(adapter);
-        result_benefit_title.setText("당신이 놓치고 있는 혜택,\n총 " + countOfWelf + "개 입니다");
+        result_benefit_title.setText("복지혜택 결과가 총 " + countOfWelf + "개\n검색되었습니다");
+        if (Integer.parseInt(countOfWelf) > 9)
+        {
+            SpannableString spannableString = new SpannableString(result_benefit_title.getText().toString());
+            spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 11, 13, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            result_benefit_title.setText(spannableString);
+        }
+        else if (Integer.parseInt(countOfWelf) < 10)
+        {
+            SpannableString spannableString = new SpannableString(result_benefit_title.getText().toString());
+            spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 11, 12, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            result_benefit_title.setText(spannableString);
+        }
+//        result_benefit_title.setText(spannableString);
     }
 
     @Override
@@ -404,4 +430,10 @@ public class ResultBenefitActivity extends AppCompatActivity
         });
     }
 
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        favor_data.clear();
+    }
 }

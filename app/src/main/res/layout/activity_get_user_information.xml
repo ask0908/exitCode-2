@@ -13,20 +13,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/third_fragment_logo"
-            android:layout_width="120dp"
-            android:layout_height="40dp"
-            android:src="@drawable/main_logo"
-            app:layout_constraintHeight_percent="0.0184"
-            app:layout_constraintHorizontal_bias="0.1145"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0511"
-            app:layout_constraintVertical_weight="1"
-            app:layout_constraintWidth_percent="0.2833" />
-
         <LinearLayout
             android:id="@+id/push_condition_top_layout"
             android:layout_width="match_parent"
@@ -34,12 +20,12 @@
             android:orientation="vertical"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/third_fragment_logo">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:background="#6f52e8"
+                android:background="@color/colorPrimaryDark"
                 android:fontFamily="@font/jalnan"
                 android:gravity="center"
                 android:text="당신이 놓치고 있는 혜택은?"
@@ -107,45 +93,19 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/man_and_woman_img_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal"
-            android:weightSum="1"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/push_condition_age_layout">
-
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_marginLeft="45dp"
-                android:layout_weight=".40"
-                android:src="@drawable/man_img" />
-
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_marginLeft="120dp"
-                android:layout_weight=".40"
-                android:src="@drawable/woman_img" />
-
-        </LinearLayout>
-
+        <!-- 남자, 여자 선택하는 가로 리니어 레이아웃 -->
         <LinearLayout
             android:id="@+id/push_condition_gender_layout"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="40dp"
             android:layout_marginRight="20dp"
             android:orientation="horizontal"
             android:weightSum="1"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/man_and_woman_img_layout">
+            app:layout_constraintTop_toBottomOf="@id/push_condition_age_layout">
 
             <Button
                 android:id="@+id/man_btn"
@@ -184,7 +144,9 @@
                 app:layout_constraintTop_toTopOf="@id/push_condition_gender_layout" />
 
         </LinearLayout>
+        <!-- 남자, 여자 선택하는 가로 리니어 레이아웃 끝 -->
 
+        <!-- 지역 선택하는 NumberPicker -->
         <NumberPicker
             android:id="@+id/first_choice_spinner"
             android:layout_width="match_parent"
@@ -196,6 +158,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/push_condition_gender_layout" />
 
+        <!-- 닉네임 입력하는 editText -->
         <EditText
             android:id="@+id/nickname_edittext"
             android:layout_width="230dp"
@@ -217,7 +180,7 @@
             android:layout_height="80dp"
             android:layout_marginTop="40dp"
             android:layout_weight=".20"
-            android:background="@drawable/btn_purple"
+            android:background="@color/colorPrimaryDark"
             android:fontFamily="@font/jalnan"
             android:text="확 인"
             android:textColor="@android:color/white"

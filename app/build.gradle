@@ -13,6 +13,7 @@ android {
         versionName "7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -64,6 +65,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.work:work-runtime:2.2.0'
+    implementation files('libs\\YouTubeAndroidPlayerApi.jar')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -109,5 +111,9 @@ dependencies {
     implementation 'com.orhanobut:logger:2.2.0'
 
     implementation 'org.greenrobot:eventbus:3.1.1'
+
+    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:chromecast-sender:0.23'
+    implementation 'com.google.android.gms:play-services:8.4.0'
+    implementation files('libs/YouTubeAndroidPlayerApi.jar')
 
 }

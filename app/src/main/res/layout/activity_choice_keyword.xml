@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.ChoiceKeywordActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/choice_keyword_layout"
+        android:orientation="vertical">
+
+        <!-- 좌상단에 뒤로가기 버튼과 가운데 레이아웃 이름을 표시할 툴바 -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/choice_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/choice_description_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/choice_toolbar"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/jalnan"
+            android:text="알림으로 받아보고 싶은 카테고리를\n체크해주세요"
+            android:layout_gravity="center"
+            android:textSize="17sp"
+            android:textColor="@color/colorBlack"
+            android:lineSpacingExtra="10sp"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/choice_constraint_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/choice_description_textview"
+            android:fontFamily="@font/jalnan"
+            android:text="최소 1개 이상 선택되어 있어야 합니다"
+            android:textSize="13sp"
+            android:textColor="@color/colorGray_B"
+            android:gravity="center"
+            android:layout_marginTop="10dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/choice_keyword_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"/>
+
+        <Button
+            android:id="@+id/choice_complete_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/choice_keyword_recyclerview"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="20dp"
+            android:background="@color/colorPrimaryDark"
+            android:fontFamily="@font/jalnan"
+            android:text="완 료"
+            android:textSize="20sp"
+            android:textColor="@color/colorMainWhite"/>
+
+    </LinearLayout>
+
+</ScrollView>

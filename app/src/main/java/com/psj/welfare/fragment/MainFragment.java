@@ -1,9 +1,9 @@
 package com.psj.welfare.fragment;
 
 import android.Manifest;
-import android.animation.ObjectAnimator;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationManager;
@@ -13,35 +13,44 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.kakao.network.ErrorResult;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.UnLinkResponseCallback;
+import com.psj.welfare.Data.HorizontalYoutubeItem;
+import com.psj.welfare.Data.RecommendItem;
 import com.psj.welfare.R;
 import com.psj.welfare.activity.MapActivity;
-import com.psj.welfare.activity.ResultBenefitActivity;
-import com.psj.welfare.custom.CustomResultBenefitDialog;
-import com.psj.welfare.custom.OnSingleClickListener;
+import com.psj.welfare.activity.YoutubeActivity;
+import com.psj.welfare.adapter.HorizontalYoutubeAdapter;
+import com.psj.welfare.adapter.RecommendAdapter;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.util.GpsTracker;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.content.Context.LOCATION_SERVICE;
 
@@ -51,50 +60,19 @@ import static android.content.Context.LOCATION_SERVICE;
  */
 public class MainFragment extends Fragment
 {
-    public static final String TAG = "MainFragment"; // 로그 찍을 때 사용하는 TAG
+    public static final String TAG = "TestMainFragment"; // 로그 찍을 때 사용하는 TAG
 
     // 구글 로그인 테스트 위한 카톡 탈퇴 버튼
-    Button kakao_unlink_btn, google_logout_btn;
-
-    // 스크롤뷰
-    private ScrollView main_ScrollView;
-
-    // 좌상단 메인 로고. 클릭 시 더보기 버튼이 있는 페이지로 화면 전환 효과 없이 이동하게 한다 (main logo)
-    ImageView main_logo, main_job_img, main_student_img, main_living_img, main_pregnancy_img, main_child_img, main_cultural_img, main_company_img, main_homeless_img,
-            main_old_img, main_disorder_img, main_multicultural_img, main_law_img, main_etc_img;
-
-    TextView main_move_text, main_job_title, main_student_title, main_living_title, main_pregnancy_title, main_child_title, main_cultural_title, main_company_title,
-            main_homeless_title, main_old_title, main_disorder_title, main_multicultural_title, main_law_title, main_etc_title;
-
-    LinearLayout main_job, main_student, main_living, main_pregnancy, main_child, main_cultural, main_company, main_homeless, main_old, main_disorder, main_multicultural,
-            main_law, main_etc;
-
-    // 맨 밑의 조회하기 버튼
-    Button main_done;
+    Button kakao_unlink_btn;
 
     // 지도 버튼
     Button map_btn;
 
-    // 더보기 버튼을 눌렀는지 확인할 때 사용할 boolean 변수. true일 경우에만 로고 클릭 이벤트를 발동시킨다
-    boolean isClicked = false;
-
-    // 더보기 버튼 있는 레이아웃
-    LinearLayout more_layout;
-    // 장애인, 다문화, 법률, 기타 버튼 있는 레이아웃
-    LinearLayout multi_law_layout, etc_layout;
-
-    // 유저에게 제공할 혜택들을 담을 ArrayList
-    ArrayList<String> m_favorList = new ArrayList<>();
-
-    // 스크롤 수정
-    LinearLayout main_content;
-
+    // 유저의 위치정보를 바꿀 때(서울특별시 -> 서울) 쓰는 변수
     String user_area;
+
     // 유저의 현 위치를 가져와 주소로 변환하는 처리를 하는 클래스
     private GpsTracker gpsTracker;
-
-    private static final int GPS_ENABLE_REQUEST_CODE = 100;
-    private static final int PERMISSIONS_REQUEST_CODE = 200;
 
     // split() 후 문자열들을 담을 리스트
     List<String> split_list;
@@ -107,24 +85,47 @@ public class MainFragment extends Fragment
             Manifest.permission.ACCESS_COARSE_LOCATION  // 앱이 대략적인 위치에 액세스하도록 허용하는 권한, ACCESS_FINE_LOCATION을 대체재로 쓸 수 있다
     };
 
+    // 가로로 유튜브 영상들을 보여줄 리사이클러뷰
+    RecyclerView youtube_video_recyclerview;
+    HorizontalYoutubeAdapter adapter;
+    HorizontalYoutubeAdapter.ItemClickListener itemClickListener;
+    List<HorizontalYoutubeItem> lists;
+    String thumbnail, title;
+
+    // 서버에서 받아 저장한 토큰값을 저장할 때 사용하는 쉐어드
+    SharedPreferences sharedPreferences;
+
+    // 서버에서 받은 값을 저장할 때 사용하는 변수
+    String welf_name, welf_local, welf_category, tag, count;
+
+    // 가로로 맞춤 혜택들을 보여줄 리사이클러뷰, 어댑터, 아이템 클릭 리스너, 리스트
+    RecyclerView recom_recycler;
+    RecommendAdapter recommendAdapter;
+    RecommendAdapter.ItemClickListener recom_itemClickListener;
+    List<RecommendItem> list;
+
     public MainFragment()
     {
-        // 프래그먼트 사용 시 있어야 하는 디폴트 생성자
     }
 
-    /* 프래그먼트와 연결된 뷰 계층 생성 위해 호출됨, onViewCreated()보다 먼저 호출된다
-     * 최초에 onAttach()가 호출된 이후 onCreate() 다음에 3번째로 호출된다 */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    public void onCreate(Bundle savedInstanceState)
     {
-        return (ViewGroup) inflater.inflate(R.layout.fragment_main, container, false);
+        super.onCreate(savedInstanceState);
     }
 
-    /* onCreateView() 다음에 호출됨. 뷰 계층 구조가 완전히 생성됐음을 알려 하위 클래스가 스스로 초기화되게 한다 */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState)
+    {
+        return inflater.inflate(R.layout.fragment_main, container, false);
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
+
         // 위치 권한 설정 처리
         PermissionListener permissionListener = new PermissionListener()
         {
@@ -153,7 +154,20 @@ public class MainFragment extends Fragment
                     .setPermissions(REQUIRED_PERMISSIONS)
                     .check();
         }
-        init(view);
+
+        map_btn = view.findViewById(R.id.map_btn);
+
+        /* 맞춤 혜택들을 가로 리사이클러뷰에 담아 보여주는 메서드 */
+        userOrderedWelfare();
+
+        /* 유튜브 영상을 보여주는 가로 리사이클러뷰 선언, 처리 */
+        getYoutubeInformation();
+        youtube_video_recyclerview = view.findViewById(R.id.youtube_video_recyclerview);
+        youtube_video_recyclerview.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
+
+        /* 맞춤 혜택 보여주는 가로 리사이클러뷰 선언, 처리 */
+        recom_recycler = view.findViewById(R.id.recom_recycler);
+        recom_recycler.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
 
         /* 카톡 회원탈퇴 버튼. 구글 로그인 테스트 위해 집어넣었음 */
         kakao_unlink_btn = view.findViewById(R.id.kakao_unlink_btn);
@@ -203,372 +217,10 @@ public class MainFragment extends Fragment
             }).show();
         });
 
-        /* 더보기 버튼을 누르면 더보기 버튼이 사라지고 다른 4가지 버튼들이 나오게 한다 */
-        more_layout.setOnClickListener(OnSingleClickListener ->
-        {
-            isClicked = true;
-            // 더보기 버튼이 있는 레이아웃은 아예 안 보이게 한다
-            more_layout.setVisibility(View.GONE);
-
-            // 다른 4가지 레이아웃들은 보이도록 한다
-            multi_law_layout.setVisibility(View.VISIBLE);
-            etc_layout.setVisibility(View.VISIBLE);
-            main_disorder.setVisibility(View.VISIBLE);
-            main_law.setVisibility(View.VISIBLE);
-        });
-
-        // 메인 로고 클릭 리스너
-        main_logo.setOnClickListener(OnSingleClickListener ->
-        {
-            if (isClicked)
-            {
-                isClicked = false;
-                // 화면 전환 효과 없이 더보기 버튼이 있는 페이지로 이동하게 한다 = VISIBLE 상태가 되었던 버튼들을 다시 GONE 상태로 되돌린다
-                more_layout.setVisibility(View.VISIBLE);
-                multi_law_layout.setVisibility(View.GONE);
-                etc_layout.setVisibility(View.GONE);
-                main_disorder.setVisibility(View.GONE);
-                main_law.setVisibility(View.GONE);
-            }
-        });
-
-        // 조회하기 버튼
-        main_done.setOnClickListener(OnSingleClickListener ->
-        {
-            // 관심사 선택이 1개라도 안돼 있으면 커스텀 다이얼로그를 띄운다
-            if (m_favorList.size() == 0)
-            {
-                CustomResultBenefitDialog dialog = new CustomResultBenefitDialog(getActivity());
-                dialog.callDialog();
-            }
-            else
-            {
-                m_favorList.add(0, "전체");
-                for (int i = 0; i < m_favorList.size(); i++)
-                {
-                    Log.e(TAG, "m_favorList : " + m_favorList);
-                }
-                // 선택한 모든 카테고리 이름을 인텐트에 넣어서 보낸다
-                Intent m_intent = new Intent(getActivity(), ResultBenefitActivity.class);
-                m_intent.putStringArrayListExtra("favor_btn", m_favorList);
-                startActivity(m_intent);
-            }
-        });
-
-        /* 아기·어린이 혜택 버튼 */
-        main_child.setOnClickListener(OnSingleClickListener ->
-        {
-            Log.e(TAG, "아기·어린이 레이아웃 클릭!");
-
-            if (OnSingleClickListener.isSelected())
-            {
-                Log.e(TAG, "OnSingleClickListener.isSelected() = " + OnSingleClickListener.isSelected());
-                m_favorList.remove("아기·어린이");
-                main_child_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.child));
-                main_child_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                main_child.setSelected(!main_child.isSelected());
-            }
-            else
-            {
-                Log.e(TAG, "OnSingleClickListener.isSelected() = " + OnSingleClickListener.isSelected());
-                m_favorList.add("아기·어린이");
-                main_child_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.child_after));
-                main_child_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                main_child.setSelected(true);
-            }
-        });
-
-        /* 학생·청년 혜택 버튼 */
-        main_student.setOnClickListener(OnSingleClickListener ->
-        {
-            Log.e(TAG, "학생·청년 레이아웃 클릭!");
-
-            if (OnSingleClickListener.isSelected())
-            {
-                m_favorList.remove("학생·청년");
-                main_student_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.student));
-                main_student_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.e(TAG, "버튼 클릭 상태 비활성화");
-                main_student.setSelected(!main_student.isSelected());
-            }
-            else
-            {
-                m_favorList.add("학생·청년");
-                main_student_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.student_after));
-                main_student_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.e(TAG, "버튼 클릭 활성화!!");
-                main_student.setSelected(true);
-            }
-        });
-
-        /* 중장년·노인 혜택 버튼 */
-        main_old.setOnClickListener(OnSingleClickListener ->
-        {
-            Log.e(TAG, "학생·청년 레이아웃 클릭!");
-
-            if (OnSingleClickListener.isSelected())
-            {
-                m_favorList.remove("중장년·노인");
-                main_old_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.old));
-                main_old_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.e(TAG, "버튼 클릭 상태 비활성화");
-                main_old.setSelected(!main_old.isSelected());
-            }
-            else
-            {
-                m_favorList.add("중장년·노인");
-                main_old_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.old_after));
-                main_old_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.e(TAG, "버튼 클릭 활성화!!");
-                main_old.setSelected(true);
-            }
-        });
-
-        /* 육아·임신 혜택 버튼 */
-        main_pregnancy.setOnClickListener(OnSingleClickListener ->
-        {
-            Log.e(TAG, "학생·청년 레이아웃 클릭!");
-
-            if (OnSingleClickListener.isSelected())
-            {
-                m_favorList.remove("육아·임신");
-                main_pregnancy_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.pregnancy));
-                main_pregnancy_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.e(TAG, "버튼 클릭 상태 비활성화");
-                main_pregnancy.setSelected(!main_pregnancy.isSelected());
-            }
-            else
-            {
-                m_favorList.add("육아·임신");
-                main_pregnancy_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.pregnancy_after));
-                main_pregnancy_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.e(TAG, "버튼 클릭 활성화!!");
-                main_pregnancy.setSelected(true);
-            }
-        });
-
-        /* 장애인 혜택 버튼 */
-        main_disorder.setOnClickListener(OnSingleClickListener ->
-        {
-
-            if (OnSingleClickListener.isSelected())
-            {
-                m_favorList.remove("장애인");
-                main_disorder_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.disorder));
-                main_disorder_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.e(TAG, "버튼 클릭 상태 비활성화");
-                main_disorder.setSelected(!main_disorder.isSelected());
-            }
-            else
-            {
-                m_favorList.add("장애인");
-                main_disorder_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.disorder_after));
-                main_disorder_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.e(TAG, "버튼 클릭 활성화!!");
-                main_disorder.setSelected(true);
-            }
-        });
-
-        /* 문화·생활 혜택 버튼 */
-        main_cultural.setOnClickListener(OnSingleClickListener ->
-        {
-            if (OnSingleClickListener.isSelected())
-            {
-                m_favorList.remove("문화·생활");
-                main_cultural_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.cultural));
-                main_cultural_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.e(TAG, "버튼 클릭 상태 비활성화");
-                main_cultural.setSelected(!main_cultural.isSelected());
-            }
-            else
-            {
-                m_favorList.add("문화·생활");
-                main_cultural_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.cultural_after));
-                main_cultural_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.e(TAG, "버튼 클릭 활성화!!");
-                main_cultural.setSelected(true);
-            }
-        });
-
-        /* 다문화 혜택 버튼 */
-        main_multicultural.setOnClickListener(OnSingleClickListener ->
-        {
-            if (OnSingleClickListener.isSelected())
-            {
-                m_favorList.remove("다문화");
-                main_multicultural_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.multicultural));
-                main_multicultural_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.e(TAG, "버튼 클릭 상태 비활성화");
-                main_multicultural.setSelected(!main_multicultural.isSelected());
-            }
-            else
-            {
-                m_favorList.add("다문화");
-                main_multicultural_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.multicultural_after));
-                main_multicultural_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.e(TAG, "버튼 클릭 활성화!!");
-                main_multicultural.setSelected(true);
-            }
-        });
-
-        /* 기업·자영업자 혜택 버튼 */
-        main_company.setOnClickListener(OnSingleClickListener ->
-        {
-            if (OnSingleClickListener.isSelected())
-            {
-                m_favorList.remove("기업·자영업자");
-                main_company_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.company));
-                main_company_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.e(TAG, "버튼 클릭 상태 비활성화");
-                main_company.setSelected(!main_company.isSelected());
-            }
-            else
-            {
-                m_favorList.add("기업·자영업자");
-                main_company_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.company_after));
-                main_company_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.e(TAG, "버튼 클릭 활성화!!");
-                main_company.setSelected(true);
-            }
-        });
-
-        /* 법률 혜택 버튼 */
-        main_law.setOnClickListener(OnSingleClickListener ->
-        {
-            if (OnSingleClickListener.isSelected())
-            {
-                m_favorList.remove("법률");
-                main_law_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.law));
-                main_law_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.e(TAG, "버튼 클릭 상태 비활성화");
-                main_law.setSelected(!main_law.isSelected());
-            }
-            else
-            {
-                m_favorList.add("법률");
-                main_law_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.law_after));
-                main_law_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.e(TAG, "버튼 클릭 활성화!!");
-                main_law.setSelected(true);
-            }
-        });
-
-        /* 주거 혜택 버튼 */
-        main_living.setOnClickListener(OnSingleClickListener ->
-        {
-            if (OnSingleClickListener.isSelected())
-            {
-                m_favorList.remove("주거");
-                main_living_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.living));
-                main_living_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.e(TAG, "버튼 클릭 상태 비활성화");
-                main_living.setSelected(!main_living.isSelected());
-            }
-            else
-            {
-                m_favorList.add("주거");
-                main_living_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.living_after));
-                main_living_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.e(TAG, "버튼 클릭 활성화!!");
-                main_living.setSelected(true);
-            }
-        });
-
-        /* 취업·창업 혜택 버튼 */
-        main_job.setOnClickListener(OnSingleClickListener ->
-        {
-            if (OnSingleClickListener.isSelected())
-            {
-                m_favorList.remove("취업·창업");
-                main_job_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                main_job_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.job));
-                Log.e(TAG, "버튼 클릭 상태 비활성화");
-                main_job.setSelected(!main_job.isSelected());
-            }
-            else
-            {
-                m_favorList.add("취업·창업");
-                main_job_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.job_after));
-                main_job_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.e(TAG, "버튼 클릭 활성화!!");
-                main_job.setSelected(true);
-            }
-        });
-
-        /* 저소득층 혜택 버튼 */
-        main_homeless.setOnClickListener(OnSingleClickListener ->
-        {
-            if (OnSingleClickListener.isSelected())
-            {
-                m_favorList.remove("저소득층");
-                main_homeless_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.homeless));
-                main_homeless_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.e(TAG, "버튼 클릭 상태 비활성화");
-                main_homeless.setSelected(!main_homeless.isSelected());
-            }
-            else
-            {
-                m_favorList.add("저소득층");
-                main_homeless_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.homeless_after));
-                main_homeless_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.e(TAG, "버튼 클릭 활성화!!");
-                main_homeless.setSelected(true);
-            }
-        });
-
-        /* 기타 혜택 버튼 */
-        main_etc.setOnClickListener(OnSingleClickListener ->
-        {
-            if (OnSingleClickListener.isSelected())
-            {
-                m_favorList.remove("기타");
-                main_etc_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.etc));
-                main_etc_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                Log.e(TAG, "버튼 클릭 상태 비활성화");
-                main_etc.setSelected(!main_etc.isSelected());
-            }
-            else
-            {
-                m_favorList.add("기타");
-                main_etc_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.etc_after));
-                main_etc_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-                Log.e(TAG, "버튼 클릭 활성화!!");
-                main_etc.setSelected(true);
-            }
-        });
-
-        // 혜택 조회하러 가기 클릭 리스너
-        main_move_text.setOnClickListener(new OnSingleClickListener()
-        {
-            @Override
-            public void onSingleClick(View v)
-            {
-                Log.e(TAG, "혜택 조회하러 가기 클릭!");
-
-                // 스크롤 0.5초만에 Y축 main_content 머리로 이동
-                main_ScrollView.post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        if (!isClicked)
-                        {
-                            // 더보기 버튼 클릭 전 스크롤 이동
-                            ObjectAnimator.ofInt(main_ScrollView, "scrollY", main_content.getTop()).setDuration(500).start();
-                        }
-                        else
-                        {
-                            // 더보기 버튼 클릭 후 스크롤 이동
-                            ObjectAnimator.ofInt(main_ScrollView, "scrollY", main_content.getTop()).setDuration(500).start();
-                        }
-
-                    }
-                });
-            }
-        });
-
-        // 지도 버튼 클릭 리스너
+        // 내 주변 혜택 찾기 버튼
         map_btn.setOnClickListener(v -> {
+
+            // 유저의 위치정보를 찾는 클래스의 객체 생성(Fragment기 때문에 인자로 getActivity()를 넣어야 함!!)
             gpsTracker = new GpsTracker(getActivity());
 
             // 유저의 위치에서 위도, 경도값을 가져와 변수에 저장
@@ -577,18 +229,17 @@ public class MainFragment extends Fragment
 
             // 위도, 경도값으로 주소를 만들어 String 변수에 저장
             String address = getCurrentAddress(latitude, longitude);
-            Log.e(TAG, "address = " + address);
 
             // String 변수 안의 값을 " "을 기준으로 split해서 'OO구' 글자를 빼낸다
             split_list = new ArrayList<>();
             String[] result = address.split(" ");
             split_list.addAll(Arrays.asList(result));
-            Log.e(TAG, "split_list = " + split_list);
 
             // OO시, OO구에 대한 정보를 각각 변수에 집어넣는다
             city = split_list.get(1);
             district = split_list.get(2);
 
+            // 들어있는 값에 따라 지역명을 바꿔서 변수에 저장한다
             if (address.contains("서울특별시"))
             {
                 user_area = "서울";
@@ -657,48 +308,153 @@ public class MainFragment extends Fragment
             {
                 user_area = "제주";
             }
+
+            // 변환이 끝난 지역명은 인텐트에 담아서 지도 화면으로 보낸다
             Intent intent = new Intent(getActivity(), MapActivity.class);
             intent.putExtra("user_area", user_area);
             intent.putExtra("city", city);
             intent.putExtra("district", district);
             startActivity(intent);
         });
+
     }
 
-    /* 사용자가 위치 권한을 허용했는지 확인하는 메서드 */
-//    void checkRunTimePermission()
-//    {
-//        // 런타임 퍼미션 처리
-//        // 1. 위치 퍼미션을 가지고 있는지 체크
-//        int hasFineLocationPermission = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
-//        int hasCoarseLocationPermission = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION);
-//
-//        // 권한 2개를 다 허용했다면 아무 처리도 하지 않는다
-//        if (hasFineLocationPermission == PackageManager.PERMISSION_GRANTED && hasCoarseLocationPermission == PackageManager.PERMISSION_GRANTED)
-//        {
-//            // 2. 이미 퍼미션을 가지고 있다면
-//            // (안드로이드 6.0 이하 버전은 런타임 퍼미션이 필요없기 때문에 이미 허용된 걸로 인식함)
-//            // 3. 위치 값을 가져올 수 있음
-//        }
-//        else
-//        {  // 2. 퍼미션 요청을 허용한 적이 없다면 퍼미션 요청이 필요하다. 2가지 경우(3-1, 4-1)가 있다
-//
-//            // 3-1. 사용자가 퍼미션 거부를 한 적이 있는 경우
-//            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), REQUIRED_PERMISSIONS[0]))
-//            {
-//                // 3-2. 요청을 진행하기 전에 사용자가에게 퍼미션이 필요한 이유를 설명한다
-//                Toast.makeText(getActivity(), "내 주변 혜택 찾기 기능을 이용하시려면 위치 접근 권한이 필요합니다.", Toast.LENGTH_LONG).show();
-//                // 3-3. 사용자게에 퍼미션 요청을 한다. 요청 결과는 onRequestPermissionResult에서 수신된다
-//                ActivityCompat.requestPermissions(getActivity(), REQUIRED_PERMISSIONS, PERMISSIONS_REQUEST_CODE);
-//            }
-//            else
-//            {
-//                // 4-1. 사용자가 퍼미션 거부를 한 적이 없는 경우에는 퍼미션 요청을 바로 한다
-//                // 요청 결과는 onRequestPermissionResult에서 수신된다
-//                ActivityCompat.requestPermissions(getActivity(), REQUIRED_PERMISSIONS, PERMISSIONS_REQUEST_CODE);
-//            }
-//        }
-//    }
+    /* 유저 관심사에 따라 관련 혜택들을 보여주는 메서드, 처음에 액티비티가 켜질 때 혜택들을 제대로 받아오지 못하는 경우가 있다 */
+    void userOrderedWelfare()
+    {
+        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+        String token = sharedPreferences.getString("token", "");
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        Call<String> call = apiInterface.userOrderedWelfare(token, "customized");   // 2번 인자는 customized로 고정이다
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    recommendParsing(result);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    private void recommendParsing(String result)
+    {
+        list = new ArrayList<>();
+        try
+        {
+            JSONObject jsonObject = new JSONObject(result);
+            count = jsonObject.getString("TotalCount");
+            JSONArray jsonArray = jsonObject.getJSONArray("Message");
+            for (int i = 0; i < jsonArray.length(); i++)
+            {
+                JSONObject inner_obj = jsonArray.getJSONObject(i);
+                welf_name = inner_obj.getString("welf_name");
+                welf_local = inner_obj.getString("welf_local");
+                welf_category = inner_obj.getString("welf_category");
+                tag = inner_obj.getString("tag");
+                RecommendItem item = new RecommendItem();
+                item.setWelf_name(welf_name);
+                item.setWelf_local(welf_local);
+                item.setWelf_category(welf_category);
+                item.setTag(tag);
+                list.add(item);
+            }
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        Log.e(TAG, "count = " + count);
+        recommendAdapter = new RecommendAdapter(getActivity(), list, recom_itemClickListener);
+        recommendAdapter.setOnItemClickListener((view, pos) ->
+        {
+            String name = list.get(pos).getWelf_name();
+            Log.e(TAG, "선택한 혜택명 = " + name);
+        });
+        recom_recycler.setAdapter(recommendAdapter);
+    }
+
+    /* 유튜브 영상 정보 가져오는 메서드 */
+    void getYoutubeInformation()
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        Call<String> call = apiInterface.getYoutubeInformation();
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    jsonParsing(result);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    /* JSON 형태의 String을 파싱해 뷰에 각각 데이터를 뿌리는 메서드 */
+    private void jsonParsing(String result)
+    {
+        lists = new ArrayList<>();
+        try
+        {
+            JSONObject jsonObject = new JSONObject(result);
+            JSONArray jsonArray = jsonObject.getJSONArray("Message");
+            for (int i = 0; i < jsonArray.length(); i++)
+            {
+                JSONObject inner_obj = jsonArray.getJSONObject(i);
+                thumbnail = inner_obj.getString("thumbnail");
+                title = inner_obj.getString("title");
+                // 리사이클러뷰에 JSONObject의 개수만큼 데이터를 뿌리기 위해 객체, 리스트, setter 활용
+                HorizontalYoutubeItem item = new HorizontalYoutubeItem();
+                item.setYoutube_name(title);
+                item.setYoutube_thumbnail(thumbnail);
+                lists.add(item);
+            }
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        adapter = new HorizontalYoutubeAdapter(getActivity(), lists, itemClickListener);
+        // MainFragment에선 썸넬과 영상 제목만 알려주기 때문에, 썸넬을 클릭하면 액티비티를 이동해 그곳에서 유튜브 영상을 틀어준다
+        adapter.setOnItemClickListener(new HorizontalYoutubeAdapter.ItemClickListener()
+        {
+            @Override
+            public void onItemClick(View view, int position)
+            {
+                Intent intent = new Intent(getActivity(), YoutubeActivity.class);
+                String videoId = lists.get(position).getYoutube_name();
+                Log.e(TAG, "getYoutube_name() : " + videoId);
+                startActivity(intent);
+            }
+        });
+        youtube_video_recyclerview.setAdapter(adapter);
+    }
 
     // 위도, 경도를 받아서 주소를 만들어내는 메서드
     public String getCurrentAddress(double latitude, double longitude)
@@ -745,128 +501,6 @@ public class MainFragment extends Fragment
 
         /* isProviderEnabled() : 지정된 provider의 현재 활성화 / 비활성화 상태를 리턴하는 메서드 */
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-    }
-
-    @Override
-    public void onStart()
-    {
-        super.onStart();
-        // 조회하기 버튼만 누르고 이동했다가 다시 돌아온 후, 다시 조회하기 버튼을 누르면 전체가 여러 개 찍히는 현상이 있다
-        // 이 현상을 없애기 위해서 ArrayList.clear()로 리스트를 싹 비운다
-        m_favorList.clear();
-
-        // ResultBenefitActivity에서 뒤로가기 누를 시 버튼이 선택된 상태의 프래그먼트로 돌아오기 때문에, 버튼이 선택되지 않은 처음의 상태로 되돌리기 위해서 필요한 로직
-        main_child_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.child));
-        main_child_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_child.setSelected(false);
-
-        main_student_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.student));
-        main_student_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_student.setSelected(false);
-
-        main_old_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.old));
-        main_old_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_old.setSelected(false);
-
-        main_pregnancy_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.pregnancy));
-        main_pregnancy_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_pregnancy.setSelected(false);
-
-        main_disorder_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.disorder));
-        main_disorder_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_disorder.setSelected(false);
-
-        main_cultural_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.cultural));
-        main_cultural_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_cultural.setSelected(false);
-
-        main_multicultural_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.multicultural));
-        main_multicultural_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_multicultural.setSelected(false);
-
-        main_company_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.company));
-        main_company_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_company.setSelected(false);
-
-        main_law_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.law));
-        main_law_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_law.setSelected(false);
-
-        main_living_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.living));
-        main_living_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_living.setSelected(false);
-
-        main_job_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.job));
-        main_job_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_job.setSelected(false);
-
-        main_homeless_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.homeless));
-        main_homeless_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_homeless.setSelected(false);
-
-        main_etc_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.etc));
-        main_etc_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_etc.setSelected(false);
-    }
-
-    private void init(View view)
-    {
-        main_content = view.findViewById(R.id.main_content);
-
-        main_logo = view.findViewById(R.id.main_logo);
-        more_layout = view.findViewById(R.id.more_layout);
-
-        /* 더보기 버튼을 누르면 나타나야 하는 레이아웃 */
-        multi_law_layout = view.findViewById(R.id.multi_law_layout);
-        etc_layout = view.findViewById(R.id.etc_layout);
-
-        main_ScrollView = view.findViewById(R.id.main_ScrollView);
-        main_move_text = view.findViewById(R.id.main_move_text);
-
-        main_child = view.findViewById(R.id.main_child);
-        main_student = view.findViewById(R.id.main_student);
-        main_old = view.findViewById(R.id.main_old);
-        main_pregnancy = view.findViewById(R.id.main_pregnancy);
-        main_disorder = view.findViewById(R.id.main_disorder);
-        main_cultural = view.findViewById(R.id.main_cultural);
-        main_multicultural = view.findViewById(R.id.main_multicultural);
-        main_company = view.findViewById(R.id.main_company);
-        main_law = view.findViewById(R.id.main_law);
-        main_living = view.findViewById(R.id.main_living);
-        main_job = view.findViewById(R.id.main_job);
-        main_homeless = view.findViewById(R.id.main_homeless);
-        main_etc = view.findViewById(R.id.main_etc);
-        main_done = view.findViewById(R.id.main_done);
-
-        main_child_img = view.findViewById(R.id.main_child_img);
-        main_student_img = view.findViewById(R.id.main_student_img);
-        main_old_img = view.findViewById(R.id.main_old_img);
-        main_pregnancy_img = view.findViewById(R.id.main_pregnancy_img);
-        main_disorder_img = view.findViewById(R.id.main_disorder_img);
-        main_cultural_img = view.findViewById(R.id.main_cultural_img);
-        main_multicultural_img = view.findViewById(R.id.main_multicultural_img);
-        main_company_img = view.findViewById(R.id.main_company_img);
-        main_law_img = view.findViewById(R.id.main_law_img);
-        main_living_img = view.findViewById(R.id.main_living_img);
-        main_job_img = view.findViewById(R.id.main_job_img);
-        main_homeless_img = view.findViewById(R.id.main_homeless_img);
-        main_etc_img = view.findViewById(R.id.main_etc_img);
-
-        main_child_title = view.findViewById(R.id.main_child_title);
-        main_student_title = view.findViewById(R.id.main_student_title);
-        main_old_title = view.findViewById(R.id.main_old_title);
-        main_pregnancy_title = view.findViewById(R.id.main_pregnancy_title);
-        main_disorder_title = view.findViewById(R.id.main_disorder_title);
-        main_cultural_title = view.findViewById(R.id.main_cultural_title);
-        main_multicultural_title = view.findViewById(R.id.main_multicultural_title);
-        main_company_title = view.findViewById(R.id.main_company_title);
-        main_law_title = view.findViewById(R.id.main_law_title);
-        main_living_title = view.findViewById(R.id.main_living_title);
-        main_job_title = view.findViewById(R.id.main_job_title);
-        main_homeless_title = view.findViewById(R.id.main_homeless_title);
-        main_etc_title = view.findViewById(R.id.main_etc_title);
-
-        map_btn = view.findViewById(R.id.map_btn);
     }
 
 }

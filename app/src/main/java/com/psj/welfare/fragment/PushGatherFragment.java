@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -38,6 +40,7 @@ public class PushGatherFragment extends Fragment
 {
     private final String TAG = "InterestBenefitFragment";
 
+    Toolbar push_toolbar;
     RecyclerView push_layout_recycler;
     PushGatherAdapter adapter;
     PushGatherAdapter.ItemClickListener itemClickListener;
@@ -69,6 +72,12 @@ public class PushGatherFragment extends Fragment
     {
         super.onViewCreated(view, savedInstanceState);
 
+        push_toolbar = view.findViewById(R.id.push_toolbar);
+        if ((AppCompatActivity)getActivity() != null)
+        {
+            ((AppCompatActivity)getActivity()).setSupportActionBar(push_toolbar);
+        }
+        push_toolbar.setTitle("알림");
         app_pref = getActivity().getSharedPreferences("app_pref", 0);
         token = app_pref.getString("token", "");
         Log.e(TAG, "onViewCreated() 쉐어드에 저장된 서버 토큰값 = " + token);

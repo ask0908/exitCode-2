@@ -347,7 +347,7 @@ public class DetailBenefitActivity extends AppCompatActivity
                 }
                 else
                 {
-                    Log.e(TAG, "onResponse 실패");
+                    Log.e(TAG, "onResponse 실패 : " + response.body());
                 }
             }
 

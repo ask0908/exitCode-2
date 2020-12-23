@@ -57,15 +57,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/*
- * 로그인 액티비티는 SNS 로그인(구글, 네이버)과 너의 혜택은 자체 로그인이 있다
- * 로그인 컨셉 구상중....
- * */
+/* 카카오, 구글 로그인 진행하는 액티비티 */
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener
 {
     public static final String TAG = "LoginActivity";
-    SharedPreferences preferences;
-    SharedPreferences app_pref;
+    SharedPreferences preferences, app_pref;
 
     public LoginActivity loginContext;
 
@@ -105,7 +101,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         Logger.addLogAdapter(new AndroidLogAdapter());
 
+        // TODO : 스크롤 내리면 체크안한 것들이 체크되는 현상 있음. 수정 필요!!
+//        app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
+//        SharedPreferences.Editor editor = app_pref.edit();
+//        editor.clear();
+//        editor.apply();
+
         google_login_btn = findViewById(R.id.google_login_btn);
+
         // 구글 로그인 버튼에 써진 텍스트를 변경한다
         setGooglePlusButtonText(google_login_btn, getString(R.string.login_google));
 
@@ -406,9 +409,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
                     SharedPreferences.Editor editor = app_pref.edit();
                     Log.e(TAG, "result = " + result);
-                    String age = app_pref.getString("age", "");
-                    String area = app_pref.getString("area", "");
-                    String gender = app_pref.getString("gender", "");
+                    String age = app_pref.getString("user_age", "");
+                    String area = app_pref.getString("user_area", "");
+                    String gender = app_pref.getString("user_gender", "");
                     String user_nickname = app_pref.getString("user_nickname", "");
                     Log.e(TAG, "쉐어드의 age = " + age + ", 지역 = " + area + ", 성별 = " + gender + ", 닉네임 = " + user_nickname);
                     // 카카오 로그인 성공 시 실행할 처리
@@ -670,6 +673,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             e.printStackTrace();
         }
         Logger.e("token = " + server_token);
+        /* 다른 액티비티/프래그먼트에서도 활용해야 하기 때문에 서버에서 받은 토큰값을 쉐어드에 저장해 사용한다 */
+        SharedPreferences.Editor editor1 = app_pref.edit();
+        editor1.putString("token", server_token);
+        editor1.apply();
     }
 
     /* 다시 구글 로그인할 때 사용하는 메서드 */

@@ -3,10 +3,21 @@ package com.psj.welfare.Data;
 /* 새로 만든 모델 클래스, ResultBenefitActivity에서 사용 */
 public class CategorySearchResultItem
 {
-    String welf_name;
-    String welf_category;
-    String tag;
-    String welf_local;
+    private String welf_name;
+    private String welf_category;
+    private String parent_category;
+    private String tag;
+    private String welf_local;
+
+    public String getParent_category()
+    {
+        return parent_category;
+    }
+
+    public void setParent_category(String parent_category)
+    {
+        this.parent_category = parent_category;
+    }
 
     public String getWelf_name()
     {
