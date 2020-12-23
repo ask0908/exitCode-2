@@ -40,7 +40,7 @@
         <item name="fontFamily">@font/jalnan</item>
         <item name="colorControlNormal">@android:color/transparent</item>
 
-        <item name="android:textColorPrimary">@color/colorPrimary</item>
+        <item name="android:textColorPrimary">@color/colorPrimaryDark</item>
         <item name="android:background">@color/colorMainWhite</item>
     </style>
 

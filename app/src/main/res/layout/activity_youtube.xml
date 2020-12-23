@@ -1,9 +1,208 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".YoutubeActivity">
+    android:orientation="vertical"
+    android:background="#fff"
+    android:theme="@style/ToolbarTheme"
+    android:descendantFocusability="blocksDescendants"
+    tools:context=".activity.YoutubeActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/youtube_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- enableLiveVideoUi : 기본값 false, true인 경우 이 뷰는 라이브 동영상에 UI를 사용한다
+         false인 경우 UI 일반 동영상을 사용한다. useWebUi가 true라면 이 속성은 아무 작업도 수행하지 않는다
+         showFullScreenButton : 기본값 true, true인 경우 이 뷰에 전체화면 버튼이 표시된다
+         false면 전체화면 버튼을 표시하지 않는다. userWebUi가 true라면 이 속성은 아무 작업도 수행하지 않는다
+         handleNetworkEvents : 기본값 true, true인 경우 이 뷰는 NetworkReceiver를 등록해 네트워크 이벤트를 처리함
+         true로 설정했을 시 플레이어가 초기화되는 동안 연결이 끊어지면, 정상으로 돌아왔을 때 자동으로 초기화를 재개한다
+         false로 설정하면 네트워크 이벤트를 직접 관리해야 한다
+         enableAutomaticInitialization : 기본값 true, true인 경우 이 뷰가 초기화를 처리한다
+         false면 직접 코딩해서 이 뷰를 초기화해야 한다
+         useWebUi : 기본값 false, true면 이 뷰는 IFrame YoutubePlayer의 웹 기반 UI를 사용한다
+         false면 라이브러리의 기본 UI를 사용한다 -->
+        <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+            android:id="@+id/player_1"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginTop="30dp"
+            app:autoPlay="false"
+            app:showFullScreenButton="true"
+            app:showSeekBar="true"
+            app:handleNetworkEvents="true"
+            app:enableAutomaticInitialization="true"
+            app:useWebUi="true"
+            app:layout_constraintTop_toBottomOf="@id/youtube_toolbar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
+            android:id="@+id/first_video_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/jalnan"
+            android:lineSpacingExtra="6sp"
+            android:text="텍스트"
+            android:textColor="@color/colorBlack"
+            android:textSize="17sp"
+            android:padding="16dp"
+            android:layout_marginTop="30dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/player_1"/>
+
+
+        <TextView
+            android:id="@+id/similar_welfare_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/jalnan"
+            android:text="영상 관련 혜택"
+            android:padding="16dp"
+            android:textSize="17sp"
+            android:textColor="@color/colorBlack"
+            android:layout_marginTop="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/first_video_title"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/similar_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/similar_welfare_textview"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+<!--        <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView-->
+<!--            android:id="@+id/player_2"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="250dp"-->
+<!--            android:visibility="gone"-->
+<!--            android:layout_marginTop="30dp"-->
+<!--            app:autoPlay="false"-->
+<!--            app:showFullScreenButton="true"-->
+<!--            app:showSeekBar="true"-->
+<!--            app:handleNetworkEvents="true"-->
+<!--            app:enableAutomaticInitialization="true"-->
+<!--            app:useWebUi="true"/>-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/second_video_title"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:visibility="gone"-->
+<!--            android:fontFamily="@font/jalnan"-->
+<!--            android:text="텍스트"-->
+<!--            android:textColor="@color/colorBlack"-->
+<!--            android:maxLines="1"-->
+<!--            android:ellipsize="end"-->
+<!--            android:padding="8dp"/>-->
+
+<!--        <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView-->
+<!--            android:id="@+id/player_3"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="250dp"-->
+<!--            android:layout_marginTop="30dp"-->
+<!--            android:visibility="gone"-->
+<!--            app:autoPlay="false"-->
+<!--            app:showFullScreenButton="true"-->
+<!--            app:showSeekBar="true"-->
+<!--            app:handleNetworkEvents="true"-->
+<!--            app:enableAutomaticInitialization="true"-->
+<!--            app:useWebUi="true"/>-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/third_video_title"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:fontFamily="@font/jalnan"-->
+<!--            android:text="텍스트"-->
+<!--            android:textColor="@color/colorBlack"-->
+<!--            android:visibility="gone"-->
+<!--            android:maxLines="1"-->
+<!--            android:ellipsize="end"-->
+<!--            android:padding="8dp"/>-->
+
+<!--        <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView-->
+<!--            android:id="@+id/player_4"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="250dp"-->
+<!--            android:layout_marginTop="30dp"-->
+<!--            android:visibility="gone"-->
+<!--            app:autoPlay="false"-->
+<!--            app:showFullScreenButton="true"-->
+<!--            app:showSeekBar="true"-->
+<!--            app:handleNetworkEvents="true"-->
+<!--            app:enableAutomaticInitialization="true"-->
+<!--            app:useWebUi="true"/>-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/fourth_video_title"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:fontFamily="@font/jalnan"-->
+<!--            android:text="텍스트"-->
+<!--            android:textColor="@color/colorBlack"-->
+<!--            android:visibility="gone"-->
+<!--            android:maxLines="1"-->
+<!--            android:ellipsize="end"-->
+<!--            android:padding="8dp"/>-->
+
+<!--        <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView-->
+<!--            android:id="@+id/player_5"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="250dp"-->
+<!--            android:layout_marginTop="30dp"-->
+<!--            android:visibility="gone"-->
+<!--            app:autoPlay="false"-->
+<!--            app:showFullScreenButton="true"-->
+<!--            app:showSeekBar="true"-->
+<!--            app:handleNetworkEvents="true"-->
+<!--            app:enableAutomaticInitialization="true"-->
+<!--            app:useWebUi="true"/>-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/fifth_video_title"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:fontFamily="@font/jalnan"-->
+<!--            android:text="텍스트"-->
+<!--            android:textColor="@color/colorBlack"-->
+<!--            android:visibility="gone"-->
+<!--            android:maxLines="1"-->
+<!--            android:ellipsize="end"-->
+<!--            android:padding="8dp"/>-->
+
+<!--        <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView-->
+<!--            android:id="@+id/player_6"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="250dp"-->
+<!--            android:layout_marginTop="30dp"-->
+<!--            android:visibility="gone"-->
+<!--            app:autoPlay="false"-->
+<!--            app:showFullScreenButton="true"-->
+<!--            app:showSeekBar="true"-->
+<!--            app:handleNetworkEvents="true"-->
+<!--            app:enableAutomaticInitialization="true"-->
+<!--            app:useWebUi="true"/>-->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

@@ -9,15 +9,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.psj.welfare.Data.SelectedButtonItem;
+import com.psj.welfare.Data.CategorySearchResultItem;
 import com.psj.welfare.R;
 
 import java.util.List;
 
+/* ResultBenefitActivity의 가로 리사이클러뷰(category_recycler)에 쓰는 어댑터 */
 public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCategoryAdapter.SelectedCategoryViewHolder>
 {
     private Context context;
-    private List<SelectedButtonItem> list;
+    private List<CategorySearchResultItem> list;
     private ItemClickListener itemClickListener;
 
     public void setOnItemClickListener(ItemClickListener itemClickListener)
@@ -25,7 +26,7 @@ public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCatego
         this.itemClickListener = itemClickListener;
     }
 
-    public SelectedCategoryAdapter(Context context, List<SelectedButtonItem> list, ItemClickListener itemClickListener)
+    public SelectedCategoryAdapter(Context context, List<CategorySearchResultItem> list, ItemClickListener itemClickListener)
     {
         this.context = context;
         this.list = list;
@@ -43,8 +44,8 @@ public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCatego
     @Override
     public void onBindViewHolder(@NonNull SelectedCategoryAdapter.SelectedCategoryViewHolder holder, int position)
     {
-        SelectedButtonItem item = list.get(position);
-        holder.category_btn.setText(item.getButton_title());
+        CategorySearchResultItem item = list.get(position);
+        holder.category_btn.setText(item.getWelf_category());
     }
 
     @Override

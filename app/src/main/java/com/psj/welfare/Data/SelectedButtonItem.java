@@ -3,48 +3,60 @@ package com.psj.welfare.Data;
 /* SelectedCategoryAdapter에서 사용됨, ResultBenefitActivity에서 선택한 버튼들의 정보를 가져온다 */
 public class SelectedButtonItem
 {
-    String button;
-    String button_title;
-    String button_color;
-    String title_num;
+    private String welf_name;
+    private String parent_category;
+    private String welf_category;
+    private String tag;
+    private String welf_local;
 
-    public String getButton()
+    public String getWelf_name()
     {
-        return button;
+        return welf_name;
     }
 
-    public void setButton(String button)
+    public void setWelf_name(String welf_name)
     {
-        this.button = button;
+        this.welf_name = welf_name;
     }
 
-    public String getButton_title()
+    public String getParent_category()
     {
-        return button_title;
+        return parent_category;
     }
 
-    public void setButton_title(String button_title)
+    public void setParent_category(String parent_category)
     {
-        this.button_title = button_title;
+        this.parent_category = parent_category;
     }
 
-    public String getButton_color()
+    public String getWelf_category()
     {
-        return button_color;
+        return welf_category;
     }
 
-    public void setButton_color(String button_color)
+    public void setWelf_category(String welf_category)
     {
-        this.button_color = button_color;
+        this.welf_category = welf_category;
     }
 
-    public String getTitle_num()
+    public String getTag()
     {
-        return title_num;
+        return tag;
     }
 
-    public void setTitle_num(String title_num)
+    public void setTag(String tag)
     {
-        this.title_num = title_num;
+        this.tag = tag;
     }
+
+    public String getWelf_local()
+    {
+        return welf_local;
+    }
+
+    public void setWelf_local(String welf_local)
+    {
+        this.welf_local = welf_local;
+    }
+
 }

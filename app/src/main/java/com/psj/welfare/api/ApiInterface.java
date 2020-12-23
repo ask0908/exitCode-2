@@ -420,8 +420,8 @@ public interface ApiInterface
 	);
 
 	/**
-	 * 키워드와 일치하는 복지혜택들의 데이터를 서버에서 가져오는 메서드
-	 * SearchFragment에서 사용
+	 * 키워드와 일치하는 복지혜택들의 데이터를 서버에서 가져오는 메서드 (혜택 상위 카테고리 검색)
+	 * SearchResultActivity에서 사용
 	 * @param type - search(키워드 기반 검색 요청을 의미하는 검색 타입)
 	 * @param keyword - 유저가 입력한 검색 키워드
 	 * @return - {
@@ -465,6 +465,53 @@ public interface ApiInterface
 			@Query("keyword") String category_keyword
 	);
 
+	/**
+	 * 혜택 하위 카테고리 검색. 카테고리에 해당하는 혜택 정보를 검색해 결과를 받아오는 메서드
+	 * SearchResultActivity에서 사용
+	 * @param type - child_category_search 문자열을 입력한다 (요청 타입), 필수 요청값
+	 * @param select_category - 선택한 상위 카테고리 정보, 여러 개를 선택했을 경우 구분자로 '|'를 중간에 넣어서 보낸다
+	 * @param welf_category - 선택한 하위 카테고리 정보(현물 지원, 현금 지원 등), 필수 요청값
+	 * @param keyword - 키워드 검색 정보
+	 * @return -
+	 * "Status":"200",
+	 * "Message":[
+	 * 			{
+	 * 				"welf_name":"전문기술인재장학금",
+	 * 				"parent_category":"청년",
+	 * 				"welf_category":"현금 지원",
+	 * 				"tag":"장학생;;학비;;전문대",
+	 * 				"welf_local":"전국"
+	 * 			},...(중략)...
+	 * 			],
+	 * "TotalCount":10
+	 */
+	@GET("https://www.urbene-fit.com/welf")
+	Call<String> searchSubCategoryWelfare(
+			@Query("type") String type,
+			@Query("select_category") String select_category,
+			@Query("welf_category") String welf_category,
+			@Query("keyword") String keyword
+	);
+
+	/**
+	 * 사용자 정보(나이, 성별, 지역, 닉네임)를 입력받으면 서버에 저장하는 메서드
+	 * GetUserInformationActivity에서 사용됨, 테스트해야 함
+	 * @param login_token - 로그인 시 서버에서 생성되는 토큰
+	 * @param user_nickname - 유저가 입력한 닉네임
+	 * @param age - 유저 나이
+	 * @param gender - 유저 성별
+	 * @param city - 유저의 거주 지역
+	 * @return - {
+	 * 				"Status":"200",
+	 * 				"Message":[
+	 * 						{
+	 * 						"age_group":"10대",
+	 * 						"gender":"여자",
+	 * 						"interest":"10대,가출,검정고시,통신비,자퇴,퇴학,중학생,고등학생,소년소녀가정,조손가정,한부모가족,가정위탁,성범죄"
+	 * 						}
+	 * 						]
+	 * 				}
+	 */
 	@FormUrlEncoded
 	@POST("https://www.urbene-fit.com/user")
 	Call<String> registerUserInfo(
@@ -473,6 +520,63 @@ public interface ApiInterface
 			@Field("age") String age,
 			@Field("gender") String gender,
 			@Field("city") String city
+	);
+
+	/**
+	 * 사용자가 관심있는 관심사를 등록하는 기능
+	 * ChoiceKeywordActivity에서 사용됨
+	 * @param login_token - 로그인 시 서버에서 생성되는 토큰
+	 * @param type - 요청 타입(interest)
+	 * @param interest - 사용자의 관심사 정보(10대,가출,검정고시,통신비,자퇴,...)
+	 * @return - {
+	 * 			"Status":"200",
+	 * 			"Message":"사용자 관심사 등록이 완료되었습니다."
+	 * 			}
+	 */
+	@FormUrlEncoded
+	@PUT("https://www.urbene-fit.com/user")
+	Call<String> registerUserInterest(
+			@Field("login_token") String login_token,
+			@Field("type") String type,
+			@Field("interest") String interest
+	);
+
+	/**
+	 * 유튜브 영상 정보를 받아오는 메서드
+	 * @return - {
+	 * 			"Status":"200",
+	 * 			"Message":[
+	 * 			{
+	 * 			"thumbnail":"https://i.ytimg.com/vi/V16hJ4ACn_A/default.jpg",
+	 * 			"videoId":"V16hJ4ACn_A",
+	 * 			"title":"잘 알려지지 않은 3가지 혜택! 꼭 받으세요~"
+	 * 			},...(중략)...
+	 * 			"TotalCount":6
+	 */
+	@GET("https://www.urbene-fit.com/youtube")
+	Call<String> getYoutubeInformation();
+
+	/**
+	 * 사용자 관심사에 따라 관련된 혜택을 보여주는 기능
+	 * 어디서 사용할지는 미정
+	 * @param login_token - 로그인 시 서버에서 받는 토큰값
+	 * @param type - customized 고정
+	 * @return -
+	 * "Status":"200",
+	 * "Message":[
+	 * 			{
+	 * 				"welf_name":"장애아동수당지원",
+	 * 				"welf_local":"전북",
+	 * 				"welf_category":"현금 지원",
+	 * 				"tag":"장애인;; 아동"
+	 * 			},...
+	 * 			],
+	 * 				"TotalCount":10
+	 */
+	@GET("https://www.urbene-fit.com/welf")
+	Call<String> userOrderedWelfare(
+			@Query("login_token") String login_token,
+			@Query("type") String type
 	);
 
 }

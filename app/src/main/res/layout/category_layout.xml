@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_marginStart="30dp"
+    android:layout_marginTop="20dp"
+    android:weightSum="1">
+
+    <CheckBox
+        android:id="@+id/search_category_checkbox"
+        android:layout_width="0dp"
+        android:layout_height="25dp"
+        android:layout_weight=".15"
+        android:button="@null"
+        android:background="@drawable/custom_checkbox"/>
+
+    <TextView
+        android:id="@+id/search_category_textview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight=".50"
+        android:layout_marginStart="5dp"
+        android:fontFamily="@font/jalnan"
+        android:text="사회 초년생"
+        android:textSize="17sp"
+        android:textColor="@color/colorBlack"/>
+
+</LinearLayout>

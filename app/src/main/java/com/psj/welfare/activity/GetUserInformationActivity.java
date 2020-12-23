@@ -13,9 +13,15 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.orhanobut.logger.Logger;
 import com.psj.welfare.R;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
@@ -31,12 +37,12 @@ import retrofit2.Response;
 public class GetUserInformationActivity extends AppCompatActivity
 {
     private ConstraintLayout third_fragment_layout;
-    private final String TAG = "ThirdFragment";
-    private NumberPicker first_choice_spinner;
-    private EditText age_edittext, nickname_edittext;
-    private Button man_btn, woman_btn, next_btn;
+    private final String TAG = this.getClass().getName();
+    private NumberPicker area_picker;                   // 지역 선택하는 NumberPicker
+    private EditText age_edittext, nickname_edittext;   // 나이, 닉네임 입력하는 editText
+    private Button man_btn, woman_btn, next_btn;        // 남자/여자 버튼, 확인 버튼
     // 스피너에서 아이템을 선택했는지 여부를 확인하는 데 사용할 String 변수. 여기에 시 · 도 선택, 시 · 군 · 구 선택이 들어있다면 다음 액티비티로 넘어가지 못하게 한다
-    String first_spinner_value, second_spinner_value;
+    String first_spinner_value;
 
     // 성별, 나이, 지역, 닉네임(사용자 정보)을 담을 변수. MainTabLayoutActivity로 이동 시 같이 가져간다
     String gender, age, area, user_nickname;
@@ -45,7 +51,10 @@ public class GetUserInformationActivity extends AppCompatActivity
     SharedPreferences sharedPreferences;
 
     // 서버에서 받은 결과값 파싱할 때 사용할 변수
-    String question, keyword_1, keyword_2;
+    String age_group, user_gender, interest;
+    String token, server_token;
+
+    SharedPreferences app_pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -56,6 +65,23 @@ public class GetUserInformationActivity extends AppCompatActivity
         init();
         sharedPreferences = getSharedPreferences("app_pref", 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        sendUserTypeAndPlatform();
+
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<InstanceIdResult> task)
+            {
+                if (!task.isSuccessful())
+                {
+                    Log.w("FCM LOG", "getInstanceId failed", task.getException());
+                    return;
+                }
+                token = task.getResult().getToken();
+                Log.e(TAG, "FCM token = " + token);
+            }
+        });
 
         // 화면의 빈 공간을 누르면 키보드가 사라지게 한다
         third_fragment_layout.setOnTouchListener(new View.OnTouchListener()
@@ -94,13 +120,13 @@ public class GetUserInformationActivity extends AppCompatActivity
 //        final String[] area_exception = {"선택이 완료되셨나요?", "완료되셨다면 확인 버튼을 눌러주세요"};
 
         // 스피너에 지역명 세팅
-        first_choice_spinner.setMinValue(0);
-        first_choice_spinner.setMaxValue(first_area.length - 1);
-        first_choice_spinner.setDisplayedValues(first_area);
-        first_choice_spinner.setWrapSelectorWheel(false);
+        area_picker.setMinValue(0);
+        area_picker.setMaxValue(first_area.length - 1);
+        area_picker.setDisplayedValues(first_area);
+        area_picker.setWrapSelectorWheel(false);
 
         // To change format of number in NumberPicker
-        first_choice_spinner.setFormatter(new NumberPicker.Formatter()
+        area_picker.setFormatter(new NumberPicker.Formatter()
         {
             @Override
             public String format(int value)
@@ -128,7 +154,7 @@ public class GetUserInformationActivity extends AppCompatActivity
         });
 
         // 1번째 스피너에서 지역을 선택하면 그것을 전역변수에 담아 쉐어드에 저장할 준비를 한다
-        first_choice_spinner.setOnValueChangedListener(new NumberPicker.OnValueChangeListener()
+        area_picker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener()
         {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal)
@@ -415,18 +441,20 @@ public class GetUserInformationActivity extends AppCompatActivity
                 return;
             }
             // 인텐트 설정 및 보낼 데이터 (나이, 성별, 지역)
-//            Intent intent = new Intent(GetUserInformationActivity.this, PushQuestionActivity.class);  // 목적지를 질문지에서 MainTabLayoutActivity로 변경해 주석 처리리
-           Intent intent = new Intent(GetUserInformationActivity.this, MainTabLayoutActivity.class);
+//           Intent intent = new Intent(GetUserInformationActivity.this, MainTabLayoutActivity.class);
+
+            /* 키워드를 선택하기 위해 MainTabLayoutActivity가 아닌 ChoiceKeywordActivity로 이동되게 처리
+            * MainTabLayoutActivity는 ChoiceKeywordActivity에서 필요한 작업을 다 마치면 이동하게 한다 */
             user_nickname = nickname_edittext.getText().toString();
             area = first_spinner_value;
             Log.e(TAG, "나이 = " + age + ", 성별 = " + gender + ", 지역 = " + area + ", 닉네임 = " + user_nickname);
+            // 나이, 성별, 지역, 닉네임을 쉐어드, 서버에 저장한 뒤 액티비티 이동
             editor.putString("user_age", age);
             editor.putString("user_gender", gender);
             editor.putString("user_area", area);
             editor.putString("user_nickname", user_nickname);
             editor.apply();
             registerUserInfo();
-            startActivity(intent);
         });
 
     }
@@ -440,10 +468,11 @@ public class GetUserInformationActivity extends AppCompatActivity
         call.enqueue(new Callback<String>()
         {
             @Override
-            public void onResponse(Call<String> call, Response<String> response)
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
+                    Log.e(TAG, "response = " + response.body());
                     String result = response.body();
                     jsonParsing(result);
                 }
@@ -454,7 +483,7 @@ public class GetUserInformationActivity extends AppCompatActivity
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t)
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
             {
                 Log.e(TAG, "에러 : " + t.getMessage());
             }
@@ -470,18 +499,73 @@ public class GetUserInformationActivity extends AppCompatActivity
             for (int i = 0; i < jsonArray.length(); i++)
             {
                 JSONObject inner_obj = jsonArray.getJSONObject(i);
-                question = inner_obj.getString("question");
-                keyword_1 = inner_obj.getString("keyword_1");
-                keyword_2 = inner_obj.getString("keyword_2");
+                age_group = inner_obj.getString("age_group");
+                user_gender = inner_obj.getString("gender");
+                interest = inner_obj.getString("interest");
             }
         }
         catch (JSONException e)
         {
             e.printStackTrace();
         }
-        Log.e(TAG, "question = " + question);
-        Log.e(TAG, "keyword_1 = " + keyword_1);
-        Log.e(TAG, "keyword_2 = " + keyword_2);
+        Log.e(TAG, "age_group = " + age_group);
+        Log.e(TAG, "gender = " + user_gender);
+        Log.e(TAG, "interest = " + interest);
+        Intent intent = new Intent(GetUserInformationActivity.this, ChoiceKeywordActivity.class);
+        intent.putExtra("age_group", age_group);
+        intent.putExtra("user_gender", user_gender);
+        intent.putExtra("interest", interest);
+        startActivity(intent);
+    }
+
+    void sendUserTypeAndPlatform()
+    {
+        String osType = getString(R.string.login_os);
+        String platform = getString(R.string.main_platform);
+        String fcm_token = token;
+        String email = getString(R.string.email2);
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        Call<String> call = apiInterface.sendUserTypeAndPlatform(osType, platform, fcm_token, email);
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    tokenParsing(response.body());
+                }
+                else
+                {
+                    Logger.e("onResponse() 실패 = " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
+            {
+                Logger.e("에러 = " + t.getMessage());
+            }
+        });
+    }
+
+    private void tokenParsing(String data)
+    {
+        app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
+        SharedPreferences.Editor editor = app_pref.edit();
+
+        try
+        {
+            JSONObject token_object = new JSONObject(data);
+            server_token = token_object.getString("Token");
+            editor.putString("token", server_token);
+            editor.apply();
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        Logger.e("server_token = " + server_token);
     }
 
     /* editText 바깥을 터치했을 때 키보드를 내리는 메서드 */
@@ -495,7 +579,7 @@ public class GetUserInformationActivity extends AppCompatActivity
     private void init()
     {
         third_fragment_layout = findViewById(R.id.third_fragment_layout);
-        first_choice_spinner = findViewById(R.id.first_choice_spinner);
+        area_picker = findViewById(R.id.first_choice_spinner);
         age_edittext = findViewById(R.id.age_edittext);
         nickname_edittext = findViewById(R.id.nickname_edittext);
         man_btn = findViewById(R.id.man_btn);

@@ -4,21 +4,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ImageView
-        android:layout_width="120dp"
-        android:layout_height="40dp"
-        android:src="@drawable/main_logo"
-        android:layout_marginStart="30dp"/>
-
-    <TextView
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/push_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/jalnan"
-        android:text="알림"
-        android:textSize="20sp"
-        android:textColor="@color/colorBlack"
-        android:paddingStart="32dp"
-        android:layout_marginTop="20dp"/>
+        android:layout_height="wrap_content"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/push_layout_recycler"

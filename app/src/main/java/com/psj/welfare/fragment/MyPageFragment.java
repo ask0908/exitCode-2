@@ -31,8 +31,6 @@ import com.psj.welfare.R;
 import com.psj.welfare.activity.MyInfoUpdateActivity;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
-import com.psj.welfare.custom.CustomPushDenyDialog;
-import com.psj.welfare.custom.CustomPushPermitDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -113,7 +111,7 @@ public class MyPageFragment extends Fragment
         // 계정 설정
         account_btn.setOnClickListener(v -> Toast.makeText(getActivity(), getString(R.string.not_yet), Toast.LENGTH_SHORT).show());
 
-        // 푸시 알림 설정 스위치
+        // 푸시 알림 설정 스위치, 로그인할 때마다 뜨니까 귀찮은데 이거 어떻게 고칠까
         push_noti_switch.setOnCheckedChangeListener((buttonView, isChecked) ->
         {
             if (isChecked)
@@ -123,8 +121,8 @@ public class MyPageFragment extends Fragment
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean("fcm_canceled", fcm_canceled);
                 editor.apply();
-                CustomPushPermitDialog dialog = new CustomPushPermitDialog(getActivity());
-                dialog.showPushDialog();
+//                CustomPushPermitDialog dialog = new CustomPushPermitDialog(getActivity());
+//                dialog.showPushDialog();
             }
             else
             {
@@ -134,8 +132,8 @@ public class MyPageFragment extends Fragment
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean("fcm_canceled", fcm_canceled);
                 editor.apply();
-                CustomPushDenyDialog denyDialog = new CustomPushDenyDialog(getActivity());
-                denyDialog.showDenyDialog();
+//                CustomPushDenyDialog denyDialog = new CustomPushDenyDialog(getActivity());
+//                denyDialog.showDenyDialog();
             }
         });
 

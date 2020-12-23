@@ -20,7 +20,10 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
-        <activity android:name=".YoutubeActivity"></activity>
+        <activity android:name=".activity.ChoiceKeywordActivity"/>
+        <activity android:name=".activity.SearchResultActivity" />
+        <activity android:name=".Test.YoutubeTestActivity" />
+        <activity android:name=".activity.YoutubeActivity" />
         <activity android:name=".activity.ChangeUserInformationActivity" />
         <activity android:name=".activity.ReviewUpdateActivity" />
         <activity android:name=".activity.GetUserInformationActivity" />
@@ -28,7 +31,6 @@
         <activity
             android:name=".activity.MyInfoUpdateActivity"
             android:theme="@style/ToolbarTheme" />
-        <activity android:name=".activity.PushSettingActivity" />
         <activity android:name=".activity.MapSearchActivity" />
         <activity android:name=".activity.MapDetailActivity" />
         <activity
