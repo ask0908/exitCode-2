@@ -25,6 +25,7 @@ import com.orhanobut.logger.Logger;
 import com.psj.welfare.R;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -443,6 +444,8 @@ public class GetUserInformationActivity extends AppCompatActivity
             // 인텐트 설정 및 보낼 데이터 (나이, 성별, 지역)
 //           Intent intent = new Intent(GetUserInformationActivity.this, MainTabLayoutActivity.class);
 
+            String request_value = age + gender + area;
+
             /* 키워드를 선택하기 위해 MainTabLayoutActivity가 아닌 ChoiceKeywordActivity로 이동되게 처리
             * MainTabLayoutActivity는 ChoiceKeywordActivity에서 필요한 작업을 다 마치면 이동하게 한다 */
             user_nickname = nickname_edittext.getText().toString();
@@ -455,8 +458,38 @@ public class GetUserInformationActivity extends AppCompatActivity
             editor.putString("user_nickname", user_nickname);
             editor.apply();
             registerUserInfo();
+            sendLog("사용자 기본 정보 입력 화면에서 확인 버튼 눌려짐", request_value);
         });
 
+    }
+
+    void sendLog(String content, String request_value)
+    {
+        String token = sharedPreferences.getString("token", "");
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        Call<String> call = apiInterface.sendLog("안드로이드", LogUtil.getVersion(), token, content, request_value);
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "성공 = " + result);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 = " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 = " + t.getMessage());
+            }
+        });
     }
 
     // 사용자 정보를 서버에 저장하는 메서드

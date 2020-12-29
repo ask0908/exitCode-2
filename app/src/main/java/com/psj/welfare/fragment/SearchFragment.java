@@ -423,6 +423,8 @@ public class SearchFragment extends Fragment
                 Intent m_intent = new Intent(getActivity(), ResultBenefitActivity.class);
                 m_intent.putStringArrayListExtra("favor_btn", m_favorList);
                 startActivity(m_intent);
+                // 백버튼으로 이 곳에 돌아온 다음 같은 걸 체크해 보내면 쌓여서 가는 현상이 있어 clear()로 비운다
+                m_favorList.clear();
             }
         });
 

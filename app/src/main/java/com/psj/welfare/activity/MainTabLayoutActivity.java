@@ -1,5 +1,6 @@
 package com.psj.welfare.activity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -21,7 +22,8 @@ import java.util.ArrayList;
 public class MainTabLayoutActivity extends AppCompatActivity
 {
 
-    public final String TAG = this.getClass().getName();
+    public final String TAG = this.getClass().getSimpleName();
+    SharedPreferences sharedPreferences;
 
     // 프래그먼트 별 화면을 표시할 뷰페이저
     ViewPager viewPager;
@@ -33,6 +35,8 @@ public class MainTabLayoutActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maintablayout);
+
+        sharedPreferences = getSharedPreferences("app_pref", 0);
 
         viewPager = findViewById(R.id.main_viewpager);
         MainViewPagerAdapter adapter = new MainViewPagerAdapter(getSupportFragmentManager());
@@ -76,18 +80,22 @@ public class MainTabLayoutActivity extends AppCompatActivity
                 if (position == 0)
                 {
                     tab.setIcon(R.drawable.home_icon_gray);
+//                    sendLog("앱 메인 화면으로 이동");
                 }
                 else if (position == 1)
                 {
                     tab.setIcon(R.drawable.alarm_icon_gray);
+//                    sendLog("알람 모아보기 화면으로 이동");
                 }
                 else if (position == 2)
                 {
                     tab.setIcon(R.drawable.search_icon_gray);
+//                    sendLog("검색 화면으로 이동");
                 }
                 else if (position == 3)
                 {
                     tab.setIcon(R.drawable.my_profile_icon_gray);
+//                    sendLog("마이페이지 화면으로 이동");
                 }
             }
 
@@ -112,5 +120,36 @@ public class MainTabLayoutActivity extends AppCompatActivity
         }
 
     }
+
+    /* 맨 밑의 탭 버튼을 누를 때마다 어떤 버튼을 눌렀는지 확인하는 메서드 */
+//    void sendLog(String content)
+//    {
+//        sharedPreferences = getSharedPreferences("app_pref", 0);
+//        String token = sharedPreferences.getString("token", "");
+//        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+//        Call<String> call = apiInterface.sendLog("안드로이드", LogUtil.getVersion(), token, content);
+//        call.enqueue(new Callback<String>()
+//        {
+//            @Override
+//            public void onResponse(Call<String> call, Response<String> response)
+//            {
+//                if (response.isSuccessful() && response.body() != null)
+//                {
+//                    String result = response.body();
+//                    Log.e(TAG, "성공 = " + result);
+//                }
+//                else
+//                {
+//                    Log.e(TAG, "실패 = " + response.body());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<String> call, Throwable t)
+//            {
+//                Log.e(TAG, "에러 = " + t.getMessage());
+//            }
+//        });
+//    }
 
 }

@@ -63,93 +63,6 @@ public interface ApiInterface
 	);
 
 	/**
-	 * 선택한 혜택의 상세정보들을 서버에서 가져오는 메서드
-	 * DetailBenefitActivity에서 사용
-	 * @param detail : 정책 제목
-	 * @return - 정책 내용들을 서버에서 리턴값으로 받는다. 받은 값들은 클라에서 파싱해 사용한다
-	 */
-	@FormUrlEncoded
-	@POST("/backend/android/and_detail.php")
-	Call<String> detailData(
-			@Field("be_name") String detail,
-			@Field("email") String email
-	);
-
-	/**
-	 * 복지 혜택 결과창(ResultBenefitActivity)에서 사용자가 선택한 관심사, 혜택 제목을 서버에서 가져오는 메서드
-	 * @param mainFavor - 사용자가 선택한 정책명
-	 * @return - 사용자가 선택한 관심사에 속한 혜택 제목들. JSON 형태의 문자열 형태로 오기 때문에 파싱해서 사용한다
-	 */
-//	@FormUrlEncoded
-//	@POST("/backend/android/and_category_result.php")
-//	Call<String> mainFavor(
-//			@Field("reqBody") String mainFavor
-//	);
-
-	/**
-	 * 1번째로 선택하는 관심사
-	 * FirstCategory에서 사용
-	 * @param category - 유저가 선택한 관심사
-	 * @param level - 1~3단계 중 현재 단계(1)
-	 * @return - 선택한 관심사에 속하는 2단계 제목들
-	 */
-	@FormUrlEncoded
-	@POST("/backend/android/and_level_select.php")
-	Call<String> category1(
-			@Field("category1_name") String category,
-			@Field("level") String level
-	);
-
-	/**
-	 * 2번째로 선택하는 관심사. 1번 관심사에서 선택한 것에 따라 보여지는 게 다르다
-	 * SecondCategory에서 사용, 현재 서버에서 넘어오는 값이 없음
-	 * @param category_first - 1번째로 선택한 관심사
-	 * @param category_second - 2번째로 선택한 관심사
-	 * @param level - 1~3단계 중 현재 단계(2)
-	 * @return
-	 */
-	@FormUrlEncoded
-	@POST("/backend/android/and_level_select.php")
-	Call<String> category2(
-			@Field("category1_name") String category_first,
-			@Field("category2_name") String category_second,
-			@Field("level") String level
-	);
-
-	/**
-	 * 3번째로 선택하는 관심사. 2번 관심사에서 선택한 것에 따라 보여지는 게 다르다
-	 * ThirdCategory에서 사용, 현재 서버에서 넘어오는 값이 없음
-	 * @param category_first - 1번째로 선택한 관심사
-	 * @param category_second - 2번째로 선택한 관심사
-	 * @param category_third - 3번째(마지막)로 선택한 관심사
-	 * @param level - 1~3단계 중 현재 단계(3)
-	 * @return
-	 */
-	@FormUrlEncoded
-	@POST("/backend/android/and_level_select.php")
-	Call<String> category3(
-			@Field("category1_name") String category_first,
-			@Field("category2_name") String category_second,
-			@Field("category3_name") String category_third,
-			@Field("level") String level
-	);
-
-	/**
-	 * 유저 이메일과 토큰을 서버에 저장하는 메서드
-	 * LoginActivity에서 사용했지만 지금은 쓰지 않아 주석 처리
-	 * @param userEmail - 유저의 이메일
-	 * @param fcm_token - fcm 토큰
-	 * @return
-	 */
-//	@FormUrlEncoded
-//	@POST("/backend/android/and_fcm_token_save.php")
-//	Call<String> fcmToken(
-//			@Field("userEmail") String userEmail,
-//			@Field("fcm_token") String fcm_token,
-//			@Field("osType") String osType
-//	);
-
-	/**
 	 * 서버에서 1번 문제와 이미지, 버튼에 넣을 텍스트들을 가져오는 메서드
 	 * Compatibility_FirstActivity에서 사용, 현재 문제와 선택지가 나오지 않음
 	 * @param problemIndex : 문제 번호, 1번째 테스트에서 가져올 거니까 1을 넣어야 한다
@@ -326,7 +239,7 @@ public interface ApiInterface
 //	@DELETE("review/{login_token}/{review_id}")
 //	@DELETE("review/login_token={login_token}?review_id={review_id}")
 	@FormUrlEncoded
-	@POST("review")
+	@POST("https://www.urbene-fit.com/review")
 	Call<String> deleteReview(
 			@Field("login_token") String login_token,
 			@Field("review_id") int review_id,
@@ -340,28 +253,29 @@ public interface ApiInterface
 	 * @param page_number - 1번째 지도 화면, 2번째 지도 화면 구분을 위한 숫자
 	 * @return - 1로 요청했으면 전국 지역별 정책 개수, 2로 요청했으면 선택한 지역의 정책 제목들을 받는다. 받은 데이터는 파싱해서 뷰에 뿌려준다
 	 */
-	@GET("map")
+	@GET("https://www.urbene-fit.com/map")
 	Call<String> getNumberOfBenefit(
 			@Query("local") String local,
-			@Query("page_number") String page_number
+			@Query("page_number") String page_number,
+			@Query("userAgent") String userAgent
 	);
 
 	/**
 	 * LoginActivity에서 카카오 로그인 시 서버로 OS 이름, 플랫폼, fcm 토큰값, 유저 이메일 정보를 보내 저장하는 메서드
 	 * LoginActivity에서 사용
-	 * @param osType - android
-	 * @param platform - kakao
-	 * @param fcm_token - 로그로 확인한 FCM 토큰값
-	 * @param email - 유저의 이메일. 카톡 로그인 시 받을 수 있게 처리해야 함
-	 * @return - 처리 성공 시 200 + 로그인에 성공하셨습니다 + 토큰값을 JSON 꼴로 리턴받는다. 비밀번호 불일치 시 400, 필수 요청값이 비어있으면 404, DB 연결 오류면 500을 리턴한다
+	 * @param email - 카카오 로그인 시 확인할 수 있는 카카오 계정(이메일)
+	 * @param fcm_token - 로그인 시 서버에서 받는 토큰
+	 * @param osType - "android" 고정
+	 * @param platform - "kakao" 고정
+	 * @return
 	 */
 	@FormUrlEncoded
 	@POST("https://www.urbene-fit.com/login")
 	Call<String> sendUserTypeAndPlatform(
-			@Field("osType") String osType,
-			@Field("platform") String platform,
+			@Field("email") String email,
 			@Field("fcm_token") String fcm_token,
-			@Field("email") String email
+			@Field("osType") String osType,
+			@Field("platform") String platform
 	);
 
 	/**
@@ -420,6 +334,37 @@ public interface ApiInterface
 	);
 
 	/**
+	 * 아래 인자를 서버로 넘겨서, 해당하는 혜택 정보를 조회하는 메서드
+	 * @param type - detail 고정(혜택 정보 조회)
+	 * @param local - 혜택이 제공되는 지역의 이름
+	 * @param welf_name - 혜택 이름
+	 * @param login_token - 로그인 시 서버에서 받는 토큰값
+	 * @param userAgent - 사용자 정보(android|SM-543N|30 꼴)
+	 * @return -"Status":"200",
+	 * 			"Message":[
+	 * 					{
+	 * 					"id":7,
+	 * 					"welf_name":"저소득층 에너지효율 개선",
+	 * 					"welf_target":"기초생활수급가구;; 차상위계층;; 복지사각지대(기초지자체 추천);; 사회복지시설 등\n ※ 주거급여를 지원받는 자가가구는 제외",
+	 * 					"welf_contents":"에너지 효율을 높일 수 있도록 노후 주택 에너지 사용 환경 개선\n · 시공지원 : 단열공사;; 창호공사;; 바닥공사 등을 통한 에너지 효율 개선\n · 물품지원 : 고효율 가스·기름 보일러 교체;; 냉방기기 지원",
+	 * 					"welf_apply":"읍면동 주민센터에 신청",
+	 * 					"welf_contact":"한국에너지재단(☎1670-7653)",
+	 * 					"welf_period":"문의처로문의",
+	 * 					"welf_end":"사업종료시까지",
+	 * 					"welf_local":"전국",
+	 * 					"isBookmark":"false"
+	 * 					}
+	 */
+	@GET("https://www.urbene-fit.com/welf")
+	Call<String> getWelfareInformation(
+			@Query("type") String type,
+			@Query("local") String local,
+			@Query("welf_name") String welf_name,
+			@Query("login_token") String login_token,
+			@Query("userAgent") String userAgent
+	);
+
+	/**
 	 * 키워드와 일치하는 복지혜택들의 데이터를 서버에서 가져오는 메서드 (혜택 상위 카테고리 검색)
 	 * SearchResultActivity에서 사용
 	 * @param type - search(키워드 기반 검색 요청을 의미하는 검색 타입)
@@ -440,11 +385,12 @@ public interface ApiInterface
 	@GET("https://www.urbene-fit.com/welf")
 	Call<String> searchWelfare(
 			@Query("type") String type,
-			@Query("keyword") String keyword
+			@Query("keyword") String keyword,
+			@Query("userAgent") String userAgent
 	);
 
 	/**
-	 * MainFragment에서 사용자가 선택한 카테고리에 속하는 혜택 데이터들을 가져오는 메서드
+	 * MainFragment에서 사용자가 선택한 카테고리에 속하는 혜택 데이터들을 가져오는 메서드 (혜택 상위 카테고리 검색)
 	 * ResultBenefitActivity에서 사용
 	 * @param type - category_search(카테고리 기반 검색 요청을 의미하는 검색 타입)
 	 * @param category_keyword - 유저가 선택한 카테고리, 중복 선택 가능하며 구분자는 "|"로 구분함
@@ -462,14 +408,14 @@ public interface ApiInterface
 	@GET("https://www.urbene-fit.com/welf")
 	Call<String> searchWelfareCategory(
 			@Query("type") String type,
-			@Query("keyword") String category_keyword
+			@Query("keyword") String category_keyword,
+			@Query("userAgent") String userAgent
 	);
 
 	/**
 	 * 혜택 하위 카테고리 검색. 카테고리에 해당하는 혜택 정보를 검색해 결과를 받아오는 메서드
 	 * SearchResultActivity에서 사용
-	 * @param type - child_category_search 문자열을 입력한다 (요청 타입), 필수 요청값
-	 * @param select_category - 선택한 상위 카테고리 정보, 여러 개를 선택했을 경우 구분자로 '|'를 중간에 넣어서 보낸다
+	 * @param type - "child_category_search" 고정 (요청 타입), 필수 요청값
 	 * @param welf_category - 선택한 하위 카테고리 정보(현물 지원, 현금 지원 등), 필수 요청값
 	 * @param keyword - 키워드 검색 정보
 	 * @return -
@@ -488,9 +434,26 @@ public interface ApiInterface
 	@GET("https://www.urbene-fit.com/welf")
 	Call<String> searchSubCategoryWelfare(
 			@Query("type") String type,
+			@Query("welf_category") String welf_category,
+			@Query("keyword") String keyword,
+			@Query("userAgent") String userAgent
+	);
+
+	/**
+	 * 상위 카테고리 선택하고 조회 버튼 누른 후 이동하는 화면에서 상단 리사이클러뷰의 아이템을 누르면, 그 카테고리에 해당하는 정책들을 보여주는 메서드
+	 * ResultBenefitActivity에서 사용
+	 * @param type - "child_category_search" 고정
+	 * @param select_category - SearchFragment에서 선택한 카테고리들, 여러 개일 경우 "|"를 구분자로 묶는다
+	 * @param welf_category - 하위 카테고리 이름(일자리 지원, 현금 지원 등)
+	 * @param userAgent - android|SM-543N|30 꼴의 사용자 정보
+	 * @return -
+	 */
+	@GET("https://www.urbene-fit.com/welf")
+	Call<String> searchUpLevelCategory(
+			@Query("type") String type,
 			@Query("select_category") String select_category,
 			@Query("welf_category") String welf_category,
-			@Query("keyword") String keyword
+			@Query("userAgent") String userAgent
 	);
 
 	/**
@@ -576,7 +539,27 @@ public interface ApiInterface
 	@GET("https://www.urbene-fit.com/welf")
 	Call<String> userOrderedWelfare(
 			@Query("login_token") String login_token,
-			@Query("type") String type
+			@Query("type") String type,
+			@Query("userAgent") String userAgent
+	);
+
+	/**
+	 * 사용자 로그를 서버로 보내는 메서드
+	 * @param os_type - 기기 정보(안드로이드 고정)
+	 * @param os_version - 해당 기기들의 버전 정보
+	 * @param login_token - 로그인 시 서버에서 받는 토큰값
+	 * @param content - 요청하는 파라미터값 정보
+	 * @param request_value - API 통신 시 보낸 파라미터값
+	 * @return - 없음
+	 */
+	@FormUrlEncoded
+	@POST("https://www.urbene-fit.com/log")
+	Call<String> sendLog(
+			@Field("os_type") String os_type,
+			@Field("os_version") String os_version,
+			@Field("login_token") String login_token,
+			@Field("content") String content,
+			@Field("request_value") String request_value
 	);
 
 }

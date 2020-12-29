@@ -24,7 +24,7 @@
         android:gravity="center"
         android:padding="20dp"
         android:text="당신이 모르는 혜택을\n알려주는 서비스"
-        android:textColor="@color/colorPurple"
+        android:textColor="@color/colorPrimaryDark"
         android:textSize="30sp" />
 
     <FrameLayout

@@ -46,6 +46,7 @@ import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.OnSingleClickListener;
 import com.psj.welfare.util.AESUtils;
+import com.psj.welfare.util.LogUtil;
 
 import org.eazegraph.lib.charts.BarChart;
 import org.eazegraph.lib.models.BarModel;
@@ -82,7 +83,7 @@ public class DetailBenefitActivity extends AppCompatActivity
     View apply_bottom_view, content_bottom_view, review_bottom_view;
 
     // 서버에서 온 값을 파싱할 때 사용할 변수
-    String name, target, contents, period, contact, benefit_no, welf_apply;
+    String welf_id, welfare_name, welf_target, welf_contents, welf_apply, welf_contact, welf_period, welf_end, welf_local, welf_bookmark;
 
     // 리뷰 데이터를 조회해서 서버에서 온 값을 파싱할 때 사용할 변수 (email은 85번 줄에 이미 있어서 안 씀)
     String id, content, writer, create_date, email2, like_count, star_count, image_url;
@@ -127,6 +128,12 @@ public class DetailBenefitActivity extends AppCompatActivity
     String benefit_image_url = "http://3.34.64.143/images/reviews/조제분유.jpg";
     String encrypted_email, decrypted_email;
 
+    // 혜택 정보를 조회할 때 지역명을 인자로 넘겨야 하는데, 지역명을 담기 위한 변수
+    String user_area;
+
+    // MapDetailActivity에서 날아온 지역명
+    String map_detail_area;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -135,6 +142,45 @@ public class DetailBenefitActivity extends AppCompatActivity
 
         Logger.addLogAdapter(new AndroidLogAdapter());
         sharedPreferences = getSharedPreferences("app_pref", 0);
+        // 쉐어드에서 유저가 거주하는 지역명을 받아온다
+        user_area = sharedPreferences.getString("user_area", "");
+        // 서울, 인천 뒤에 붙는 특별시/광역시 글자를 제거한다
+        if (user_area != null)
+        {
+            switch (user_area)
+            {
+                case "서울특별시" :
+                    user_area = "서울";
+                    break;
+
+                case "인천광역시" :
+                    user_area = "인천";
+                    break;
+
+                case "대전광역시" :
+                    user_area = "대전";
+                    break;
+
+                case "울산광역시" :
+                    user_area = "울산";
+                    break;
+
+                case "부산광역시" :
+                    user_area = "부산";
+                    break;
+
+                case "광주광역시" :
+                    user_area = "광주";
+                    break;
+
+                case "대구광역시" :
+                    user_area = "대구";
+                    break;
+
+                default:
+                    break;
+            }
+        }
 
         /* findViewById() 모아놓은 메서드 */
         init();
@@ -225,6 +271,22 @@ public class DetailBenefitActivity extends AppCompatActivity
 
             Logger.e("상세 페이지에서 보여줄 타이틀 : " + detail_data);
         }
+        else if (getIntent().hasExtra("name"))
+        {
+            Intent intent = getIntent();
+            detail_data = intent.getStringExtra("name");
+        }
+
+        if (getIntent().hasExtra("area"))
+        {
+            Intent intent = getIntent();
+            map_detail_area = intent.getStringExtra("area");
+            Log.e(TAG, "map_detail_area : " + map_detail_area);
+        }
+
+        Log.e(TAG, "getWelfareInformation()에 넣을 혜택명 : " + detail_data);
+        /* 혜택의 상세정보를 가져오는 메서드, detail_data에 null이 들어간다 */
+        getWelfareInformation();
 
         // 리사이클러뷰 처리
         detail_benefit_recyclerview.setHasFixedSize(true);
@@ -234,9 +296,6 @@ public class DetailBenefitActivity extends AppCompatActivity
 
         // 리사이클러뷰 어댑터 안의 클릭 리스너를 액티비티 위에 만든다
         itemClickListener = (view, position) -> Logger.e("pos = " + position);
-
-        String email = "ne0001912@gmail.com";
-        detailData(detail_data, email);
 
         // 리뷰 작성 화면으로 이동
         more_big_scene_button.setOnClickListener(v -> {
@@ -327,34 +386,35 @@ public class DetailBenefitActivity extends AppCompatActivity
         });
     }
 
-    /* 리뉴얼된 혜택 상세정보들을 가져오는 메서드드 */
-    // 선택한 혜택의 상세정보들을 서버에서 가져오는 메서드
-    void detailData(String detail_data, String email)
+    /* 리뉴얼된 혜택 상세정보들을 가져오는 메서드 */
+    void getWelfareInformation()
     {
+        String token = sharedPreferences.getString("token" ,"");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Log.e(TAG, "상세 내용 불러올 정책 제목 : " + detail_data);
-        Call<String> call = apiInterface.detailData(detail_data, email);
+        // 인자 = "detail", 서울, 혜택명, 로그인 토큰값, LogUtil.getUserLog()
+        Call<String> call = apiInterface.getWelfareInformation("detail", map_detail_area, detail_data, token, LogUtil.getUserLog());
+        Log.e("fff", "type = detail, map_detail_area = " + map_detail_area + ", map_detail_area = " + detail_data + ", token = " + token + ", " + LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
             @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
+            public void onResponse(Call<String> call, Response<String> response)
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    Logger.e("detailData() - onResponse() = " + response.body());
-                    String detail = response.body();
-                    jsonParsing(detail);
+                    String result = response.body();
+                    jsonParsing(result);
+                    Log.e(TAG, "성공 = " + response.body());
                 }
                 else
                 {
-                    Log.e(TAG, "onResponse 실패 : " + response.body());
+                    Log.e(TAG, "실패 = " + response.body());
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
+            public void onFailure(Call<String> call, Throwable t)
             {
-                Log.e(TAG, "onFailure : " + t.getMessage());
+                Log.e(TAG, "에러 = " + t.getMessage());
             }
         });
     }
@@ -473,43 +533,40 @@ public class DetailBenefitActivity extends AppCompatActivity
 
     // 서버에서 가져온 String 형태의 JSON 값들을 파싱한 뒤, 특수문자를 콤마로 바꿔서 뷰에 set하는 메서드
     /* GSON 써서도 해보자 */
-    private void jsonParsing(String detail)
+    private void jsonParsing(String result)
     {
         try
         {
-            JSONObject jsonObject_total = new JSONObject(detail);
-            String retBody_data;
-
-            retBody_data = jsonObject_total.getString("retBody");
-
-            JSONObject jsonObject_detail = new JSONObject(retBody_data);
-
-            benefit_no = jsonObject_detail.getString("benefit_no");
-            name = jsonObject_detail.getString("welf_name");
-            target = jsonObject_detail.getString("welf_target");
-            contents = jsonObject_detail.getString("welf_contents");
-            period = jsonObject_detail.getString("welf_period");
-            welf_apply = jsonObject_detail.getString("welf_apply");
-            contact = jsonObject_detail.getString("welf_contact");
-            isBookmark = jsonObject_detail.getString("isBookmark");
-
-            // 서버에서 true 값을 가져왔으면 빨간 하트로 표현하고, false 값을 가져왔으면 회색 하트 그대로 둔다
-            if (isBookmark.equals(getString(R.string.is_true)))
+            JSONObject jsonObject = new JSONObject(result);
+            JSONArray jsonArray = jsonObject.getJSONArray("Message");
+            for (int i = 0; i < jsonArray.length(); i++)
             {
-                // 좋아요 버튼 활성화시킴
+                JSONObject inner_obj = jsonArray.getJSONObject(i);
+                welf_id = inner_obj.getString("id");
+                welf_name = inner_obj.getString("welf_name");
+                welf_contents = inner_obj.getString("welf_contents");
+                welf_apply = inner_obj.getString("welf_apply");
+                welf_target = inner_obj.getString("welf_target");
+                welf_contact = inner_obj.getString("welf_contact");
+                welf_period = inner_obj.getString("welf_period");
+                welf_end = inner_obj.getString("welf_end");
+                welf_local = inner_obj.getString("welf_local");
+                welf_bookmark = inner_obj.getString("isBookmark");
+            }
+            if (welf_bookmark.equals(getString(R.string.is_true)))
+            {
                 favorite_btn.setLiked(true);
             }
             else
             {
                 favorite_btn.setLiked(false);
             }
+            detail_title.setText(welf_name);
+            detail_target.setText(welf_target);
+            detail_contents.setText(welf_contents);
+            detail_contact.setText(welf_contact);
 
-            detail_title.setText(name);
-            detail_target.setText(target);
-            detail_contents.setText(contents);
-            detail_contact.setText(contact);
-
-            symbolChange(target, contents, contact);
+            symbolChange(welf_target, welf_contents, welf_contact);
         }
         catch (JSONException e)
         {
@@ -532,24 +589,29 @@ public class DetailBenefitActivity extends AppCompatActivity
 
     }
 
-    // 혜택의 대상, 내용, 연락처에 붙어있는 특수문자를 콤마(,)로 바꾸는 기능
-    public void symbolChange(String target, String contents, String contact)
+    // 혜택의 대상, 내용, 연락처에 붙어있는 특수문자를 콤마(,)로 바꾸는 메서드
+    private void symbolChange(String welf_target, String welf_content, String welf_contact)
     {
-        String target_line = target.replace("^;", "\n");
-        String target_comma = target_line.replace(";;", ",");
-//        Log.e(TAG, "특수기호 변환 후 : " + target_comma);
-
-        String contents_line = contents.replace("^;", "\n");
-        String contents_comma = contents_line.replace(";;", ",");
-//        Log.e(TAG, "특수기호 변환 후 : " + contents_comma);
-
-        String contact_line = contact.replace("^;", "\n");
-        String contact_comma = contact_line.replace(";;", ",");
-//        Log.e(TAG, "특수기호 변환 후 : " + contact_comma);
-
-        detail_target.setText(target_comma);
-        detail_contents.setText(contents_comma);
-        detail_contact.setText(contact_comma);
+        if (welf_target != null)
+        {
+            String target_line = welf_target.replace("^;", "\n");
+            String target_comma = target_line.replace(";;", ",");
+            detail_target.setText(target_comma);
+        }
+        if (welf_content != null)
+        {
+            String contents_line = welf_content.replace("^;", "\n");
+            String contents_comma = contents_line.replace(";;", ",");
+            Log.e(TAG, ";;를 ,로 변환한 결과 : " + contents_comma);
+            detail_contents.setText(contents_comma);
+        }
+        if (welf_contact != null)
+        {
+            String contact_line = welf_contact.replace("^;", "\n");
+            String contact_comma = contact_line.replace(";;", ",");
+            Log.e(TAG, ";;를 ,로 변환한 결과 : " + contact_line);
+            detail_contact.setText(contact_comma);
+        }
     }
 
     // list 문자열, review_id(혜택 id 정보)를 서버로 넘겨 리뷰들을 가져오는 메서드

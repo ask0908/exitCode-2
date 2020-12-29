@@ -5,13 +5,14 @@
     android:orientation="horizontal"
     android:layout_marginStart="30dp"
     android:layout_marginTop="20dp"
+    android:paddingBottom="30dp"
     android:weightSum="1">
 
     <CheckBox
         android:id="@+id/search_category_checkbox"
         android:layout_width="0dp"
-        android:layout_height="25dp"
-        android:layout_weight=".15"
+        android:layout_height="40dp"
+        android:layout_weight=".25"
         android:button="@null"
         android:background="@drawable/custom_checkbox"/>
 

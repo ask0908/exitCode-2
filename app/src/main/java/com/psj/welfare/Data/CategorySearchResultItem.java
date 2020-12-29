@@ -9,6 +9,15 @@ public class CategorySearchResultItem
     private String tag;
     private String welf_local;
 
+    public CategorySearchResultItem()
+    {
+    }
+
+    public CategorySearchResultItem(String welf_category)
+    {
+        this.welf_category = welf_category;
+    }
+
     public String getParent_category()
     {
         return parent_category;

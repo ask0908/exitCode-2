@@ -4,6 +4,7 @@
     android:id="@+id/main_scrollview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorMainWhite"
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -11,20 +12,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/main_title_textview"
+<!--        <TextView-->
+<!--            android:id="@+id/main_title_textview"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="80dp"-->
+<!--            android:background="@null"-->
+<!--            android:fontFamily="@font/jalnan"-->
+<!--            android:gravity="center"-->
+<!--            android:padding="8dp"-->
+<!--            android:text="너의 혜택은"-->
+<!--            android:textColor="@color/colorPrimaryDark"-->
+<!--            android:textSize="24sp"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/test_view_pager2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimaryDark"
-            android:fontFamily="@font/jalnan"
-            android:gravity="center"
-            android:padding="8dp"
-            android:text="너의 혜택은"
-            android:textColor="@color/colorMainWhite"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/youtube_text"/>
 
         <Button
             android:id="@+id/kakao_unlink_btn"
@@ -42,13 +52,14 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/nanum_barun_gothic_bold"
             android:paddingStart="12dp"
-            android:paddingTop="10dp"
-            android:text="유튜브 혜택 소개"
+            android:paddingTop="20dp"
+            android:text="유튜버 혜택 소개 영상"
             android:textColor="@color/colorBlack"
+            android:background="@color/colorMainWhite"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/main_title_textview" />
+            app:layout_constraintTop_toBottomOf="@id/test_view_pager2" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/youtube_video_recyclerview"
@@ -82,7 +93,8 @@
             android:padding="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/recommend_welfare_textview" />
+            app:layout_constraintTop_toBottomOf="@id/recommend_welfare_textview"
+            app:layout_constraintBottom_toTopOf="@id/map_btn"/>
 
         <Button
             android:id="@+id/map_btn"
@@ -91,17 +103,26 @@
             android:layout_marginLeft="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginRight="20dp"
-            android:layout_marginBottom="30dp"
             android:background="@drawable/btn_done"
             android:fontFamily="@font/jalnan"
-            android:gravity="start"
+            android:gravity="center"
             android:lineSpacingExtra="10sp"
             android:padding="30dp"
-            android:text="내 주변 혜택 찾기\n지도에서 내 주변 혜택을 확인하세요"
+            android:text="지도로 보는 내 주변 혜택"
+            android:textSize="24sp"
             android:textColor="@color/colorMainWhite"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/recom_recycler" />
+            app:layout_constraintTop_toBottomOf="@id/recom_recycler"
+            app:layout_constraintBottom_toTopOf="@id/trash_view"/>
+
+        <View
+            android:id="@+id/trash_view"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/map_btn"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

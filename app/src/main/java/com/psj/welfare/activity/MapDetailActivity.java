@@ -23,6 +23,7 @@ import com.psj.welfare.adapter.MapResultAdapter;
 import com.psj.welfare.adapter.ResultKeywordAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -460,7 +461,7 @@ public class MapDetailActivity extends AppCompatActivity
     void getNumberOfBenefit()
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.getNumberOfBenefit(area, "2");
+        Call<String> call = apiInterface.getNumberOfBenefit(area, "2", LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -512,6 +513,7 @@ public class MapDetailActivity extends AppCompatActivity
             Log.e(TAG, "혜택 이름 = " + name);
             Intent see_detail_intent = new Intent(MapDetailActivity.this, DetailBenefitActivity.class);
             see_detail_intent.putExtra("name", name);
+            see_detail_intent.putExtra("area", area);
             startActivity(see_detail_intent);
         });
         map_result_recyclerview.setAdapter(map_adapter);

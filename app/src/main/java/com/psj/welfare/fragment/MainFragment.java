@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ import com.psj.welfare.adapter.RecommendAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.util.GpsTracker;
+import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,19 +50,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.content.Context.LOCATION_SERVICE;
 
-/**
- * MainActivity를 대체하는 프래그먼트
- * 앱 실행 시 이 프래그먼트의 화면이 먼저 보이게 한다
- */
+/* 앱 메인 페이지. 유튜브 혜택 소개, 맞춤 혜택 목록을 볼 수 있다 */
 public class MainFragment extends Fragment
 {
-    public static final String TAG = "TestMainFragment"; // 로그 찍을 때 사용하는 TAG
+    public static final String TAG = "MainFragment"; // 로그 찍을 때 사용하는 TAG
 
     // 구글 로그인 테스트 위한 카톡 탈퇴 버튼
     Button kakao_unlink_btn;
@@ -91,6 +91,8 @@ public class MainFragment extends Fragment
     HorizontalYoutubeAdapter.ItemClickListener itemClickListener;
     List<HorizontalYoutubeItem> lists;
     String thumbnail, title;
+
+    String userAgent;
 
     // 서버에서 받아 저장한 토큰값을 저장할 때 사용하는 쉐어드
     SharedPreferences sharedPreferences;
@@ -157,6 +159,12 @@ public class MainFragment extends Fragment
 
         map_btn = view.findViewById(R.id.map_btn);
 
+        /* 로그 확인 */
+        Log.e(TAG, "getVersion() = " + LogUtil.getVersion());
+        userAgent = new WebView(getActivity()).getSettings().getUserAgentString();
+        Log.e(TAG, "userAgent = " + userAgent);
+        Log.e(TAG, "getDeviceName() = " + LogUtil.getDeviceName());
+
         /* 맞춤 혜택들을 가로 리사이클러뷰에 담아 보여주는 메서드 */
         userOrderedWelfare();
 
@@ -171,7 +179,8 @@ public class MainFragment extends Fragment
 
         /* 카톡 회원탈퇴 버튼. 구글 로그인 테스트 위해 집어넣었음 */
         kakao_unlink_btn = view.findViewById(R.id.kakao_unlink_btn);
-        kakao_unlink_btn.setOnClickListener(v -> {
+        kakao_unlink_btn.setOnClickListener(v ->
+        {
             final String appendMessage = getString(R.string.com_kakao_confirm_unlink);
             new AlertDialog.Builder(getActivity()).setMessage(appendMessage).setPositiveButton(getString(R.string.com_kakao_ok_button), new DialogInterface.OnClickListener()
             {
@@ -218,8 +227,8 @@ public class MainFragment extends Fragment
         });
 
         // 내 주변 혜택 찾기 버튼
-        map_btn.setOnClickListener(v -> {
-
+        map_btn.setOnClickListener(v ->
+        {
             // 유저의 위치정보를 찾는 클래스의 객체 생성(Fragment기 때문에 인자로 getActivity()를 넣어야 함!!)
             gpsTracker = new GpsTracker(getActivity());
 
@@ -325,7 +334,7 @@ public class MainFragment extends Fragment
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
         String token = sharedPreferences.getString("token", "");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.userOrderedWelfare(token, "customized");   // 2번 인자는 customized로 고정이다
+        Call<String> call = apiInterface.userOrderedWelfare(token, "customized", LogUtil.getUserLog());   // 2번 인자는 customized로 고정이다
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -401,6 +410,7 @@ public class MainFragment extends Fragment
                 {
                     String result = response.body();
                     jsonParsing(result);
+//                    sendLog();
                 }
                 else
                 {
@@ -490,7 +500,7 @@ public class MainFragment extends Fragment
 
         Log.e(TAG, "addresses 리스트 = " + addresses.toString());
         Address address = addresses.get(0);
-        return address.getAddressLine(0)+ "\n";
+        return address.getAddressLine(0) + "\n";
     }
 
     public boolean checkLocationServicesStatus()
@@ -501,6 +511,52 @@ public class MainFragment extends Fragment
 
         /* isProviderEnabled() : 지정된 provider의 현재 활성화 / 비활성화 상태를 리턴하는 메서드 */
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+
+    /* 로그 보내는 메서드 */
+//    void sendLog()
+//    {
+//        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+//        String token = sharedPreferences.getString("token", "");
+//        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+//        Call<String> call = apiInterface.sendLog("안드로이드", LogUtil.getVersion(), token, LogUtil.getIp());
+//        call.enqueue(new Callback<String>()
+//        {
+//            @Override
+//            public void onResponse(Call<String> call, Response<String> response)
+//            {
+//                if (response.isSuccessful() && response.body() != null)
+//                {
+//                    String result = response.body();
+//                    Log.e(TAG, "성공 = " + result);
+//                }
+//                else
+//                {
+//                    Log.e(TAG, "실패 = " + response.body());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<String> call, Throwable t)
+//            {
+//                Log.e(TAG, "에러 = " + t.getMessage());
+//            }
+//        });
+//    }
+
+    private HttpLoggingInterceptor httpLoggingInterceptor()
+    {
+
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger()
+        {
+            @Override
+            public void log(String message)
+            {
+                android.util.Log.e("fff : ", message + "");
+            }
+        });
+
+        return interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
     }
 
 }

@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,6 +16,7 @@ import com.psj.welfare.R;
 
 import java.util.List;
 
+/* 아이템 안의 체크박스 - 체크하고 스크롤하다 보면 체크가 해제됨, 다른 곳이 체크되는 현상 */
 public class ChoiceKeywordAdapter extends RecyclerView.Adapter<ChoiceKeywordAdapter.ChoiceKeywordViewHolder>
 {
     private Context context;
@@ -47,26 +47,24 @@ public class ChoiceKeywordAdapter extends RecyclerView.Adapter<ChoiceKeywordAdap
     @Override
     public void onBindViewHolder(@NonNull ChoiceKeywordAdapter.ChoiceKeywordViewHolder holder, int position)
     {
-        ChoiceKeywordItem item = list.get(position);
+        // final로 선언해야 체크박스의 체크 상태값(T/F)이 바뀌지 않는다
+        final ChoiceKeywordItem item = list.get(position);
         holder.search_category_textview.setText(item.getInterest());
+
+        // 먼저 체크박스의 리스너를 null로 초기화한다
         holder.search_category_checkbox.setOnCheckedChangeListener(null);
-        holder.search_category_checkbox.setSelected(item.getSelected());
-        holder.search_category_checkbox.setTag(list.get(position));
+
+        // 모델 클래스의 게터로 체크 상태값을 가져온다
+        holder.search_category_checkbox.setChecked(item.getSelected());
+
+        // 체크박스의 상태값을 알기 위해 리스너 부착
         holder.search_category_checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
         {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
             {
-                if (isChecked)
-                {
-                    list.get(position).setSelected(true);
-                    Toast.makeText(context, "checked = " + list.get(position).getSelected(), Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    list.get(position).setSelected(false);
-                    Toast.makeText(context, "checked = " + list.get(position).getSelected(), Toast.LENGTH_SHORT).show();
-                }
+                // 여기의 item은 final 키워드를 붙인 모델 클래스의 객체와 동일하다
+                item.setSelected(isChecked);
             }
         });
     }
