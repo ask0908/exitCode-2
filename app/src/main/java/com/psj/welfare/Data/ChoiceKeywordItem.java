@@ -3,7 +3,7 @@ package com.psj.welfare.Data;
 public class ChoiceKeywordItem
 {
     private String interest;
-    private boolean isSelected;
+    boolean isSelected;
 
     public String getInterest()
     {

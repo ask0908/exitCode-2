@@ -40,6 +40,7 @@ import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.kakao.usermgmt.callback.MeV2ResponseCallback;
 import com.kakao.usermgmt.callback.UnLinkResponseCallback;
 import com.kakao.usermgmt.response.MeV2Response;
+import com.kakao.util.OptionalBoolean;
 import com.kakao.util.exception.KakaoException;
 import com.nhn.android.naverlogin.OAuthLogin;
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton;
@@ -92,6 +93,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     // 로그인 시 서버에서 주는 토큰
     String server_token;
+    // 카카오 로그인 시 확인할 수 있는 카카오 이메일을 담기 위한 변수
+    String kakao_email;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -101,7 +104,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         Logger.addLogAdapter(new AndroidLogAdapter());
 
-        // TODO : 스크롤 내리면 체크안한 것들이 체크되는 현상 있음. 수정 필요!!
+        // GetUserInformationActivity, ChoiceKeywordActivity 체크 위한 쉐어드 처리
 //        app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
 //        SharedPreferences.Editor editor = app_pref.edit();
 //        editor.clear();
@@ -406,6 +409,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void onSuccess(MeV2Response result)
                 {
+                    // 카카오 계정에 저장된 이메일을 가져온다
+                    if (result.getKakaoAccount().hasEmail() == OptionalBoolean.TRUE)
+                    {
+                        kakao_email = result.getKakaoAccount().getEmail();
+                    }
                     app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
                     SharedPreferences.Editor editor = app_pref.edit();
                     Log.e(TAG, "result = " + result);
@@ -413,6 +421,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     String area = app_pref.getString("user_area", "");
                     String gender = app_pref.getString("user_gender", "");
                     String user_nickname = app_pref.getString("user_nickname", "");
+                    Log.e(TAG, "카카오 계정 이메일 확인 = " + kakao_email);
                     Log.e(TAG, "쉐어드의 age = " + age + ", 지역 = " + area + ", 성별 = " + gender + ", 닉네임 = " + user_nickname);
                     // 카카오 로그인 성공 시 실행할 처리
 //                    Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
@@ -441,6 +450,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         }
                         /* 서버로 osType, platform, FCM 토큰값 정보를 보내는 메서드 */
                         sendUserTypeAndPlatform();
+                        // TODO : 카카오 이메일 가져오는 것 확인 위해 액티비티 이동 막음
                         startActivity(intent);
                         finish();
                     }
@@ -456,32 +466,37 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    /* 서버로 osType, platform, FCM 토큰값 정보를 보내는 메서드 */
+    /* 카카오 로그인 시 서버로 osType, platform, FCM 토큰값 정보를 보내는 메서드 */
     void sendUserTypeAndPlatform()
     {
-        String osType = getString(R.string.login_os);
+        String email = kakao_email;
+        String token = app_pref.getString("token", "");
+        String os_type = getString(R.string.login_os);
         String platform = getString(R.string.main_platform);
-        String fcm_token = token;
-        String email = getString(R.string.email2);
+
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.sendUserTypeAndPlatform(osType, platform, fcm_token, email);
+        Call<String> call = apiInterface.sendUserTypeAndPlatform(email, token, os_type, platform);
         call.enqueue(new Callback<String>()
         {
             @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
+            public void onResponse(Call<String> call, Response<String> response)
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
+                    String result = response.body();
                     tokenParsing(response.body());
+                    int code = response.code();
+                    Log.e(TAG, "성공 = " + result);
+                    Log.e(TAG, "code = " + code);
                 }
                 else
                 {
-                    Logger.e("onResponse() 실패 = " + response.body());
+                    Log.e(TAG, "실패 = " + response.body());
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
+            public void onFailure(Call<String> call, Throwable t)
             {
                 Logger.e("에러 = " + t.getMessage());
             }
@@ -664,19 +679,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         try
         {
             JSONObject token_object = new JSONObject(data);
+            /* 다른 액티비티/프래그먼트에서도 활용해야 하기 때문에 서버에서 받은 토큰값을 쉐어드에 저장해 사용한다 */
             server_token = token_object.getString("Token");
-            editor.putString("token", server_token);
-            editor.commit();
         }
         catch (JSONException e)
         {
             e.printStackTrace();
         }
-        Logger.e("token = " + server_token);
+        Logger.e("서버에서 받은 토큰 = " + server_token);
         /* 다른 액티비티/프래그먼트에서도 활용해야 하기 때문에 서버에서 받은 토큰값을 쉐어드에 저장해 사용한다 */
-        SharedPreferences.Editor editor1 = app_pref.edit();
-        editor1.putString("token", server_token);
-        editor1.apply();
+        editor.putString("token", server_token);
+        editor.apply();
     }
 
     /* 다시 구글 로그인할 때 사용하는 메서드 */

@@ -33,6 +33,16 @@ public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCatego
         this.itemClickListener = itemClickListener;
     }
 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
     @NonNull
     @Override
     public SelectedCategoryAdapter.SelectedCategoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
@@ -46,6 +56,8 @@ public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCatego
     {
         CategorySearchResultItem item = list.get(position);
         holder.category_btn.setText(item.getWelf_category());
+        // 바인드하는 텍스트 로그 확인
+        // pos값, 카테고리 맞게 되고 있는지 로그 확인
     }
 
     @Override

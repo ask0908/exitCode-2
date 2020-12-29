@@ -21,6 +21,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
@@ -37,6 +38,7 @@ import com.psj.welfare.adapter.RecommendAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.util.GpsTracker;
+import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -100,6 +102,9 @@ public class TestMainFragment extends Fragment
     RecommendAdapter.ItemClickListener recom_itemClickListener;
     List<RecommendItem> list;
 
+    // 테스트용 뷰페이저
+    ViewPager2 viewPager2;
+
     public TestMainFragment()
     {
     }
@@ -152,6 +157,13 @@ public class TestMainFragment extends Fragment
         }
 
         map_btn = view.findViewById(R.id.map_btn);
+
+        /* 테스트용 뷰페이저2 */
+        viewPager2 = view.findViewById(R.id.test_view_pager2);
+        ArrayList<TestViewPagerData> list = new ArrayList<>();
+        list.add(new TestViewPagerData("당신이 놓치고 있는\n700개의 여성 혜택"));
+        list.add(new TestViewPagerData("당신을 위한 900개의 혜택\n바로 확인해 보세요"));
+        viewPager2.setAdapter(new TestViewPagerAdapter(getActivity(), list));
 
         /* 맞춤 혜택들을 가로 리사이클러뷰에 담아 보여주는 메서드 */
         userOrderedWelfare();
@@ -321,7 +333,7 @@ public class TestMainFragment extends Fragment
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
         String token = sharedPreferences.getString("token", "");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.userOrderedWelfare(token, "customized");   // 2번 인자는 customized로 고정이다
+        Call<String> call = apiInterface.userOrderedWelfare(token, "customized", LogUtil.getUserLog());   // 2번 인자는 customized로 고정
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -381,6 +393,37 @@ public class TestMainFragment extends Fragment
             Log.e(TAG, "선택한 혜택명 = " + name);
         });
         recom_recycler.setAdapter(recommendAdapter);
+    }
+
+    /* 서버로 로그 보내는 메서드 */
+    void sendLog(String content, String request_value)
+    {
+        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+        String token = sharedPreferences.getString("token", "");
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        Call<String> call = apiInterface.sendLog("안드로이드", LogUtil.getDeviceName(), token, content, request_value);
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "성공 = " + result);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 = " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 = " + t.getMessage());
+            }
+        });
     }
 
     /* 유튜브 영상 정보 가져오는 메서드 */

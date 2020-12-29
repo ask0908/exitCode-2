@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.psj.welfare.R;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -87,7 +88,8 @@ public class MapActivity extends AppCompatActivity
     void getNumberOfBenefit()
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.getNumberOfBenefit(user_area, "1");
+        // 마지막 인자는 "android|SM-542N|30" 식으로 보내야 한다
+        Call<String> call = apiInterface.getNumberOfBenefit(user_area, "1", LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
             @Override

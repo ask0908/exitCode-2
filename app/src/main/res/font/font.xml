@@ -44,4 +44,14 @@
         android:fontStyle="normal"
         android:fontWeight="400" />
 
+    <font
+        android:font="@font/bauhaus_bold"
+        android:fontStyle="normal"
+        android:fontWeight="400" />
+
+    <font
+        android:font="@font/bauhaus_light"
+        android:fontStyle="normal"
+        android:fontWeight="400" />
+
 </font-family>

@@ -14,6 +14,7 @@ import com.psj.welfare.R;
 
 import java.util.List;
 
+/* ResultBenefitActivity의 세로 리사이클러뷰에 쓰는 어댑터 */
 public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySearchResultAdapter.CategorySearchResultViewHolder>
 {
     private Context context;
@@ -30,6 +31,16 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
         this.context = context;
         this.list = list;
         this.itemClickListener = itemClickListener;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
     @NonNull

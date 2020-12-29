@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.psj.welfare.fragment.MainFragment;
+import com.psj.welfare.Test.TestMainFragment;
 import com.psj.welfare.fragment.MyPageFragment;
 import com.psj.welfare.fragment.PushGatherFragment;
 import com.psj.welfare.fragment.SearchFragment;
@@ -22,7 +22,8 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter
     public MainViewPagerAdapter(@NonNull FragmentManager fm)
     {
         super(fm);
-        list.add(new MainFragment());
+//        list.add(new MainFragment());
+        list.add(new TestMainFragment());
         list.add(new PushGatherFragment());
         // TODO : 검색 화면 UI 조정 끝나면 SearchFragment로 되돌리기
         list.add(new SearchFragment());

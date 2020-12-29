@@ -16,18 +16,9 @@ public class SearchItem
     {
     }
 
-    public SearchItem(String welf_name, String welf_local, String parent_category, String welf_category, String tag)
+    public SearchItem(String welf_category)
     {
-        this.welf_name = welf_name;
-        this.welf_local = welf_local;
-        this.parent_category = parent_category;
         this.welf_category = welf_category;
-        this.tag = tag;
-    }
-
-    public SearchItem(String searchTitle)
-    {
-        this.searchTitle = searchTitle;
     }
 
     public void setSearchTitle(String searchTitle)

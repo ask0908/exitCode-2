@@ -32,15 +32,16 @@
         <item name="android:textColor">@color/colorBlack</item>
     </style>
 
+    <!-- GetUserInformationActivity의 NumberPicker 테마 -->
     <style name="DefaultNumberPickerTheme" parent="Theme.AppCompat.Light">
-        <item name="colorAccent">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorBlack</item>
         <item name="android:textSize">30sp</item>
         <item name="android:textStyle">bold</item>
         <!-- To remove divider of the Numberpicker -->
         <item name="fontFamily">@font/jalnan</item>
         <item name="colorControlNormal">@android:color/transparent</item>
 
-        <item name="android:textColorPrimary">@color/colorPrimaryDark</item>
+        <item name="android:textColorPrimary">@color/colorBlack</item>
         <item name="android:background">@color/colorMainWhite</item>
     </style>
 
