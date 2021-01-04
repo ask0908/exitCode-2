@@ -12,7 +12,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -20,10 +19,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.psj.welfare.Data.SearchItem;
 import com.psj.welfare.R;
 import com.psj.welfare.activity.ResultBenefitActivity;
 import com.psj.welfare.activity.SearchResultActivity;
@@ -32,24 +29,17 @@ import com.psj.welfare.custom.CustomResultBenefitDialog;
 import java.util.ArrayList;
 
 /* 혜택 이름 검색하는 프래그먼트
-* 하단의 카테고리들을 선택하고 버튼을 눌러 이동한 경우, 혜택 하위 카테고리 검색을 적용해 결과를 보여준다 */
+* 하단의 카테고리들을 선택하고 버튼을 눌러 이동한 경우, 혜택 하위 카테고리 검색을 적용해 결과를 보여준다
+* 카테고리 다중선택이 없어져서 이제 해시태그 키워드를 누르면, 그 카테고리에 관련된 혜택들만 보여준다 */
 public class SearchFragment extends Fragment
 {
     public static final String TAG = "SearchFragment"; // 로그 찍을 때 사용하는 TAG
 
     private EditText searching;
 
-    private ArrayList<SearchItem> searchList;
-
     Toolbar search_toolbar;
 
-    // JSON 값을 파싱할 때 Value를 넣을 변수
-    String welf_name, welf_local, parent_category, welf_category, tag;
-
     TextView recommend_search_textview, recent_search_history_textview;
-
-    ImageView main_job_img, main_student_img, main_living_img, main_pregnancy_img, main_child_img, main_cultural_img, main_company_img,
-            main_homeless_img, main_old_img, main_disorder_img, main_multicultural_img, main_law_img;
 
     TextView main_job_title, main_student_title, main_living_title, main_pregnancy_title, main_child_title, main_cultural_title,
             main_company_title, main_homeless_title, main_old_title, main_disorder_title, main_multicultural_title, main_law_title;
@@ -91,8 +81,6 @@ public class SearchFragment extends Fragment
         recent_search_history_textview = view.findViewById(R.id.recent_search_history_textview);
         searching = view.findViewById(R.id.searching);
 
-        searchList = new ArrayList<>();
-
         search_toolbar = view.findViewById(R.id.search_toolbar);
         if ((AppCompatActivity)getActivity() != null)
         {
@@ -130,19 +118,42 @@ public class SearchFragment extends Fragment
             {
                 Log.e(TAG, "OnSingleClickListener.isSelected() = " + OnSingleClickListener.isSelected());
                 m_favorList.remove("아기·어린이");
-                main_child_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.child));
-                main_child_title.setTextColor(getResources().getColor(R.color.colorBlack));
+                main_child_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 main_child.setSelected(!main_child.isSelected());
-                main_child.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+                main_child.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
             }
             else
             {
                 Log.e(TAG, "OnSingleClickListener.isSelected() = " + OnSingleClickListener.isSelected());
                 m_favorList.add("아기·어린이");
-                main_child_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.child_after));
                 main_child_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 main_child.setSelected(true);
-                main_child.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                main_child.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
+
+                // 관심사 선택이 1개라도 안돼 있으면 커스텀 다이얼로그를 띄운다
+                if (m_favorList.size() == 0)
+                {
+                    CustomResultBenefitDialog dialog = new CustomResultBenefitDialog(getActivity());
+                    dialog.callDialog();
+                }
+                else
+                {
+                    /* if문 안의 처리를 하지 않으면 백버튼을 누르고 혜택 조회하러 가기 버튼을 누를 때마다 전체 버튼이 계속 생성되는 버그가 발생함 */
+                    if (!m_favorList.contains("전체"))
+                    {
+                        m_favorList.add(0, "전체");
+                    }
+                    for (int i = 0; i < m_favorList.size(); i++)
+                    {
+                        Log.e(TAG, "m_favorList : " + m_favorList);
+                    }
+                    // 선택한 모든 카테고리 이름을 인텐트에 넣어서 보낸다
+                    Intent m_intent = new Intent(getActivity(), ResultBenefitActivity.class);
+                    m_intent.putStringArrayListExtra("favor_btn", m_favorList);
+                    startActivity(m_intent);
+                    // 백버튼으로 이 곳에 돌아온 다음 같은 걸 체크해 보내면 쌓여서 가는 현상이 있어 clear()로 비운다
+                    m_favorList.clear();
+                }
             }
         });
 
@@ -152,21 +163,44 @@ public class SearchFragment extends Fragment
             if (OnSingleClickListener.isSelected())
             {
                 m_favorList.remove("청년");
-                main_student_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.student));
-                main_student_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                main_student.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+                main_student_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_student.setSelected(!main_student.isSelected());
+                main_student.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
             }
             else
             {
                 // 이 때 아이콘이 하얗게 변한다
                 m_favorList.add("청년");
-                main_student_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.student_after));
                 main_student_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 활성화!!");
                 main_student.setSelected(true);
-                main_student.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                main_student.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
+
+                // 관심사 선택이 1개라도 안돼 있으면 커스텀 다이얼로그를 띄운다
+                if (m_favorList.size() == 0)
+                {
+                    CustomResultBenefitDialog dialog = new CustomResultBenefitDialog(getActivity());
+                    dialog.callDialog();
+                }
+                else
+                {
+                    /* if문 안의 처리를 하지 않으면 백버튼을 누르고 혜택 조회하러 가기 버튼을 누를 때마다 전체 버튼이 계속 생성되는 버그가 발생함 */
+                    if (!m_favorList.contains("전체"))
+                    {
+                        m_favorList.add(0, "전체");
+                    }
+                    for (int i = 0; i < m_favorList.size(); i++)
+                    {
+                        Log.e(TAG, "m_favorList : " + m_favorList);
+                    }
+                    // 선택한 모든 카테고리 이름을 인텐트에 넣어서 보낸다
+                    Intent m_intent = new Intent(getActivity(), ResultBenefitActivity.class);
+                    m_intent.putStringArrayListExtra("favor_btn", m_favorList);
+                    startActivity(m_intent);
+                    // 백버튼으로 이 곳에 돌아온 다음 같은 걸 체크해 보내면 쌓여서 가는 현상이 있어 clear()로 비운다
+                    m_favorList.clear();
+                }
             }
         });
 
@@ -176,20 +210,43 @@ public class SearchFragment extends Fragment
             if (OnSingleClickListener.isSelected())
             {
                 m_favorList.remove("중장년·노인");
-                main_old_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.old));
-                main_old_title.setTextColor(getResources().getColor(R.color.colorBlack));
+                main_old_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_old.setSelected(!main_old.isSelected());
-                main_old.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+                main_old.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
             }
             else
             {
                 m_favorList.add("중장년·노인");
-                main_old_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.old_after));
                 main_old_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 활성화!!");
                 main_old.setSelected(true);
-                main_old.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                main_old.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
+
+                // 관심사 선택이 1개라도 안돼 있으면 커스텀 다이얼로그를 띄운다
+                if (m_favorList.size() == 0)
+                {
+                    CustomResultBenefitDialog dialog = new CustomResultBenefitDialog(getActivity());
+                    dialog.callDialog();
+                }
+                else
+                {
+                    /* if문 안의 처리를 하지 않으면 백버튼을 누르고 혜택 조회하러 가기 버튼을 누를 때마다 전체 버튼이 계속 생성되는 버그가 발생함 */
+                    if (!m_favorList.contains("전체"))
+                    {
+                        m_favorList.add(0, "전체");
+                    }
+                    for (int i = 0; i < m_favorList.size(); i++)
+                    {
+                        Log.e(TAG, "m_favorList : " + m_favorList);
+                    }
+                    // 선택한 모든 카테고리 이름을 인텐트에 넣어서 보낸다
+                    Intent m_intent = new Intent(getActivity(), ResultBenefitActivity.class);
+                    m_intent.putStringArrayListExtra("favor_btn", m_favorList);
+                    startActivity(m_intent);
+                    // 백버튼으로 이 곳에 돌아온 다음 같은 걸 체크해 보내면 쌓여서 가는 현상이 있어 clear()로 비운다
+                    m_favorList.clear();
+                }
             }
         });
 
@@ -199,20 +256,43 @@ public class SearchFragment extends Fragment
             if (OnSingleClickListener.isSelected())
             {
                 m_favorList.remove("육아·임신");
-                main_pregnancy_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.pregnancy));
-                main_pregnancy_title.setTextColor(getResources().getColor(R.color.colorBlack));
+                main_pregnancy_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_pregnancy.setSelected(!main_pregnancy.isSelected());
-                main_pregnancy.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+                main_pregnancy.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
             }
             else
             {
                 m_favorList.add("육아·임신");
-                main_pregnancy_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.pregnancy_after));
                 main_pregnancy_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 활성화!!");
                 main_pregnancy.setSelected(true);
-                main_pregnancy.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                main_pregnancy.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
+
+                // 관심사 선택이 1개라도 안돼 있으면 커스텀 다이얼로그를 띄운다
+                if (m_favorList.size() == 0)
+                {
+                    CustomResultBenefitDialog dialog = new CustomResultBenefitDialog(getActivity());
+                    dialog.callDialog();
+                }
+                else
+                {
+                    /* if문 안의 처리를 하지 않으면 백버튼을 누르고 혜택 조회하러 가기 버튼을 누를 때마다 전체 버튼이 계속 생성되는 버그가 발생함 */
+                    if (!m_favorList.contains("전체"))
+                    {
+                        m_favorList.add(0, "전체");
+                    }
+                    for (int i = 0; i < m_favorList.size(); i++)
+                    {
+                        Log.e(TAG, "m_favorList : " + m_favorList);
+                    }
+                    // 선택한 모든 카테고리 이름을 인텐트에 넣어서 보낸다
+                    Intent m_intent = new Intent(getActivity(), ResultBenefitActivity.class);
+                    m_intent.putStringArrayListExtra("favor_btn", m_favorList);
+                    startActivity(m_intent);
+                    // 백버튼으로 이 곳에 돌아온 다음 같은 걸 체크해 보내면 쌓여서 가는 현상이 있어 clear()로 비운다
+                    m_favorList.clear();
+                }
             }
         });
 
@@ -223,20 +303,43 @@ public class SearchFragment extends Fragment
             if (OnSingleClickListener.isSelected())
             {
                 m_favorList.remove("장애인");
-                main_disorder_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.disorder));
-                main_disorder_title.setTextColor(getResources().getColor(R.color.colorBlack));
+                main_disorder_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_disorder.setSelected(!main_disorder.isSelected());
-                main_disorder.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+                main_disorder.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
             }
             else
             {
                 m_favorList.add("장애인");
-                main_disorder_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.disorder_after));
                 main_disorder_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 활성화!!");
-                main_disorder.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
                 main_disorder.setSelected(true);
+                main_disorder.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
+
+                // 관심사 선택이 1개라도 안돼 있으면 커스텀 다이얼로그를 띄운다
+                if (m_favorList.size() == 0)
+                {
+                    CustomResultBenefitDialog dialog = new CustomResultBenefitDialog(getActivity());
+                    dialog.callDialog();
+                }
+                else
+                {
+                    /* if문 안의 처리를 하지 않으면 백버튼을 누르고 혜택 조회하러 가기 버튼을 누를 때마다 전체 버튼이 계속 생성되는 버그가 발생함 */
+                    if (!m_favorList.contains("전체"))
+                    {
+                        m_favorList.add(0, "전체");
+                    }
+                    for (int i = 0; i < m_favorList.size(); i++)
+                    {
+                        Log.e(TAG, "m_favorList : " + m_favorList);
+                    }
+                    // 선택한 모든 카테고리 이름을 인텐트에 넣어서 보낸다
+                    Intent m_intent = new Intent(getActivity(), ResultBenefitActivity.class);
+                    m_intent.putStringArrayListExtra("favor_btn", m_favorList);
+                    startActivity(m_intent);
+                    // 백버튼으로 이 곳에 돌아온 다음 같은 걸 체크해 보내면 쌓여서 가는 현상이 있어 clear()로 비운다
+                    m_favorList.clear();
+                }
             }
         });
 
@@ -246,20 +349,43 @@ public class SearchFragment extends Fragment
             if (OnSingleClickListener.isSelected())
             {
                 m_favorList.remove("문화·생활");
-                main_cultural_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.cultural));
-                main_cultural_title.setTextColor(getResources().getColor(R.color.colorBlack));
+                main_cultural_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_cultural.setSelected(!main_cultural.isSelected());
-                main_cultural.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+                main_cultural.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
             }
             else
             {
                 m_favorList.add("문화·생활");
-                main_cultural_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.cultural_after));
                 main_cultural_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 활성화!!");
-                main_cultural.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
                 main_cultural.setSelected(true);
+                main_cultural.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
+
+                // 관심사 선택이 1개라도 안돼 있으면 커스텀 다이얼로그를 띄운다
+                if (m_favorList.size() == 0)
+                {
+                    CustomResultBenefitDialog dialog = new CustomResultBenefitDialog(getActivity());
+                    dialog.callDialog();
+                }
+                else
+                {
+                    /* if문 안의 처리를 하지 않으면 백버튼을 누르고 혜택 조회하러 가기 버튼을 누를 때마다 전체 버튼이 계속 생성되는 버그가 발생함 */
+                    if (!m_favorList.contains("전체"))
+                    {
+                        m_favorList.add(0, "전체");
+                    }
+                    for (int i = 0; i < m_favorList.size(); i++)
+                    {
+                        Log.e(TAG, "m_favorList : " + m_favorList);
+                    }
+                    // 선택한 모든 카테고리 이름을 인텐트에 넣어서 보낸다
+                    Intent m_intent = new Intent(getActivity(), ResultBenefitActivity.class);
+                    m_intent.putStringArrayListExtra("favor_btn", m_favorList);
+                    startActivity(m_intent);
+                    // 백버튼으로 이 곳에 돌아온 다음 같은 걸 체크해 보내면 쌓여서 가는 현상이 있어 clear()로 비운다
+                    m_favorList.clear();
+                }
             }
         });
 
@@ -269,20 +395,43 @@ public class SearchFragment extends Fragment
             if (OnSingleClickListener.isSelected())
             {
                 m_favorList.remove("다문화");
-                main_multicultural_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.multicultural));
-                main_multicultural_title.setTextColor(getResources().getColor(R.color.colorBlack));
+                main_multicultural_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_multicultural.setSelected(!main_multicultural.isSelected());
-                main_multicultural.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+                main_multicultural.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
             }
             else
             {
                 m_favorList.add("다문화");
-                main_multicultural_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.multicultural_after));
                 main_multicultural_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 활성화!!");
-                main_multicultural.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
                 main_multicultural.setSelected(true);
+                main_multicultural.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
+
+                // 관심사 선택이 1개라도 안돼 있으면 커스텀 다이얼로그를 띄운다
+                if (m_favorList.size() == 0)
+                {
+                    CustomResultBenefitDialog dialog = new CustomResultBenefitDialog(getActivity());
+                    dialog.callDialog();
+                }
+                else
+                {
+                    /* if문 안의 처리를 하지 않으면 백버튼을 누르고 혜택 조회하러 가기 버튼을 누를 때마다 전체 버튼이 계속 생성되는 버그가 발생함 */
+                    if (!m_favorList.contains("전체"))
+                    {
+                        m_favorList.add(0, "전체");
+                    }
+                    for (int i = 0; i < m_favorList.size(); i++)
+                    {
+                        Log.e(TAG, "m_favorList : " + m_favorList);
+                    }
+                    // 선택한 모든 카테고리 이름을 인텐트에 넣어서 보낸다
+                    Intent m_intent = new Intent(getActivity(), ResultBenefitActivity.class);
+                    m_intent.putStringArrayListExtra("favor_btn", m_favorList);
+                    startActivity(m_intent);
+                    // 백버튼으로 이 곳에 돌아온 다음 같은 걸 체크해 보내면 쌓여서 가는 현상이 있어 clear()로 비운다
+                    m_favorList.clear();
+                }
             }
         });
 
@@ -292,43 +441,91 @@ public class SearchFragment extends Fragment
             if (OnSingleClickListener.isSelected())
             {
                 m_favorList.remove("기업·자영업자");
-                main_company_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.company));
-                main_company_title.setTextColor(getResources().getColor(R.color.colorBlack));
+                main_company_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_company.setSelected(!main_company.isSelected());
-                main_company.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+                main_company.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
             }
             else
             {
                 m_favorList.add("기업·자영업자");
-                main_company_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.company_after));
                 main_company_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 활성화!!");
-                main_company.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
                 main_company.setSelected(true);
+                main_company.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
+
+                // 관심사 선택이 1개라도 안돼 있으면 커스텀 다이얼로그를 띄운다
+                if (m_favorList.size() == 0)
+                {
+                    CustomResultBenefitDialog dialog = new CustomResultBenefitDialog(getActivity());
+                    dialog.callDialog();
+                }
+                else
+                {
+                    /* if문 안의 처리를 하지 않으면 백버튼을 누르고 혜택 조회하러 가기 버튼을 누를 때마다 전체 버튼이 계속 생성되는 버그가 발생함 */
+                    if (!m_favorList.contains("전체"))
+                    {
+                        m_favorList.add(0, "전체");
+                    }
+                    for (int i = 0; i < m_favorList.size(); i++)
+                    {
+                        Log.e(TAG, "m_favorList : " + m_favorList);
+                    }
+                    // 선택한 모든 카테고리 이름을 인텐트에 넣어서 보낸다
+                    Intent m_intent = new Intent(getActivity(), ResultBenefitActivity.class);
+                    m_intent.putStringArrayListExtra("favor_btn", m_favorList);
+                    startActivity(m_intent);
+                    // 백버튼으로 이 곳에 돌아온 다음 같은 걸 체크해 보내면 쌓여서 가는 현상이 있어 clear()로 비운다
+                    m_favorList.clear();
+                }
             }
         });
 
         /* 법률 혜택 버튼 */
-//        main_law.setOnClickListener(OnSingleClickListener ->
-//        {
-//            if (OnSingleClickListener.isSelected())
-//            {
-//                m_favorList.remove("법률");
-//                main_law_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.law));
-//                main_law_title.setTextColor(getResources().getColor(R.color.colorBlack));
-//                Log.e(TAG, "버튼 클릭 상태 비활성화");
-//                main_law.setSelected(!main_law.isSelected());
-//            }
-//            else
-//            {
-//                m_favorList.add("법률");
-//                main_law_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.law_after));
-//                main_law_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
-//                Log.e(TAG, "버튼 클릭 활성화!!");
-//                main_law.setSelected(true);
-//            }
-//        });
+        main_law.setOnClickListener(OnSingleClickListener ->
+        {
+            if (OnSingleClickListener.isSelected())
+            {
+                m_favorList.remove("법률");
+                main_law_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
+                Log.e(TAG, "버튼 클릭 상태 비활성화");
+                main_law.setSelected(!main_law.isSelected());
+                main_law.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
+            }
+            else
+            {
+                m_favorList.add("법률");
+                main_law_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
+                Log.e(TAG, "버튼 클릭 활성화!!");
+                main_law.setSelected(true);
+                main_law.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
+
+                // 관심사 선택이 1개라도 안돼 있으면 커스텀 다이얼로그를 띄운다
+                if (m_favorList.size() == 0)
+                {
+                    CustomResultBenefitDialog dialog = new CustomResultBenefitDialog(getActivity());
+                    dialog.callDialog();
+                }
+                else
+                {
+                    /* if문 안의 처리를 하지 않으면 백버튼을 누르고 혜택 조회하러 가기 버튼을 누를 때마다 전체 버튼이 계속 생성되는 버그가 발생함 */
+                    if (!m_favorList.contains("전체"))
+                    {
+                        m_favorList.add(0, "전체");
+                    }
+                    for (int i = 0; i < m_favorList.size(); i++)
+                    {
+                        Log.e(TAG, "m_favorList : " + m_favorList);
+                    }
+                    // 선택한 모든 카테고리 이름을 인텐트에 넣어서 보낸다
+                    Intent m_intent = new Intent(getActivity(), ResultBenefitActivity.class);
+                    m_intent.putStringArrayListExtra("favor_btn", m_favorList);
+                    startActivity(m_intent);
+                    // 백버튼으로 이 곳에 돌아온 다음 같은 걸 체크해 보내면 쌓여서 가는 현상이 있어 clear()로 비운다
+                    m_favorList.clear();
+                }
+            }
+        });
 
         /* 주거 혜택 버튼 */
         main_living.setOnClickListener(OnSingleClickListener ->
@@ -336,20 +533,43 @@ public class SearchFragment extends Fragment
             if (OnSingleClickListener.isSelected())
             {
                 m_favorList.remove("주거");
-                main_living_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.living));
-                main_living_title.setTextColor(getResources().getColor(R.color.colorBlack));
+                main_living_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_living.setSelected(!main_living.isSelected());
-                main_living.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+                main_living.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
             }
             else
             {
                 m_favorList.add("주거");
-                main_living_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.living_after));
                 main_living_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 활성화!!");
-                main_living.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
                 main_living.setSelected(true);
+                main_living.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
+
+                // 관심사 선택이 1개라도 안돼 있으면 커스텀 다이얼로그를 띄운다
+                if (m_favorList.size() == 0)
+                {
+                    CustomResultBenefitDialog dialog = new CustomResultBenefitDialog(getActivity());
+                    dialog.callDialog();
+                }
+                else
+                {
+                    /* if문 안의 처리를 하지 않으면 백버튼을 누르고 혜택 조회하러 가기 버튼을 누를 때마다 전체 버튼이 계속 생성되는 버그가 발생함 */
+                    if (!m_favorList.contains("전체"))
+                    {
+                        m_favorList.add(0, "전체");
+                    }
+                    for (int i = 0; i < m_favorList.size(); i++)
+                    {
+                        Log.e(TAG, "m_favorList : " + m_favorList);
+                    }
+                    // 선택한 모든 카테고리 이름을 인텐트에 넣어서 보낸다
+                    Intent m_intent = new Intent(getActivity(), ResultBenefitActivity.class);
+                    m_intent.putStringArrayListExtra("favor_btn", m_favorList);
+                    startActivity(m_intent);
+                    // 백버튼으로 이 곳에 돌아온 다음 같은 걸 체크해 보내면 쌓여서 가는 현상이 있어 clear()로 비운다
+                    m_favorList.clear();
+                }
             }
         });
 
@@ -359,20 +579,43 @@ public class SearchFragment extends Fragment
             if (OnSingleClickListener.isSelected())
             {
                 m_favorList.remove("취업·창업");
-                main_job_title.setTextColor(getResources().getColor(R.color.colorBlack));
-                main_job_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.job));
+                main_job_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_job.setSelected(!main_job.isSelected());
-                main_job.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+                main_job.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
             }
             else
             {
                 m_favorList.add("취업·창업");
-                main_job_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.job_after));
                 main_job_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 활성화!!");
-                main_job.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
                 main_job.setSelected(true);
+                main_job.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
+
+                // 관심사 선택이 1개라도 안돼 있으면 커스텀 다이얼로그를 띄운다
+                if (m_favorList.size() == 0)
+                {
+                    CustomResultBenefitDialog dialog = new CustomResultBenefitDialog(getActivity());
+                    dialog.callDialog();
+                }
+                else
+                {
+                    /* if문 안의 처리를 하지 않으면 백버튼을 누르고 혜택 조회하러 가기 버튼을 누를 때마다 전체 버튼이 계속 생성되는 버그가 발생함 */
+                    if (!m_favorList.contains("전체"))
+                    {
+                        m_favorList.add(0, "전체");
+                    }
+                    for (int i = 0; i < m_favorList.size(); i++)
+                    {
+                        Log.e(TAG, "m_favorList : " + m_favorList);
+                    }
+                    // 선택한 모든 카테고리 이름을 인텐트에 넣어서 보낸다
+                    Intent m_intent = new Intent(getActivity(), ResultBenefitActivity.class);
+                    m_intent.putStringArrayListExtra("favor_btn", m_favorList);
+                    startActivity(m_intent);
+                    // 백버튼으로 이 곳에 돌아온 다음 같은 걸 체크해 보내면 쌓여서 가는 현상이 있어 clear()로 비운다
+                    m_favorList.clear();
+                }
             }
         });
 
@@ -382,20 +625,43 @@ public class SearchFragment extends Fragment
             if (OnSingleClickListener.isSelected())
             {
                 m_favorList.remove("저소득층");
-                main_homeless_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.homeless));
-                main_homeless_title.setTextColor(getResources().getColor(R.color.colorBlack));
+                main_homeless_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 상태 비활성화");
                 main_homeless.setSelected(!main_homeless.isSelected());
-                main_homeless.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+                main_homeless.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
             }
             else
             {
                 m_favorList.add("저소득층");
-                main_homeless_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.homeless_after));
                 main_homeless_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
                 Log.e(TAG, "버튼 클릭 활성화!!");
-                main_homeless.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
                 main_homeless.setSelected(true);
+                main_homeless.setBackground(getResources().getDrawable(R.drawable.search_fragment_after_layout));
+
+                // 관심사 선택이 1개라도 안돼 있으면 커스텀 다이얼로그를 띄운다
+                if (m_favorList.size() == 0)
+                {
+                    CustomResultBenefitDialog dialog = new CustomResultBenefitDialog(getActivity());
+                    dialog.callDialog();
+                }
+                else
+                {
+                    /* if문 안의 처리를 하지 않으면 백버튼을 누르고 혜택 조회하러 가기 버튼을 누를 때마다 전체 버튼이 계속 생성되는 버그가 발생함 */
+                    if (!m_favorList.contains("전체"))
+                    {
+                        m_favorList.add(0, "전체");
+                    }
+                    for (int i = 0; i < m_favorList.size(); i++)
+                    {
+                        Log.e(TAG, "m_favorList : " + m_favorList);
+                    }
+                    // 선택한 모든 카테고리 이름을 인텐트에 넣어서 보낸다
+                    Intent m_intent = new Intent(getActivity(), ResultBenefitActivity.class);
+                    m_intent.putStringArrayListExtra("favor_btn", m_favorList);
+                    startActivity(m_intent);
+                    // 백버튼으로 이 곳에 돌아온 다음 같은 걸 체크해 보내면 쌓여서 가는 현상이 있어 clear()로 비운다
+                    m_favorList.clear();
+                }
             }
         });
 
@@ -428,6 +694,18 @@ public class SearchFragment extends Fragment
             }
         });
 
+        main_job_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
+        main_student_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
+        main_living_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
+        main_pregnancy_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
+        main_child_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
+        main_cultural_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
+        main_company_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
+        main_homeless_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
+        main_old_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
+        main_disorder_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
+        main_multicultural_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
+
     }
 
     // 모바일 키보드에서 검색 버튼 눌렀을 때
@@ -451,65 +729,40 @@ public class SearchFragment extends Fragment
     {
         super.onStart();
 
-        // ResultBenefitActivity에서 뒤로가기 누를 시 버튼이 선택된 상태의 프래그먼트로 돌아오기 때문에, 버튼이 선택되지 않은 처음의 상태로 되돌리기 위해서 필요한 로직
-        main_child_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.child));
-        main_child_title.setTextColor(getResources().getColor(R.color.colorBlack));
+        main_child_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
         main_child.setSelected(false);
-        main_child.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
 
-        main_student_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.student));
-        main_student_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_student.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+        main_student_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
         main_student.setSelected(false);
 
-        main_old_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.old));
-        main_old_title.setTextColor(getResources().getColor(R.color.colorBlack));
+        main_old_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
         main_old.setSelected(false);
-        main_old.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
 
-        main_pregnancy_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.pregnancy));
-        main_pregnancy_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_pregnancy.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+        main_pregnancy_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
         main_pregnancy.setSelected(false);
 
-        main_disorder_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.disorder));
-        main_disorder_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_disorder.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+        main_disorder_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
         main_disorder.setSelected(false);
 
-        main_cultural_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.cultural));
-        main_cultural_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_cultural.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+        main_cultural_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
         main_cultural.setSelected(false);
 
-        main_multicultural_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.multicultural));
-        main_multicultural_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_multicultural.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+        main_multicultural_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
         main_multicultural.setSelected(false);
 
-        main_company_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.company));
-        main_company_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_company.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+        main_company_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
         main_company.setSelected(false);
 
-        main_law_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.law));
-        main_law_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_law.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+        main_law_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
         main_law.setSelected(false);
 
-        main_living_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.living));
-        main_living_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_living.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+        main_living_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
         main_living.setSelected(false);
 
-        main_job_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.job));
-        main_job_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_job.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+        main_job_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
         main_job.setSelected(false);
 
-        main_homeless_img.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.homeless));
-        main_homeless_title.setTextColor(getResources().getColor(R.color.colorBlack));
-        main_homeless.setBackgroundColor(getResources().getColor(R.color.colorMainWhite));
+        main_homeless_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
         main_homeless.setSelected(false);
     }
 
@@ -529,19 +782,6 @@ public class SearchFragment extends Fragment
         main_living = view.findViewById(R.id.main_living);
         main_job = view.findViewById(R.id.main_job);
         main_homeless = view.findViewById(R.id.main_homeless);
-
-        main_child_img = view.findViewById(R.id.main_child_img);
-        main_student_img = view.findViewById(R.id.main_student_img);
-        main_old_img = view.findViewById(R.id.main_old_img);
-        main_pregnancy_img = view.findViewById(R.id.main_pregnancy_img);
-        main_disorder_img = view.findViewById(R.id.main_disorder_img);
-        main_cultural_img = view.findViewById(R.id.main_cultural_img);
-        main_multicultural_img = view.findViewById(R.id.main_multicultural_img);
-        main_company_img = view.findViewById(R.id.main_company_img);
-        main_law_img = view.findViewById(R.id.main_law_img);
-        main_living_img = view.findViewById(R.id.main_living_img);
-        main_job_img = view.findViewById(R.id.main_job_img);
-        main_homeless_img = view.findViewById(R.id.main_homeless_img);
 
         main_child_title = view.findViewById(R.id.main_child_title);
         main_student_title = view.findViewById(R.id.main_student_title);

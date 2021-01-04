@@ -29,8 +29,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 import com.kakao.auth.ISessionCallback;
 import com.kakao.auth.Session;
 import com.kakao.network.ErrorResult;
@@ -105,10 +103,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Logger.addLogAdapter(new AndroidLogAdapter());
 
         // GetUserInformationActivity, ChoiceKeywordActivity 체크 위한 쉐어드 처리
-//        app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
-//        SharedPreferences.Editor editor = app_pref.edit();
-//        editor.clear();
-//        editor.apply();
+        app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
+        // 스플래시 화면에서 받은 FCM 토큰
+        token = app_pref.getString("fcm_token", "");
+
+        SharedPreferences.Editor editor = app_pref.edit();
+        editor.apply();
 
         google_login_btn = findViewById(R.id.google_login_btn);
 
@@ -135,20 +135,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         fake_kakao = findViewById(R.id.fake_kakao);
 
         // 파이어베이스 FCM 디바이스 토큰값을 확인하는 로직
-        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>()
-        {
-            @Override
-            public void onComplete(@NonNull Task<InstanceIdResult> task)
-            {
-                if (!task.isSuccessful())
-                {
-                    Log.w("FCM LOG", "getInstanceId failed", task.getException());
-                    return;
-                }
-                token = task.getResult().getToken();
-                Log.e(TAG, "FCM token = " + token);
-            }
-        });
+        /* SplashActivity에서 발급받고 쉐어드에 저장했기 때문에 여기서 다시 FCM 토큰을 받을 필요가 없다 */
+//        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>()
+//        {
+//            @Override
+//            public void onComplete(@NonNull Task<InstanceIdResult> task)
+//            {
+//                if (!task.isSuccessful())
+//                {
+//                    Log.w("FCM LOG", "getInstanceId failed", task.getException());
+//                    return;
+//                }
+//                token = task.getResult().getToken();
+//                Log.e(TAG, "FCM token = " + token);
+//            }
+//        });
 
         // LoginActivity context 저장
         loginContext = LoginActivity.this;
@@ -241,7 +242,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                     SharedPreferences.Editor editor = preferences.edit();
                                     editor.putString("snsToken", idToken);
                                     editor.putString("email", email);
-                                    editor.commit();
+                                    editor.apply();
                                 }
                                 else
                                 {
@@ -426,34 +427,49 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     // 카카오 로그인 성공 시 실행할 처리
 //                    Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
                     /* 사용자 정보(나이, 성별, 지역, 닉네임)를 입력받기 위해 이동한다. 기존에 입력된 정보가 있으면 MainTabLayoutActivity로 이동한다 */
-                    if (app_pref.getString("user_age", "").equals("") && app_pref.getString("user_area", "").equals("") &&
-                    app_pref.getString("user_gender", "").equals("") && app_pref.getString("user_nickname", "").equals(""))
-                    {
-                        // 기존 정보가 없을 경우
-                        Intent intent = new Intent(LoginActivity.this, GetUserInformationActivity.class);
-                        startActivity(intent);
-                    }
-                    else
-                    {
-                        Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
-                        editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
-                        editor.putString(getString(R.string.get_kakao_name), result.getNickname());
-                        editor.apply();
-                        intent.putExtra("name", result.getNickname());
-                        intent.putExtra("profile", result.getProfileImagePath());
-                        intent.putExtra("email", result.getKakaoAccount().getEmail());
-                        if (result.getKakaoAccount().needsScopeAccountEmail())
-                        {
-                            // 현재 이메일에 체크하지 않아서(이메일 정보 제공에 동의하지 않아서) true가 나온다
-                            String email_result = result.getKakaoAccount().getEmail();
-                            Logger.e("email_result = " + email_result);
-                        }
-                        /* 서버로 osType, platform, FCM 토큰값 정보를 보내는 메서드 */
-                        sendUserTypeAndPlatform();
-                        // TODO : 카카오 이메일 가져오는 것 확인 위해 액티비티 이동 막음
-                        startActivity(intent);
-                        finish();
-                    }
+                    Intent intent = new Intent(LoginActivity.this, GetUserInformationActivity.class);
+                    editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
+                    editor.putString(getString(R.string.get_kakao_name), result.getNickname());
+                    editor.putString("kakao_email", result.getKakaoAccount().getEmail());
+                    editor.apply();
+                    intent.putExtra("name", result.getNickname());
+                    intent.putExtra("profile", result.getProfileImagePath());
+                    intent.putExtra("email", result.getKakaoAccount().getEmail());
+                    /* 서버로 osType, platform, FCM 토큰값 정보를 보내는 메서드 */
+                    sendUserTypeAndPlatform();
+                    // sendUserTypeAndPlatform() 처리 후 기본 정보 입력받는 화면으로 이동
+                    startActivity(intent);
+                    finish();
+
+
+//                    if (app_pref.getString("user_age", "").equals("") && app_pref.getString("user_area", "").equals("") &&
+//                    app_pref.getString("user_gender", "").equals("") && app_pref.getString("user_nickname", "").equals(""))
+//                    {
+//                        // 기존 정보가 없을 경우
+//                        Intent intent = new Intent(LoginActivity.this, GetUserInformationActivity.class);
+//                        startActivity(intent);
+//                    }
+//                    else
+//                    {
+//                        Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
+//                        editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
+//                        editor.putString(getString(R.string.get_kakao_name), result.getNickname());
+//                        editor.putString("kakao_email", result.getKakaoAccount().getEmail());
+//                        editor.apply();
+//                        intent.putExtra("name", result.getNickname());
+//                        intent.putExtra("profile", result.getProfileImagePath());
+//                        intent.putExtra("email", result.getKakaoAccount().getEmail());
+//                        if (result.getKakaoAccount().needsScopeAccountEmail())
+//                        {
+//                            // 현재 이메일에 체크하지 않아서(이메일 정보 제공에 동의하지 않아서) true가 나온다
+//                            String email_result = result.getKakaoAccount().getEmail();
+//                            Logger.e("email_result = " + email_result);
+//                        }
+//                        /* 서버로 osType, platform, FCM 토큰값 정보를 보내는 메서드 */
+//                        sendUserTypeAndPlatform();
+//                        startActivity(intent);
+//                        finish();
+//                    }
                 }
             });
         }
@@ -470,7 +486,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     void sendUserTypeAndPlatform()
     {
         String email = kakao_email;
-        String token = app_pref.getString("token", "");
+        Log.e(TAG, "sendUserTypeAndPlatform() - 쉐어드에서 꺼낸 FCM 토큰값 = " + token);
         String os_type = getString(R.string.login_os);
         String platform = getString(R.string.main_platform);
 
@@ -485,9 +501,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 {
                     String result = response.body();
                     tokenParsing(response.body());
-                    int code = response.code();
-                    Log.e(TAG, "성공 = " + result);
-                    Log.e(TAG, "code = " + code);
+                    Log.e("카카오 로그인", "성공 = " + result);
                 }
                 else
                 {
@@ -671,22 +685,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    /* 로그인 시 서버에서 넘어오는 토큰값이 있는데 이걸 저장해야 한다 */
     private void tokenParsing(String data)
     {
+        // 서버에서 발급받은 토큰값을 저장할 쉐어드 준비
         app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
         SharedPreferences.Editor editor = app_pref.edit();
 
         try
         {
             JSONObject token_object = new JSONObject(data);
-            /* 다른 액티비티/프래그먼트에서도 활용해야 하기 때문에 서버에서 받은 토큰값을 쉐어드에 저장해 사용한다 */
             server_token = token_object.getString("Token");
         }
         catch (JSONException e)
         {
             e.printStackTrace();
         }
-        Logger.e("서버에서 받은 토큰 = " + server_token);
         /* 다른 액티비티/프래그먼트에서도 활용해야 하기 때문에 서버에서 받은 토큰값을 쉐어드에 저장해 사용한다 */
         editor.putString("token", server_token);
         editor.apply();
@@ -719,6 +733,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         // 데이터를 저장 or 편집하기 위해 Editor 변수를 선언한다
                         SharedPreferences.Editor editor = preferences.edit();
                         editor.putString("serverToken", token_data);
+                        editor.apply();
 
                         editor.commit();
                     }

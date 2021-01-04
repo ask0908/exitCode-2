@@ -76,6 +76,8 @@ public class ResultBenefitActivity extends AppCompatActivity
     // 기존 변수와 구분하기 위해 SearchResultActivity에서 사용된 변수 가져옴
     String second_welf_name, second_parent_category, second_welf_category, second_tag, second_welf_local, second_total_count;
 
+    List<CategorySearchResultItem> test_list;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -186,6 +188,7 @@ public class ResultBenefitActivity extends AppCompatActivity
 
     private void jsonParse(String category_result)
     {
+        test_list = new ArrayList<>();
         try
         {
             JSONObject jsonObject = new JSONObject(category_result);
@@ -211,7 +214,8 @@ public class ResultBenefitActivity extends AppCompatActivity
                 // 하위 카테고리만 따로 담아서 중복 체크한 뒤 리사이클러뷰에 박는다
                 CategorySearchResultItem top_item = new CategorySearchResultItem();
                 top_item.setWelf_category(welf_category);
-                Log.e(TAG, top_item.getWelf_category());
+
+                Log.e("jsonParse()", top_item.getWelf_category());
                 boolean hasDuplicate = false;   // for-loop 안에서 하위 카테고리 이름 중복 여부 확인 시 사용
                 for (int j = 0; j < top_list.size(); j++)
                 {
@@ -226,7 +230,11 @@ public class ResultBenefitActivity extends AppCompatActivity
                 // if문 조건이 false인 경우는 중복되는 게 없다는 뜻이니까 리스트에 add로 값을 추가한다
                 if (!hasDuplicate)
                 {
-                    top_list.add(top_item);
+                    /* top_list 안에 ;;이 들어간 아이템을 제외하고 값을 넣는다 */
+                    if (!top_item.getWelf_category().contains(";; "))
+                    {
+                        top_list.add(top_item);
+                    }
                 }
             }
             total_count = jsonObject.getString("TotalCount");
@@ -236,20 +244,12 @@ public class ResultBenefitActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
-        for (int i = 0; i < top_list.size(); i++)
-        {
-            Log.e("숫자 확인", "top_list = " + top_list.get(i).getWelf_category());
-        }
         up_adapter = new SelectedCategoryAdapter(ResultBenefitActivity.this, top_list, up_itemClickListener);
-        up_adapter.setOnItemClickListener(new SelectedCategoryAdapter.ItemClickListener()
+        up_adapter.setOnItemClickListener((view, position) ->
         {
-            @Override
-            public void onItemClick(View view, int position)
-            {
-                String name = top_list.get(position).getWelf_category();
-                Log.e(TAG, "상단 리사이클러뷰에서 선택한 아이템 이름 = " + name);
-                searchUpLevelCategory(name);
-            }
+            String name = top_list.get(position).getWelf_category();
+            Log.e(TAG, "상단 리사이클러뷰에서 선택한 아이템 이름 = " + name);
+            searchUpLevelCategory(name);
         });
 
         // 쿼리 결과 개수로 몇 개가 검색됐는지 유저에게 알려준다
@@ -270,100 +270,6 @@ public class ResultBenefitActivity extends AppCompatActivity
         bottom_recycler.setAdapter(bottom_adapter);
         up_recycler.setAdapter(up_adapter);
     }
-
-//    private void jsonParse(String category_result)
-//    {
-//        Log.e(TAG, "jsonParse() 호출됨");
-//        try
-//        {
-//            JSONObject jsonObject = new JSONObject(category_result);
-//            JSONArray jsonArray = jsonObject.getJSONArray("Message");
-//            for (int i = 0; i < jsonArray.length(); i++)
-//            {
-//                JSONObject inner_obj = jsonArray.getJSONObject(i);
-//                welf_name = inner_obj.getString("welf_name");
-//                parent_category = inner_obj.getString("parent_category");
-//                welf_category = inner_obj.getString("welf_category");
-//                tag = inner_obj.getString("tag");
-//                welf_local = inner_obj.getString("welf_local");
-//
-//                // 하단 리사이클러뷰에 박을 데이터들
-//                CategorySearchResultItem item = new CategorySearchResultItem();
-//                item.setWelf_name(welf_name);
-//                item.setParent_category(parent_category);
-//                item.setWelf_category(welf_category);
-//                item.setTag(tag);
-//                item.setWelf_local(welf_local);
-//                list.add(item);
-//
-//                // 하위 카테고리만 따로 담아서 중복 체크한 뒤 리사이클러뷰에 박는다
-//                CategorySearchResultItem top_item = new CategorySearchResultItem();
-//                top_item.setWelf_category(welf_category);
-//                boolean hasDuplicate = false;   // for-loop 안에서 하위 카테고리 이름 중복 여부 확인 시 사용
-//                for (int j = 0; j < top_list.size(); j++)
-//                {
-//                    if (top_list.get(j).getWelf_category().equals(top_item.getWelf_category()))
-//                    {
-//                        // 추가하지 않음
-//                        // 1개라도 중복되는 게 있으면 브레이크로 빠져나옴
-//                        hasDuplicate = true;
-//                        break;
-//                    }
-//                }
-//                // if문 조건이 false인 경우는 중복되는 게 없다는 뜻이니까 리스트에 add로 값을 추가한다
-//                if (!hasDuplicate)
-//                {
-//                    top_list.add(top_item);
-//                }
-//            }
-//            countOfWelf = jsonObject.getString("TotalCount");
-//        }
-//        catch (JSONException e)
-//        {
-//            e.printStackTrace();
-//        }
-//        for (int i = 0; i < top_list.size(); i++)
-//        {
-//            Log.e("ddd", "top_list = " + top_list.get(i).getWelf_category());
-//        }
-//
-//        // 상단 가로 리사이클러뷰에 붙일 어댑터(하위 카테고리들 나옴)
-//        top_list.add(0, new CategorySearchResultItem("전체"));
-//        bottom_adapter = new SelectedCategoryAdapter(ResultBenefitActivity.this, top_list, bottom_itemClickListener);
-////        selectedCategoryAdapter.setHasStableIds(true);
-//
-//        bottom_adapter.setOnItemClickListener(((view, position) -> {
-//            String sub_category = top_list.get(position).getWelf_category();
-//            Log.e(TAG, "선택한 하위 카테고리명 = " + sub_category);
-//            searchUpLevelCategory(sub_category);
-//        }));
-//
-//        // 쿼리 결과 개수로 몇 개가 검색됐는지 유저에게 알려준다
-//        result_benefit_title.setText("복지혜택 결과가 총 " + countOfWelf + "개\n검색되었습니다");
-//        if (Integer.parseInt(countOfWelf) > 9)
-//        {
-//            SpannableString spannableString = new SpannableString(result_benefit_title.getText().toString());
-//            spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 11, 13, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//            result_benefit_title.setText(spannableString);
-//        }
-//        else if (Integer.parseInt(countOfWelf) < 10)
-//        {
-//            SpannableString spannableString = new SpannableString(result_benefit_title.getText().toString());
-//            spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 11, 12, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//            result_benefit_title.setText(spannableString);
-//        }
-//        up_recycler.setAdapter(up_adapter);
-//
-//        // 하단 세로 리사이클러뷰에 붙일 어댑터(정책명들 나옴)
-//        up_adapter = new CategorySearchResultAdapter(ResultBenefitActivity.this, list, up_itemClickListener);
-//        up_adapter.setOnItemClickListener(((view, position) -> {
-//            String name = list.get(position).getWelf_name();
-//            Log.e(TAG, "선택한 이름 : " + name);
-//            Intent intent = new Intent(ResultBenefitActivity.this, DetailBenefitActivity.class);
-//            intent.putExtra("RBF_title", name);
-//            startActivity(intent);
-//        }));
-//    }
 
     /* 하위 카테고리 눌러 검색할 때 사용하는 메서드 */
     void searchUpLevelCategory(String sub_category)
@@ -435,53 +341,11 @@ public class ResultBenefitActivity extends AppCompatActivity
             public void onItemClick(View view, int pos)
             {
                 String name = list.get(pos).getWelf_name();
-                Log.e(TAG, "시발 좀 나와라 혜택명아 = " + name);
+                Log.e(TAG, "선택한 혜택명 = " + name);
             }
         });
         bottom_recycler.setAdapter(bottom_adapter);
     }
-
-//    private void categoryParsing(String result)
-//    {
-//        list.clear();
-//        try
-//        {
-//            JSONObject jsonObject = new JSONObject(result);
-//            JSONArray jsonArray = jsonObject.getJSONArray("Message");
-//            second_total_count = jsonObject.getString("TotalCount");
-//            for (int i = 0; i < jsonArray.length(); i++)
-//            {
-//                JSONObject inner_obj = jsonArray.getJSONObject(i);
-//                second_welf_name = inner_obj.getString("welf_name");
-//                second_parent_category = inner_obj.getString("parent_category");
-//                second_welf_category = inner_obj.getString("welf_category");
-//                second_tag = inner_obj.getString("tag");
-//                second_welf_local = inner_obj.getString("welf_local");
-//
-//                // 하단 리사이클러뷰에 박을 모델 클래스 객체 정의 후 값 대입
-//                CategorySearchResultItem item = new CategorySearchResultItem();
-//                item.setWelf_name(welf_name);
-//                item.setParent_category(parent_category);
-//                item.setWelf_category(welf_category);
-//                item.setTag(tag);
-//                item.setWelf_local(welf_local);
-//
-//                // 하단 리사이클러뷰에 쓰이는 리스트에 모델 클래스 객체 대입
-//                list.add(item);
-//            }
-//        }
-//        catch (JSONException e)
-//        {
-//            e.printStackTrace();
-//        }
-//        // 세로 리사이클러뷰에 쓸 어댑터의 리스트에 값들을 넣는다
-//        bottom_adapter = new CategorySearchResultAdapter(ResultBenefitActivity.this, list, bottom_itemClickListener);
-//        bottom_adapter.setOnItemClickListener(((view, position) -> {
-//            String name = list.get(position).getWelf_name();
-//            Log.e(TAG, "선택한 이름 : " + name);
-//        }));
-//        up_recycler.setAdapter(up_adapter);
-//    }
 
     @Override
     protected void onPause()

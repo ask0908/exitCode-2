@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -38,14 +37,12 @@ import retrofit2.Response;
 /* 받았던 알림들을 확인할 수 있는 프래그먼트 */
 public class PushGatherFragment extends Fragment
 {
-    private final String TAG = "InterestBenefitFragment";
+    private final String TAG = "PushGatherFragment";
 
     Toolbar push_toolbar;
     RecyclerView push_layout_recycler;
     PushGatherAdapter adapter;
     PushGatherAdapter.ItemClickListener itemClickListener;
-
-    List<PushGatherItem> list;
 
     SharedPreferences app_pref;
 
@@ -80,21 +77,22 @@ public class PushGatherFragment extends Fragment
         push_toolbar.setTitle("알림");
         app_pref = getActivity().getSharedPreferences("app_pref", 0);
         token = app_pref.getString("token", "");
-        Log.e(TAG, "onViewCreated() 쉐어드에 저장된 서버 토큰값 = " + token);
 
         getPushData();
 
         push_layout_recycler = view.findViewById(R.id.push_layout_recycler);
         push_layout_recycler.setHasFixedSize(true);
-        push_layout_recycler.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         push_layout_recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
     /* 서버에 저장된 푸시 데이터들을 가져오는 메서드 */
     void getPushData()
     {
+        app_pref = getActivity().getSharedPreferences("app_pref", 0);
+        String token = app_pref.getString("token", "");
+        Log.e(TAG, "푸시 알림 목록 뽑을 때 토큰값 = " + token);
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.getPushData(token);
+        Call<String> call = apiInterface.getPushData(token, "pushList");
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -151,7 +149,7 @@ public class PushGatherFragment extends Fragment
                 String welf_name = list.get(position).getWelf_name();
                 // 혜택 이름을 뽑고 푸시를 클릭하면 해당 액티비티로 이동하도록 한다
                 Intent intent = new Intent(getActivity(), DetailBenefitActivity.class);
-                intent.putExtra("RBF_title", welf_name);
+                intent.putExtra("name", welf_name);
                 startActivity(intent);
             }
         });

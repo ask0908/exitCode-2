@@ -1,9 +1,11 @@
 package com.psj.welfare.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -37,7 +39,7 @@ public class VerticalSearchResultAdapter extends RecyclerView.Adapter<VerticalSe
     @Override
     public VerticalSearchResultAdapter.VerticalSearchResultViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        View view = LayoutInflater.from(context).inflate(R.layout.category_search_result_item, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.search_result_item, parent, false);
         return new VerticalSearchResultViewHolder(view, itemClickListener);
     }
 
@@ -45,7 +47,44 @@ public class VerticalSearchResultAdapter extends RecyclerView.Adapter<VerticalSe
     public void onBindViewHolder(@NonNull VerticalSearchResultAdapter.VerticalSearchResultViewHolder holder, int position)
     {
         SearchItem item = list.get(position);
-        holder.result_textview.setText(item.getWelf_name());
+        holder.search_result_textview.setText(item.getWelf_name());
+        holder.search_welf_local_textview.setText("#" + item.getWelf_local());
+
+        Log.e("키워드 검색 후", "카테고리 = " + list.get(position).getWelf_category());
+
+        switch (list.get(position).getWelf_category())
+        {
+            case "일자리 지원" :
+                holder.search_result_imageview.setImageResource(R.drawable.counseling);
+                break;
+
+            case "카드 지원" :
+                holder.search_result_imageview.setImageResource(R.drawable.loan);
+                break;
+
+            case "현금 지원" :
+                holder.search_result_imageview.setImageResource(R.drawable.cash);
+                break;
+
+            case "현물 지원" :
+                holder.search_result_imageview.setImageResource(R.drawable.loan);
+                break;
+
+            case "대출 지원" :
+                holder.search_result_imageview.setImageResource(R.drawable.loan);
+                break;
+
+            case "임대 지원" :
+                holder.search_result_imageview.setImageResource(R.drawable.house);
+                break;
+
+            case "보험 지원" :
+                holder.search_result_imageview.setImageResource(R.drawable.cash);
+                break;
+
+            default:
+                break;
+        }
     }
 
     @Override
@@ -56,16 +95,19 @@ public class VerticalSearchResultAdapter extends RecyclerView.Adapter<VerticalSe
 
     public class VerticalSearchResultViewHolder extends RecyclerView.ViewHolder
     {
-        TextView result_textview;
+        ImageView search_result_imageview;
+        TextView search_result_textview, search_welf_local_textview;
         VerticalItemClickListener itemClickListener;
 
         public VerticalSearchResultViewHolder(@NonNull View view, VerticalItemClickListener itemClickListener)
         {
             super(view);
 
-            result_textview = view.findViewById(R.id.category_search_result_title);
+            search_result_imageview = view.findViewById(R.id.search_result_imageview);
+            search_welf_local_textview = view.findViewById(R.id.search_welf_local_textview);
+            search_result_textview = view.findViewById(R.id.search_result_title);
             this.itemClickListener = itemClickListener;
-            result_textview.setOnClickListener(v -> {
+            search_result_textview.setOnClickListener(v -> {
                 int pos = getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION && itemClickListener != null)
                 {

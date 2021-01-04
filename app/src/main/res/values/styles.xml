@@ -11,10 +11,25 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="TestActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <!-- No Title Bar-->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        
+        <item name="android:windowActivityTransitions">true</item>
+    </style>
+
     <style name="ToolbarTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textSize">20sp</item> <!-- Toolbar의 타이틀 텍스트 사이즈-->
+        <item name="android:fontFamily">@font/jalnan</item>
     </style>
 
     <style name="ReviewTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -75,5 +90,28 @@
         <item name="android:layout_height">2dp</item>
     </style>
 
+    <!-- MainTabLayoutActivity의 하단 탭 배경화면 설정 -->
+<!--    <style name="Base.Widget.Design.TabLayout" parent="android:Widget">-->
+<!--        <item name="tabBackground">@drawable/tab_background</item>-->
+<!--    </style>-->
+    
+    <style name="toolbar_jalnan_fontfamily" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:fontFamily">@font/jalnan</item>
+    </style>
+
+<!--    <style name="BaseAppTheme" parent="android:Theme.Material">-->
+<!--        &lt;!&ndash; enable window content transitions &ndash;&gt;-->
+<!--        <item name="android:windowActivityTransitions">true</item>-->
+
+<!--        &lt;!&ndash; specify enter and exit transitions &ndash;&gt;-->
+<!--        <item name="android:windowEnterTransition">@transition/explode</item>-->
+<!--        <item name="android:windowExitTransition">@transition/explode</item>-->
+
+<!--        &lt;!&ndash; specify shared element transitions &ndash;&gt;-->
+<!--        <item name="android:windowSharedElementEnterTransition">-->
+<!--            @transition/change_image_transform</item>-->
+<!--        <item name="android:windowSharedElementExitTransition">-->
+<!--            @transition/change_image_transform</item>-->
+<!--    </style>-->
 
 </resources>

@@ -126,6 +126,7 @@ public class TestMainFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
+        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
 
         // 위치 권한 설정 처리
         PermissionListener permissionListener = new PermissionListener()
@@ -164,6 +165,14 @@ public class TestMainFragment extends Fragment
         list.add(new TestViewPagerData("당신이 놓치고 있는\n700개의 여성 혜택"));
         list.add(new TestViewPagerData("당신을 위한 900개의 혜택\n바로 확인해 보세요"));
         viewPager2.setAdapter(new TestViewPagerAdapter(getActivity(), list));
+
+        // 사용자 기본 정보(나이, 성별, 지역)가 있는 경우 & 로그인한 경우 뷰페이저를 gone으로 돌린다
+        // 로그인한 경우에 대한 예외처리는 아직
+        if (!sharedPreferences.getString("user_area", "").equals("") || !sharedPreferences.getString("user_nickname", "").equals("")
+                || !sharedPreferences.getString("user_gender", "").equals(""))
+        {
+            viewPager2.setVisibility(View.GONE);
+        }
 
         /* 맞춤 혜택들을 가로 리사이클러뷰에 담아 보여주는 메서드 */
         userOrderedWelfare();
@@ -342,6 +351,7 @@ public class TestMainFragment extends Fragment
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
+                    Log.e(TAG, "관심 혜택 결과 = " + result);
                     recommendParsing(result);
                 }
                 else
@@ -398,7 +408,6 @@ public class TestMainFragment extends Fragment
     /* 서버로 로그 보내는 메서드 */
     void sendLog(String content, String request_value)
     {
-        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
         String token = sharedPreferences.getString("token", "");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Call<String> call = apiInterface.sendLog("안드로이드", LogUtil.getDeviceName(), token, content, request_value);

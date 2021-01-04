@@ -4,6 +4,8 @@
 <!--    <color name="colorPrimaryDark">#6f52e8</color>-->
     <color name="colorPrimaryDark">#EE2F43</color>
     <color name="colorAccent">#D81B60</color>
+
+    <color name="app_top_color">#FFF0FE</color>
     <color name="colorMainBlue">#54A4FF</color>
     <color name="colorMainWhite">#FFFFFF</color>
     <color name="colorBlack">#000000</color>

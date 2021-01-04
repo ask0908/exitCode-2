@@ -8,19 +8,19 @@
     android:background="@color/colorPrimaryDark"
     tools:context=".activity.SplashActivity">
 
-    <!-- iOS와 폰트 보이는 형태가 다름. 수정 필요 -->
     <TextView
+        android:id="@+id/splash_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="60dp"
         android:fontFamily="@font/bauhaus_bold"
+        android:gravity="center"
+        android:padding="10dp"
         android:text="UrBene fit"
-        android:textSize="50sp"
-        android:textStyle="bold"
         android:textColor="@color/colorMainWhite"
-        android:gravity="center"/>
+        android:textSize="40sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

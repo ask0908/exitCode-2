@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,8 @@ public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCatego
     private Context context;
     private List<CategorySearchResultItem> list;
     private ItemClickListener itemClickListener;
+
+    public static int selected_item = 0;
 
     public void setOnItemClickListener(ItemClickListener itemClickListener)
     {
@@ -56,8 +59,6 @@ public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCatego
     {
         CategorySearchResultItem item = list.get(position);
         holder.category_btn.setText(item.getWelf_category());
-        // 바인드하는 텍스트 로그 확인
-        // pos값, 카테고리 맞게 되고 있는지 로그 확인
     }
 
     @Override
@@ -68,6 +69,7 @@ public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCatego
 
     public class SelectedCategoryViewHolder extends RecyclerView.ViewHolder
     {
+        LinearLayout sub_category_layout;
         TextView category_btn;
         ItemClickListener itemClickListener;
 
@@ -75,6 +77,7 @@ public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCatego
         {
             super(view);
 
+            sub_category_layout = view.findViewById(R.id.sub_category_layout);
             category_btn = view.findViewById(R.id.category_btn);
             this.itemClickListener = itemClickListener;
             category_btn.setOnClickListener(v -> {

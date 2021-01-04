@@ -9,8 +9,10 @@
             android:shape="rectangle">
             <corners
                 android:radius="12dp"/>
+            <stroke
+                android:color="@color/fui_transparent"/>
             <solid
-                android:color="@color/colorMainWhite"/>
+                android:color="@color/app_top_color"/>
         </shape>
     </item>
 </layer-list>
