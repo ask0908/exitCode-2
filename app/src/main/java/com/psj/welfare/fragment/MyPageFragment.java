@@ -41,7 +41,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/* 마이페이지 프래그먼트 */
+/* 마이페이지 프래그먼트
+* 마이페이지에 카카오 계정으로 아직 로그인하지 않았는데도 카카오 계정으로 나오는 현상 있음 */
 public class MyPageFragment extends Fragment
 {
     private final String TAG = "MyPageFragment";
@@ -98,6 +99,10 @@ public class MyPageFragment extends Fragment
             kakao_nick = sharedPreferences.getString(getString(R.string.get_kakao_name), "");
             kakao_name.setText(kakao_nick);
             account_platform_text.setText(getString(R.string.set_kakao_account));
+        }
+        else
+        {
+            account_platform_text.setText("");
         }
         if (profile_image != null)
         {
@@ -250,14 +255,14 @@ public class MyPageFragment extends Fragment
         {
             e.printStackTrace();
         }
-        if (checked.equals(getString(R.string.is_true)))
-        {
-            push_noti_switch.setChecked(true);
-        }
-        else
-        {
-            push_noti_switch.setChecked(false);
-        }
+//        if (checked.equals(getString(R.string.is_true)))
+//        {
+//            push_noti_switch.setChecked(true);
+//        }
+//        else
+//        {
+//            push_noti_switch.setChecked(false);
+//        }
     }
 
     private void init(View view)

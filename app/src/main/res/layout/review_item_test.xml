@@ -20,8 +20,7 @@
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/review_user_image"
             android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:src="@drawable/man_img"/>
+            android:layout_height="70dp"/>
 
         <!-- 유저 아이디, 1시간 전 문구를 놓을 수직 리니어 레이아웃 -->
         <LinearLayout

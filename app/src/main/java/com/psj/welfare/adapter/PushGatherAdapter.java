@@ -5,10 +5,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.psj.welfare.Data.PushGatherItem;
@@ -71,8 +71,8 @@ public class PushGatherAdapter extends RecyclerView.Adapter<PushGatherAdapter.Pu
             // String -> LocalDateTime 로 타입 변경
             LocalDateTime localDateTime = LocalDateTime.parse(item.getPush_gather_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-            Log.e("adapter", " LocalDateTime 로 변경한 현재 시간 값: " + currentDateTime);
-            Log.e("adapter", " LocalDateTime 로 변경한 글 등록 시간 값: " + localDateTime);
+            Log.e("PushGatherAdapter", " LocalDateTime 로 변경한 현재 시간 값: " + currentDateTime);
+            Log.e("PushGatherAdapter", " LocalDateTime 로 변경한 글 등록 시간 값: " + localDateTime);
 
             // 글 등록시간, 현재 시간 비교
             Duration duration = null;
@@ -81,27 +81,27 @@ public class PushGatherAdapter extends RecyclerView.Adapter<PushGatherAdapter.Pu
             diffTime = duration.toMillis() / 1000;
             if (diffTime < SEC)
             {
-                holder.push_gather_date.setText(diffTime + "초전");
+                holder.push_gather_date.setText(diffTime + "초 전");
             }
             else if ((diffTime /= SEC) < MIN)
             {
-                holder.push_gather_date.setText(diffTime + "분전");
+                holder.push_gather_date.setText(diffTime + "분 전");
             }
             else if ((diffTime /= MIN) < HOUR)
             {
-                holder.push_gather_date.setText(diffTime + "시간전");
+                holder.push_gather_date.setText(diffTime + "시간 전");
             }
             else if ((diffTime /= HOUR) < DAY)
             {
-                holder.push_gather_date.setText(diffTime + " 일전");
+                holder.push_gather_date.setText(diffTime + " 일 전");
             }
             else if ((diffTime /= DAY) < MONTH)
             {
-                holder.push_gather_date.setText(diffTime + " 달전");
+                holder.push_gather_date.setText(diffTime + " 달 전");
             }
             else
             {
-                holder.push_gather_date.setText(diffTime + " 년전");
+                holder.push_gather_date.setText(diffTime + " 년 전");
             }
         }
     }
@@ -114,7 +114,7 @@ public class PushGatherAdapter extends RecyclerView.Adapter<PushGatherAdapter.Pu
 
     public class PushGatherViewHolder extends RecyclerView.ViewHolder
     {
-        LinearLayout push_gather_item_layout;
+        ConstraintLayout push_gather_item_layout;
         TextView push_gather_title, push_gather_desc, push_gather_date;
         ItemClickListener itemClickListener;
 

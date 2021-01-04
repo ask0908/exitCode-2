@@ -22,6 +22,15 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
+        <activity android:name=".Test.MyPage.TestChangeMyInformActivity">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+        </activity>
+        <activity android:name=".Test.Review.TestReviewWriteActivity" />
+        <activity android:name=".Test.GetUserInformation.TestGetInformationActivity" />
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,13 +45,11 @@
         <activity android:name=".activity.ChangeUserInformationActivity" />
         <activity android:name=".activity.ReviewUpdateActivity" />
         <activity android:name=".activity.GetUserInformationActivity">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
         <activity android:name=".activity.CalculatorResultActivity" />
         <activity
@@ -58,7 +65,6 @@
             android:parentActivityName=".activity.DetailBenefitActivity"
             android:theme="@style/ReviewTheme" />
         <activity android:name=".activity.TestActivity" />
-        <activity android:name=".activity.PushQuestionActivity" />
         <activity android:name=".activity.Compatibility.Compatibility_FourthActivity" />
         <activity android:name=".Test.CompatibilityTestActivity" />
         <activity android:name=".activity.Compatibility.Compatibility_ResultActivity">
@@ -84,11 +90,13 @@
         <activity android:name=".activity.MainTabLayoutActivity" />
         <activity android:name=".activity.ResultBenefitActivity" />
         <activity android:name=".activity.LoginActivity">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
 
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity android:name=".activity.DetailBenefitActivity" />
 

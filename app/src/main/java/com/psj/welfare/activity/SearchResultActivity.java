@@ -118,6 +118,7 @@ public class SearchResultActivity extends AppCompatActivity
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String search_result = response.body();
+                    Log.e(TAG, "search_result = " + search_result);
                     jsonParsing(search_result);
                 }
                 else
@@ -175,12 +176,18 @@ public class SearchResultActivity extends AppCompatActivity
                 }
                 if (!hasDuplicate)
                 {
-                    top_list.add(top_item);
+                    /* top_list 안에 ;;이 들어간 아이템을 제외하고 값을 넣는다 */
+                    if (!top_item.getWelf_category().contains(";; "))
+                    {
+                        top_list.add(top_item);
+                    }
                 }
 
                 // 하단의 세로 리사이클러뷰에 넣을 리스트
                 SearchItem name_item = new SearchItem();
                 name_item.setWelf_name(welf_name);
+                name_item.setWelf_category(welf_category);
+                name_item.setWelf_local(welf_local);
                 name_list.add(name_item);
             }
             total_count = jsonObject.getString("TotalCount");
@@ -195,7 +202,6 @@ public class SearchResultActivity extends AppCompatActivity
             Log.e("ddd", "top_list = " + top_list.get(i).getWelf_category());
         }
 
-        /* ;; 구분자를 없앤 다음, 분리된 문자열들을 중복 처리해서 리스트에 담는다 */
         // 가로 리사이클러뷰에 쓸 어댑터의 리스트에 값들을 넣는다
         top_list.add(0, new SearchItem("전체"));
         category_adapter = new HorizontalSearchResultAdapter(this, top_list, category_clickListener);

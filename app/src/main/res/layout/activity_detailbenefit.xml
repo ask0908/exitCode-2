@@ -142,6 +142,7 @@
 
                 </LinearLayout>
 
+                <!-- 클베 이후 다듬고 내기 위해 리뷰 부분을 gone 처리함 -->
                 <LinearLayout
                     android:id="@+id/review_view"
                     android:layout_width="0dp"
@@ -149,6 +150,7 @@
                     android:layout_weight=".20"
                     android:gravity="center"
                     android:orientation="vertical"
+                    android:visibility="gone"
                     android:paddingTop="20dp"
                     android:paddingBottom="10dp">
 
@@ -179,11 +181,13 @@
         <!-- 내용, 신청방법, 리뷰 텍스트뷰 있는 그라데이션 구간 끝 -->
 
         <!-- 리뷰 작성용 화면, 텍스트뷰를 누르면 다른 화면으로 이동해서 작성할 수 있게 한다
-         평소엔 gone이었다가 리뷰를 누르면 visible로 바뀌면서 보여지게 한다. 이 때 다른 뷰들을 gone으로 돌린다-->
+         평소엔 gone이었다가 리뷰를 누르면 visible로 바뀌면서 보여지게 한다. 이 때 다른 뷰들을 gone으로 돌린다
+         클베 이후에 사용하기 위해 잠시 gone 처리 -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/all_review_scene"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="gone">
 
             <!-- 가로로 혜택의 평점, 별점을 표시하는 레이아웃 -->
             <LinearLayout

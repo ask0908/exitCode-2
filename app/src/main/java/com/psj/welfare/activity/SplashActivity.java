@@ -4,17 +4,27 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.psj.welfare.R;
 
 /* 스플래시 액티비티, 쉐어드를 초기화한 후 안에 저장된 사용자 기본 정보가 없으면 GetUserInformationActivity로 이동한다
 * 기본 정보가 있고 이미 로그인 돼 있으면 MainTabLayoutActivity로 이동하며, 재로그인 시 뷰페이저는 gone으로 돌린다
-* 폰트가 iOS와 달라서 이 부분 수정 필요 */
+* 로그인과 기본정보 검사를 여기서 실행 */
 public class SplashActivity extends AppCompatActivity
 {
+    private final String TAG = this.getClass().getSimpleName();
+
     SharedPreferences sharedPreferences;
+
+    String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -23,6 +33,29 @@ public class SplashActivity extends AppCompatActivity
         setContentView(R.layout.activity_splash);
 
         sharedPreferences = getSharedPreferences("app_pref", 0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        // TODO : 맞춤 혜택들을 MainFragment에서 받아오는 것까지 테스트하기 위해 매 실행마다 쉐어드 초기화시킴. 테스트 끝나면 삭제
+//        editor.clear();
+//        editor.apply();
+
+        // 스플래시 화면에서 FCM 토큰을 발급받는다. 여기서 한번 토큰을 받았으니 다른 액티비티에서 추가로 토큰을 생성하지 못하게 한다
+        // 생성된 토큰값은 쉐어드에 저장한 뒤 메인 화면을 타고 로그인 화면으로 넘어갔을 때 거기서 꺼내 사용한다
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<InstanceIdResult> task)
+            {
+                if (!task.isSuccessful())
+                {
+                    Log.w("FCM LOG", "getInstanceId failed", task.getException());
+                    return;
+                }
+                token = task.getResult().getToken();
+                Log.e(TAG, "FCM token = " + token);
+                editor.putString("fcm_token", token);
+                editor.apply();
+            }
+        });
 
         Handler handler = new Handler();
         handler.postDelayed(new SplashHandler(), 3000);
@@ -33,19 +66,21 @@ public class SplashActivity extends AppCompatActivity
         @Override
         public void run()
         {
-            // 사용자 기본 정보(나이, 성별, 지역)가 없으면 설정하도록 기본 정보를 받는 화면으로 이동한다
-            if (sharedPreferences.getString("user_area", "").equals("") || sharedPreferences.getString("user_nickname", "").equals("")
-            || sharedPreferences.getString("user_gender", "").equals(""))
-            {
-                startActivity(new Intent(getApplication(), GetUserInformationActivity.class));
-                SplashActivity.this.finish();
-            }
-            else
-            {
-                // 사용자 기본 정보가 있으면 MainTabLayoutActivity로 이동해 로그인할 수 있도록 한다
-                startActivity(new Intent(getApplication(), MainTabLayoutActivity.class));
-                SplashActivity.this.finish();
-            }
+            startActivity(new Intent(getApplicationContext(), MainTabLayoutActivity.class));
+            SplashActivity.this.finish();
+//            // 사용자 기본 정보(나이, 성별, 지역)가 없으면 로그인 후 설정하도록 로그인 화면으로 이동한다
+//            if (sharedPreferences.getString("user_area", "").equals("") || sharedPreferences.getString("user_nickname", "").equals("")
+//            || sharedPreferences.getString("user_gender", "").equals(""))
+//            {
+//                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+//                SplashActivity.this.finish();
+//            }
+//            else
+//            {
+//                // 사용자 기본 정보가 있으면 MainTabLayoutActivity로 이동한다
+//                startActivity(new Intent(getApplication(), MainTabLayoutActivity.class));
+//                SplashActivity.this.finish();
+//            }
         }
     }
 

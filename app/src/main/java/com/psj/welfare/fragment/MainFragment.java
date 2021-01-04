@@ -1,6 +1,7 @@
 package com.psj.welfare.fragment;
 
 import android.Manifest;
+import android.app.ActivityOptions;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -22,6 +22,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
@@ -31,6 +32,9 @@ import com.kakao.usermgmt.callback.UnLinkResponseCallback;
 import com.psj.welfare.Data.HorizontalYoutubeItem;
 import com.psj.welfare.Data.RecommendItem;
 import com.psj.welfare.R;
+import com.psj.welfare.Test.TestViewPagerAdapter;
+import com.psj.welfare.Test.TestViewPagerData;
+import com.psj.welfare.activity.LoginActivity;
 import com.psj.welfare.activity.MapActivity;
 import com.psj.welfare.activity.YoutubeActivity;
 import com.psj.welfare.adapter.HorizontalYoutubeAdapter;
@@ -92,8 +96,6 @@ public class MainFragment extends Fragment
     List<HorizontalYoutubeItem> lists;
     String thumbnail, title;
 
-    String userAgent;
-
     // 서버에서 받아 저장한 토큰값을 저장할 때 사용하는 쉐어드
     SharedPreferences sharedPreferences;
 
@@ -105,6 +107,15 @@ public class MainFragment extends Fragment
     RecommendAdapter recommendAdapter;
     RecommendAdapter.ItemClickListener recom_itemClickListener;
     List<RecommendItem> list;
+
+    // 테스트용 뷰페이저
+    ViewPager2 viewPager2;
+
+    // 화면 우상단의 혜택찾기 버튼
+    Button find_welfare_btn;
+
+    // 카카오 이메일 담을 변수
+    String kakao_email;
 
     public MainFragment()
     {
@@ -127,6 +138,7 @@ public class MainFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
+        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
 
         // 위치 권한 설정 처리
         PermissionListener permissionListener = new PermissionListener()
@@ -157,19 +169,36 @@ public class MainFragment extends Fragment
                     .check();
         }
 
+//        sendUserTypeAndPlatform();
+
         map_btn = view.findViewById(R.id.map_btn);
+        find_welfare_btn = view.findViewById(R.id.find_welfare_btn);
+        // 기본 정보 입력 화면으로 이동시킨다
+        // TODO : 이미 개인정보가 있는 유저의 경우 이동시키지 말아야 한다. 그럼 어디로 이동시키지? 이것도 안 보이게 하고 유튜브 썸네일들을 맨 위로 올려버려?
+        find_welfare_btn.setOnClickListener(v -> {
+            Log.e(TAG, "클릭됨");
+//            Intent intent = new Intent(getActivity(), GetUserInformationActivity.class);
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            startActivity(intent);
+        });
 
-        /* 로그 확인 */
-        Log.e(TAG, "getVersion() = " + LogUtil.getVersion());
-        userAgent = new WebView(getActivity()).getSettings().getUserAgentString();
-        Log.e(TAG, "userAgent = " + userAgent);
-        Log.e(TAG, "getDeviceName() = " + LogUtil.getDeviceName());
+        /* 비로그인 때만 보이는 뷰페이저 */
+        viewPager2 = view.findViewById(R.id.test_view_pager2);
+        ArrayList<TestViewPagerData> list = new ArrayList<>();
+        list.add(new TestViewPagerData("당신이 놓치고 있는\n700개의 여성 혜택"));
+        list.add(new TestViewPagerData("당신을 위한 900개의 혜택\n바로 확인해 보세요"));
+        viewPager2.setAdapter(new TestViewPagerAdapter(getActivity(), list));
 
-        /* 맞춤 혜택들을 가로 리사이클러뷰에 담아 보여주는 메서드 */
-        userOrderedWelfare();
+        // 사용자 기본 정보(나이, 성별, 지역)가 있는 경우 & 로그인한 경우 뷰페이저를 gone으로 돌린다
+        // 로그인한 경우에 대한 예외처리는 아직
+        if (!sharedPreferences.getString("user_area", "").equals("") || !sharedPreferences.getString("user_nickname", "").equals("")
+                || !sharedPreferences.getString("user_gender", "").equals(""))
+        {
+            viewPager2.setVisibility(View.GONE);
+        }
 
         /* 유튜브 영상을 보여주는 가로 리사이클러뷰 선언, 처리 */
-        getYoutubeInformation();
+//        getYoutubeInformation(); // onResume()으로 이동
         youtube_video_recyclerview = view.findViewById(R.id.youtube_video_recyclerview);
         youtube_video_recyclerview.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
 
@@ -328,13 +357,49 @@ public class MainFragment extends Fragment
 
     }
 
-    /* 유저 관심사에 따라 관련 혜택들을 보여주는 메서드, 처음에 액티비티가 켜질 때 혜택들을 제대로 받아오지 못하는 경우가 있다 */
+    private void sendUserTypeAndPlatform()
+    {
+        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+        kakao_email = sharedPreferences.getString("kakao_email", "");
+        String token = sharedPreferences.getString("token", "");
+        Log.e(TAG, "카카오 이메일 = " + kakao_email + "\n토큰 = " + token);
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        Call<String> call = apiInterface.sendUserTypeAndPlatform(kakao_email, token, "android", "kakao");
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e("MainFragment - sendUserTypeAndPlatform()", "성공 = " + result);
+                }
+                else
+                {
+                    Log.e("MainFragment - sendUserTypeAndPlatform()", "실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e("MainFragment - sendUserTypeAndPlatform()", "에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    /* 유저 관심사에 따라 관련 혜택들을 보여주는 메서드, 처음에 액티비티가 켜질 때 혜택들을 제대로 받아오지 못하는 경우가 있다
+    * 로그인 해야 맞춤 혜택이 보이도록 처리해야 함 */
     void userOrderedWelfare()
     {
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
         String token = sharedPreferences.getString("token", "");
+        Log.e("MainFragment - 맞춤 혜택 가로 리사이클러뷰", "token = " + token);
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Call<String> call = apiInterface.userOrderedWelfare(token, "customized", LogUtil.getUserLog());   // 2번 인자는 customized로 고정이다
+//        String aa = LogUtil.getUserLog();
+//        Log.e("사용자 로그", aa);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -343,6 +408,7 @@ public class MainFragment extends Fragment
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
+                    Log.e(TAG, "맞춤 혜택 결과 = " + result);
                     recommendParsing(result);
                 }
                 else
@@ -359,6 +425,7 @@ public class MainFragment extends Fragment
         });
     }
 
+    /* 맞춤 혜택 파싱 */
     private void recommendParsing(String result)
     {
         list = new ArrayList<>();
@@ -410,7 +477,6 @@ public class MainFragment extends Fragment
                 {
                     String result = response.body();
                     jsonParsing(result);
-//                    sendLog();
                 }
                 else
                 {
@@ -460,10 +526,11 @@ public class MainFragment extends Fragment
                 Intent intent = new Intent(getActivity(), YoutubeActivity.class);
                 String videoId = lists.get(position).getYoutube_name();
                 Log.e(TAG, "getYoutube_name() : " + videoId);
-                startActivity(intent);
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
             }
         });
         youtube_video_recyclerview.setAdapter(adapter);
+
     }
 
     // 위도, 경도를 받아서 주소를 만들어내는 메서드
@@ -513,37 +580,6 @@ public class MainFragment extends Fragment
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
-    /* 로그 보내는 메서드 */
-//    void sendLog()
-//    {
-//        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
-//        String token = sharedPreferences.getString("token", "");
-//        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-//        Call<String> call = apiInterface.sendLog("안드로이드", LogUtil.getVersion(), token, LogUtil.getIp());
-//        call.enqueue(new Callback<String>()
-//        {
-//            @Override
-//            public void onResponse(Call<String> call, Response<String> response)
-//            {
-//                if (response.isSuccessful() && response.body() != null)
-//                {
-//                    String result = response.body();
-//                    Log.e(TAG, "성공 = " + result);
-//                }
-//                else
-//                {
-//                    Log.e(TAG, "실패 = " + response.body());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<String> call, Throwable t)
-//            {
-//                Log.e(TAG, "에러 = " + t.getMessage());
-//            }
-//        });
-//    }
-
     private HttpLoggingInterceptor httpLoggingInterceptor()
     {
 
@@ -559,4 +595,12 @@ public class MainFragment extends Fragment
         return interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
     }
 
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        getYoutubeInformation();
+        /* 맞춤 혜택들을 가로 리사이클러뷰에 담아 보여주는 메서드 */
+        userOrderedWelfare();
+    }
 }

@@ -2,197 +2,193 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/get_user_inform_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".activity.GetUserInformationActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/third_fragment_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:id="@+id/push_condition_top_layout"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:orientation="vertical"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="@color/colorPrimaryDark"
-                android:fontFamily="@font/jalnan"
-                android:gravity="center"
-                android:text="당신이 놓치고 있는 혜택은?"
-                android:textColor="@android:color/white"
-                android:textSize="18sp" />
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/push_condition_top_textview"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/get_information_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:fontFamily="@font/jalnan"
-            android:layout_marginStart="20dp"
-            android:lineSpacingExtra="7dp"
-            android:text="당신의 나이, 성별, 거주지역, 닉네임을\n입력해 주세요"
-            android:textColor="@android:color/black"
-            android:textSize="19sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/push_condition_top_layout" />
+            android:theme="@style/ToolbarTheme"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:id="@+id/push_condition_age_layout"
+        <TextView
+            android:id="@+id/change_inform_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:fontFamily="@font/nanum_barun_gothic_bold"
+            android:layout_marginTop="20dp"
+            android:lineSpacingExtra="12sp"
+            android:text="맞춤 혜택을 위한\n정보를 입력해주세요"
+            android:textColor="@color/colorBlack"
+            android:textSize="25sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/get_information_toolbar" />
+
+        <!-- 닉네임 -->
+        <TextView
+            android:id="@+id/nickname_desc_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="30dp"
+            android:fontFamily="@font/nanum_barun_gothic_bold"
+            android:text="닉네임"
+            android:textColor="@color/colorBlack"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/change_inform_textview" />
+
+        <EditText
+            android:id="@+id/nickname_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:fontFamily="@font/nanum_barun_gothic_bold"
+            android:hint="닉네임"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/nickname_desc_text" />
+
+        <!-- 나이 -->
+        <TextView
+            android:id="@+id/age_desc_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="50dp"
+            android:fontFamily="@font/nanum_barun_gothic_bold"
+            android:text="나이"
+            android:textColor="@color/colorBlack"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nickname_edittext" />
+
+        <EditText
+            android:id="@+id/age_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:fontFamily="@font/nanum_barun_gothic_bold"
+            android:hint="나이"
+            android:inputType="number"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/age_desc_text" />
+
+        <!-- 성별 -->
+        <TextView
+            android:id="@+id/gender_desc_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="50dp"
+            android:fontFamily="@font/nanum_barun_gothic_bold"
+            android:text="성별"
+            android:textColor="@color/colorBlack"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/age_edittext" />
+
+        <RadioGroup
+            android:id="@+id/gender_radiogroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:gravity="center"
             android:orientation="horizontal"
-            android:weightSum="1"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/push_condition_top_textview">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight=".20"
-                android:fontFamily="@font/jalnan"
-                android:gravity="center"
-                android:text="만"
-                android:textSize="20sp" />
-
-            <EditText
-                android:id="@+id/age_edittext"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_weight=".58"
-                android:background="@drawable/edittext_rectangle"
-                android:fontFamily="@font/jalnan"
-                android:gravity="center"
-                android:inputType="number"
-                android:textColor="@android:color/black"
-                android:textSize="20sp" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight=".20"
-                android:fontFamily="@font/jalnan"
-                android:gravity="center"
-                android:text="세"
-                android:textSize="20sp" />
-
-        </LinearLayout>
-
-        <!-- 남자, 여자 선택하는 가로 리니어 레이아웃 -->
-        <LinearLayout
-            android:id="@+id/push_condition_gender_layout"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginStart="31dp"
-            android:layout_marginTop="40dp"
-            android:layout_marginEnd="20dp"
-            android:orientation="horizontal"
-            android:weightSum="1"
-            app:layout_constraintStart_toStartOf="parent"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:weightSum="3"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/push_condition_age_layout">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/gender_desc_text">
 
-            <Button
-                android:id="@+id/man_btn"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_weight=".40"
-                android:background="@drawable/btn_round"
-                android:fontFamily="@font/jalnan"
-                android:text="남 자"
-                android:textColor="@android:color/black"
-                android:textSize="20sp"
-                app:layout_constraintRight_toLeftOf="@id/center_view"
-                app:layout_constraintTop_toTopOf="@id/push_condition_gender_layout" />
-
-            <View
-                android:id="@+id/center_view"
+            <RadioButton
+                android:id="@+id/male_radiobutton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight=".178"
-                app:layout_constraintLeft_toLeftOf="@id/man_btn"
-                app:layout_constraintRight_toLeftOf="@id/woman_btn"
-                app:layout_constraintTop_toTopOf="@id/push_condition_gender_layout" />
-
-            <Button
-                android:id="@+id/woman_btn"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_weight=".40"
-                android:background="@drawable/btn_round"
+                android:layout_weight="1"
                 android:fontFamily="@font/jalnan"
-                android:text="여 자"
-                android:textColor="@android:color/black"
-                android:textSize="20sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintLeft_toRightOf="@id/center_view"
-                app:layout_constraintTop_toTopOf="@id/push_condition_gender_layout" />
+                android:text="남자"
+                android:textSize="18sp" />
 
-        </LinearLayout>
-        <!-- 남자, 여자 선택하는 가로 리니어 레이아웃 끝 -->
+            <RadioButton
+                android:id="@+id/female_radiobutton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/jalnan"
+                android:text="여자"
+                android:textSize="18sp" />
 
-        <!-- 지역 선택하는 NumberPicker -->
+        </RadioGroup>
+
+        <!-- 지역 -->
+        <TextView
+            android:id="@+id/area_desc_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/nanum_barun_gothic_bold"
+            android:text="지역"
+            android:textColor="@color/colorBlack"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/gender_radiogroup"/>
+
         <NumberPicker
-            android:id="@+id/first_choice_spinner"
+            android:id="@+id/area_picker"
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:theme="@style/DefaultNumberPickerTheme"
             android:background="@drawable/custom_spinner"
-            android:layout_marginTop="40dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/push_condition_gender_layout" />
+            app:layout_constraintTop_toBottomOf="@id/area_desc_text" />
 
-        <!-- 닉네임 입력하는 editText -->
-        <EditText
-            android:id="@+id/nickname_edittext"
-            android:layout_width="230dp"
-            android:layout_height="50dp"
-            android:background="@drawable/edittext_rectangle"
-            android:fontFamily="@font/jalnan"
-            android:hint="닉네임"
-            android:gravity="center"
-            android:textColor="@android:color/black"
-            android:textSize="20sp"
-            android:layout_marginTop="50dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/first_choice_spinner"/>
-
-        <Button
-            android:id="@+id/next_btn"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_weight=".20"
-            android:background="@drawable/btn_done"
-            android:fontFamily="@font/jalnan"
-            android:text="확 인"
-            android:textColor="@android:color/white"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginBottom="30dp"
-            android:textSize="30sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/nickname_edittext"/>
+        <!-- 확인 버튼 -->
+<!--        <Button-->
+<!--            android:id="@+id/get_ok_btn"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="60dp"-->
+<!--            android:layout_marginLeft="20dp"-->
+<!--            android:layout_marginTop="250dp"-->
+<!--            android:layout_marginRight="20dp"-->
+<!--            android:layout_marginBottom="30dp"-->
+<!--            android:layout_weight=".20"-->
+<!--            android:background="@drawable/btn_primary_dark"-->
+<!--            android:fontFamily="@font/jalnan"-->
+<!--            android:text="확 인"-->
+<!--            android:textColor="@android:color/white"-->
+<!--            android:textSize="30sp"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

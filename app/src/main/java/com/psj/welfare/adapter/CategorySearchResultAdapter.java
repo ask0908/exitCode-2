@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -55,7 +56,42 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
     public void onBindViewHolder(@NonNull CategorySearchResultAdapter.CategorySearchResultViewHolder holder, int position)
     {
         CategorySearchResultItem item = list.get(position);
+        holder.welf_local_textview.setText("#" + item.getWelf_local());
         holder.result_textview.setText(item.getWelf_name());
+
+        switch (list.get(position).getWelf_category())
+        {
+            case "일자리 지원" :
+                holder.result_imageview.setImageResource(R.drawable.counseling);
+                break;
+
+            case "카드 지원" :
+                holder.result_imageview.setImageResource(R.drawable.loan);
+                break;
+
+            case "현금 지원" :
+                holder.result_imageview.setImageResource(R.drawable.cash);
+                break;
+
+            case "현물 지원" :
+                holder.result_imageview.setImageResource(R.drawable.loan);
+                break;
+
+            case "대출 지원" :
+                holder.result_imageview.setImageResource(R.drawable.loan);
+                break;
+
+            case "임대 지원" :
+                holder.result_imageview.setImageResource(R.drawable.house);
+                break;
+
+            case "보험 지원" :
+                holder.result_imageview.setImageResource(R.drawable.cash);
+                break;
+
+            default:
+                break;
+        }
     }
 
     @Override
@@ -64,15 +100,18 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
         return list.size();
     }
 
-    public class CategorySearchResultViewHolder extends RecyclerView.ViewHolder
+    public static class CategorySearchResultViewHolder extends RecyclerView.ViewHolder
     {
-        TextView result_textview;
+        ImageView result_imageview;
+        TextView result_textview, welf_local_textview;
         ItemClickListener itemClickListener;
 
         public CategorySearchResultViewHolder(@NonNull View view, ItemClickListener itemClickListener)
         {
             super(view);
 
+            welf_local_textview = view.findViewById(R.id.welf_local_textview);
+            result_imageview = view.findViewById(R.id.result_imageview);
             result_textview = view.findViewById(R.id.category_search_result_title);
             this.itemClickListener = itemClickListener;
             result_textview.setOnClickListener(v -> {

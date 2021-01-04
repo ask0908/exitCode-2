@@ -302,11 +302,13 @@ public interface ApiInterface
 	/**
 	 * 로그인 시 서버에서 받는 토큰을 넘겨 푸시 알림 데이터들을 받아오는 메서드
 	 * @param login_token - 로그인 시 서버에서 생성되는 토큰
+	 * @param type - "pushList" 고정
 	 * @return - JSON 형태의 혜택 제목, 푸시 제목, 푸시 body, 푸시를 받은 날짜가 문자열 꼴로 나온다
 	 */
 	@GET("https://www.urbene-fit.com/push")
 	Call<String> getPushData(
-			@Query("login_token") String login_token
+			@Query("login_token") String login_token,
+			@Query("type") String type
 	);
 
 	/**
@@ -459,10 +461,10 @@ public interface ApiInterface
 	/**
 	 * 사용자 정보(나이, 성별, 지역, 닉네임)를 입력받으면 서버에 저장하는 메서드
 	 * GetUserInformationActivity에서 사용됨, 테스트해야 함
-	 * @param login_token - 로그인 시 서버에서 생성되는 토큰
-	 * @param user_nickname - 유저가 입력한 닉네임
+	 * @param login_token - 로그인 시 서버에서 생성되는 토큰 (필수)
+	 * @param user_nickname - 유저가 입력한 닉네임 (필수)
 	 * @param age - 유저 나이
-	 * @param gender - 유저 성별
+	 * @param gender - 유저 성별(남자, 여자)
 	 * @param city - 유저의 거주 지역
 	 * @return - {
 	 * 				"Status":"200",
@@ -521,9 +523,10 @@ public interface ApiInterface
 
 	/**
 	 * 사용자 관심사에 따라 관련된 혜택을 보여주는 기능
-	 * 어디서 사용할지는 미정
+	 * MainFragment에서 사용 중
 	 * @param login_token - 로그인 시 서버에서 받는 토큰값
 	 * @param type - customized 고정
+	 * @param userAgent - android|SM-543N|30 꼴의 사용자 로그
 	 * @return -
 	 * "Status":"200",
 	 * "Message":[
