@@ -288,7 +288,7 @@ public class ReviewActivity extends AppCompatActivity
                 {
                     Log.e(TAG, "response = " + response);
                     Toast.makeText(getApplicationContext(), "소중한 리뷰가 등록되었어요", Toast.LENGTH_SHORT).show();
-                    finish();
+                    setResult(RESULT_OK);
                 }
                 else
                 {

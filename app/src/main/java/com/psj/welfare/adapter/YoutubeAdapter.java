@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
-import com.psj.welfare.Data.YoutubeDTO;
+import com.psj.welfare.Data.YoutubeItem;
 import com.psj.welfare.R;
 
 import java.util.List;
@@ -21,11 +21,11 @@ import java.util.List;
 public class YoutubeAdapter extends RecyclerView.Adapter<YoutubeAdapter.YoutubeViewHolder>
 {
     private Context context;
-    private List<YoutubeDTO> list;
+    private List<YoutubeItem> list;
 
     String video_id;
 
-    public YoutubeAdapter(Context context, List<YoutubeDTO> list)
+    public YoutubeAdapter(Context context, List<YoutubeItem> list)
     {
         this.context = context;
         this.list = list;
@@ -42,7 +42,7 @@ public class YoutubeAdapter extends RecyclerView.Adapter<YoutubeAdapter.YoutubeV
     @Override
     public void onBindViewHolder(@NonNull YoutubeAdapter.YoutubeViewHolder holder, int position)
     {
-        YoutubeDTO dto = list.get(position);
+        YoutubeItem dto = list.get(position);
         holder.youtube_player_title.setText(dto.getTitle());
         holder.youtube_url_id.setText(dto.getUrl_id());
         Log.e("onBindViewHolder()", "youtube_url_id = " + dto.getUrl_id());

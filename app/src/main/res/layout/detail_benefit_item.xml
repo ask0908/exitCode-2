@@ -8,7 +8,7 @@
         android:id="@+id/benefit_layout"
         android:layout_width="281.3dp"
         android:layout_height="177.5dp"
-        android:background="#fff"
+        android:background="@drawable/shadow_button_layer_list"
         android:layout_marginRight="40dp"
         android:orientation="vertical">
         
@@ -22,9 +22,9 @@
                 android:layout_width="50.5dp"
                 android:layout_height="28dp"
                 android:text="의료"
-                android:background="#666fef"
+                android:background="@color/colorPrimaryDark"
                 android:fontFamily="@font/nanum_barun_gothic_bold"
-                android:textColor="#fff"
+                android:textColor="@color/colorMainWhite"
                 android:textStyle="normal"
                 android:layout_marginLeft="28.5dp"
                 android:layout_marginTop="25.5dp"
@@ -42,7 +42,7 @@
                 android:layout_width="28.5dp"
                 android:layout_height="28.5dp"
                 android:layout_marginTop="25.5dp"
-                android:src="@drawable/move_gray"/>
+                android:src="@drawable/add_black"/>
             
         </LinearLayout>
         
@@ -54,7 +54,7 @@
             android:text="의료급여수급권자\n영유아건강검진비 지원"
             android:fontFamily="@font/nanum_barun_gothic_bold"
             android:textSize="16sp"
-            android:textColor="#000000"
+            android:textColor="@color/colorPrimaryDark"
             android:letterSpacing="-0.03"
             android:lineSpacingExtra="10.5sp"
             android:layout_marginTop="42.8dp"/>

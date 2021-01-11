@@ -5,10 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -62,9 +62,9 @@ public class HorizontalYoutubeAdapter extends RecyclerView.Adapter<HorizontalYou
 
     public class HorizontalYoutubeViewHolder extends RecyclerView.ViewHolder
     {
-        CardView horizontal_youtube_layout;
+        LinearLayout horizontal_youtube_layout;
         ImageView youtube_image;
-        TextView youtube_category, youtube_title, youtube_desc;
+        TextView youtube_title;
         ItemClickListener itemClickListener;
 
         public HorizontalYoutubeViewHolder(@NonNull View view, ItemClickListener itemClickListener)
@@ -73,9 +73,7 @@ public class HorizontalYoutubeAdapter extends RecyclerView.Adapter<HorizontalYou
 
             horizontal_youtube_layout = view.findViewById(R.id.horizontal_youtube_layout);
             youtube_image = view.findViewById(R.id.youtube_image);
-            youtube_category = view.findViewById(R.id.youtube_category);
             youtube_title = view.findViewById(R.id.youtube_title);
-            youtube_desc = view.findViewById(R.id.youtube_desc);
 
             this.itemClickListener = itemClickListener;
             horizontal_youtube_layout.setOnClickListener(v -> {

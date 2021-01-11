@@ -5,6 +5,7 @@
     <color name="colorPrimaryDark">#EE2F43</color>
     <color name="colorAccent">#D81B60</color>
 
+    <color name="detail_gradation_color">#f697a0</color>
     <color name="app_top_color">#FFF0FE</color>
     <color name="colorMainBlue">#54A4FF</color>
     <color name="colorMainWhite">#FFFFFF</color>
@@ -18,5 +19,8 @@
     <color name="colorPurple">#6f52e8</color>
     <color name="colorPink">#FF33FF</color>
     <color name="detail_benefit_background_color">#ffecbc</color>
+    <color name="divider_color">#CDCED0</color>
+    <color name="bottom_divider_color">#ECF0F3</color>
+    <color name="red_background_forward">#f7f93a</color>
 
 </resources>
