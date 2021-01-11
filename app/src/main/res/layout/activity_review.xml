@@ -34,8 +34,7 @@
             android:layout_height="wrap_content"
             android:text="이 혜택이 얼마나 도움이 되셨나요?"
             android:fontFamily="@font/jalnan"
-            android:visibility="gone"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textColor="@color/colorBlack"
             android:gravity="center"
             android:layout_marginTop="10dp"/>
@@ -45,7 +44,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:numStars="5"
-            android:visibility="gone"
             android:stepSize="1"
             android:layout_marginTop="10dp"
             android:layout_gravity="center"/>
@@ -61,7 +59,7 @@
             android:layout_height="wrap_content"
             android:text="당신의 소중한 리뷰를 남겨주세요"
             android:fontFamily="@font/jalnan"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textColor="@color/colorBlack"
             android:gravity="center"
             android:layout_marginTop="10dp"/>
@@ -91,7 +89,7 @@
             android:layout_height="wrap_content"
             android:text="이미지 첨부"
             android:fontFamily="@font/jalnan"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textColor="@color/colorBlack"
             android:layout_marginTop="20dp"
             android:layout_marginLeft="20dp"/>

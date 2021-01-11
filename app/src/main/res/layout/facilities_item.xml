@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/facilities_parent_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shadow_button_layer_list"
+    android:layout_margin="10dp"
+    android:padding="10dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="20dp"
+        android:weightSum="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/facilities_type"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".80"
+                android:fontFamily="@font/jalnan"
+                android:text="행정복지센터"
+                android:textColor="@color/colorBlack"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="25dp"
+                android:layout_weight=".10"
+                android:src="@drawable/location_black" />
+
+            <TextView
+                android:id="@+id/facilities_distance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".10"
+                android:text="20m" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/facilities_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/nanum_barun_gothic_bold"
+            android:text="서울 관악구 행운1길 43 행운동 주민센터"
+            android:textColor="@color/colorBlack" />
+
+        <TextView
+            android:id="@+id/facilities_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:fontFamily="@font/nanum_barun_gothic_bold"
+            android:text="평일 09:00 ~ 18:00" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+
+            <FrameLayout
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="15dp"
+                android:background="@drawable/detail_benefit_gray_circle">
+
+                <ImageView
+                    android:layout_width="21dp"
+                    android:layout_height="21dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/call_black" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/detail_benefit_gray_circle">
+
+                <ImageView
+                    android:layout_width="21dp"
+                    android:layout_height="21dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/location_black" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <!-- 시설의 유형, 거리 나타내는 가로 리니어 레이아웃 -->
+
+</androidx.constraintlayout.widget.ConstraintLayout>

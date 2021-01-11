@@ -14,10 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
-import com.psj.welfare.Data.DetailBenefitItem;
-import com.psj.welfare.Data.YoutubeDTO;
+import com.psj.welfare.Data.OtherYoutubeItem;
+import com.psj.welfare.Data.YoutubeItem;
 import com.psj.welfare.R;
-import com.psj.welfare.adapter.RelativeWelfareAdapter;
+import com.psj.welfare.adapter.OtherYoutubeAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 
@@ -37,21 +37,20 @@ import retrofit2.Response;
 * 이 화면에서 영상들을 어떻게 보여줄까? */
 public class YoutubeActivity extends AppCompatActivity
 {
-    private final String TAG = this.getClass().getName();
+    private final String TAG = this.getClass().getSimpleName();
 
     Toolbar youtube_toolbar;
     YouTubePlayerView player_1;
-    YouTubePlayerView player_2, player_3, player_4, player_5, player_6;
     String url_id, thumbnail, title, youtube_count;
-    List<YoutubeDTO> youtube_list;
+    List<YoutubeItem> youtube_list;
     List<String> url_id_list, title_list;
-    TextView first_title, second_title, third_title, fourth_title, fifth_title;
+    TextView first_title;
 
-    /* 영상과 관련된 혜택들을 보여줄 리사이클러뷰(재구현 필요) */
-    RecyclerView similar_recycler;
-    private RelativeWelfareAdapter adapter;
-    private RelativeWelfareAdapter.ItemClickListener itemClickListener;
-    List<DetailBenefitItem> list;
+    /* 다른 영상들을 보여주는 하단 리사이클러뷰 */
+    RecyclerView other_video_recyclerview;
+    OtherYoutubeAdapter adapter;
+    OtherYoutubeAdapter.YoutubeItemClickListener itemClickListener;
+    List<OtherYoutubeItem> other_list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -68,11 +67,9 @@ public class YoutubeActivity extends AppCompatActivity
 
         getYoutubeInformation();
 
-        similar_recycler = findViewById(R.id.similar_recycler);
-        similar_recycler.setHasFixedSize(true);
-        similar_recycler.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new RelativeWelfareAdapter(YoutubeActivity.this, list, itemClickListener);
-        similar_recycler.setAdapter(adapter);
+        other_video_recyclerview = findViewById(R.id.other_video_recyclerview);
+        other_video_recyclerview.setHasFixedSize(true);
+        other_video_recyclerview.setLayoutManager(new LinearLayoutManager(this));
 
         // 유튜브 플레이어엔 임시로 영상을 추가한다. video_id 안에 유튜브 영상 링크의 "watch?v="의 오른쪽 부분을 가져와 넣으면 된다
         /* loadVideo() vs cueVideo() : loadVideo()는 비디오를 로드하고 자동으로 재생하는 반면 cueVideo()는 비디오, 미리보기 이미지만 로드하고 자동 재생하지 않는다
@@ -88,61 +85,6 @@ public class YoutubeActivity extends AppCompatActivity
                 youTubePlayer.pause();
             }
         });
-
-//        player_2.addYouTubePlayerListener(new AbstractYouTubePlayerListener()
-//        {
-//            @Override
-//            public void onReady(YouTubePlayer youTubePlayer)
-//            {
-//                String video_id = url_id_list.get(1);
-//                youTubePlayer.cueVideo(video_id, 0);
-//                youTubePlayer.pause();
-//            }
-//        });
-//
-//        player_3.addYouTubePlayerListener(new AbstractYouTubePlayerListener()
-//        {
-//            @Override
-//            public void onReady(YouTubePlayer youTubePlayer)
-//            {
-//                String video_id = url_id_list.get(2);
-//                youTubePlayer.cueVideo(video_id, 0);
-//                youTubePlayer.pause();
-//            }
-//        });
-//
-//        player_4.addYouTubePlayerListener(new AbstractYouTubePlayerListener()
-//        {
-//            @Override
-//            public void onReady(YouTubePlayer youTubePlayer)
-//            {
-//                String video_id = url_id_list.get(3);
-//                youTubePlayer.cueVideo(video_id, 0);
-//                youTubePlayer.pause();
-//            }
-//        });
-//
-//        player_5.addYouTubePlayerListener(new AbstractYouTubePlayerListener()
-//        {
-//            @Override
-//            public void onReady(YouTubePlayer youTubePlayer)
-//            {
-//                String video_id = url_id_list.get(4);
-//                youTubePlayer.cueVideo(video_id, 0);
-//                youTubePlayer.pause();
-//            }
-//        });
-//
-//        player_6.addYouTubePlayerListener(new AbstractYouTubePlayerListener()
-//        {
-//            @Override
-//            public void onReady(YouTubePlayer youTubePlayer)
-//            {
-//                String video_id = url_id_list.get(5);
-//                youTubePlayer.cueVideo(video_id, 0);
-//                youTubePlayer.pause();
-//            }
-//        });
     }
 
     void getYoutubeInformation()
@@ -157,6 +99,7 @@ public class YoutubeActivity extends AppCompatActivity
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
+                    Log.e(TAG, "유튜브 화면 결과 = " + result);
                     jsonParsing(result);
                 }
                 else
@@ -173,11 +116,13 @@ public class YoutubeActivity extends AppCompatActivity
         });
     }
 
+    // 밑에 있는 리사이클러뷰에 다른 영상들의 썸네일과 이름을 보여줘야 한다
     private void jsonParsing(String result)
     {
         youtube_list = new ArrayList<>();
         url_id_list = new ArrayList<>();
         title_list = new ArrayList<>();
+        other_list = new ArrayList<>();
         try
         {
             JSONObject jsonObject = new JSONObject(result);
@@ -188,13 +133,14 @@ public class YoutubeActivity extends AppCompatActivity
                 thumbnail = inner_obj.getString("thumbnail");
                 url_id = inner_obj.getString("videoId");
                 title = inner_obj.getString("title");
-//                youtube = new YoutubeDTO();
-//                youtube.setThumbnail(thumbnail);
-//                youtube.setUrl_id(url_id);
-//                youtube.setTitle(title);
-//                youtube_list.add(youtube);
                 url_id_list.add(url_id);
                 title_list.add(title);
+
+                OtherYoutubeItem item = new OtherYoutubeItem();
+                item.setThumbnail(thumbnail);
+                item.setUrl_id(url_id);
+                item.setTitle(title);
+                other_list.add(item);
             }
             youtube_count = jsonObject.getString("TotalCount");
         }
@@ -203,11 +149,20 @@ public class YoutubeActivity extends AppCompatActivity
             e.printStackTrace();
         }
         first_title.setText(title_list.get(1));
-//        second_title.setText(title_list.get(1));
-//        third_title.setText(title_list.get(2));
-//        fourth_title.setText(title_list.get(3));
-//        fifth_title.setText(title_list.get(4));
         Log.e(TAG, "count = " + youtube_count);
+        for (int i = 0; i < other_list.size(); i++)
+        {
+            Log.e("영상명 중복 확인", "other_list = " + other_list.get(i).getTitle());
+        }
+        // 하단 리사이클러뷰에 들어갈 어댑터
+        adapter = new OtherYoutubeAdapter(YoutubeActivity.this, other_list, itemClickListener);
+        adapter.setOnItemClickListener(((view, pos) -> {
+            String youtube_url_id = other_list.get(pos).getUrl_id();
+            String thumbnail = other_list.get(pos).getThumbnail();
+            String title = other_list.get(pos).getTitle();
+            Log.e(TAG, "url_id = " + youtube_url_id + ", 썸네일 = " + thumbnail + " 제목 = " + title);
+        }));
+        other_video_recyclerview.setAdapter(adapter);
     }
 
     private void init()
@@ -215,26 +170,7 @@ public class YoutubeActivity extends AppCompatActivity
         player_1 = findViewById(R.id.player_1);
         getLifecycle().addObserver(player_1);
 
-//        player_2 = findViewById(R.id.player_2);
-//        getLifecycle().addObserver(player_2);
-//
-//        player_3 = findViewById(R.id.player_3);
-//        getLifecycle().addObserver(player_3);
-//
-//        player_4 = findViewById(R.id.player_4);
-//        getLifecycle().addObserver(player_4);
-//
-//        player_5 = findViewById(R.id.player_5);
-//        getLifecycle().addObserver(player_5);
-//
-//        player_6 = findViewById(R.id.player_6);
-//        getLifecycle().addObserver(player_6);
-
         first_title = findViewById(R.id.first_video_title);
-//        second_title = findViewById(R.id.second_video_title);
-//        third_title = findViewById(R.id.third_video_title);
-//        fourth_title = findViewById(R.id.fourth_video_title);
-//        fifth_title = findViewById(R.id.fifth_video_title);
     }
 
     @Override

@@ -46,7 +46,6 @@ public class SearchResultActivity extends AppCompatActivity
     // 가로 리사이클러뷰에 붙일 어댑터
     private HorizontalSearchResultAdapter category_adapter;
     private HorizontalSearchResultAdapter.ItemClickListener category_clickListener;
-    List<SearchItem> list;
     // 세로 리사이클러뷰에 붙일 어댑터
     private VerticalSearchResultAdapter adapter;
     private VerticalSearchResultAdapter.VerticalItemClickListener itemClickListener;

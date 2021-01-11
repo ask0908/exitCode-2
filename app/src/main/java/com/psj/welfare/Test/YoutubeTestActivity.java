@@ -8,7 +8,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.psj.welfare.Data.YoutubeDTO;
+import com.psj.welfare.Data.YoutubeItem;
 import com.psj.welfare.R;
 import com.psj.welfare.adapter.YoutubeAdapter;
 import com.psj.welfare.api.ApiClient;
@@ -33,12 +33,12 @@ public class YoutubeTestActivity extends AppCompatActivity
 
     RecyclerView youtube_recycler;
     YoutubeAdapter adapter;
-    List<YoutubeDTO> youtube_list;
+    List<YoutubeItem> youtube_list;
 
     String url_id, thumbnail, title, youtube_count;
     List<String> url_id_list;
 
-    YoutubeDTO youtube;
+    YoutubeItem youtube;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -100,7 +100,7 @@ public class YoutubeTestActivity extends AppCompatActivity
                 thumbnail = inner_obj.getString("thumbnail");
                 url_id = inner_obj.getString("videoId");
                 title = inner_obj.getString("title");
-                youtube = new YoutubeDTO();
+                youtube = new YoutubeItem();
 //                youtube.setThumbnail(thumbnail);
                 youtube.setUrl_id(url_id);
 //                youtube.setTitle(title);

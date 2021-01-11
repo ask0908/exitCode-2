@@ -6,13 +6,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.hedgehog.ratingbar.RatingBar;
 import com.psj.welfare.Data.ReviewItem;
 import com.psj.welfare.R;
@@ -53,7 +57,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     @Override
     public ReviewAdapter.ReviewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        View view = LayoutInflater.from(context).inflate(R.layout.review_item_test, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.review_item, parent, false);
         return new ReviewViewHolder(view, itemClickListener);
     }
 
@@ -61,10 +65,19 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     public void onBindViewHolder(@NonNull ReviewAdapter.ReviewViewHolder holder, int position)
     {
         ReviewItem item = list.get(position);
+        if (!item.getImage_url().equals("없음"))
+        {
+            Glide.with(context)
+                    .load(item.getImage_url())
+                    .apply(RequestOptions.bitmapTransform(new RoundedCorners(40)))
+                    .into(holder.review_image);
+        }
+        else
+        {
+            holder.review_image.setVisibility(View.GONE);
+            holder.cardView.setVisibility(View.GONE);
+        }
         holder.review_id.setText(item.getId());
-        Glide.with(context)
-                .load(item.getImage_url())
-                .into(holder.review_image);
         holder.review_content.setText(item.getContent());
         holder.review_date.setText(item.getCreate_date());
         float count = item.getStar_count();
@@ -147,7 +160,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     public static class ReviewViewHolder extends RecyclerView.ViewHolder
     {
         private ConstraintLayout review_item_layout;
+        private LinearLayout like_layout;
+        private CardView cardView;
         private ImageView review_image;
+//        private RoundedImageView review_image;
         private TextView review_id, review_date, review_content;
         private RatingBar review_rate;
         ItemClickListener itemClickListener;
@@ -156,12 +172,16 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         {
             super(view);
 
+            cardView = view.findViewById(R.id.review_image_card);
             review_item_layout = view.findViewById(R.id.review_item_layout);
             review_image = view.findViewById(R.id.review_image);
             review_id = view.findViewById(R.id.review_id);
             review_date = view.findViewById(R.id.review_date);
             review_content = view.findViewById(R.id.review_content);
             review_rate = view.findViewById(R.id.review_rate);
+
+            // 좋아요 버튼튼
+           like_layout = view.findViewById(R.id.like_layout);
 
             this.itemClickListener = itemClickListener;
             review_item_layout.setOnClickListener(v -> {

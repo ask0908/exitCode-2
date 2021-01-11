@@ -17,7 +17,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/btn_done"
+        android:background="@drawable/btn_main_after"
         android:fontFamily="@font/jalnan"
         android:text="선정기준 확인하기"
         android:textColor="@color/colorMainWhite"

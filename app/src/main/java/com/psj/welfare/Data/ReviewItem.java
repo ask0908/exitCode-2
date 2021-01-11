@@ -1,12 +1,25 @@
 package com.psj.welfare.Data;
 
+import com.google.gson.annotations.SerializedName;
+
 public class ReviewItem
 {
+    @SerializedName("id")
     private String id;
+
+    @SerializedName("content")
     private String content;
+
+    @SerializedName("create_date")
     private String create_date;
+
+    @SerializedName("image_url")
     private String image_url;
+
+    @SerializedName("writer")
     private String writer;
+
+    @SerializedName("star_count")
     private float star_count;
 
     public ReviewItem()

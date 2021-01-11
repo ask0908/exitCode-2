@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "30.0.1"
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
 
     defaultConfig {
         applicationId "com.psj.welfare"
-        minSdkVersion 26
-        targetSdkVersion 29
+        minSdkVersion 23
+        targetSdkVersion 30
         versionCode 7
         versionName "7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -98,7 +98,6 @@ dependencies {
     implementation 'com.hedgehog.ratingbar:app:1.1.2'
 
     // 가로 막대 그래프
-    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.github.blackfizz:eazegraph:1.2.2@aar'
     implementation 'com.nineoldandroids:library:2.4.0'
 

@@ -1,9 +1,12 @@
 package com.psj.welfare.Data;
 
+import com.google.gson.annotations.SerializedName;
+
 /* MainFragment에서 가로로 유튜브 영상들을 보여주는 리사이클러뷰에 사용할 모델 클래스 */
 public class HorizontalYoutubeItem
 {
     private String category;
+    @SerializedName("title")
     private String youtube_name;
     private String youtube_desc;
     private String youtube_thumbnail;

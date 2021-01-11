@@ -22,13 +22,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
-        <activity android:name=".Test.MyPage.TestChangeMyInformActivity">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-        </activity>
+        <activity android:name=".Test.MyPage.TestChangeMyInformActivity" />
         <activity android:name=".Test.Review.TestReviewWriteActivity" />
         <activity android:name=".Test.GetUserInformation.TestGetInformationActivity" />
         <activity android:name=".activity.SplashActivity">
@@ -44,13 +38,7 @@
         <activity android:name=".activity.YoutubeActivity" />
         <activity android:name=".activity.ChangeUserInformationActivity" />
         <activity android:name=".activity.ReviewUpdateActivity" />
-        <activity android:name=".activity.GetUserInformationActivity">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-        </activity>
+        <activity android:name=".activity.GetUserInformationActivity" />
         <activity android:name=".activity.CalculatorResultActivity" />
         <activity
             android:name=".activity.MyInfoUpdateActivity"
