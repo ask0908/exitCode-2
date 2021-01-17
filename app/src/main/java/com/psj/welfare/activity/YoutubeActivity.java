@@ -1,5 +1,6 @@
 package com.psj.welfare.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -26,7 +27,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -44,6 +47,7 @@ public class YoutubeActivity extends AppCompatActivity
     String url_id, thumbnail, title, youtube_count;
     List<YoutubeItem> youtube_list;
     List<String> url_id_list, title_list;
+    // 메인에서 선택한 유튜브 영상명을 붙일 텍스트뷰
     TextView first_title;
 
     /* 다른 영상들을 보여주는 하단 리사이클러뷰 */
@@ -52,12 +56,23 @@ public class YoutubeActivity extends AppCompatActivity
     OtherYoutubeAdapter.YoutubeItemClickListener itemClickListener;
     List<OtherYoutubeItem> other_list;
 
+    // 선택한 유튜브 영상을 보여줄 때 사용할 해시맵
+    HashMap<String, String> get_youtube_hashmap;
+    String youtube_name;
+
+    // 재생할 영상 아이디
+    String key_name;
+
+    // 리스트에서 중복되는 영상 제거할 때 사용할 변수
+    String video_name;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_youtube);
 
+        get_youtube_hashmap = new HashMap<>();
         youtube_toolbar = findViewById(R.id.youtube_toolbar);
         setSupportActionBar(youtube_toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -65,6 +80,35 @@ public class YoutubeActivity extends AppCompatActivity
 
         init();
 
+        // 인텐트 널체크한 후 안의 해시맵 데이터 꺼내기
+        if (getIntent().hasExtra("youtube_hashmap"))
+        {
+            Intent intent = getIntent();
+            get_youtube_hashmap = (HashMap<String, String>) intent.getSerializableExtra("youtube_hashmap");
+        }
+
+        if (getIntent().hasExtra("youtube_name"))
+        {
+            Intent intent = getIntent();
+            youtube_name = intent.getStringExtra("youtube_name");
+            first_title.setText(youtube_name);
+        }
+
+        if (get_youtube_hashmap != null)
+        {
+            for (Map.Entry<String, String> element : get_youtube_hashmap.entrySet())
+            {
+                Log.e("받아온 유튜브 해시맵", String.format("키 -> %s, 값 -> %s", element.getKey(), element.getValue()));
+            }
+            Log.e(TAG, "받아온 유튜브 영상 이름 = " + youtube_name);
+        }
+
+        // first_title 텍스트뷰에 set된 텍스트와 일치하는 키값을 찾고, 그 키값에 매핑된 value값을 String 변수에 담는다
+        key_name = (String) get_youtube_hashmap.get(youtube_name);
+        video_name = (String) getkey(get_youtube_hashmap, key_name);
+        Log.e(TAG, "잘 찾아오나 확인 : " + video_name);
+
+        // 서버에서 유튜브 데이터 가져오는 메서드
         getYoutubeInformation();
 
         other_video_recyclerview = findViewById(R.id.other_video_recyclerview);
@@ -80,11 +124,22 @@ public class YoutubeActivity extends AppCompatActivity
             @Override
             public void onReady(YouTubePlayer youTubePlayer)
             {
-                String video_id = url_id_list.get(1);
-                youTubePlayer.cueVideo(video_id, 0);
+                youTubePlayer.cueVideo(key_name, 0);
                 youTubePlayer.pause();
             }
         });
+    }
+
+    public static Object getkey(HashMap<String, String> hashmap, Object value)
+    {
+        for (Object o : hashmap.keySet())
+        {
+            if (hashmap.get(o).equals(value))
+            {
+                return o;
+            }
+        }
+        return null;
     }
 
     void getYoutubeInformation()
@@ -140,7 +195,24 @@ public class YoutubeActivity extends AppCompatActivity
                 item.setThumbnail(thumbnail);
                 item.setUrl_id(url_id);
                 item.setTitle(title);
-                other_list.add(item);
+//                other_list.add(item);
+                // for문으로 리스트를 돌면서 지금 재생중인 영상 제목과 일치하는 영상을 찾는다
+                boolean isDuplicated = false;
+                for (int j = 0; j < other_list.size(); j++)
+                {
+                    if (other_list.get(j).getTitle().equals(video_name))
+                    {
+                        isDuplicated = true;
+                        break;
+                    }
+                }
+                if (!isDuplicated)
+                {
+                    if (!item.getTitle().contains(video_name))
+                    {
+                        other_list.add(item);
+                    }
+                }
             }
             youtube_count = jsonObject.getString("TotalCount");
         }
@@ -148,12 +220,13 @@ public class YoutubeActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
-        first_title.setText(title_list.get(1));
         Log.e(TAG, "count = " + youtube_count);
         for (int i = 0; i < other_list.size(); i++)
         {
-            Log.e("영상명 중복 확인", "other_list = " + other_list.get(i).getTitle());
+            Log.e("하단 리사이클러뷰에 들어갈 영상 제목들", "other_list = " + other_list.get(i).getTitle());
         }
+        Log.e("jsonParsing()", "key_name = " + key_name);
+
         // 하단 리사이클러뷰에 들어갈 어댑터
         adapter = new OtherYoutubeAdapter(YoutubeActivity.this, other_list, itemClickListener);
         adapter.setOnItemClickListener(((view, pos) -> {
@@ -161,6 +234,13 @@ public class YoutubeActivity extends AppCompatActivity
             String thumbnail = other_list.get(pos).getThumbnail();
             String title = other_list.get(pos).getTitle();
             Log.e(TAG, "url_id = " + youtube_url_id + ", 썸네일 = " + thumbnail + " 제목 = " + title);
+            /* 하단 리사이클러뷰의 영상을 누르면 그 영상을 재생시키기 위해 이 액티비티를 재시작해야 한다
+            * 이걸 구현하려면 new Intent()를 쓰는 게 아닌 getIntent()를 쓰고 finish()로 이 액티비티를 지운 다음, intent를 시작하면
+            * 선택한 영상의 제목을 갖고 액티비티를 재시작하는 효과를 낸다. 액티비티 스택이 쌓이지 않기 때문에 뒤로가기를 눌러도 MainFragment로 이동된다 */
+            Intent intent = getIntent();
+            intent.putExtra("youtube_name", title);
+            finish();
+            startActivity(intent);
         }));
         other_video_recyclerview.setAdapter(adapter);
     }

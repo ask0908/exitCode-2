@@ -16,8 +16,7 @@
             android:id="@+id/dialog_logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/main_logo" />
+            android:layout_gravity="center" />
 
     </LinearLayout>
 

@@ -1,7 +1,6 @@
 package com.psj.welfare.activity;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -39,25 +38,41 @@ import retrofit2.Response;
 /* 지도 화면에서 지역 선택 시 이동해 지역별 혜택 목록을 보여주는 액티비티 */
 public class MapDetailActivity extends AppCompatActivity
 {
-    private final String TAG = this.getClass().getName();
+    private final String TAG = this.getClass().getSimpleName();
 
     TextView map_result_textview;
+    // 상단 카테고리 리사이클러뷰, 하단 혜택명 나오는 리사이클러뷰
     RecyclerView result_keyword_recyclerview, map_result_recyclerview;
+
+    /* ============================================================================== */
+    // 상단 리사이클러뷰에 붙일 어댑터
     ResultKeywordAdapter adapter;
     ResultKeywordAdapter.ItemClickListener keyword_click;
+    // 상단 리사이클러뷰에 쓸 리스트
+    List<ResultKeywordItem> keyword_list;
+    /* ============================================================================== */
+
+    /* ============================================================================== */
+    // 하단 리사이클러뷰에 붙일 어댑터
     MapResultAdapter map_adapter;
     MapResultAdapter.ItemClickListener itemClickListener;
-
-    List<ResultKeywordItem> list;
+    // 하단 리사이클러뷰에 쓸 리스트
     List<MapResultItem> item_list;
+    /* ============================================================================== */
 
     // 지도 화면에서 가져온 지역 정보를 담을 변수
     String area, welf_count;
 
     // 서버 통신 시 지역명을 보낼 때, 혜택 개수를 담을 때 사용하는 변수
-    String user_area, number_of_benefit;
+    String number_of_benefit;
 
-    String name;
+    // 서버에서 받는 JSON 값을 파싱할 때 쓸 변수
+    String parent_category, welf_name, welf_category, tag;
+
+    // 상단 리사이클러뷰에 나오는 카테고리를 눌렀을 때 서버에서 가져오는 데이터를 파싱하기 위해 사용하는 변수
+    String second_welf_name, second_parent_category, second_welf_category, second_tag, second_welf_local, second_count;
+    // 위 변수들을 담을 리스트
+    List<MapResultItem> second_item_list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -66,6 +81,9 @@ public class MapDetailActivity extends AppCompatActivity
         setContentView(R.layout.activity_map_detail);
 
         Logger.addLogAdapter(new AndroidLogAdapter());
+
+        keyword_list = new ArrayList<>();
+        second_item_list = new ArrayList<>();
 
         Intent intent = getIntent();
         area = intent.getStringExtra("area");
@@ -81,33 +99,11 @@ public class MapDetailActivity extends AppCompatActivity
         result_keyword_recyclerview.setHasFixedSize(true);
         result_keyword_recyclerview.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
-        // 복지혜택 이름들을 세로로 보여주는 리사이클러뷰
+        // 복지혜택 이름들을 세로로 보여주는 하단 리사이클러뷰
         map_result_recyclerview = findViewById(R.id.map_result_recyclerview);
         map_result_recyclerview.setHasFixedSize(true);
 //        map_result_recyclerview.addItemDecoration(new DividerItemDecoration(MapDetailActivity.this, DividerItemDecoration.VERTICAL));
         map_result_recyclerview.setLayoutManager(new LinearLayoutManager(this));
-
-        list = new ArrayList<>();
-        list.add(new ResultKeywordItem("전체"));
-        list.add(new ResultKeywordItem("학생·청년"));
-        list.add(new ResultKeywordItem("주거"));
-        list.add(new ResultKeywordItem("육아·임신"));
-        list.add(new ResultKeywordItem("아기·어린이"));
-        list.add(new ResultKeywordItem("문화·생활"));
-        list.add(new ResultKeywordItem("기업·자영업자"));
-        list.add(new ResultKeywordItem("저소득층"));
-        list.add(new ResultKeywordItem("중장년·노인"));
-        list.add(new ResultKeywordItem("장애인"));
-        list.add(new ResultKeywordItem("다문화"));
-        list.add(new ResultKeywordItem("법률"));
-        list.add(new ResultKeywordItem("기타"));
-        adapter = new ResultKeywordAdapter(MapDetailActivity.this, list, keyword_click);
-        adapter.setOnResultKeywordClickListener((view, position) ->
-        {
-            String name = list.get(position).getKeyword_category();
-            Log.e(TAG, "ResultKeywordAdapter - name = " + name);
-        });
-        result_keyword_recyclerview.setAdapter(adapter);
 
         // end 값이 25인 것은 1자리 숫자기 때문에 그 숫자만 색깔을 바꾸게 하기 위한 처리다.
         if (area.equals("서울"))
@@ -120,13 +116,13 @@ public class MapDetailActivity extends AppCompatActivity
             if (changed_count < 10)
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
             else
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
         }
@@ -140,13 +136,13 @@ public class MapDetailActivity extends AppCompatActivity
             if (changed_count < 10)
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
             else
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
         }
@@ -162,13 +158,13 @@ public class MapDetailActivity extends AppCompatActivity
             if (changed_count < 10)
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
             else
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
         }
@@ -184,13 +180,13 @@ public class MapDetailActivity extends AppCompatActivity
             if (changed_count < 10)
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
             else
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
         }
@@ -204,13 +200,13 @@ public class MapDetailActivity extends AppCompatActivity
             if (changed_count < 10)
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
             else
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
         }
@@ -224,13 +220,13 @@ public class MapDetailActivity extends AppCompatActivity
             if (changed_count < 10)
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
             else
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
         }
@@ -244,13 +240,13 @@ public class MapDetailActivity extends AppCompatActivity
             if (changed_count < 10)
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
             else
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
         }
@@ -264,13 +260,13 @@ public class MapDetailActivity extends AppCompatActivity
             if (changed_count < 10)
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
             else
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
         }
@@ -284,13 +280,13 @@ public class MapDetailActivity extends AppCompatActivity
             if (changed_count < 10)
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
             else
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
         }
@@ -304,13 +300,13 @@ public class MapDetailActivity extends AppCompatActivity
             if (changed_count < 10)
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
             else
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
         }
@@ -324,13 +320,13 @@ public class MapDetailActivity extends AppCompatActivity
             if (changed_count < 10)
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
             else
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
         }
@@ -344,13 +340,13 @@ public class MapDetailActivity extends AppCompatActivity
             if (changed_count < 10)
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
             else
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
         }
@@ -364,13 +360,13 @@ public class MapDetailActivity extends AppCompatActivity
             if (changed_count < 10)
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
             else
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
         }
@@ -384,13 +380,13 @@ public class MapDetailActivity extends AppCompatActivity
             if (changed_count < 10)
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
             else
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
         }
@@ -404,13 +400,13 @@ public class MapDetailActivity extends AppCompatActivity
             if (changed_count < 10)
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
             else
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
         }
@@ -424,13 +420,13 @@ public class MapDetailActivity extends AppCompatActivity
             if (changed_count < 10)
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
             else
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
         }
@@ -444,14 +440,14 @@ public class MapDetailActivity extends AppCompatActivity
             if (changed_count < 10)
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
             // 10 미만이 아니라면 두자리 수 이상의 숫자기 때문에 24~26 영역만 색을 바꾸도록 한다
             else
             {
                 SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#6f52e8")), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 map_result_textview.setText(spannableString);
             }
         }
@@ -470,19 +466,24 @@ public class MapDetailActivity extends AppCompatActivity
                 if (response.isSuccessful() && response.body() != null)
                 {
                     number_of_benefit = response.body();
-                    Log.e(TAG, "number_of_benefit = " + number_of_benefit);
+                    Log.e(TAG, "성공 : " + number_of_benefit);
                     jsonParse(number_of_benefit);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 : " + response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
             {
-                Log.e(TAG, "getUNumberOfBenefit() 에러 : " + t.getMessage());
+                Log.e(TAG, "에러 : " + t.getMessage());
             }
         });
     }
 
+    /* 서버에서 넘어온 JSONArray 안의 값들을 파싱해서 하단 리사이클러뷰에 보여주는 메서드 */
     private void jsonParse(String number_of_benefit)
     {
         item_list = new ArrayList<>();
@@ -493,10 +494,49 @@ public class MapDetailActivity extends AppCompatActivity
             for (int i = 0; i < jsonArray.length(); i++)
             {
                 JSONObject inner_json = jsonArray.getJSONObject(i);
-                name = inner_json.getString("welf_name");
+                parent_category = inner_json.getString("parent_category");
+                welf_name = inner_json.getString("welf_name");
+                welf_category = inner_json.getString("welf_category");
+                tag = inner_json.getString("tag");
+
+                // 하단 리사이클러뷰에 넣을 혜택명들을 저장할 객체에 값 대입
                 MapResultItem item = new MapResultItem();
-                item.setBenefit_name(name);
-                // 혜택 이름들을 보여주는 리사이클러뷰의 어댑터에 쓰일 List에 for문이 반복된 만큼 생성된 DTO 객체들을 넣는다
+                item.setParent_category(parent_category);
+                item.setWelf_name(welf_name);
+                item.setWelf_category(welf_category);
+                item.setKeyword_tag(tag);
+
+                // 상단 리사이클러뷰에 넣을 키워드를 저장할 객체 생성
+                ResultKeywordItem keywordItem = new ResultKeywordItem();
+                keywordItem.setParent_category(parent_category);
+
+                /* 키워드들을 보여주는 상단 리사이클러뷰의 어댑터에 쓰일 리스트에 객체들을 넣는다
+                * 넣기 전 중복되는 값들을 빼고 넣는다(SearchResultActivity 163번 줄부터 같은 로직 있음) */
+                // 중복 여부를 if문으로 확인할 때 사용할 변수
+                boolean isDuplicate = false;
+                for (int j = 0; j < keyword_list.size(); j++)
+                {
+                    if (keyword_list.get(j).getParent_category().equals(keywordItem.getParent_category()))
+                    {
+                        Log.e(TAG, "서버에서 받은 카테고리명들 확인" + keyword_list.get(j).getParent_category());
+                        isDuplicate = true;
+                        break;
+                    }
+                }
+                // 여기선 같은 게 있어서 for문을 나온건지, 하나도 없어서 나온건지 알 수 없다
+                // 그래서 boolean 변수를 통해 같은 게 있었으면 true, 없었으면 false로 설정하고 false일 때 리스트에 아이템을 추가한다
+                if (!isDuplicate)
+                {
+                    keyword_list.add(keywordItem);
+                    /* 아래 조건은 무조건 필요한 게 아니다. for문이 끝난 후 boolean 변수가 true일 경우에만 리스트에 추가하도록 해서도
+                    * 중복되지 않는 값을 넣을 수 있다 */
+//                    if (!keywordItem.getParent_category().equals(keywordItem.getParent_category()))
+//                    {
+//                        keyword_list.add(keywordItem);
+//                    }
+                }
+
+                // 혜택 이름들을 보여주는 하단 리사이클러뷰의 어댑터에 쓰일 List에 for문이 반복된 만큼 생성된 DTO 객체들을 넣는다
                 item_list.add(item);
             }
         }
@@ -504,55 +544,120 @@ public class MapDetailActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
+        for (int i = 0; i < keyword_list.size(); i++)
+        {
+            Log.e(TAG, "try-catch 이후 for문 : " + keyword_list.get(i).getParent_category());
+        }
+        // 상단 리사이클러뷰 어댑터 처리
+//        keyword_list.add(0, new ResultKeywordItem("전체"));
+        adapter = new ResultKeywordAdapter(this, keyword_list, keyword_click);
+        adapter.setOnResultKeywordClickListener((view, position) ->
+        {
+            String name = keyword_list.get(position).getParent_category();
+            Log.e(TAG, "상단 리사이클러뷰에서 선택한 카테고리명 = " + name);
+            // 선택한 카테고리명에 속하는 혜택들을 리사이클러뷰에 붙이는 메서드가 있다면 그걸 하단 리사이클러뷰에 붙인다
+            searchUpLevelCategory(name);
+        });
+        result_keyword_recyclerview.setAdapter(adapter);
+
         // 어댑터 초기화, 이 때 for문 안에서 값이 들어간 List를 인자로 넣는다
         map_adapter = new MapResultAdapter(MapDetailActivity.this, item_list, itemClickListener);
         // 더보기 버튼 클릭 시 해당 혜택의 상세보기 화면으로 이동한다
         map_adapter.setOnItemClickListener((view, position) ->
         {
-            String name = item_list.get(position).getBenefit_name();
+            String name = item_list.get(position).getWelf_name();
             Log.e(TAG, "혜택 이름 = " + name);
             Intent see_detail_intent = new Intent(MapDetailActivity.this, DetailBenefitActivity.class);
             see_detail_intent.putExtra("name", name);
-            see_detail_intent.putExtra("area", area);
+            see_detail_intent.putExtra("welf_local", area);
+            Log.e(TAG, "area = " + area);
             startActivity(see_detail_intent);
         });
         map_result_recyclerview.setAdapter(map_adapter);
     }
 
-    /* 서버에서 넘어온 JSONArray 안의 값들을 파싱해서 리사이클러뷰에 보여주는 메서드 */
-    private void jsonParsing(String number_of_benefit)
+    // 상단 리사이클러뷰에서 선택한 카테고리명에 따라 리사이클러뷰에 뿌리는 혜택명들을 바꾼다
+    void searchUpLevelCategory(String select_category)
     {
-        item_list = new ArrayList<>();
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        Call<String> call = apiInterface.searchWelfareCategory("category_search", select_category, LogUtil.getUserLog());
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "성공 : " + result);
+                    second_parsing(result);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    // 카테고리를 눌러 가져온 데이터들을 파싱하는 2번째 파싱 메서드
+    private void second_parsing(String result)
+    {
+        item_list.clear();
+        second_item_list.clear();
         try
         {
-            // 서버에서 JSONArray 형태로 오기 때문에 클라에서도 서버 응답을 먼저 JSONArray로 받는다
-            JSONArray jsonArray = new JSONArray(number_of_benefit);
-            // JSONArray의 크기만큼 for문을 돌면서 JSONArray 안의 값들을 꺼낸다
+            JSONObject jsonObject = new JSONObject(result);
+            second_count = jsonObject.getString("TotalCount");
+            JSONArray jsonArray = jsonObject.getJSONArray("Message");
             for (int i = 0; i < jsonArray.length(); i++)
             {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                // 리사이클러뷰에 복지혜택 이름들을 담아야 하니까 getString()으로 빼내서 전역변수에 담는다
-                name = jsonObject.getString("welf_name");
-                // 리사이클러뷰에 붙이기 위한 처리
+                JSONObject inner = jsonArray.getJSONObject(i);
+                second_welf_name = inner.getString("welf_name");
+                second_parent_category = inner.getString("parent_category");
+                second_welf_category = inner.getString("welf_category");
+                second_tag = inner.getString("tag");
+                second_welf_local = inner.getString("welf_local");
+
                 MapResultItem item = new MapResultItem();
-                item.setBenefit_name(name);
-                // 혜택 이름들을 보여주는 리사이클러뷰의 어댑터에 쓰일 List에 for문이 반복된 만큼 생성된 DTO 객체들을 넣는다
-                item_list.add(item);
+                item.setWelf_category(second_welf_category);
+                item.setKeyword_tag(second_tag);
+                item.setParent_category(second_parent_category);
+                item.setWelf_name(second_welf_name);
+                second_item_list.add(item);
             }
         }
         catch (JSONException e)
         {
             e.printStackTrace();
         }
-        // 어댑터 초기화, 이 때 for문 안에서 값이 들어간 List를 인자로 넣는다
-        map_adapter = new MapResultAdapter(MapDetailActivity.this, item_list, itemClickListener);
+        adapter = new ResultKeywordAdapter(this, keyword_list, keyword_click);
+        adapter.setOnResultKeywordClickListener((view, position) ->
+        {
+            String name = keyword_list.get(position).getParent_category();
+            Log.e(TAG, "상단 리사이클러뷰에서 선택한 카테고리명 = " + name);
+            // 선택한 카테고리명에 속하는 혜택들을 리사이클러뷰에 붙이는 메서드가 있다면 그걸 하단 리사이클러뷰에 붙인다
+            searchUpLevelCategory(name);
+        });
+        result_keyword_recyclerview.setAdapter(adapter);
+
+        // 하단 리사이클러뷰의 어댑터 초기화, 이 때 for문 안에서 값이 들어간 List를 인자로 넣는다
+        map_adapter = new MapResultAdapter(MapDetailActivity.this, second_item_list, itemClickListener);
         // 더보기 버튼 클릭 시 해당 혜택의 상세보기 화면으로 이동한다
         map_adapter.setOnItemClickListener((view, position) ->
         {
-            String name = item_list.get(position).getBenefit_name();
+            String name = second_item_list.get(position).getWelf_name();
             Log.e(TAG, "혜택 이름 = " + name);
             Intent see_detail_intent = new Intent(MapDetailActivity.this, DetailBenefitActivity.class);
             see_detail_intent.putExtra("name", name);
+            see_detail_intent.putExtra("welf_local", area);
+            Log.e(TAG, "area = " + area);
             startActivity(see_detail_intent);
         });
         map_result_recyclerview.setAdapter(map_adapter);

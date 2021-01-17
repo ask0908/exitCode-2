@@ -77,23 +77,23 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             holder.review_image.setVisibility(View.GONE);
             holder.cardView.setVisibility(View.GONE);
         }
-        holder.review_id.setText(item.getId());
+        holder.review_writer.setText(item.getWriter());
         holder.review_content.setText(item.getContent());
         holder.review_date.setText(item.getCreate_date());
         float count = item.getStar_count();
         Log.e("ReviewAdapter", "getId() : " + item.getId());  // 닉네임이 출력된다
         Log.e("ReviewAdapter", "getImage_url() : " + item.getImage_url());
         Log.e("ReviewAdapter", "getContent() : " + item.getContent());
-//        Log.e("ReviewAdapter", "별점 : " + item.getStar_count());
-//        if (item.getStar_count() != 0.0)
-//        {
-//            Log.e("ReviewAdapter", "rate = " + item.getStar_count());
-//            holder.review_rate.setStar(3.0f);
-//        }
-//        else
-//        {
-//            Log.e("ReviewAdapter", "rate = 0.0");
-//        }
+        Log.e("ReviewAdapter", "별점 : " + item.getStar_count());
+        if (item.getStar_count() != 0.0)
+        {
+            Log.e("ReviewAdapter", "rate = " + item.getStar_count());
+            holder.review_rate.setStar(count);
+        }
+        else
+        {
+            Log.e("ReviewAdapter", "rate = 0.0");
+        }
 
         // 시간 정보 가져오는 객체 생성 후 저장
         // 참고: https://krksap.tistory.com/1158
@@ -120,32 +120,32 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             if (diffTime < SEC)
             {
                 // Log.d(TAG, diffTime + " 초전");
-                holder.review_date.setText(diffTime + "초전");
+                holder.review_date.setText(diffTime + "초 전");
             }
             else if ((diffTime /= SEC) < MIN)
             {
                 // Log.d(TAG, diffTime + " 분전");
-                holder.review_date.setText(diffTime + "분전");
+                holder.review_date.setText(diffTime + "분 전");
             }
             else if ((diffTime /= MIN) < HOUR)
             {
                 // Log.d(TAG, diffTime + " 시간전");
-                holder.review_date.setText(diffTime + "시간전");
+                holder.review_date.setText(diffTime + "시간 전");
             }
             else if ((diffTime /= HOUR) < DAY)
             {
                 //  Log.d(TAG, diffTime + " 일전");
-                holder.review_date.setText(diffTime + " 일전");
+                holder.review_date.setText(diffTime + " 일 전");
             }
             else if ((diffTime /= DAY) < MONTH)
             {
                 // Log.d(TAG, diffTime + " 달전");
-                holder.review_date.setText(diffTime + " 달전");
+                holder.review_date.setText(diffTime + " 달 전");
             }
             else
             {
                 // Log.d(TAG, diffTime + " 년전");
-                holder.review_date.setText(diffTime + " 년전");
+                holder.review_date.setText(diffTime + " 년 전");
             }
         }
 
@@ -164,7 +164,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         private CardView cardView;
         private ImageView review_image;
 //        private RoundedImageView review_image;
-        private TextView review_id, review_date, review_content;
+        private TextView review_writer, review_date, review_content;
         private RatingBar review_rate;
         ItemClickListener itemClickListener;
 
@@ -175,7 +175,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             cardView = view.findViewById(R.id.review_image_card);
             review_item_layout = view.findViewById(R.id.review_item_layout);
             review_image = view.findViewById(R.id.review_image);
-            review_id = view.findViewById(R.id.review_id);
+            review_writer = view.findViewById(R.id.review_id);
             review_date = view.findViewById(R.id.review_date);
             review_content = view.findViewById(R.id.review_content);
             review_rate = view.findViewById(R.id.review_rate);

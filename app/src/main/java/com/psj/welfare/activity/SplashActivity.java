@@ -34,9 +34,6 @@ public class SplashActivity extends AppCompatActivity
 
         sharedPreferences = getSharedPreferences("app_pref", 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        // TODO : 맞춤 혜택들을 MainFragment에서 받아오는 것까지 테스트하기 위해 매 실행마다 쉐어드 초기화시킴. 테스트 끝나면 삭제
-//        editor.clear();
-//        editor.apply();
 
         // 스플래시 화면에서 FCM 토큰을 발급받는다. 여기서 한번 토큰을 받았으니 다른 액티비티에서 추가로 토큰을 생성하지 못하게 한다
         // 생성된 토큰값은 쉐어드에 저장한 뒤 메인 화면을 타고 로그인 화면으로 넘어갔을 때 거기서 꺼내 사용한다

@@ -9,16 +9,21 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,6 +39,7 @@ import com.psj.welfare.Data.RecommendItem;
 import com.psj.welfare.R;
 import com.psj.welfare.Test.TestViewPagerAdapter;
 import com.psj.welfare.Test.TestViewPagerData;
+import com.psj.welfare.activity.DetailBenefitActivity;
 import com.psj.welfare.activity.LoginActivity;
 import com.psj.welfare.activity.MapActivity;
 import com.psj.welfare.activity.YoutubeActivity;
@@ -51,8 +57,10 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -65,6 +73,8 @@ import static android.content.Context.LOCATION_SERVICE;
 public class MainFragment extends Fragment
 {
     public static final String TAG = "MainFragment"; // 로그 찍을 때 사용하는 TAG
+
+    CardView main_fragment_cardview;
 
     // 구글 로그인 테스트 위한 카톡 탈퇴 버튼
     Button kakao_unlink_btn;
@@ -94,7 +104,8 @@ public class MainFragment extends Fragment
     HorizontalYoutubeAdapter adapter;
     HorizontalYoutubeAdapter.ItemClickListener itemClickListener;
     List<HorizontalYoutubeItem> lists;
-    String thumbnail, title;
+    // 유튜브 영상 데이터를 파싱할 때 사용할 변수
+    String thumbnail, title, videoId;
 
     // 서버에서 받아 저장한 토큰값을 저장할 때 사용하는 쉐어드
     SharedPreferences sharedPreferences;
@@ -117,6 +128,15 @@ public class MainFragment extends Fragment
     // 카카오 이메일 담을 변수
     String kakao_email;
 
+    // 리사이클러뷰에 어댑터가 없으면(비로그인 시) 맞춤 혜택을 보여주지 않기 때문에, 맞춤 혜택란을 설명하는 텍스트뷰를 가려야 한다
+    public String status = "";
+    TextView recommend_welfare_textview, recommend_welfare_count;
+
+    // YoutubeActivity로 이동할 때 선택한 영상을 재생하는 데 사용할 HashMap
+    HashMap<String, String> youtube_hashmap;
+
+    int count_int;
+
     public MainFragment()
     {
     }
@@ -138,7 +158,6 @@ public class MainFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
 
         // 위치 권한 설정 처리
         PermissionListener permissionListener = new PermissionListener()
@@ -169,12 +188,45 @@ public class MainFragment extends Fragment
                     .check();
         }
 
-//        sendUserTypeAndPlatform();
+        recommend_welfare_textview = view.findViewById(R.id.recommend_welfare_textview);
+        recommend_welfare_count = view.findViewById(R.id.recommend_welfare_count);
+        userOrderedWelfare();
+        // 로그인해서 카톡 정보가 있다면 유저이름을 따와서 텍스트뷰에 넣는다
+        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+        if (!sharedPreferences.getString("nickname", "").equals(""))
+        {
+            String kakao_name = sharedPreferences.getString("nickname", "");
+            recommend_welfare_textview.setText(kakao_name + "님에게");
+            // 아이디, 개수 색깔 강조
+            SpannableString spannableString = new SpannableString(recommend_welfare_textview.getText().toString());
+            spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 0, 3, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            recommend_welfare_textview.setText(spannableString);
+        }
+        // if문으로 맞춤 혜택 받아온 개수를 뽑아 10 미만인 경우, 10 이상인 경우 별로 각각 다른 위치를 강조해야 한다
+        Log.e(TAG, "메서드 밖의 count = " + count);
+//        if (Integer.parseInt(count) < 10)
+//        {
+//            SpannableString count_span = new SpannableString(recommend_welfare_count.getText().toString());
+//            count_span.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 5, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//            recommend_welfare_count.setText(count_span);
+//        }
+//        else if (Integer.parseInt(count) > 10)
+//        {
+//            SpannableString count_span = new SpannableString(recommend_welfare_count.getText().toString());
+//            count_span.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 5, 8, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//            recommend_welfare_count.setText(count_span);
+//        }
 
+        youtube_hashmap = new HashMap<>();
+        main_fragment_cardview = view.findViewById(R.id.main_fragment_cardview);
+        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+        if (!sharedPreferences.getString("user_category", "").equals(""))
+        {
+            main_fragment_cardview.setVisibility(View.GONE);
+        }
         map_btn = view.findViewById(R.id.map_btn);
         find_welfare_btn = view.findViewById(R.id.find_welfare_btn);
         // 기본 정보 입력 화면으로 이동시킨다
-        // TODO : 이미 개인정보가 있는 유저의 경우 이동시키지 말아야 한다. 그럼 어디로 이동시키지? 이것도 안 보이게 하고 유튜브 썸네일들을 맨 위로 올려버려?
         find_welfare_btn.setOnClickListener(v -> {
             Log.e(TAG, "클릭됨");
 //            Intent intent = new Intent(getActivity(), GetUserInformationActivity.class);
@@ -228,6 +280,10 @@ public class MainFragment extends Fragment
                         public void onSessionClosed(ErrorResult errorResult)
                         {
                             Log.e("다이얼로그 안", "onSessionClosed");
+                            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.clear();
+                            editor.apply();
                         }
 
                         @Override
@@ -239,7 +295,11 @@ public class MainFragment extends Fragment
                         @Override
                         public void onSuccess(Long userId)
                         {
-                            Log.e("다이얼로그 안", "onSuccess");
+                            Log.e(TAG, "카톡 탈퇴 성공");
+                            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.clear();
+                            editor.apply();
                         }
                     });
                     dialog.dismiss();
@@ -355,38 +415,22 @@ public class MainFragment extends Fragment
             startActivity(intent);
         });
 
-    }
+        Log.e(TAG, "메인에서 count_int = " + count_int);
+//        if (count_int > 10)
+//        {
+//            Log.e(TAG, "10보다 큰 경우 돌입");
+//            SpannableString count_span = new SpannableString(recommend_welfare_count.getText().toString());
+//            count_span.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 5, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//            recommend_welfare_count.setText(count_span);
+//        }
+//        else if (count_int < 10)
+//        {
+//            Log.e(TAG, "10보다 작은 경우 돌입");
+//            SpannableString count_span = new SpannableString(recommend_welfare_count.getText().toString());
+//            count_span.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 5, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//            recommend_welfare_count.setText(count_span);
+//        }
 
-    private void sendUserTypeAndPlatform()
-    {
-        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
-        kakao_email = sharedPreferences.getString("kakao_email", "");
-        String token = sharedPreferences.getString("token", "");
-        Log.e(TAG, "카카오 이메일 = " + kakao_email + "\n토큰 = " + token);
-        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.sendUserTypeAndPlatform(kakao_email, token, "android", "kakao");
-        call.enqueue(new Callback<String>()
-        {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response)
-            {
-                if (response.isSuccessful() && response.body() != null)
-                {
-                    String result = response.body();
-                    Log.e("MainFragment - sendUserTypeAndPlatform()", "성공 = " + result);
-                }
-                else
-                {
-                    Log.e("MainFragment - sendUserTypeAndPlatform()", "실패 : " + response.body());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t)
-            {
-                Log.e("MainFragment - sendUserTypeAndPlatform()", "에러 : " + t.getMessage());
-            }
-        });
     }
 
     /* 유저 관심사에 따라 관련 혜택들을 보여주는 메서드, 처음에 액티비티가 켜질 때 혜택들을 제대로 받아오지 못하는 경우가 있다
@@ -398,8 +442,6 @@ public class MainFragment extends Fragment
         Log.e("MainFragment - 맞춤 혜택 가로 리사이클러뷰", "token = " + token);
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Call<String> call = apiInterface.userOrderedWelfare(token, "customized", LogUtil.getUserLog());   // 2번 인자는 customized로 고정이다
-//        String aa = LogUtil.getUserLog();
-//        Log.e("사용자 로그", aa);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -433,6 +475,7 @@ public class MainFragment extends Fragment
         {
             JSONObject jsonObject = new JSONObject(result);
             count = jsonObject.getString("TotalCount");
+            status = jsonObject.getString("Status");
             JSONArray jsonArray = jsonObject.getJSONArray("Message");
             for (int i = 0; i < jsonArray.length(); i++)
             {
@@ -441,6 +484,7 @@ public class MainFragment extends Fragment
                 welf_local = inner_obj.getString("welf_local");
                 welf_category = inner_obj.getString("welf_category");
                 tag = inner_obj.getString("tag");
+
                 RecommendItem item = new RecommendItem();
                 item.setWelf_name(welf_name);
                 item.setWelf_local(welf_local);
@@ -453,14 +497,47 @@ public class MainFragment extends Fragment
         {
             e.printStackTrace();
         }
-        Log.e(TAG, "count = " + count);
+        if (count != null)
+        {
+            count_int = Integer.parseInt(count);
+        }
+        if (status.equals(""))
+        {
+            recommend_welfare_textview.setVisibility(View.GONE);
+            recommend_welfare_count.setVisibility(View.GONE);
+        }
+        // 맞춤 혜택 보여주는 가로 리사이클러뷰의 어댑터 설정
         recommendAdapter = new RecommendAdapter(getActivity(), list, recom_itemClickListener);
         recommendAdapter.setOnItemClickListener((view, pos) ->
         {
             String name = list.get(pos).getWelf_name();
+            String tag = "#" + list.get(pos).getTag().replace(";;", " #");
             Log.e(TAG, "선택한 혜택명 = " + name);
+            Log.e(TAG, list.get(pos).getWelf_category().replace(";; ", ", "));
+            Log.e(TAG, list.get(pos).getWelf_local());
+            // 맞춤 혜택 클릭 시 혜택 상세보기 페이지로 혜택명을 갖고 이동한다
+            // 혜택명은 상세보기 페이지에서 서버로 넘겨 혜택의 내용들을 가져올 때 사용한다
+            Intent intent = new Intent(getActivity(), DetailBenefitActivity.class);
+            intent.putExtra("name", name);
+            intent.putExtra("welf_local", list.get(pos).getWelf_local());
+            startActivity(intent);
         });
         recom_recycler.setAdapter(recommendAdapter);
+
+        if (count_int > 9)
+        {
+            Log.e(TAG, "10보다 큰 경우 돌입");
+            SpannableString count_span = new SpannableString(recommend_welfare_count.getText().toString());
+            count_span.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 5, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            recommend_welfare_count.setText(count_span);
+        }
+        else
+        {
+            Log.e(TAG, "10보다 작은 경우 돌입");
+            SpannableString count_span = new SpannableString(recommend_welfare_count.getText().toString());
+            count_span.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 5, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            recommend_welfare_count.setText(count_span);
+        }
     }
 
     /* 유튜브 영상 정보 가져오는 메서드 */
@@ -476,6 +553,7 @@ public class MainFragment extends Fragment
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
+                    Log.e("메인에서 유튜브 썸네일 클릭", "성공 : " + result);
                     jsonParsing(result);
                 }
                 else
@@ -492,7 +570,7 @@ public class MainFragment extends Fragment
         });
     }
 
-    /* JSON 형태의 String을 파싱해 뷰에 각각 데이터를 뿌리는 메서드 */
+    /* JSON 형태의 String을 파싱해 리사이클러뷰에 각각 유튜브 영상 데이터를 뿌리는 메서드 */
     private void jsonParsing(String result)
     {
         lists = new ArrayList<>();
@@ -505,16 +583,28 @@ public class MainFragment extends Fragment
                 JSONObject inner_obj = jsonArray.getJSONObject(i);
                 thumbnail = inner_obj.getString("thumbnail");
                 title = inner_obj.getString("title");
+                videoId = inner_obj.getString("videoId");
                 // 리사이클러뷰에 JSONObject의 개수만큼 데이터를 뿌리기 위해 객체, 리스트, setter 활용
                 HorizontalYoutubeItem item = new HorizontalYoutubeItem();
                 item.setYoutube_name(title);
                 item.setYoutube_thumbnail(thumbnail);
+                item.setYoutube_id(videoId);
                 lists.add(item);
             }
         }
         catch (JSONException e)
         {
             e.printStackTrace();
+        }
+        for (int i = 0; i < lists.size(); i++)
+        {
+            Log.e("youtube_id", lists.get(i).getYoutube_id());
+            // for문을 돌면서 hashmap의 키값으로 video_id, value로 영상 제목을 넣는다
+            youtube_hashmap.put(lists.get(i).getYoutube_name(), lists.get(i).getYoutube_id());
+        }
+        for (Map.Entry<String, String> element : youtube_hashmap.entrySet())
+        {
+            Log.e("유튜브 해시맵", String.format("키 -> %s, 값 -> %s", element.getKey(), element.getValue()));
         }
         adapter = new HorizontalYoutubeAdapter(getActivity(), lists, itemClickListener);
         // MainFragment에선 썸넬과 영상 제목만 알려주기 때문에, 썸넬을 클릭하면 액티비티를 이동해 그곳에서 유튜브 영상을 틀어준다
@@ -524,8 +614,10 @@ public class MainFragment extends Fragment
             public void onItemClick(View view, int position)
             {
                 Intent intent = new Intent(getActivity(), YoutubeActivity.class);
-                String videoId = lists.get(position).getYoutube_name();
-                Log.e(TAG, "getYoutube_name() : " + videoId);
+                String youtube_name = lists.get(position).getYoutube_name();
+                intent.putExtra("youtube_name", youtube_name);
+                intent.putExtra("youtube_hashmap", youtube_hashmap);
+//                Log.e(TAG, "getYoutube_name() : " + videoId);
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
             }
         });
@@ -555,12 +647,14 @@ public class MainFragment extends Fragment
         }
         catch (IllegalArgumentException illegalArgumentException)
         {
+            // 좌표 문제
             Toast.makeText(getActivity(), "잘못된 GPS 좌표입니다", Toast.LENGTH_LONG).show();
             return "잘못된 GPS 좌표";
         }
 
         if (addresses == null || addresses.size() == 0)
         {
+            // 주소 미발견
             Toast.makeText(getActivity(), "주소가 발견되지 않았습니다", Toast.LENGTH_LONG).show();
             return "주소 미발견";
         }
@@ -580,15 +674,15 @@ public class MainFragment extends Fragment
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
+    /* API 사용 후 결과를 확인할 때 사용하는 메서드 */
     private HttpLoggingInterceptor httpLoggingInterceptor()
     {
-
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger()
         {
             @Override
             public void log(String message)
             {
-                android.util.Log.e("fff : ", message + "");
+                Log.e("인터셉터 내용 : ", message + "");
             }
         });
 
@@ -601,6 +695,6 @@ public class MainFragment extends Fragment
         super.onResume();
         getYoutubeInformation();
         /* 맞춤 혜택들을 가로 리사이클러뷰에 담아 보여주는 메서드 */
-        userOrderedWelfare();
+//        userOrderedWelfare();
     }
 }

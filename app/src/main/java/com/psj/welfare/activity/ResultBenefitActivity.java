@@ -44,9 +44,11 @@ public class ResultBenefitActivity extends AppCompatActivity
 
     // 상단 리사이클러뷰, 하단 리사이클러뷰
     private RecyclerView up_recycler, bottom_recycler;
+
     // 상단 리사이클러뷰에 붙일 어댑터
     private SelectedCategoryAdapter up_adapter;
     private SelectedCategoryAdapter.ItemClickListener up_itemClickListener;
+
     // 하단 리사이클러뷰에 붙일 어댑터
     private CategorySearchResultAdapter bottom_adapter;
     private CategorySearchResultAdapter.ItemClickListener bottom_itemClickListener;
@@ -58,13 +60,10 @@ public class ResultBenefitActivity extends AppCompatActivity
     // 세로 리사이클러뷰에 넣을 혜택 이름(welf_name)을 넣을 리스트
     List<CategorySearchResultItem> name_list;
 
-//    private RecyclerView.Adapter RbfBtn_Adapter, RbfTitle_Adapter;
-
-    TextView result_benefit_title; // 혜택 결과 개수 타이틀
-    int position_RB = 1; // 관심사 버튼 넘버
+    TextView result_benefit_title;  // 혜택 결과 개수 타이틀
+    int position_RB = 1;            // 관심사 버튼 넘버
 
     private ArrayList<ResultBenefitItem> RBF_ListSet;       // 관심사 버튼 리스트
-    private ArrayList<ResultBenefitItem> RBFTitle_ListSet;  // 복지혜택 이름을 리사이클러뷰에 보여줄 때 해당 리사이클러뷰의 어댑터에 사용할 리스트
     ArrayList<String> favor_data; // 관심사 버튼 문자열
 
     // 검색 api 리뉴얼로 추가한 변수
@@ -97,7 +96,6 @@ public class ResultBenefitActivity extends AppCompatActivity
         bottom_recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         RBF_ListSet = new ArrayList<>();
-        RBFTitle_ListSet = new ArrayList<>();
 
         favor_data = new ArrayList<>();
         favor_data.clear();
@@ -142,6 +140,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                 category = category.replace("null전체|", "");
             }
         }
+        // "null전체|" 문자열을 지우고 StringBuilder를 써서 아이템에 각 문자열을 set한다
         if (category.length() > 0)
         {
             sb = new StringBuffer(category);
@@ -267,6 +266,20 @@ public class ResultBenefitActivity extends AppCompatActivity
             result_benefit_title.setText(spannableString);
         }
         bottom_adapter = new CategorySearchResultAdapter(this, list, bottom_itemClickListener);
+        bottom_adapter.setOnItemClickListener(new CategorySearchResultAdapter.ItemClickListener()
+        {
+            @Override
+            public void onItemClick(View view, int pos)
+            {
+                String name = list.get(pos).getWelf_name();
+                String local = list.get(pos).getWelf_local();
+                Log.e(TAG, "선택한 혜택명 = " + name);
+                Intent intent = new Intent(ResultBenefitActivity.this, DetailBenefitActivity.class);
+                intent.putExtra("name", name);
+                intent.putExtra("welf_local", local);
+                startActivity(intent);
+            }
+        });
         bottom_recycler.setAdapter(bottom_adapter);
         up_recycler.setAdapter(up_adapter);
     }
@@ -341,7 +354,12 @@ public class ResultBenefitActivity extends AppCompatActivity
             public void onItemClick(View view, int pos)
             {
                 String name = list.get(pos).getWelf_name();
+                String local = list.get(pos).getWelf_local();
                 Log.e(TAG, "선택한 혜택명 = " + name);
+                Intent intent = new Intent(ResultBenefitActivity.this, DetailBenefitActivity.class);
+                intent.putExtra("name", name);
+                intent.putExtra("welf_local", local);
+                startActivity(intent);
             }
         });
         bottom_recycler.setAdapter(bottom_adapter);
@@ -351,8 +369,8 @@ public class ResultBenefitActivity extends AppCompatActivity
     protected void onPause()
     {
         super.onPause();
-        favor_data.clear();
-        list.clear();
-        top_list.clear();
+//        favor_data.clear();
+//        list.clear();
+//        top_list.clear();
     }
 }

@@ -2,15 +2,15 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    compileSdkVersion 29
+    buildToolsVersion "30.0.1"
 
     defaultConfig {
         applicationId "com.psj.welfare"
-        minSdkVersion 23
-        targetSdkVersion 30
-        versionCode 7
-        versionName "7"
+        minSdkVersion 26
+        targetSdkVersion 29
+        versionCode 8
+        versionName "8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true

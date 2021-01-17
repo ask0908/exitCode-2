@@ -15,8 +15,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
@@ -24,8 +22,8 @@ import android.view.MenuItem;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 import android.widget.RatingBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,8 +31,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.gun0912.tedpermission.PermissionListener;
-import com.gun0912.tedpermission.TedPermission;
 import com.psj.welfare.R;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
@@ -43,18 +39,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.util.List;
 
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 /* 리뷰 텍스트뷰를 누르면 나오는 화면
  * 별점을 확인하고 핸드폰에서 이미지를 첨부해 리뷰를 쓸 수 있다 */
@@ -77,8 +66,18 @@ public class ReviewActivity extends AppCompatActivity
 
     File file;
 
-    TextView restrict_word_number_textview;
     private static final int PICK_PHOTO = 1;
+
+    // 신청이 쉬웠나요 라디오그룹
+    RadioGroup difficulty_radiogroup;
+    // 혜택 만족도 라디오 그룹
+    RadioGroup satisfaction_radiogroup;
+
+    // 라디오 그룹에서 선택한 값 담을 변수
+    String difficulty, satisfaction = "";
+
+    // 선택해서 가져온 리뷰 아이디
+    String review_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -86,64 +85,95 @@ public class ReviewActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review);
 
+        if (getIntent().hasExtra("id") && getIntent().hasExtra("id2"))
+        {
+            Intent intent = getIntent();
+            review_id = intent.getStringExtra("id");
+            Log.e(TAG, "받아온 id = " + review_id);
+        }
+
         setSupportActionBar(findViewById(R.id.review_toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         init();
 
-        // 리뷰 내용 작성 시 글자수 제한은 125자로 한다
-        review_content_edit.addTextChangedListener(new TextWatcher()
+        /* 별점 밑 혜택 신청하면서 느낀 점을 라디오버튼으로 선택하게 한다 */
+        difficulty_radiogroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after)
+            public void onCheckedChanged(RadioGroup group, int checkedId)
             {
-                //
-            }
+                switch (checkedId)
+                {
+                    case R.id.easy_radiobutton :
+                        // 신청이 쉬워요 클릭
+                        difficulty = "쉬워요";
+                        break;
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count)
-            {
-                String input_text = review_content_edit.getText().toString();
-                /* 띄어쓰기 제외 125자로 입력수를 제한하려면 어떻게 하나? */
-            }
+                    case R.id.hard_radiobutton :
+                        // 신청이 어려워요 클릭
+                        difficulty = "어려워요";
+                        break;
 
+                    default:
+                        break;
+                }
+            }
+        });
+
+        satisfaction_radiogroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
             @Override
-            public void afterTextChanged(Editable s)
+            public void onCheckedChanged(RadioGroup group, int checkedId)
             {
-                //
+                switch (checkedId)
+                {
+                    case R.id.good_radiobutton :
+                        // 도움이 됐어요 클릭
+                        satisfaction = "도움이 됐어요";
+                        break;
+
+                    case R.id.bad_radiobutton :
+                        // 도움이 안 됐어요 클릭
+                        satisfaction = "도움이 안 됐어요";
+                        break;
+
+                    default:
+                        break;
+                }
             }
         });
 
         // 이미지를 추가하려면 앨범에 접근해야 하기 때문에 이를 위한 권한 처리기 생성
-        PermissionListener permissionListener = new PermissionListener()
-        {
-            @Override
-            public void onPermissionGranted()
-            {
-                //
-            }
-
-            @Override
-            public void onPermissionDenied(List<String> deniedPermissions)
-            {
-                //
-            }
-        };
-
-        // 권한 처리기 설정 후 실행
-        TedPermission.with(this)
-                .setRationaleMessage("앨범 접근 권한 설정")
-                .setDeniedMessage("이미지를 추가하려면 앨범 접근 권한을 설정해야 합니다")
-                .setPermissionListener(permissionListener)
-                .setPermissions(WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE)
-                .check();
+//        PermissionListener permissionListener = new PermissionListener()
+//        {
+//            @Override
+//            public void onPermissionGranted()
+//            {
+//                //
+//            }
+//
+//            @Override
+//            public void onPermissionDenied(List<String> deniedPermissions)
+//            {
+//                //
+//            }
+//        };
+//
+//        // 권한 처리기 설정 후 실행
+//        TedPermission.with(this)
+//                .setRationaleMessage("앨범 접근 권한 설정")
+//                .setDeniedMessage("이미지를 추가하려면 앨범 접근 권한을 설정해야 합니다")
+//                .setPermissionListener(permissionListener)
+//                .setPermissions(WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE)
+//                .check();
 
         // 카메라 이미지를 누르면 갤러리로 이동해서 파일을 가져온다
-        review_photo.setOnClickListener(v ->
-        {
-            Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            startActivityForResult(intent, PICK_PHOTO);
-        });
+//        review_photo.setOnClickListener(v ->
+//        {
+//            Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//            startActivityForResult(intent, PICK_PHOTO);
+//        });
 
     }
 
@@ -227,7 +257,9 @@ public class ReviewActivity extends AppCompatActivity
         review_rate_edit = findViewById(R.id.review_rate_edit);
         review_content_edit = findViewById(R.id.review_content_edit);
         review_photo = findViewById(R.id.review_photo);
-        restrict_word_number_textview = findViewById(R.id.restrict_word_number_textview);
+
+        difficulty_radiogroup = findViewById(R.id.difficulty_radiogroup);
+        satisfaction_radiogroup = findViewById(R.id.satisfaction_radiogroup);
     }
 
     @Override
@@ -244,10 +276,17 @@ public class ReviewActivity extends AppCompatActivity
         {
             case R.id.review_done:
                 /* 이미지 전송 메서드 호출 */
-                uploadReview();
-                Toast.makeText(this, "소중한 리뷰가 등록되었어요", Toast.LENGTH_SHORT).show();
-                finish();
-                break;
+                if (difficulty.equals("") || satisfaction.equals(""))
+                {
+                    Toast.makeText(this, "느낀점을 선택해 주세요", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+                else
+                {
+                    uploadReview();
+                    finish();
+                    break;
+                }
 
             case android.R.id.home:
                 finish();
@@ -267,32 +306,38 @@ public class ReviewActivity extends AppCompatActivity
         String token = sharedPreferences.getString("token", "");
         Retrofit retrofit = ApiClient.getApiClient();
         ApiInterface apiInterface = retrofit.create(ApiInterface.class);
-        Log.e("aaa", "file = " + file);
-        Log.e("aaa", "file.length() = " + file.length());
+//        Log.e("aaa", "file = " + file);
+//        Log.e("aaa", "file.length() = " + file.length());
 
         // 이미지 파일을 만들고(thumbnailFile)
-        RequestBody imageReqBody = RequestBody.create(MediaType.parse("image/*"), file);
-        MultipartBody.Part imagePart = MultipartBody.Part.createFormData("file", "test.png", imageReqBody); // 2번 인자 file.getName()에서 String으로 수정
-        RequestBody imageDescription = RequestBody.create(MediaType.parse("text/plain"), "image-type");
+        /* 리뷰 이미지 삭제로 코드 주석 처리 */
+//        RequestBody imageReqBody = RequestBody.create(MediaType.parse("image/*"), file);
+//        MultipartBody.Part imagePart = MultipartBody.Part.createFormData("file", "test.png", imageReqBody); // 2번 인자 file.getName()에서 String으로 수정
+//        RequestBody imageDescription = RequestBody.create(MediaType.parse("text/plain"), "image-type");
 
         /* 리뷰 쓰는 조건 = 사용자가 정보를 등록해야 함(나이, 성별, 닉네임) */
         // 이미지를 업로드하는 레트로핏 객체를 생성
-        Call<String> call = apiInterface.uploadReview(token, 1019, review_content_edit.getText().toString(), imageDescription, imagePart);
+//        Call<String> call = apiInterface.uploadReview(token, 1019, review_content_edit.getText().toString(), imageDescription, imagePart);
+
+        int rate = (int) review_rate_edit.getRating();
+        int id = Integer.parseInt(review_id);
+        String star_count = String.valueOf(rate);
+        Call<String> call = apiInterface.uploadReview(token, id, review_content_edit.getText().toString(), null, null,
+                difficulty, satisfaction, star_count);
         call.enqueue(new Callback<String>()
         {
             @Override
             public void onResponse(Call<String> call, Response<String> response)
             {
-                Log.e(TAG, "uploadReview() 호출");
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    Log.e(TAG, "response = " + response);
-                    Toast.makeText(getApplicationContext(), "소중한 리뷰가 등록되었어요", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "리뷰 작성 성공 = " + response);
+                    Toast.makeText(getApplicationContext(), "리뷰가 등록되었습니다", Toast.LENGTH_SHORT).show();
                     setResult(RESULT_OK);
                 }
                 else
                 {
-                    Toast.makeText(getApplicationContext(), "전송 실패", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "실패 : " + response.body());
                 }
             }
 

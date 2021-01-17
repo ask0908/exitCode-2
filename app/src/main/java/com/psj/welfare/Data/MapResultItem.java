@@ -2,36 +2,52 @@ package com.psj.welfare.Data;
 
 public class MapResultItem
 {
-    private String benefit_name;
-    private String benefit_btn_text;
+    private String parent_category; // 기타, 육아·임신 등 카테고리
+    private String welf_name;       // 혜택명
+    private String welf_category;   // 현금 지원, 일자리 지원 등 하위 카테고리
+    private String keyword_tag;     // ';; ' 구분자 섞여서 날아오는 태그들
 
     public MapResultItem()
     {
     }
 
-    public MapResultItem(String benefit_name, String benefit_btn_text)
+    public String getParent_category()
     {
-        this.benefit_name = benefit_name;
-        this.benefit_btn_text = benefit_btn_text;
+        return parent_category;
     }
 
-    public String getBenefit_name()
+    public void setParent_category(String parent_category)
     {
-        return benefit_name;
+        this.parent_category = parent_category;
     }
 
-    public void setBenefit_name(String benefit_name)
+    public String getWelf_name()
     {
-        this.benefit_name = benefit_name;
+        return welf_name;
     }
 
-    public String getBenefit_btn_text()
+    public void setWelf_name(String welf_name)
     {
-        return benefit_btn_text;
+        this.welf_name = welf_name;
     }
 
-    public void setBenefit_btn_text(String benefit_btn_text)
+    public String getWelf_category()
     {
-        this.benefit_btn_text = benefit_btn_text;
+        return welf_category;
+    }
+
+    public void setWelf_category(String welf_category)
+    {
+        this.welf_category = welf_category;
+    }
+
+    public String getKeyword_tag()
+    {
+        return keyword_tag;
+    }
+
+    public void setKeyword_tag(String keyword_tag)
+    {
+        this.keyword_tag = keyword_tag;
     }
 }

@@ -24,14 +24,15 @@
         <item name="android:windowActivityTransitions">true</item>
     </style>
 
+    <!-- MypageFragment의 툴바에 쓰는 스타일 -->
     <style name="ToolbarTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textSize">20sp</item> <!-- Toolbar의 타이틀 텍스트 사이즈-->
-        <item name="android:fontFamily">@font/jalnan</item>
     </style>
 
+    <!-- ReviewActivity, ReviewUpdateActivity에서 액션바의 글자 색깔을 바꾸기 위한 스타일 -->
     <style name="ReviewTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -67,8 +68,6 @@
     </style>
 
     <style name="LoginButtonStyle">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">50dp</item>
         <item name="android:layout_marginTop">0dp</item>
         <item name="android:layout_marginLeft">10dp</item>
         <item name="android:layout_marginRight">10dp</item>
@@ -94,7 +93,8 @@
 <!--    <style name="Base.Widget.Design.TabLayout" parent="android:Widget">-->
 <!--        <item name="tabBackground">@drawable/tab_background</item>-->
 <!--    </style>-->
-    
+
+    <!-- 툴바 폰트 바꿀 때 쓰는 스타일 -->
     <style name="toolbar_jalnan_fontfamily" parent="ThemeOverlay.AppCompat.Light">
         <item name="android:fontFamily">@font/jalnan</item>
     </style>

@@ -8,15 +8,15 @@ public class HorizontalYoutubeItem
     private String category;
     @SerializedName("title")
     private String youtube_name;
-    private String youtube_desc;
+    private String youtube_id;
     private String youtube_thumbnail;
 
     /* 하드코딩에 쓰기 위해 추가한 생성자 */
-    public HorizontalYoutubeItem(String category, String youtube_name, String youtube_desc)
+    public HorizontalYoutubeItem(String category, String youtube_name, String youtube_id)
     {
         this.category = category;
         this.youtube_name = youtube_name;
-        this.youtube_desc = youtube_desc;
+        this.youtube_id = youtube_id;
     }
 
     public HorizontalYoutubeItem()
@@ -53,13 +53,13 @@ public class HorizontalYoutubeItem
         this.youtube_name = youtube_name;
     }
 
-    public String getYoutube_desc()
+    public String getYoutube_id()
     {
-        return youtube_desc;
+        return youtube_id;
     }
 
-    public void setYoutube_desc(String youtube_desc)
+    public void setYoutube_id(String youtube_id)
     {
-        this.youtube_desc = youtube_desc;
+        this.youtube_id = youtube_id;
     }
 }

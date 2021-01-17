@@ -164,31 +164,15 @@
             android:layout_height="150dp"
             android:theme="@style/DefaultNumberPickerTheme"
             android:background="@drawable/custom_spinner"
+            android:descendantFocusability="blocksDescendants"
             android:layout_marginTop="10dp"
             android:layout_marginStart="20dp"
+            android:layout_marginBottom="20dp"
             android:layout_marginEnd="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/area_desc_text" />
-
-        <!-- 확인 버튼 -->
-<!--        <Button-->
-<!--            android:id="@+id/get_ok_btn"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="60dp"-->
-<!--            android:layout_marginLeft="20dp"-->
-<!--            android:layout_marginTop="250dp"-->
-<!--            android:layout_marginRight="20dp"-->
-<!--            android:layout_marginBottom="30dp"-->
-<!--            android:layout_weight=".20"-->
-<!--            android:background="@drawable/btn_primary_dark"-->
-<!--            android:fontFamily="@font/jalnan"-->
-<!--            android:text="확 인"-->
-<!--            android:textColor="@android:color/white"-->
-<!--            android:textSize="30sp"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

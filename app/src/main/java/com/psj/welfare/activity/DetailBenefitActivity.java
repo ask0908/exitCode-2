@@ -1,25 +1,22 @@
 package com.psj.welfare.activity;
 
 import android.animation.ObjectAnimator;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.Spannable;
-import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RatingBar;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
@@ -27,6 +24,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.borjabravo.readmoretextview.ReadMoreTextView;
+import com.bumptech.glide.Glide;
+import com.hedgehog.ratingbar.RatingBar;
 import com.kakao.kakaolink.v2.KakaoLinkResponse;
 import com.kakao.kakaolink.v2.KakaoLinkService;
 import com.kakao.message.template.ButtonObject;
@@ -37,17 +36,16 @@ import com.kakao.message.template.SocialObject;
 import com.kakao.network.ErrorResult;
 import com.kakao.network.callback.ResponseCallback;
 import com.like.LikeButton;
-import com.like.OnLikeListener;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.psj.welfare.Data.ReviewItem;
+import com.psj.welfare.Data.ReviewStatsItem;
 import com.psj.welfare.R;
 import com.psj.welfare.adapter.FacilitiesAdapter;
 import com.psj.welfare.adapter.ReviewAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.OnSingleClickListener;
-import com.psj.welfare.util.AESUtils;
 import com.psj.welfare.util.LogUtil;
 
 import org.eazegraph.lib.charts.BarChart;
@@ -76,7 +74,13 @@ public class DetailBenefitActivity extends AppCompatActivity
 
     // 혜택명
     private TextView welfare_desc_title;
+    // 지원내용
+//    private TextView welf_content_detail;
+    // 연락처
+//    private TextView welf_contact_detail;
+
     private String detail_data;
+    private String push_welf_name;
 
     // 내용, 신청방법, 리뷰
     LinearLayout content_view, review_view;
@@ -84,10 +88,13 @@ public class DetailBenefitActivity extends AppCompatActivity
     View content_bottom_view, review_bottom_view;
 
     // 서버에서 온 값을 파싱할 때 사용할 변수
-    String welf_id, welf_target, welf_contents, welf_apply, welf_contact, welf_period, welf_end, welf_local, welf_bookmark;
+    String welf_id, welf_target, welf_contents, welf_apply, welf_contact, welf_period, welf_end, welf_local, welf_bookmark, push_welf_local, welfare_target,
+    welfare_target_tag, welf_image, welf_wording = "";
 
     // 리뷰 데이터를 조회해서 서버에서 온 값을 파싱할 때 사용할 변수 (email은 85번 줄에 이미 있어서 안 씀)
-    String id, content, writer, create_date, email2, like_count, star_count, image_url;
+    String id, content, writer, create_date, like_count, star_count, image_url, review_count = "";
+    // 리뷰 개수 보여줄 텍스트뷰
+    TextView total_review_count;
 
     // 즐겨찾기 버튼
     LikeButton favorite_btn;
@@ -95,11 +102,8 @@ public class DetailBenefitActivity extends AppCompatActivity
     // 즐겨찾기 저장 시 사용할 이메일, 혜택명, 북마크 여부
     String email, welf_name, isBookmark;
 
-    // 리뷰 액티비티 안의 뷰들
-    private ImageView review_status_image;
-    private RatingBar review_rating;
+    // 리뷰 목록 보여주는 리사이클러뷰
     private RecyclerView review_recycler;
-    private Button more_big_scene_button;
 
     // 리뷰 보여주는 리사이클러뷰에 붙일 어댑터
     ReviewAdapter review_adapter;
@@ -111,15 +115,11 @@ public class DetailBenefitActivity extends AppCompatActivity
     // 클릭 시 리뷰 위로 스크롤을 올리기 위한 boolean 변수
     boolean isClicked = false;
 
-    // 막대그래프
-    private BarChart chart;
-
     // 혜택 내용을 타인에게 공유할 때 사용할 이미지뷰
     ImageView review_share_imageview;
 
     // 혜택 이미지를 담은 url (암호화 해야 함)
     String benefit_image_url = "http://3.34.64.143/images/reviews/조제분유.jpg";
-    String encrypted_email, decrypted_email;
 
     // 혜택 정보를 조회할 때 지역명을 인자로 넘겨야 하는데, 지역명을 담기 위한 변수
     String user_area;
@@ -128,10 +128,10 @@ public class DetailBenefitActivity extends AppCompatActivity
     String map_detail_area;
 
     // 지원대상 텍스트 있는 레이아웃(헤더), 그 밑에 딸린 레이아웃
-    LinearLayout mLinearLayoutHeader, mLinearLayout;
+//    LinearLayout mLinearLayoutHeader, mLinearLayout;
 
     // 상세내용 텍스트 있는 레이아웃(헤더), 그 밑에 딸린 레이아웃
-    LinearLayout welfare_detail_content_header, detail_expandable_layout;
+//    LinearLayout welfare_detail_content_header, detail_expandable_layout;
 
     // 주변시설 텍스트 있는 레이아웃
     ConstraintLayout facilities_layout;
@@ -143,7 +143,7 @@ public class DetailBenefitActivity extends AppCompatActivity
     View facilities_bottom_view, institution_bottom_view;
 
     // 연락처 레이아웃
-    LinearLayout welfare_detail_call, welfare_detail_call_expandable;
+//    LinearLayout welfare_detail_call, welfare_detail_call_expandable;
 
     TextView median_income, detail_support_target_textview, facilities_textview, content_textview, review_textview, institution_textview;
 
@@ -154,7 +154,35 @@ public class DetailBenefitActivity extends AppCompatActivity
     // 리뷰 작성 버튼
     Button review_write_button;
 
+    // 리뷰 통계 자료를 가져올 때 파싱한 데이터를 담을 변수
+    String total_user, star_sum, one_point, two_point, three_point, four_point, five_point, easy, hard, help, help_not;
+    // 리뷰 통계 자료 붙일 뷰
+    TextView review_average_textview;
+    RatingBar review_rate_average;
+    // 1점~5점 별 선택한 인원수를 보여줄 차트
     BarChart review_chart;
+    // 신청이 쉬웠다, 어려웠다 프로그레스 바
+    ProgressBar easy_progressbar, hard_progressbar;
+    // 도움이 됐다, 안 됐다 프로그레스 바
+    ProgressBar help_progressbar, help_not_progressbar;
+
+    // 클릭하면 다이얼로그 나오는 상세조건 텍스트뷰
+    TextView first_target, second_target, third_target;
+    // 혜택 내용을 보여줄 텍스트뷰
+    TextView first_benefit, second_benefit, third_benefit;
+    String first_welf_target;
+    String first_welf_content;
+    // 대상을 넣을 리스트
+    List<String> target_list = new ArrayList<>();
+    // 내용을 넣을 리스트
+    List<String> content_list = new ArrayList<>();
+    LinearLayout second_content_layout, third_content_layout;
+    TextView first_target_textview;
+
+    // 서버에서 받은 이미지 있으면 넣거나 없으면 기본 이미지 넣을 이미지뷰
+    ImageView welf_imageview;
+    // 서버에서 받은 텍스트 있으면 넣거나 없으면 기본 텍스트 넣을 텍스트뷰
+    TextView welf_word_textview;
 
     // 미구현 레이아웃
     LinearLayout institution_view;
@@ -210,25 +238,16 @@ public class DetailBenefitActivity extends AppCompatActivity
         /* findViewById() 모아놓은 메서드 */
         init();
         all_review_scene.setVisibility(View.GONE);
+        content_bottom_view.setBackgroundColor(getColor(R.color.colorBlack));
 
         /* BarChart로 가로 막대그래프 만들기
         * https://github.com/blackfizz/EazeGraph */
         review_chart.clearChart();
 
-        // 지금은 데이터가 없어서 하드코딩
-        review_chart.addBar(new BarModel("5점", 50, 0xFFFF5549));
-        review_chart.addBar(new BarModel("4점", 40, 0xFFFF5549));
-        review_chart.addBar(new BarModel("3점", 10, 0xFFFF5549));
-        review_chart.addBar(new BarModel("2점", 10, 0xFFFF5549));
-        review_chart.addBar(new BarModel("1점", 5, 0xFFFF5549));
-
-        review_chart.startAnimation();
-
         // 리뷰 보여주는 리사이클러뷰 처리
         review_recycler = findViewById(R.id.review_recycler);
         review_recycler.setLayoutManager(new LinearLayoutManager(this));
         review_recycler.setHasFixedSize(true);
-//        review_recycler.addItemDecoration(new DividerItemDecoration(DetailBenefitActivity.this, DividerItemDecoration.VERTICAL));
 
         // 주변시설 리사이클러뷰
         facilities_recyclerview = findViewById(R.id.facilities_recyclerview);
@@ -238,102 +257,112 @@ public class DetailBenefitActivity extends AppCompatActivity
         facilities_recyclerview.setAdapter(facilitiesAdapter);
 
         // 중위소득 기준표 텍스트 클릭 시 토스트 출력(성공 시 액티비티 이동)
-        median_income.setMovementMethod(LinkMovementMethod.getInstance());
-        Spannable spannable = (Spannable) median_income.getText();
-        ClickableSpan span = new ClickableSpan()
-        {
-            @Override
-            public void onClick(@NonNull View widget)
-            {
-                Toast.makeText(DetailBenefitActivity.this, "중위소득 기준표 클릭", Toast.LENGTH_SHORT).show();
-            }
-        };
-        spannable.setSpan(span, 17, 19, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//        median_income.setMovementMethod(LinkMovementMethod.getInstance());
+//        Spannable spannable = (Spannable) median_income.getText();
+//        ClickableSpan span = new ClickableSpan()
+//        {
+//            @Override
+//            public void onClick(@NonNull View widget)
+//            {
+//                Toast.makeText(DetailBenefitActivity.this, "중위소득 기준표 클릭", Toast.LENGTH_SHORT).show();
+//            }
+//        };
+//        spannable.setSpan(span, 17, 19, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         // 자세한 지원 대상 정보 확인 텍스트뷰
-        detail_support_target_textview.setMovementMethod(LinkMovementMethod.getInstance());
-        Spannable support_target_span = (Spannable) detail_support_target_textview.getText();
-        ClickableSpan support_target_clickable_span = new ClickableSpan()
-        {
-            @Override
-            public void onClick(@NonNull View widget)
-            {
-                Toast.makeText(DetailBenefitActivity.this, "상세 지원 정보 클릭", Toast.LENGTH_SHORT).show();
-            }
-        };
-        support_target_span.setSpan(support_target_clickable_span, 18, 20, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//        detail_support_target_textview.setMovementMethod(LinkMovementMethod.getInstance());
+//        Spannable support_target_span = (Spannable) detail_support_target_textview.getText();
+//        ClickableSpan support_target_clickable_span = new ClickableSpan()
+//        {
+//            @Override
+//            public void onClick(@NonNull View widget)
+//            {
+//                Toast.makeText(DetailBenefitActivity.this, "상세 지원 정보 클릭", Toast.LENGTH_SHORT).show();
+//            }
+//        };
+//        support_target_span.setSpan(support_target_clickable_span, 18, 20, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        // 즐겨찾기 버튼 클릭 리스너
-        favorite_btn.setOnLikeListener(new OnLikeListener()
-        {
-            @Override
-            public void liked(LikeButton likeButton)
-            {
-                // 토스트로 관심사에 등록됐다는 내용을 보낸다
-                String message = welfare_desc_title.getText().toString();
-                Toast.makeText(DetailBenefitActivity.this, message + " 정책을 내 관심사로 설정했습니다", Toast.LENGTH_SHORT).show();
+        /* 즐겨찾기 버튼 클릭 리스너, 오픈베타 이후 구현 */
+//        favorite_btn.setOnLikeListener(new OnLikeListener()
+//        {
+//            @Override
+//            public void liked(LikeButton likeButton)
+//            {
+//                // 토스트로 관심사에 등록됐다는 내용을 보낸다
+//                String message = welfare_desc_title.getText().toString();
+//                Toast.makeText(DetailBenefitActivity.this, message + " 정책을 내 관심사로 설정했습니다", Toast.LENGTH_SHORT).show();
+//
+//                // 서버로 이메일, 혜택 이름(welf_name)를 보내서 즐겨찾기에 저장한다. 지금은 이메일을 하드코딩해 사용하지만 암호화를 해서 저장해야 한다
+//                email = getString(R.string.email);
+//                try
+//                {
+//                    encrypted_email = AESUtils.encrypt(email);
+//                }
+//                catch (Exception e)
+//                {
+//                    e.printStackTrace();
+//                }
+//
+//                try
+//                {
+//                    decrypted_email = AESUtils.decrypt(encrypted_email);
+//                }
+//                catch (Exception e)
+//                {
+//                    e.printStackTrace();
+//                }
+//                Logger.e("encrypted_email = " + encrypted_email);
+//                Logger.e("decrypted_email = " + decrypted_email);
+//                welf_name = welfare_desc_title.getText().toString();
+//                isBookmark = "true";
+//
+//                // 메서드 호출
+//                getBookmark(decrypted_email, welf_name);
+//            }
+//
+//            @Override
+//            public void unLiked(LikeButton likeButton)
+//            {
+//                // 회색 하트로 변하면 false를 0으로 치고 서버로 보낸다
+//                boolean isClicked = favorite_btn.isLiked();
+//                Logger.e("즐찾 버튼 클릭 상태 : " + isClicked);
+//
+//                // 토스트로 관심사에서 등록 해제됐다는 내용을 보낸다
+//                String message = welfare_desc_title.getText().toString();
+//                Toast.makeText(DetailBenefitActivity.this, message + " 정책을 내 관심사에서 설정 해제했습니다", Toast.LENGTH_SHORT).show();
+//
+//                // 서버로 이메일, 혜택 이름(welf_name)를 보내서 즐겨찾기에서 삭제한다
+//                email = "ne0001912@gmail.com";
+//                welf_name = welfare_desc_title.getText().toString();
+//                isBookmark = "false";
+//
+//                // 메서드 호출
+//                getBookmark(email, welf_name);
+//            }
+//        });
 
-                // 서버로 이메일, 혜택 이름(welf_name)를 보내서 즐겨찾기에 저장한다. 지금은 이메일을 하드코딩해 사용하지만 암호화를 해서 저장해야 한다
-                email = getString(R.string.email);
-                try
-                {
-                    encrypted_email = AESUtils.encrypt(email);
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-
-                try
-                {
-                    decrypted_email = AESUtils.decrypt(encrypted_email);
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-                Logger.e("encrypted_email = " + encrypted_email);
-                Logger.e("decrypted_email = " + decrypted_email);
-                welf_name = welfare_desc_title.getText().toString();
-                isBookmark = "true";
-
-                // 메서드 호출
-                getBookmark(decrypted_email, welf_name);
-            }
-
-            @Override
-            public void unLiked(LikeButton likeButton)
-            {
-                // 회색 하트로 변하면 false를 0으로 치고 서버로 보낸다
-                boolean isClicked = favorite_btn.isLiked();
-                Logger.e("즐찾 버튼 클릭 상태 : " + isClicked);
-
-                // 토스트로 관심사에서 등록 해제됐다는 내용을 보낸다
-                String message = welfare_desc_title.getText().toString();
-                Toast.makeText(DetailBenefitActivity.this, message + " 정책을 내 관심사에서 설정 해제했습니다", Toast.LENGTH_SHORT).show();
-
-                // 서버로 이메일, 혜택 이름(welf_name)를 보내서 즐겨찾기에서 삭제한다
-                email = "ne0001912@gmail.com";
-                welf_name = welfare_desc_title.getText().toString();
-                isBookmark = "false";
-
-                // 메서드 호출
-                getBookmark(email, welf_name);
-            }
-        });
-
-        // 인텐트에 혜택 이름이 포함돼 있는지 확인 후 있는 경우에만 가져온다
+        /* 인텐트에 혜택 이름이 포함돼 있는지 확인 후 있는 경우에만 가져온다 */
         if (getIntent().hasExtra("RBF_title"))
         {
             Intent RBF_intent = getIntent();
             detail_data = RBF_intent.getStringExtra("RBF_title");
 
             Logger.e("상세 페이지에서 보여줄 타이틀 : " + detail_data);
+            welfare_desc_title.setText(detail_data);
         }
-        else if (getIntent().hasExtra("name"))
+
+        if (getIntent().hasExtra("name"))
         {
             Intent intent = getIntent();
-            detail_data = intent.getStringExtra("name");
+            push_welf_name = intent.getStringExtra("name");
+            welfare_desc_title.setText(push_welf_name);
+        }
+
+        if (getIntent().hasExtra("welf_local"))
+        {
+            Intent intent = getIntent();
+            push_welf_local = intent.getStringExtra("welf_local");
+            Log.e(TAG, "인텐트로 가져온 지역명 = " + push_welf_local);
         }
 
         if (getIntent().hasExtra("area"))
@@ -347,12 +376,6 @@ public class DetailBenefitActivity extends AppCompatActivity
         /* 혜택의 상세정보를 가져오는 메서드, detail_data에 null이 들어간다 */
         getWelfareInformation();
 
-        // 리뷰 작성 화면으로 이동
-//        more_big_scene_button.setOnClickListener(v -> {
-//            Intent intent = new Intent(DetailBenefitActivity.this, ReviewActivity.class);
-//            startActivityForResult(intent, 1);
-//        });
-
         // 공유 모양 이미지뷰 클릭 리스너
         review_share_imageview.setOnClickListener(v -> {
             /* 카카오 링크 적용 */
@@ -364,16 +387,16 @@ public class DetailBenefitActivity extends AppCompatActivity
                             .setDescrption("지금 바로 " + welfare_desc_title.getText().toString() + " 혜택의 정보를 확인해 보세요!")  // 제목 밑의 본문
                             .build())
                     .setSocial(SocialObject.newBuilder().build()).addButton(new ButtonObject("앱에서 보기", LinkObject.newBuilder()
-                            .setWebUrl("'https://developers.kakao.com")
-                            .setMobileWebUrl("'https://developers.kakao.com")
+                            .setWebUrl("https://www.urbene-fit.com")
+                            .setMobileWebUrl("https://developers.kakao.com")
                             .setAndroidExecutionParams("key1=value1")
                             .setIosExecutionParams("key1=value1")
                             .build()))
                     .setSocial(SocialObject.newBuilder().build()).addButton(new ButtonObject("웹에서 보기", LinkObject.newBuilder()
-                            .setWebUrl("https://developers.kakao.com")
+                            .setWebUrl("https://www.urbene-fit.com")
                             .setMobileWebUrl("https://developers.kakao.com")
-                            .setAndroidExecutionParams("key1=value1")
-                            .setIosExecutionParams("key1=value1")
+                            .setAndroidExecutionParams("key2=value2")
+                            .setIosExecutionParams("key2=value2")
                             .build()))
                     .setSocial(SocialObject.newBuilder().setLikeCount(10).setCommentCount(20).setSharedCount(30).build())   // 좋아요 수, 댓글(리뷰) 수, 공유된 회수 더미
                     .build();
@@ -397,6 +420,26 @@ public class DetailBenefitActivity extends AppCompatActivity
                     Logger.e(result.toString());
                 }
             });
+        });
+
+        // 상세조건 누를 때마다 각 대상에 맞는 상세정보가 다이얼로그로 나오게 한다
+        first_target.setOnClickListener(new OnSingleClickListener()
+        {
+            @Override
+            public void onSingleClick(View v)
+            {
+                AlertDialog.Builder builder = new AlertDialog.Builder(DetailBenefitActivity.this);
+                /* target_tag 넣기 */
+                builder.setMessage(first_welf_target)
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                dialog.dismiss();
+                            }
+                        }).show();
+            }
         });
 
     }
@@ -446,8 +489,10 @@ public class DetailBenefitActivity extends AppCompatActivity
     {
         String token = sharedPreferences.getString("token" ,"");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.getWelfareInformation("detail", map_detail_area, detail_data, token, LogUtil.getUserLog());
-        Log.e("fff", "type = detail, map_detail_area = " + map_detail_area + ", map_detail_area = " + detail_data + ", token = " + token + ", " + LogUtil.getUserLog());
+        // "detail", local(지역 정보), welf_name(혜택 이름), login_token(유저 인증용 토큰 정보), 사용자 로그
+        Call<String> call = apiInterface.getWelfareInformation("detail", push_welf_local, push_welf_name, token, LogUtil.getUserLog());
+        Log.e("혜택 상세보기 페이지", "type = detail, push_welf_local = " + push_welf_local + ", push_welf_name = " + push_welf_name +
+                ", token = " + token + ", " + LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -491,39 +536,58 @@ public class DetailBenefitActivity extends AppCompatActivity
         content_all_layout = findViewById(R.id.content_all_layout);
         top_divider_view = findViewById(R.id.top_divider_view);
 
-        mLinearLayout = findViewById(R.id.expandable_layout);
-        mLinearLayoutHeader = findViewById(R.id.header_layout);
-        detail_expandable_layout = findViewById(R.id.detail_expandable_layout);
-        welfare_detail_content_header = findViewById(R.id.welfare_detail_content);
-        median_income = findViewById(R.id.median_income_base_table_textview);
-        detail_support_target_textview = findViewById(R.id.detail_support_target_textview);
-        welfare_detail_call = findViewById(R.id.welfare_detail_call);
-        welfare_detail_call_expandable = findViewById(R.id.welfare_detail_call_expandable);
+//        mLinearLayout = findViewById(R.id.expandable_layout);
+//        mLinearLayoutHeader = findViewById(R.id.header_layout);
+//        detail_expandable_layout = findViewById(R.id.detail_expandable_layout);
+//        welfare_detail_content_header = findViewById(R.id.welfare_detail_content);
+//        median_income = findViewById(R.id.median_income_base_table_textview);
+//        detail_support_target_textview = findViewById(R.id.detail_support_target_textview);
+//        welfare_detail_call = findViewById(R.id.welfare_detail_call);
+//        welfare_detail_call_expandable = findViewById(R.id.welfare_detail_call_expandable);
         facilities_layout = findViewById(R.id.facilities_layout);
         content_view = findViewById(R.id.content_view);
 
+//        welf_content_detail = findViewById(R.id.welf_content_detail);
         facilities_view = findViewById(R.id.facilities_view);
         facilities_textview = findViewById(R.id.facilities_textview);
+//        welf_contact_detail = findViewById(R.id.welf_contact_detail);
 
         content_textview = findViewById(R.id.content_textview);
         content_bottom_view = findViewById(R.id.content_bottom_view);
-        divider_view = findViewById(R.id.divider_view);
+//        divider_view = findViewById(R.id.divider_view);
         facilities_bottom_view = findViewById(R.id.facilities_bottom_view);
-        detail_divider_view = findViewById(R.id.detail_divider_view);
+//        detail_divider_view = findViewById(R.id.detail_divider_view);
         review_textview = findViewById(R.id.review_textview);
 
         institution_view = findViewById(R.id.institution_view);
 
-        first_imageview = findViewById(R.id.first_imageview);
-        second_imageview = findViewById(R.id.second_imageview);
+//        first_imageview = findViewById(R.id.first_imageview);
+//        second_imageview = findViewById(R.id.second_imageview);
 
         institution_view = findViewById(R.id.institution_view);
         all_review_scene = findViewById(R.id.all_review_scene);
         institution_bottom_view = findViewById(R.id.institution_bottom_view);
         institution_textview = findViewById(R.id.institution_textview);
 
-        review_chart = findViewById(R.id.review_chart);
+        total_review_count = findViewById(R.id.total_review_count);
         review_write_button = findViewById(R.id.review_write_button);
+
+        review_average_textview = findViewById(R.id.review_average_textview);
+        review_rate_average = findViewById(R.id.review_rate_average);
+        review_chart = findViewById(R.id.review_chart);
+        easy_progressbar = findViewById(R.id.easy_progressbar);
+        hard_progressbar = findViewById(R.id.hard_progressbar);
+        help_progressbar = findViewById(R.id.help_progressbar);
+        help_not_progressbar = findViewById(R.id.help_not_progressbar);
+
+        first_target = findViewById(R.id.first_target);
+
+        first_benefit = findViewById(R.id.first_benefit);
+
+        first_target_textview = findViewById(R.id.first_target_textview);
+
+        welf_imageview = findViewById(R.id.welf_imageview);
+        welf_word_textview = findViewById(R.id.welf_word_textview);
     }
 
     @Override
@@ -538,6 +602,8 @@ public class DetailBenefitActivity extends AppCompatActivity
             public void onSingleClick(View v)
             {
                 Intent intent = new Intent(DetailBenefitActivity.this, ReviewActivity.class);
+                intent.putExtra("id", welf_id);
+                intent.putExtra("id2", id);
                 startActivityForResult(intent, 1);
             }
         });
@@ -549,6 +615,7 @@ public class DetailBenefitActivity extends AppCompatActivity
             public void onSingleClick(View v)
             {
                 content_bottom_view.setVisibility(View.VISIBLE);
+                content_bottom_view.setBackgroundColor(getColor(R.color.colorBlack));
                 facilities_bottom_view.setVisibility(View.GONE);
                 facilities_layout.setVisibility(View.GONE);
                 all_review_scene.setVisibility(View.GONE);
@@ -556,46 +623,17 @@ public class DetailBenefitActivity extends AppCompatActivity
                 review_bottom_view.setVisibility(View.GONE);
                 top_divider_view.setVisibility(View.VISIBLE);
                 content_all_layout.setVisibility(View.VISIBLE);
-                content_textview.setTextColor(getColor(R.color.colorBlack));
+                content_textview.setTextColor(getColor(R.color.colorPrimaryDark));
                 facilities_textview.setTextColor(getColor(R.color.colorGray_B));
 
-                mLinearLayoutHeader.setVisibility(View.VISIBLE);
-                mLinearLayout.setVisibility(View.VISIBLE);
-                divider_view.setVisibility(View.VISIBLE);
-                welfare_detail_content_header.setVisibility(View.VISIBLE);
-                detail_expandable_layout.setVisibility(View.VISIBLE);
-                detail_divider_view.setVisibility(View.VISIBLE);
-                welfare_detail_call.setVisibility(View.VISIBLE);
-                welfare_detail_call_expandable.setVisibility(View.VISIBLE);
-            }
-        });
-
-        // 주변시설 클릭
-        facilities_view.setOnClickListener(new OnSingleClickListener()
-        {
-            @Override
-            public void onSingleClick(View v)
-            {
-                content_bottom_view.setVisibility(View.GONE);
-                facilities_bottom_view.setVisibility(View.VISIBLE);
-                review_textview.setTextColor(getColor(R.color.colorGray_B));
-                top_divider_view.setVisibility(View.VISIBLE);
-                facilities_layout.setVisibility(View.VISIBLE);
-                content_all_layout.setVisibility(View.GONE);
-                review_bottom_view.setVisibility(View.GONE);
-                content_textview.setTextColor(getColor(R.color.colorGray_B));
-                facilities_textview.setTextColor(getColor(R.color.colorBlack));
-
-                // 주변시설을 누르면 주변시설 관련 레이아웃, 뷰를 제외한 다른 뷰들은 GONE 처리해서 보이지 않게 한다
-                mLinearLayoutHeader.setVisibility(View.GONE);
-                mLinearLayout.setVisibility(View.GONE);
-                divider_view.setVisibility(View.GONE);
-                all_review_scene.setVisibility(View.GONE);
-                welfare_detail_content_header.setVisibility(View.GONE);
-                detail_expandable_layout.setVisibility(View.GONE);
-                detail_divider_view.setVisibility(View.GONE);
-                welfare_detail_call.setVisibility(View.GONE);
-                welfare_detail_call_expandable.setVisibility(View.GONE);
+//                mLinearLayoutHeader.setVisibility(View.VISIBLE);
+//                mLinearLayout.setVisibility(View.VISIBLE);
+//                divider_view.setVisibility(View.VISIBLE);
+//                welfare_detail_content_header.setVisibility(View.VISIBLE);
+//                detail_expandable_layout.setVisibility(View.VISIBLE);
+//                detail_divider_view.setVisibility(View.VISIBLE);
+//                welfare_detail_call.setVisibility(View.VISIBLE);
+//                welfare_detail_call_expandable.setVisibility(View.VISIBLE);
             }
         });
 
@@ -613,7 +651,7 @@ public class DetailBenefitActivity extends AppCompatActivity
                 all_review_scene.setVisibility(View.VISIBLE);
                 content_textview.setTextColor(getColor(R.color.colorGray_B));
                 facilities_textview.setTextColor(getColor(R.color.colorGray_B));
-                review_textview.setTextColor(getColor(R.color.colorBlack));
+                review_textview.setTextColor(getColor(R.color.colorPrimaryDark));
                 review_bottom_view.setVisibility(View.VISIBLE);
                 review_bottom_view.setBackgroundColor(getColor(R.color.colorBlack));
                 isClicked = true;
@@ -637,13 +675,33 @@ public class DetailBenefitActivity extends AppCompatActivity
             }
         });
 
-        // 신청기관 클릭(미구현)
-        institution_textview.setOnClickListener(new OnSingleClickListener()
+        // 주변시설 클릭
+        facilities_view.setOnClickListener(new OnSingleClickListener()
         {
             @Override
             public void onSingleClick(View v)
             {
-                Toast.makeText(DetailBenefitActivity.this, "준비중인 서비스입니다", Toast.LENGTH_SHORT).show();
+                content_bottom_view.setVisibility(View.GONE);
+                facilities_bottom_view.setVisibility(View.VISIBLE);
+                facilities_bottom_view.setBackgroundColor(getColor(R.color.colorBlack));
+                review_textview.setTextColor(getColor(R.color.colorGray_B));
+                top_divider_view.setVisibility(View.VISIBLE);
+                facilities_layout.setVisibility(View.VISIBLE);
+                content_all_layout.setVisibility(View.GONE);
+                review_bottom_view.setVisibility(View.GONE);
+                content_textview.setTextColor(getColor(R.color.colorGray_B));
+                facilities_textview.setTextColor(getColor(R.color.colorPrimaryDark));
+
+                // 주변시설을 누르면 주변시설 관련 레이아웃, 뷰를 제외한 다른 뷰들은 GONE 처리해서 보이지 않게 한다
+//                mLinearLayoutHeader.setVisibility(View.GONE);
+//                mLinearLayout.setVisibility(View.GONE);
+//                divider_view.setVisibility(View.GONE);
+                all_review_scene.setVisibility(View.GONE);
+//                welfare_detail_content_header.setVisibility(View.GONE);
+//                detail_expandable_layout.setVisibility(View.GONE);
+//                detail_divider_view.setVisibility(View.GONE);
+//                welfare_detail_call.setVisibility(View.GONE);
+//                welfare_detail_call_expandable.setVisibility(View.GONE);
             }
         });
 
@@ -670,14 +728,91 @@ public class DetailBenefitActivity extends AppCompatActivity
                 welf_end = inner_obj.getString("welf_end");
                 welf_local = inner_obj.getString("welf_local");
                 welf_bookmark = inner_obj.getString("isBookmark");
+                welfare_target = inner_obj.getString("target");
+                welfare_target_tag = inner_obj.getString("target_tag");
+                welf_image = inner_obj.getString("welf_image");
+                welf_wording = inner_obj.getString("welf_wording");
             }
-            if (welf_bookmark.equals(getString(R.string.is_true)))
+
+            // 이미지, 문구 처리
+            if (!welf_image.equals("") && !welf_wording.equals(""))
             {
-                favorite_btn.setLiked(true);
+                if (welf_image.equals("기본 이미지") && welf_wording.equals("기본 문구"))
+                {
+                    Glide.with(DetailBenefitActivity.this)
+                            .load(R.drawable.detail_main_img)
+                            .into(welf_imageview);
+                    welf_word_textview.setText("기저귀, 분유값 절약하는 스마트한 방법");
+                }
+                else
+                {
+                    // 데이터가 있으면 각 뷰에 넣는다
+                }
             }
-            else
+
+            /* 좋아요 버튼은 오픈베타 이후 구현 */
+//            if (welf_bookmark.equals(getString(R.string.is_true)))
+//            {
+//                favorite_btn.setLiked(true);
+//            }
+//            else
+//            {
+//                favorite_btn.setLiked(false);
+//            }
+
+            if (!welfare_target.equals(""))
             {
-                favorite_btn.setLiked(false);
+                // '/'를 ','로 바꿔서 set한다
+                String first_target = welfare_target.replace("/", ", ");
+                first_target_textview.setText(first_target);
+            }
+
+            /* target_tag는 상세조건을 누르면 나오는 다이얼로그에서 보여준다 */
+            if (!welfare_target_tag.equals(""))
+            {
+//                first_welf_target = welfare_target_tag;
+                String[] before_str = welfare_target_tag.split("#");
+                List<String> tag_list = new ArrayList<>();
+                for (String str : before_str)
+                {
+                    tag_list.add(str);
+                }
+                Log.e("ff", "태그의 # 제거 후 결과 : " + tag_list);
+                tag_list.remove(0);
+                Log.e("ff", "0번 지운 후 결과 : " + tag_list);
+                for (int i = 0; i < tag_list.size(); i++)
+                {
+                    String letter = tag_list.get(i);
+                    String replace_letter = letter.replaceAll("/", "");
+                    tag_list.set(i, replace_letter);
+                }
+                Log.e("ff", "'/' 문자열 지운 결과 : " + tag_list);
+                for (int i = 0; i < tag_list.size(); i++)
+                {
+                    String letter = tag_list.get(i);
+                    String replace_letter = letter.replaceAll(";;", ",");
+                    tag_list.set(i, replace_letter);
+//                    StringBuffer sb = new StringBuffer(tag_list.get(i));
+//                    sb.append(tag_list.get(i));
+//                    sb.append(", ");
+                }
+                Log.e(TAG, ";;를 ,로 바꾼 결과 : " + tag_list);
+                /* StringBuilder로 ArrayList 안의 문자열들 사이에 ,를 섞어서 이어붙인다 */
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < tag_list.size(); i++)
+                {
+                    sb.append(tag_list.get(i) + ", ");
+                }
+                String sb_result = sb.toString();
+                Log.e("ff", "콤마 붙임 : " + sb_result);
+                // 마지막의 ',' 문자를 지운다
+                first_welf_target = sb_result.substring(0, sb_result.lastIndexOf(","));
+                Log.e("ff", "최종적으로 다이얼로그에 보여야 하는 문구 : " + first_welf_target);
+//                if (!sb_result.equals("") && sb_result.length() > 0 && sb_result.charAt(sb_result.length() - 1) == ',')
+//                {
+//                    first_welf_target = sb_result.substring(0, sb_result.length() - 1);
+//                    Log.e("ff", "최종적으로 다이얼로그에 보여야 하는 문구 : " + first_welf_target);
+//                }
             }
 
             symbolChange(welf_target, welf_contents, welf_contact);
@@ -703,28 +838,65 @@ public class DetailBenefitActivity extends AppCompatActivity
 
     }
 
-    // 혜택의 대상, 내용, 연락처에 붙어있는 특수문자를 콤마(,)로 바꾸는 메서드
+    // 혜택의 대상, 내용, 연락처에 붙어있는 특수문자를 콤마(,)로 바꿔 뷰에 set하는 메서드
     private void symbolChange(String welf_target, String welf_content, String welf_contact)
     {
         if (welf_target != null)
         {
             String target_line = welf_target.replace("^;", "\n");
             String target_comma = target_line.replace(";;", ",");
-//            detail_target.setText(target_comma);
+            Log.e(TAG, "welf_target의 ;;를 ,로 변환한 결과 : " + target_comma);
+            /* 받은 데이터에서 ,를 구분자로 스플릿해서 String[]에 담는다 */
+            String[] str = target_comma.split(", ");
+            for (int i = 0; i < str.length; i++)
+            {
+                Log.e(TAG, "', '를 구분자로 스플릿한 결과 = " + str[i]);
+                target_list.add(str[i]);
+            }
+//            if (target_list.size() == 0)
+//            {
+//                first_target.setVisibility(View.GONE);
+//            }
+//            else if (target_list.size() == 1)
+//            {
+//                first_welf_target = target_list.get(0);
+//                Log.e(TAG, "target_list의 크기가 1인 경우 : " + first_welf_target);
+//            }
+//            else if (target_list.size() == 2)
+//            {
+//                first_welf_target = target_list.get(0);
+//                second_welf_target = target_list.get(1);
+//                Log.e(TAG, "target_list의 크기가 2인 경우 : " + first_welf_target + ", " + second_welf_target);
+//            }
         }
         if (welf_content != null)
         {
             String contents_line = welf_content.replace("^;", "\n");
             String contents_comma = contents_line.replace(";;", ",");
-            Log.e(TAG, ";;를 ,로 변환한 결과 : " + contents_comma);
-//            detail_contents.setText(contents_comma);
+            Log.e(TAG, "welf_content의 ;;를 ,로 변환한 결과 : " + contents_comma);
+            /* 지원내용에 ;; 특수문자를 변환한 내용을 넣는다 */
+            first_benefit.setText(contents_comma);
+            String[] str = contents_comma.split(", ");
+            for (int i = 0; i < str.length; i++)
+            {
+                Log.e(TAG, "내용의 ', '를 구분자로 스플릿한 결과 : " + str[i]);
+                content_list.add(str[i]);
+            }
+            Log.e(TAG, "content_list 크기 : " + content_list.size());
+            for (int i = 0; i < content_list.size(); i++)
+            {
+                Log.e(TAG, "content_list = " + content_list.get(i) + ", ");
+                first_welf_content = content_list.get(i);
+            }
+//            welf_content_detail.setText(contents_comma);
         }
         if (welf_contact != null)
         {
             String contact_line = welf_contact.replace("^;", "\n");
             String contact_comma = contact_line.replace(";;", ",");
-            Log.e(TAG, ";;를 ,로 변환한 결과 : " + contact_line);
-//            detail_contact.setText(contact_comma);
+            Log.e(TAG, "welf_contact의 ;;를 ,로 변환한 결과 : " + contact_comma);
+            /* 문의처에 ;; 특수문자를 변환한 내용을 넣는다 */
+//            welf_contact_detail.setText(contact_comma);
         }
     }
 
@@ -733,7 +905,7 @@ public class DetailBenefitActivity extends AppCompatActivity
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         /* review_id에는 리뷰의 idx를 가져와서 넣어야 한다 */
-        Call<String> call = apiInterface.getReview("list", "1019");
+        Call<String> call = apiInterface.getReview("list", welf_id);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -761,6 +933,7 @@ public class DetailBenefitActivity extends AppCompatActivity
         try
         {
             JSONObject jsonObject_total = new JSONObject(detail);
+            review_count = jsonObject_total.getString("TotalCount");
             JSONArray jsonArray = jsonObject_total.getJSONArray("Message");
             for (int i = 0; i < jsonArray.length(); i++)
             {
@@ -768,7 +941,6 @@ public class DetailBenefitActivity extends AppCompatActivity
                 id = jsonObject.getString("id");
                 content = jsonObject.getString("content");
                 writer = jsonObject.getString("writer");
-                email2 = jsonObject.getString("email");
                 create_date = jsonObject.getString("create_date");
                 like_count = jsonObject.getString("like_count");
                 star_count = jsonObject.getString("star_count");
@@ -783,11 +955,116 @@ public class DetailBenefitActivity extends AppCompatActivity
                 value.setStar_count(Float.parseFloat(star_count));  // String으로 오기 때문에 float로 캐스팅해야 함
                 list.add(value);
             }
-        }
+            /* 리뷰 통계 부분에 쓸 데이터 파싱 */
+            JSONArray stats = jsonObject_total.getJSONArray("Review_stats");
+            for (int i = 0; i < stats.length(); i++)
+            {
+                JSONObject inner = stats.getJSONObject(i);
+                total_user = inner.getString("total_user");
+                star_sum = inner.getString("star_sum");
+                one_point = inner.getString("one_point");
+                two_point = inner.getString("two_point");
+                three_point = inner.getString("three_point");
+                four_point = inner.getString("four_point");
+                five_point = inner.getString("five_point");
+                easy = inner.getString("esay");
+                hard = inner.getString("hard");
+                help = inner.getString("help");
+                help_not = inner.getString("helf_not");
+
+                // 통계 가져오기 위한 모델 클래스 객체 설정
+                ReviewStatsItem item = new ReviewStatsItem();
+                item.setTotal_user(total_user);
+                item.setStar_sum(star_sum);
+                item.setOne_point(one_point);
+                item.setTwo_point(two_point);
+                item.setThree_point(three_point);
+                item.setFour_point(four_point);
+                item.setFive_point(five_point);
+                item.setEasy(easy);
+                item.setHard(hard);
+                item.setHelp(help);
+                item.setHelp_not(help_not);
+            }
+        }   // try end
         catch (JSONException e)
         {
             e.printStackTrace();
         }
+
+        /* 뷰에 데이터 set */
+        // 리뷰 평점 구하기
+        if (one_point != null && two_point != null && three_point != null && four_point != null && five_point != null)
+        {
+            int one_person = Integer.parseInt(one_point);
+            int two_person = Integer.parseInt(two_point);
+            int three_person = Integer.parseInt(three_point);
+            int four_person = Integer.parseInt(four_point);
+            int five_person = Integer.parseInt(five_point);
+            int one = 1;
+            int two = 2;
+            int three = 3;
+            int four = 4;
+            int five = 5;
+            int writer_count = Integer.parseInt(review_count);
+            // 각 인원수에 1~5점씩을 곱한 다음 리뷰 작성 인원수로 나눈다
+            int add_average = (one_person * one) + (two_person * two) + (three_person * three) + (four_person * four) + (five_person * five);
+            if (add_average != 0 && !review_count.equals(""))
+            {
+                int review_average = add_average / writer_count;
+                // 평균이 구해지면 그 숫자를 텍스트뷰와 별점에 넣는다
+                review_average_textview.setText("" + review_average);
+                review_rate_average.setStar(review_average);
+            }
+        }
+        // 리뷰 개수 붙이기
+        if (!review_count.equals(""))
+        {
+            total_review_count.setText("리뷰 " + review_count + "개");
+        }
+        // 가로 막대그래프에 데이터 set
+        if (five_point != null || four_point != null || three_point != null || two_point != null || one_point != null)
+        {
+            review_chart.addBar(new BarModel("5점", Float.parseFloat(five_point), 0xFFFF5549));
+            review_chart.addBar(new BarModel("4점", Float.parseFloat(four_point), 0xFFFF5549));
+            review_chart.addBar(new BarModel("3점", Float.parseFloat(three_point), 0xFFFF5549));
+            review_chart.addBar(new BarModel("2점", Float.parseFloat(two_point), 0xFFFF5549));
+            review_chart.addBar(new BarModel("1점", Float.parseFloat(one_point), 0xFFFF5549));
+            review_chart.startAnimation();
+        }
+        else
+        {
+            review_chart.addBar(new BarModel("5점", 0f, 0xFFFF5549));
+            review_chart.addBar(new BarModel("4점", 0f, 0xFFFF5549));
+            review_chart.addBar(new BarModel("3점", 0f, 0xFFFF5549));
+            review_chart.addBar(new BarModel("2점", 0f, 0xFFFF5549));
+            review_chart.addBar(new BarModel("1점", 0f, 0xFFFF5549));
+            review_chart.startAnimation();
+        }
+
+        // 쉬워요, 어려워요 프로그레스 바
+        if (easy != null || hard != null)
+        {
+            easy_progressbar.setProgress(Integer.parseInt(easy));
+            hard_progressbar.setProgress(Integer.parseInt(hard));
+        }
+        else
+        {
+            easy_progressbar.setProgress(0);
+            hard_progressbar.setProgress(0);
+        }
+        // 도움됐어요, 안됐어요 프로그레스 바
+        if (help != null || help_not != null)
+        {
+            help_progressbar.setProgress(Integer.parseInt(help));
+            help_not_progressbar.setProgress(Integer.parseInt(help_not));
+        }
+        else
+        {
+            help_progressbar.setProgress(0);
+            help_not_progressbar.setProgress(0);
+        }
+
         review_adapter = new ReviewAdapter(DetailBenefitActivity.this, list, review_clickListener);
         review_adapter.setOnItemClickListener(new ReviewAdapter.ItemClickListener()
         {
@@ -798,6 +1075,8 @@ public class DetailBenefitActivity extends AppCompatActivity
                 String user_nickname = sharedPreferences.getString("user_nickname", "");
                 String writer_nickname = list.get(position).getWriter();
                 String review_content = list.get(position).getContent();
+                float star = list.get(position).getStar_count();
+                String star_count = String.valueOf(star);
                 String posting_id = list.get(position).getId();
                 Log.e(TAG, "작성자 = " + writer_nickname);
                 Log.e(TAG, "리뷰 내용 = " + review_content);
@@ -810,6 +1089,7 @@ public class DetailBenefitActivity extends AppCompatActivity
                     intent.putExtra("image_url", image_url);
                     intent.putExtra("content", review_content);
                     intent.putExtra("id", posting_id);
+                    intent.putExtra("star_count", star_count);
                     startActivity(intent);
                 }
             }

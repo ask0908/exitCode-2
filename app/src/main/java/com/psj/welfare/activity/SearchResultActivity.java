@@ -43,9 +43,11 @@ public class SearchResultActivity extends AppCompatActivity
 
     // 가로로 하위 카테고리들을 보여줄 리사이클러뷰, 세로로 검색 결과들을 보여줄 리사이클러뷰뷰
     private RecyclerView keyword_category_recycler, search_result_title_recycler;
+
     // 가로 리사이클러뷰에 붙일 어댑터
     private HorizontalSearchResultAdapter category_adapter;
     private HorizontalSearchResultAdapter.ItemClickListener category_clickListener;
+
     // 세로 리사이클러뷰에 붙일 어댑터
     private VerticalSearchResultAdapter adapter;
     private VerticalSearchResultAdapter.VerticalItemClickListener itemClickListener;
@@ -160,12 +162,13 @@ public class SearchResultActivity extends AppCompatActivity
 
                 SearchItem top_item = new SearchItem();
 
-                // 상단의 가로 리사이클러뷰(하위 카테고리 보이는곳)에 넣을 리스트
+                // 상단의 가로 리사이클러뷰(하위 카테고리 보이는곳)에 넣을 리스트에 박을 객체
                 top_item.setWelf_category(welf_category);
                 Log.e("fff", "top_item = " + top_item.getWelf_category());
                 boolean hasDuplicate = false;
                 for (int j = 0; j < top_list.size(); j++)
                 {
+                    // 1번이라도 중복되는 게 있으면 break로 for문 탈출
                     if (top_list.get(j).getWelf_category().equals(top_item.getWelf_category()))
                     {
                         Log.e("fff", top_list.get(j).getWelf_category());
@@ -173,6 +176,8 @@ public class SearchResultActivity extends AppCompatActivity
                         break;
                     }
                 }
+                // 여기선 같은 게 있어서 나온건지 하나도 없어서 나온건지 모른다
+                // 그래서 boolean 변수를 통해 같은 게 있었으면 true, 없었으면 false로 설정하고 false일 때 리스트에 아이템을 추가한다
                 if (!hasDuplicate)
                 {
                     /* top_list 안에 ;;이 들어간 아이템을 제외하고 값을 넣는다 */
@@ -234,7 +239,12 @@ public class SearchResultActivity extends AppCompatActivity
         adapter = new VerticalSearchResultAdapter(this, name_list, itemClickListener);
         adapter.setOnItemClickListener((((view, pos) -> {
             String name = name_list.get(pos).getWelf_name();
+            String local = name_list.get(pos).getWelf_local();
             Log.e(TAG, "선택한 혜택명 = " + name);
+            Intent intent = new Intent(SearchResultActivity.this, DetailBenefitActivity.class);
+            intent.putExtra("name", name);
+            intent.putExtra("welf_local", local);
+            startActivity(intent);
         })));
         search_result_title_recycler.setAdapter(adapter);
     }
@@ -308,10 +318,12 @@ public class SearchResultActivity extends AppCompatActivity
         adapter = new VerticalSearchResultAdapter(this, name_list, itemClickListener);
         adapter.setOnItemClickListener((((view, pos) -> {
             String name = name_list.get(pos).getWelf_name();
+            String local = name_list.get(pos).getWelf_local();
             Log.e(TAG, "선택한 혜택명 = " + name);
             // 혜택 이름을 선택하면 이 이름을 갖고 액티비티를 이동해서 선택한 혜택의 상세 정보를 보여준다
             Intent intent = new Intent(SearchResultActivity.this, DetailBenefitActivity.class);
             intent.putExtra("name", name);
+            intent.putExtra("welf_local", local);
             startActivity(intent);
         })));
         search_result_title_recycler.setAdapter(adapter);

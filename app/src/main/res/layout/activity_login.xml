@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/login_layout"
     android:layout_width="match_parent"
@@ -10,27 +10,39 @@
         android:id="@+id/loginClose"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/app_logo_text"
         android:layout_gravity="right"
         android:layout_margin="10dp"
         android:src="@drawable/close" />
 
     <TextView
+        android:id="@+id/app_logo_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
         android:layout_marginBottom="30dp"
-        android:fontFamily="@font/jalnan"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:fontFamily="@font/bauhaus_bold"
         android:lineSpacingExtra="6sp"
         android:gravity="center"
         android:padding="20dp"
-        android:text="당신이 모르는 혜택을\n알려주는 서비스"
+        android:text="UrBene fit"
         android:textColor="@color/colorPrimaryDark"
-        android:textSize="30sp" />
+        android:textSize="60sp" />
 
     <FrameLayout
+        android:id="@+id/kakao_login_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="110dp">
+        android:layout_marginTop="260dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/app_logo_text">
 
         <com.kakao.usermgmt.LoginButton
             android:id="@+id/real_kakao"
@@ -40,56 +52,48 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp" />
 
-        <com.psj.welfare.custom.CustomLoginButton
+        <Button
             android:id="@+id/fake_kakao"
-            style="@style/LoginButtonStyle"
-            android:layout_gravity="center"
-            app:bg="@drawable/btn_kakao"
-            app:symbol="@drawable/login_kakao_symbol"
-            app:text="@string/login_kakao"
-            app:textColor="@color/colorMainWhite" />
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="35dp"
+            android:layout_marginEnd="35dp"
+            android:background="@drawable/btn_main_after"
+            android:fontFamily="@font/jalnan"
+            android:text="카카오로 시작하기"
+            android:textColor="@color/colorMainWhite"
+            android:textSize="17sp" />
 
     </FrameLayout>
 
     <TextView
+        android:id="@+id/other_login_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
         android:fontFamily="@font/jalnan"
-        android:text="다른 계정으로 시작하기"
-        android:textSize="20sp"
         android:gravity="center"
-        android:layout_marginTop="40dp"/>
+        android:text="다른 계정으로 시작하기"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/kakao_login_layout" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/other_login_layout"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
         android:weightSum="1">
-
-        <!-- 네이버 로그인 버튼 -->
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".20"
-            android:layout_marginTop="20dp">
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                app:borderWidth="0dp"
-                app:maxImageSize="36dp"
-                android:src="@drawable/naver_btn"
-                android:backgroundTint="#00D136"/>
-
-        </FrameLayout>
 
         <!-- 페이스북 로그인 버튼 -->
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight=".33"
+            android:layout_weight=".20"
             android:layout_marginTop="20dp">
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -129,4 +133,4 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

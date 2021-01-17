@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.psj.welfare.R;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.custom.NotReadyDialog;
 import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONArray;
@@ -35,7 +36,7 @@ public class MapActivity extends AppCompatActivity
             sejong_benefit_btn, gwangju_benefit_btn, daegu_benefit_btn;
 
     // 인텐트에서 가져온 지역명 담을 변수
-    String user_area;
+    String user_area = "";
     // 유저가 선택한 지역에 있는 혜택의 개수들을 담을 변수
     String number_of_benefit;
     // OO시, OO구 정보를 담을 변수
@@ -56,11 +57,14 @@ public class MapActivity extends AppCompatActivity
         user_area = intent.getStringExtra("user_area");
         map_city = intent.getStringExtra("city");
         map_district = intent.getStringExtra("district");
-        Log.e(TAG, "user_area = " + user_area + ", city = " + map_city + ", district = " + map_district);
+        Log.e(TAG, "user_area = " + user_area + ", city = " + map_city);
 
+        // 지역별 혜택 개수 받아와서 원 안에 넣는 메서드
         getNumberOfBenefit();
 
+        // findViewById() 모아놓은 메서드
         init();
+        // 버튼 클릭 리스너 모아놓은 메서드
         btnClickListener();
 
         district_list = new ArrayList<>();
@@ -68,10 +72,23 @@ public class MapActivity extends AppCompatActivity
 
         // 반투명 텍스트뷰를 누르면 바로 내 지역의 혜택을 보러 이동한다
         map_bottom_textview.setOnClickListener(v -> {
-            Intent textview_intent = new Intent(MapActivity.this, MapDetailActivity.class);
-            textview_intent.putExtra("area", user_area);
-            textview_intent.putExtra("welf_count", count);
-            startActivity(textview_intent);
+            // 아직 데이터가 준비안된 지역엔 이동하지 않고 다이얼로그로 준비중이라고 보여준다
+            if (user_area.equals("서울") || user_area.equals("경기") || user_area.equals("강원") || user_area.equals("경북") || user_area.equals("세종")
+            || user_area.equals("충남") || user_area.equals("대전") || user_area.equals("광주") || user_area.equals("대구") || user_area.equals("경남")
+            || user_area.equals("부산"))
+            {
+                NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
+                dialog.showNotReadyDialog();
+            }
+            else
+            {
+                Intent textview_intent = new Intent(MapActivity.this, MapDetailActivity.class);
+                textview_intent.putExtra("area", user_area);
+                startActivity(textview_intent);
+                textview_intent.putExtra("welf_count", count);
+                Log.e(TAG, "user_area = " + user_area);
+                startActivity(textview_intent);
+            }
         });
 
         // 현재 지역명을 출력하는 텍스트뷰
@@ -88,7 +105,6 @@ public class MapActivity extends AppCompatActivity
     void getNumberOfBenefit()
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        // 마지막 인자는 "android|SM-542N|30" 식으로 보내야 한다
         Call<String> call = apiInterface.getNumberOfBenefit(user_area, "1", LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
@@ -238,6 +254,7 @@ public class MapActivity extends AppCompatActivity
     }
 
     /* 버튼 클릭 리스너들 모아놓은 메서드 */
+    /* 서울, 경기, 강원, 경북, 세종, 충남, 대전, 광주, 대구, 경남, 부산 */
     private void btnClickListener()
     {
         // 인천
@@ -253,7 +270,9 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "서울");
             intent.putExtra("welf_count", String.valueOf(count_list.get(9)));
-            startActivity(intent);
+            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
+            dialog.showNotReadyDialog();
+//            startActivity(intent);
         });
 
         // 경기
@@ -261,7 +280,9 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "경기");
             intent.putExtra("welf_count", String.valueOf(count_list.get(2)));
-            startActivity(intent);
+            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
+            dialog.showNotReadyDialog();
+//            startActivity(intent);
         });
 
         // 강원
@@ -269,7 +290,9 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "강원");
             intent.putExtra("welf_count", String.valueOf(count_list.get(1)));
-            startActivity(intent);
+            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
+            dialog.showNotReadyDialog();
+//            startActivity(intent);
         });
 
         // 충남
@@ -277,7 +300,9 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "충남");
             intent.putExtra("welf_count", String.valueOf(count_list.get(16)));
-            startActivity(intent);
+            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
+            dialog.showNotReadyDialog();
+//            startActivity(intent);
         });
 
         // 충북
@@ -293,7 +318,9 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "세종");
             intent.putExtra("welf_count", String.valueOf(count_list.get(10)));
-            startActivity(intent);
+            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
+            dialog.showNotReadyDialog();
+//            startActivity(intent);
         });
 
         // 대전
@@ -301,7 +328,9 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "대전");
             intent.putExtra("welf_count", String.valueOf(count_list.get(7)));
-            startActivity(intent);
+            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
+            dialog.showNotReadyDialog();
+//            startActivity(intent);
         });
 
         // 경북
@@ -309,7 +338,9 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "경북");
             intent.putExtra("welf_count", String.valueOf(count_list.get(4)));
-            startActivity(intent);
+            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
+            dialog.showNotReadyDialog();
+//            startActivity(intent);
         });
 
         // 전북
@@ -333,7 +364,9 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "경남");
             intent.putExtra("welf_count", String.valueOf(count_list.get(3)));
-            startActivity(intent);
+            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
+            dialog.showNotReadyDialog();
+//            startActivity(intent);
         });
 
         // 제주
@@ -357,7 +390,9 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "대구");
             intent.putExtra("welf_count", String.valueOf(count_list.get(6)));
-            startActivity(intent);
+            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
+            dialog.showNotReadyDialog();
+//            startActivity(intent);
         });
 
         // 광주
@@ -365,7 +400,9 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "광주");
             intent.putExtra("welf_count", String.valueOf(count_list.get(5)));
-            startActivity(intent);
+            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
+            dialog.showNotReadyDialog();
+//            startActivity(intent);
         });
 
         // 부산
@@ -373,7 +410,9 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "부산");
             intent.putExtra("welf_count", String.valueOf(count_list.get(8)));
-            startActivity(intent);
+            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
+            dialog.showNotReadyDialog();
+//            startActivity(intent);
         });
     }
 

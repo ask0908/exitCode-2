@@ -15,9 +15,9 @@
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
 
-    <string name="login_naver">네이버로 로그인하기</string>
-    <string name="login_kakao">카카오로 로그인하기</string>
-    <string name="login_google">구글로 로그인하기</string>
+    <string name="login_naver">네이버로 시작하기</string>
+    <string name="login_kakao">카카오로 시작하기</string>
+    <string name="login_google">구글로 시작하기</string>
     <string name="kakao_app_key">3f7e171f8d9c6549cfa5949a68eb571e</string>
     <string name="kakao_scheme">kakao3f7e171f8d9c6549cfa5949a68eb571e</string>
     <string name="kakaolink_host">kakaolink</string>
