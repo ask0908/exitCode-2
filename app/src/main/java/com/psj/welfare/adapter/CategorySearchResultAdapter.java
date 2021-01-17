@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.psj.welfare.Data.CategorySearchResultItem;
 import com.psj.welfare.R;
 
@@ -62,31 +63,53 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
         switch (list.get(position).getWelf_category())
         {
             case "일자리 지원" :
-                holder.result_imageview.setImageResource(R.drawable.counseling);
+                Glide.with(context)
+                        .load(R.drawable.job)
+                        .into(holder.result_imageview);
                 break;
 
             case "카드 지원" :
-                holder.result_imageview.setImageResource(R.drawable.loan);
+                Glide.with(context)
+                        .load(R.drawable.card_support)
+                        .into(holder.result_imageview);
+                break;
+
+            case "인력 지원" :
+                Glide.with(context)
+                        .load(R.drawable.person_support)
+                        .into(holder.result_imageview);
                 break;
 
             case "현금 지원" :
-                holder.result_imageview.setImageResource(R.drawable.cash);
+                holder.result_imageview.setImageResource(R.drawable.goods_support);
+                Glide.with(context)
+                        .load(R.drawable.goods_support)
+                        .into(holder.result_imageview);
                 break;
 
             case "현물 지원" :
-                holder.result_imageview.setImageResource(R.drawable.loan);
+                holder.result_imageview.setImageResource(R.drawable.goods_support);
+                Glide.with(context)
+                        .load(R.drawable.goods_support)
+                        .into(holder.result_imageview);
                 break;
 
             case "대출 지원" :
-                holder.result_imageview.setImageResource(R.drawable.loan);
+                Glide.with(context)
+                        .load(R.drawable.loan)
+                        .into(holder.result_imageview);
                 break;
 
             case "임대 지원" :
-                holder.result_imageview.setImageResource(R.drawable.house);
+                Glide.with(context)
+                        .load(R.drawable.rent_support)
+                        .into(holder.result_imageview);
                 break;
 
             case "보험 지원" :
-                holder.result_imageview.setImageResource(R.drawable.cash);
+                Glide.with(context)
+                        .load(R.drawable.insurance_support)
+                        .into(holder.result_imageview);
                 break;
 
             default:

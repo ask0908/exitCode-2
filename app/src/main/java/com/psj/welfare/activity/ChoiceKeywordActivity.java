@@ -166,6 +166,8 @@ public class ChoiceKeywordActivity extends AppCompatActivity
         Log.e(TAG, message);
         // 테스트 위해 화면 이동 코드 잠시 주석처리, 여기까지 잘 됨(20.12.31 14:52)
         Intent intent = new Intent(ChoiceKeywordActivity.this, MainTabLayoutActivity.class);
+        // 아래 플래그를 쓰지 않으면 이전 액티비티가 나와서 흐름이 꼬인다
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }

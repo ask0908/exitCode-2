@@ -1,7 +1,11 @@
 package com.psj.welfare.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
@@ -87,13 +91,35 @@ public class MainTabLayoutActivity extends AppCompatActivity
             public void onTabReselected(TabLayout.Tab tab) {}
         });
 
-        // 처음 들어왔을 때 탭에서 보여줄 이미지를 추가한다
+        LinearLayout tab_layout = (LinearLayout) tabLayout.getChildAt(0);
+        tab_layout.getChildAt(3).setOnTouchListener(new View.OnTouchListener()
+        {
+            @Override
+            public boolean onTouch(View v, MotionEvent event)
+            {
+                switch (event.getAction())
+                {
+                    case MotionEvent.ACTION_UP :
+                        if (sharedPreferences.getString("user_category", "").equals(""))
+                        {
+                            // 키워드 쉐어드가 비어있으면 로그인 화면으로 이동시킨다
+                            Intent intent = new Intent(MainTabLayoutActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                        }
+                        break;
+                }
+                return false;
+            }
+        });
+
+        // 처음 들어왔을 때 하단 탭에서 보여줄 이미지를 ArrayList에 추가한다
         ArrayList<Integer> image = new ArrayList<>();
         image.add(R.drawable.home_red);
         image.add(R.drawable.alarm_icon_gray);
         image.add(R.drawable.search_icon_gray);
         image.add(R.drawable.my_profile_icon_gray);
 
+        // for문으로 이미지가 든 ArrayList를 돌며 탭에 set
         for (int i = 0; i < image.size(); i++)
         {
             tabLayout.getTabAt(i).setIcon(image.get(i));

@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="160dp"
     android:layout_height="wrap_content"
-    android:padding="5dp"
+    android:id="@+id/keyword_layout"
+    android:layout_marginStart="10dp"
+    android:background="@drawable/rbf_btn_before"
     android:orientation="vertical">
 
-    <Button
+    <TextView
         android:id="@+id/keyword_category"
-        android:layout_width="150dp"
-        android:layout_height="40dp"
-        android:fontFamily="@font/jalnan"
-        android:background="@drawable/keyword_round_textview"
-        android:gravity="center"
-        android:text="육아 임신"
-        android:textSize="15sp"
-        android:textColor="@color/colorBlack"/>
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:fontFamily="@font/nanum_barun_gothic_bold"
+        android:padding="15dp"
+        android:layout_gravity="center"
+        android:text="전체"
+        android:textColor="@color/colorBlack"
+        android:textSize="24sp"/>
 
 </LinearLayout>

@@ -20,7 +20,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
@@ -29,7 +29,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bumptech.glide.Glide;
 import com.psj.welfare.R;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
@@ -39,22 +38,25 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/* 리뷰 수정하는 화면 */
 public class ReviewUpdateActivity extends AppCompatActivity
 {
     private String TAG = this.getClass().getName();
 
+    // 별점 매길 때 사용하는 ratingBar
     private RatingBar review_rate_update_edit;
+    // 리뷰 작성하는 editText
     private EditText review_content_update_edit;
-    private ImageView update_review_photo;
+    // 리뷰에 붙일 이미지를 넣는 이미지뷰
+//    private ImageView update_review_photo;
 
+    // 갤러리에서 가져온 이미지를 담을 비트맵 객체
     private Bitmap bitmap;
+    // 갤러리에서 가져온 이미지의 경로를 담을 Uri
     Uri filePath;
 
     // 이미지 절대 경로
@@ -63,13 +65,25 @@ public class ReviewUpdateActivity extends AppCompatActivity
     // 갤러리에서 가져온 이미지를 서버로 보내 저장하기 전 담는 변수
     String encodeImageString;
 
+    // 갤러리에서 가져온 이미지 파일을 담아서 레트로핏으로 서버로 보낼 때 쓸 파일 객체
     File file;
 
+    // 갤러리에서 사진 가져올 때 onActivityResult()에서 결과 확인용으로 쓸 상수
     private static final int PICK_PHOTO = 1;
 
+    // 단말에 저장된 토큰값을 가져올 때 쓸 쉐어드
     SharedPreferences sharedPreferences;
-    String token, content, image_url;
+    // 단말에 저장된 토큰값, 리뷰 작성 내용, 갤러리에서 가져온 이미지 경로를 담을 변수
+    String token, content, image_url, star_count = "";
+    // 작성된 리뷰의 테이블 내 id를 담을 변수, 리뷰 화면에서 작성된 리뷰(아이템)를 누르면 그 아이템에 매핑된 테이블 내 id를 가져와서
+    // 리뷰를 작성한 사람만 수정할 수 있게 한다
     int id;
+
+    // 신청이 쉬웠나요 라디오그룹
+    RadioGroup update_difficulty_radiogroup;
+    // 혜택 만족도 라디오 그룹
+    RadioGroup update_satisfaction_radiogroup;
+    String difficulty, satisfaction = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -77,6 +91,7 @@ public class ReviewUpdateActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review_update);
 
+        // 화면 최상단의 툴바 쓰기 위한 처리
         setSupportActionBar(findViewById(R.id.review_update_toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -84,30 +99,85 @@ public class ReviewUpdateActivity extends AppCompatActivity
         sharedPreferences = getSharedPreferences("app_pref", 0);
         token = sharedPreferences.getString("token", "");
 
-        // getIntent() null 체크
-        if (getIntent().hasExtra("content") && getIntent().hasExtra("image_url"))
+        // getIntent() null 체크 후 안에 있는 데이터 꺼냄
+        if (getIntent().hasExtra("content") && getIntent().hasExtra("image_url") && getIntent().hasExtra("star_count"))
         {
             Intent intent = getIntent();
             content = intent.getStringExtra("content");
             image_url = intent.getStringExtra("image_url");
+            star_count = intent.getStringExtra("star_count");
+            // 별 카운트에 값이 있다면 그걸 상단의 별점바에 세팅한다
+            if (star_count != null)
+            {
+                float count = Float.parseFloat(star_count);
+                review_rate_update_edit.setRating(count);
+            }
+            // id는 서버에서 String 형태로 날아오고, 수정 후 서버로 보낼 땐 int로 보내야 하기 때문에 int로 캐스팅한다
             String before_id = intent.getStringExtra("id");
             if (before_id != null)
             {
                 id = Integer.parseInt(before_id);
             }
             Log.e(TAG, "DetailBenefit에서 가져온 리뷰 내용 : " + content + ", image_url : " + image_url);
+            // 자신이 작성한 리뷰 내용을 가져와 editText에 set
             review_content_update_edit.setText(content);
-            Glide.with(ReviewUpdateActivity.this)
-                    .load(image_url)
-                    .into(update_review_photo);
+            // 리뷰 작성 시 사용했던 이미지를 가져와 set한다. 이 때 사진을 수정하지 않았을 경우 에러가 뜨기 때문에 기존에 첨부한 이미지의 경로를 가져와서
+            // 이 파일과 매핑시켜야 하는데?
+//            Glide.with(ReviewUpdateActivity.this)
+//                    .load(image_url)
+//                    .into(update_review_photo);
         }
 
         // 카메라 이미지를 누르면 갤러리로 이동해서 파일을 가져온다
-        update_review_photo.setOnClickListener(v ->
+//        update_review_photo.setOnClickListener(v ->
+//        {
+//            Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//            startActivityForResult(intent, PICK_PHOTO);
+//        });
+
+        update_difficulty_radiogroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
-            Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            startActivityForResult(intent, PICK_PHOTO);
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId)
+            {
+                switch (checkedId)
+                {
+                    case R.id.update_easy_radiobutton :
+                        // 신청이 쉬워요 클릭
+                        difficulty = "쉬워요";
+                        break;
+
+                    case R.id.update_hard_radiobutton :
+                        // 신청이 어려워요 클릭
+                        difficulty = "어려워요";
+                        break;
+                }
+            }
         });
+
+        update_satisfaction_radiogroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId)
+            {
+                switch (checkedId)
+                {
+                    case R.id.update_good_radiobutton :
+                        // 도움이 됐어요 클릭
+                        satisfaction = "도움이 됐어요";
+                        break;
+
+                    case R.id.update_bad_radiobutton :
+                        // 도움이 안 됐어요 클릭
+                        satisfaction = "도움이 안 됐어요";
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        });
+
     }
 
     // 앨범에서 이미지 가져온 이후 필요한 처리는 여기서 수행한다
@@ -140,9 +210,9 @@ public class ReviewUpdateActivity extends AppCompatActivity
                 bitmap = BitmapFactory.decodeStream(inputStream);
                 // 갤러리에서 가져온 이미지를 비트맵 객체에 넣고 Glide로 이미지뷰에 set한다
 //                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
-                Glide.with(this)
-                        .load(bitmap)
-                        .into(update_review_photo);
+//                Glide.with(this)
+//                        .load(bitmap)
+//                        .into(update_review_photo);
                 encodeBitmapImage(bitmap);
                 /* 촬영한 이미지를 이미지뷰에 set할 때 90도 회전되서 set되므로 setRotation()으로 90도 회전시켜서 이미지뷰에 들어가게 한다 */
 //                review_photo.setRotation(90);
@@ -168,8 +238,10 @@ public class ReviewUpdateActivity extends AppCompatActivity
     private void init()
     {
         review_rate_update_edit = findViewById(R.id.review_rate_update_edit);
+        update_difficulty_radiogroup = findViewById(R.id.update_difficulty_radiogroup);
+        update_satisfaction_radiogroup = findViewById(R.id.update_satisfaction_radiogroup);
         review_content_update_edit = findViewById(R.id.review_content_update_edit);
-        update_review_photo = findViewById(R.id.update_review_photo);
+//        update_review_photo = findViewById(R.id.update_review_photo);
     }
 
     @Override
@@ -187,7 +259,7 @@ public class ReviewUpdateActivity extends AppCompatActivity
             case R.id.review_update:
                 /* 리뷰 수정 메서드 호출 */
                 updateReview();
-                Toast.makeText(this, "리뷰 수정 완료", Toast.LENGTH_SHORT).show();
+                finish();
                 break;
 
             case R.id.review_delete :
@@ -204,6 +276,7 @@ public class ReviewUpdateActivity extends AppCompatActivity
                                 deleteReview();
                                 Toast.makeText(ReviewUpdateActivity.this, "리뷰 삭제 완료", Toast.LENGTH_SHORT).show();
                                 dialog.dismiss();
+                                finish();
                             }
                         })
                         .setNegativeButton("아니오", new DialogInterface.OnClickListener()
@@ -215,27 +288,6 @@ public class ReviewUpdateActivity extends AppCompatActivity
                                 dialog.dismiss();
                             }
                         }).create().show();
-//                builder.setTitle("리뷰 삭제")
-//                        .setMessage("리뷰를 삭제하시겠습니까?")
-//                        .setPositiveButton("예", new DialogInterface.OnClickListener()
-//                        {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which)
-//                            {
-//                                // 리뷰 삭제 메서드 호출
-//                                deleteReview();
-//                                Toast.makeText(ReviewUpdateActivity.this, "리뷰 삭제 완료", Toast.LENGTH_SHORT).show();
-//                                dialog.dismiss();
-//                            }
-//                        }).setNegativeButton("아니오", new DialogInterface.OnClickListener()
-//                {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which)
-//                    {
-//                        Toast.makeText(ReviewUpdateActivity.this, "리뷰 삭제 취소", Toast.LENGTH_SHORT).show();
-//                        dialog.dismiss();
-//                    }
-//                }).show();
 
             case android.R.id.home:
                 return true;
@@ -281,12 +333,15 @@ public class ReviewUpdateActivity extends AppCompatActivity
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
 
-        RequestBody imageReqBody = RequestBody.create(MediaType.parse("image/*"), file);
-        MultipartBody.Part imagePart = MultipartBody.Part.createFormData("file", "update.png", imageReqBody); // 2번 인자 file.getName()에서 String으로 수정
+//        RequestBody imageReqBody = RequestBody.create(MediaType.parse("image/*"), file);
+//        MultipartBody.Part imagePart = MultipartBody.Part.createFormData("file", "update.png", imageReqBody); // 2번 인자 file.getName()에서 String으로 수정
+//
+//        RequestBody imageDescription = RequestBody.create(MediaType.parse("text/plain"), "image-type");
 
-        RequestBody imageDescription = RequestBody.create(MediaType.parse("text/plain"), "image-type");
-
-        Call<String> call = apiInterface.updateReview(token, id, review_content_update_edit.getText().toString(), imageDescription, imagePart);
+        int rate = (int) review_rate_update_edit.getRating();
+        String star_count = String.valueOf(rate);
+        Call<String> call = apiInterface.updateReview(token, id, review_content_update_edit.getText().toString(), null, null,
+                difficulty, satisfaction, star_count);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -296,6 +351,7 @@ public class ReviewUpdateActivity extends AppCompatActivity
                 {
                     String result = response.body();
                     Log.e(TAG, "수정 결과 = " + result);
+                    Toast.makeText(ReviewUpdateActivity.this, "리뷰 수정 완료", Toast.LENGTH_SHORT).show();
                 }
                 else
                 {

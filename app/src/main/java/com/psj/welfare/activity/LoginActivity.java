@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,7 +48,6 @@ import com.orhanobut.logger.Logger;
 import com.psj.welfare.R;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
-import com.psj.welfare.custom.CustomLoginButton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,7 +65,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public LoginActivity loginContext;
 
     // 카카오 로그인하는 커스텀 버튼
-    private CustomLoginButton fake_kakao;
+    private Button fake_kakao;
     private com.kakao.usermgmt.LoginButton real_kakao;
     // 카카오 로그인 시 필요한 세션 콜백
     private SessionCallback sessionCallback;
@@ -131,25 +131,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         // 화면 우상단의 X 버튼
         loginClose = findViewById(R.id.loginClose);
-        // 커스텀된 카카오 로그인 버튼
+        // 카카오 로그인 버튼
         fake_kakao = findViewById(R.id.fake_kakao);
-
-        // 파이어베이스 FCM 디바이스 토큰값을 확인하는 로직
-        /* SplashActivity에서 발급받고 쉐어드에 저장했기 때문에 여기서 다시 FCM 토큰을 받을 필요가 없다 */
-//        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>()
-//        {
-//            @Override
-//            public void onComplete(@NonNull Task<InstanceIdResult> task)
-//            {
-//                if (!task.isSuccessful())
-//                {
-//                    Log.w("FCM LOG", "getInstanceId failed", task.getException());
-//                    return;
-//                }
-//                token = task.getResult().getToken();
-//                Log.e(TAG, "FCM token = " + token);
-//            }
-//        });
 
         // LoginActivity context 저장
         loginContext = LoginActivity.this;
@@ -243,6 +226,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                     editor.putString("snsToken", idToken);
                                     editor.putString("email", email);
                                     editor.apply();
+                                    Intent intent = new Intent(LoginActivity.this, GetUserInformationActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                    finish();
                                 }
                                 else
                                 {
@@ -251,6 +238,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                     /* 사용자 정보(나이, 성별, 닉네임)를 입력받기 위해 액티비티 이동. 기존에 입력했던 정보가 있다면 MainTablayoutActivity로 이동한다 */
 //                                    Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
                                     Intent intent = new Intent(LoginActivity.this, GetUserInformationActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     startActivity(intent);
                                     finish();
                                 }
@@ -435,41 +423,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     intent.putExtra("name", result.getNickname());
                     intent.putExtra("profile", result.getProfileImagePath());
                     intent.putExtra("email", result.getKakaoAccount().getEmail());
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     /* 서버로 osType, platform, FCM 토큰값 정보를 보내는 메서드 */
                     sendUserTypeAndPlatform();
                     // sendUserTypeAndPlatform() 처리 후 기본 정보 입력받는 화면으로 이동
                     startActivity(intent);
                     finish();
-
-
-//                    if (app_pref.getString("user_age", "").equals("") && app_pref.getString("user_area", "").equals("") &&
-//                    app_pref.getString("user_gender", "").equals("") && app_pref.getString("user_nickname", "").equals(""))
-//                    {
-//                        // 기존 정보가 없을 경우
-//                        Intent intent = new Intent(LoginActivity.this, GetUserInformationActivity.class);
-//                        startActivity(intent);
-//                    }
-//                    else
-//                    {
-//                        Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
-//                        editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
-//                        editor.putString(getString(R.string.get_kakao_name), result.getNickname());
-//                        editor.putString("kakao_email", result.getKakaoAccount().getEmail());
-//                        editor.apply();
-//                        intent.putExtra("name", result.getNickname());
-//                        intent.putExtra("profile", result.getProfileImagePath());
-//                        intent.putExtra("email", result.getKakaoAccount().getEmail());
-//                        if (result.getKakaoAccount().needsScopeAccountEmail())
-//                        {
-//                            // 현재 이메일에 체크하지 않아서(이메일 정보 제공에 동의하지 않아서) true가 나온다
-//                            String email_result = result.getKakaoAccount().getEmail();
-//                            Logger.e("email_result = " + email_result);
-//                        }
-//                        /* 서버로 osType, platform, FCM 토큰값 정보를 보내는 메서드 */
-//                        sendUserTypeAndPlatform();
-//                        startActivity(intent);
-//                        finish();
-//                    }
                 }
             });
         }

@@ -57,6 +57,7 @@ public class GetUserInformationActivity extends AppCompatActivity
             "경기도 고양시", "경기도 과천시", "경기도 광명시", "경기도 광주시", "경기도 구리시", "경기도 군포시", "경기도 남양주시", "경기도 동두천시", "경기도 부천시", "경기도 성남시",
             "경기도 수원시", "경기도 시흥시", "경기도 안산시", "경기도 안성시", "경기도 안양시", "경기도 양주시", "경기도 양평군", "경기도 여주시", "경기도 연천군", "경기도 오산시",
             "경기도 용인시", "경기도 의왕시", "경기도 의정부시", "경기도 이천시", "경기도 파주시", "경기도 평택시", "경기도 포천시", "경기도 하남시", "경기도 화성시"};
+    // NumberPicker에서 선택한 도시명을 담을 변수
     String user_area;
 
     // 성별, 나이, 지역, 닉네임을 저장할 쉐어드
@@ -68,6 +69,7 @@ public class GetUserInformationActivity extends AppCompatActivity
     // SplashActivity에서 생성된 FCM 토큰을 담을 변수
     String token, server_token;
 
+    // 메뉴 버튼의 색을 바꾸는 데 사용할 메뉴 객체
     private Menu mOptionMenu;
 
     @Override
@@ -80,8 +82,6 @@ public class GetUserInformationActivity extends AppCompatActivity
 
         init();
         app_pref = getSharedPreferences("app_pref", 0);
-        // FCM 토큰을 담아서 sendUserTypeAndPlatform()에서 서버로 넘겨, 유저 별 고유한 토큰값이 생성되도록 한다
-//        token = app_pref.getString("fcm_token", "");
         /* 서버에서 받은 유저 별 토큰값을 저장해 관심사를 보낼 때 사용한다 */
         token = app_pref.getString("token", "");
 

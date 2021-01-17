@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.psj.welfare.Data.SearchItem;
 import com.psj.welfare.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /* SearchResultActivity의 가로 리사이클러뷰에 쓰이는 어댑터
@@ -24,7 +23,7 @@ public class HorizontalSearchResultAdapter extends RecyclerView.Adapter<Horizont
     private ItemClickListener itemClickListener;
 
     // 중복 처리에 사용하는 리스트
-    List<String> str_list = new ArrayList<>();
+//    List<String> str_list = new ArrayList<>();
 
     public void setOnItemClickListener(ItemClickListener itemClickListener)
     {
@@ -51,7 +50,7 @@ public class HorizontalSearchResultAdapter extends RecyclerView.Adapter<Horizont
     {
         SearchItem item = list.get(position);
         holder.category_btn.setText(item.getWelf_category());
-        str_list.add(item.getParent_category());
+//        str_list.add(item.getParent_category());
     }
 
     @Override

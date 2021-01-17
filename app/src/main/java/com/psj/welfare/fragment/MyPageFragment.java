@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,9 +29,11 @@ import com.bumptech.glide.Glide;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.psj.welfare.R;
+import com.psj.welfare.activity.GetUserInformationActivity;
 import com.psj.welfare.activity.MyInfoUpdateActivity;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.custom.OnSingleClickListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,6 +49,8 @@ import retrofit2.Response;
 public class MyPageFragment extends Fragment
 {
     private final String TAG = "MyPageFragment";
+
+    LinearLayout account_layout;
 
     ImageView kakao_profile_image, move_update_personal_imageview;
     TextView kakao_name, account_platform_text;
@@ -114,7 +119,16 @@ public class MyPageFragment extends Fragment
         getUserInfo();
 
         // 계정 설정
-        account_btn.setOnClickListener(v -> Toast.makeText(getActivity(), getString(R.string.not_yet), Toast.LENGTH_SHORT).show());
+        account_layout.setOnClickListener(new OnSingleClickListener()
+        {
+            @Override
+            public void onSingleClick(View v)
+            {
+                Intent intent = new Intent(getActivity(), GetUserInformationActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
 
         // 푸시 알림 설정 스위치, 로그인할 때마다 뜨니까 귀찮은데 이거 어떻게 고칠까
         push_noti_switch.setOnCheckedChangeListener((buttonView, isChecked) ->
@@ -192,7 +206,7 @@ public class MyPageFragment extends Fragment
     {
         String is_push = String.valueOf(isPushed);
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.putPushSetting(server_token, is_push);
+        Call<String> call = apiInterface.putPushSetting(server_token, "push", is_push);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -200,11 +214,12 @@ public class MyPageFragment extends Fragment
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    //
+                    String result = response.body();
+                    Log.e(TAG, "성공 : " + result);
                 }
                 else
                 {
-                    //
+                    Log.e(TAG, "실패 : " + response.body());
                 }
             }
 
@@ -255,18 +270,25 @@ public class MyPageFragment extends Fragment
         {
             e.printStackTrace();
         }
-//        if (checked.equals(getString(R.string.is_true)))
-//        {
-//            push_noti_switch.setChecked(true);
-//        }
-//        else
-//        {
-//            push_noti_switch.setChecked(false);
-//        }
+        // 비로그인 상태에서 이 화면으로 들어가면 값이 없어서 죽기 때문에 이 예외처리 해야 함
+        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+        String token = sharedPreferences.getString("token", "");
+        if (!token.equals(""))
+        {
+            if (checked.equals(getString(R.string.is_true)))
+            {
+                push_noti_switch.setChecked(true);
+            }
+            else
+            {
+                push_noti_switch.setChecked(false);
+            }
+        }
     }
 
     private void init(View view)
     {
+        account_layout = view.findViewById(R.id.account_layout);
         mypage_toolbar = view.findViewById(R.id.mypage_toolbar);
         kakao_profile_image = view.findViewById(R.id.kakao_profile_image);
         account_btn = view.findViewById(R.id.account_btn);

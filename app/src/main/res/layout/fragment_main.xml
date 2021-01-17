@@ -33,7 +33,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@id/youtube_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/main_fragment_textview" />
@@ -121,6 +120,50 @@
 
         </androidx.cardview.widget.CardView>
 
+        <TextView
+            android:id="@+id/recommend_welfare_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorMainWhite"
+            android:fontFamily="@font/jalnan"
+            android:layout_marginStart="20dp"
+            android:paddingStart="12dp"
+            android:paddingTop="10dp"
+            android:lineSpacingExtra="6sp"
+            android:text="아이디 님에게"
+            android:textColor="@color/colorBlack"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/main_fragment_cardview" />
+
+        <TextView
+            android:id="@+id/recommend_welfare_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorMainWhite"
+            android:layout_marginStart="20dp"
+            android:fontFamily="@font/jalnan"
+            android:lineSpacingExtra="6sp"
+            android:paddingStart="12dp"
+            android:text="복지혜택 10개를 추천해요"
+            android:textColor="@color/colorBlack"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/recommend_welfare_textview" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recom_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/recommend_welfare_count" />
+
         <LinearLayout
             android:id="@+id/youtube_video_layout"
             android:layout_width="match_parent"
@@ -128,7 +171,7 @@
             android:weightSum="1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/main_fragment_cardview"
+            app:layout_constraintTop_toBottomOf="@id/recom_recycler"
             android:orientation="horizontal">
 
             <TextView
@@ -143,10 +186,7 @@
                 android:layout_marginTop="10dp"
                 android:text="유튜버들의 생생한 혜택 리뷰!"
                 android:textColor="@color/colorBlack"
-                android:textSize="20sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/main_fragment_cardview" />
+                android:textSize="20sp" />
 
             <ImageView
                 android:layout_width="0dp"
@@ -166,33 +206,7 @@
             android:padding="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/youtube_video_layout" />
-
-        <TextView
-            android:id="@+id/recommend_welfare_textview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorMainWhite"
-            android:fontFamily="@font/jalnan"
-            android:paddingStart="12dp"
-            android:paddingTop="10dp"
-            android:text="당신을 위한 맞춤 혜택!"
-            android:textColor="@color/colorBlack"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/youtube_video_recyclerview" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recom_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="10dp"
-            app:layout_constraintBottom_toTopOf="@id/map_img_and_btn_layout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/recommend_welfare_textview" />
+            app:layout_constraintTop_toBottomOf="@+id/youtube_video_layout"/>
 
         <LinearLayout
             android:id="@+id/map_img_and_btn_layout"
@@ -202,7 +216,8 @@
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/recom_recycler">
+            app:layout_constraintTop_toBottomOf="@id/youtube_video_recyclerview"
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <TextView
                 android:layout_width="match_parent"

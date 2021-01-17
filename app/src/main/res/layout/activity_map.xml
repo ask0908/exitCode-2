@@ -28,16 +28,17 @@
     </androidx.appcompat.widget.Toolbar>
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="1"
         android:background="#fff"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_toolbar"
+        android:orientation="horizontal"
         android:paddingTop="10dp"
-        android:paddingBottom="10dp">
+        android:paddingBottom="10dp"
+        android:weightSum="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/map_toolbar">
 
         <TextView
             android:id="@+id/area_textview"
@@ -45,28 +46,28 @@
             android:layout_height="wrap_content"
             android:layout_weight=".40"
             android:fontFamily="@font/jalnan"
-            android:text="부산"
-            android:textSize="17sp"
+            android:paddingLeft="20dp"
             android:textColor="@color/colorBlack"
-            android:paddingLeft="20dp"/>
+            android:textSize="17sp" />
 
         <View
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:layout_weight=".30"/>
+            android:layout_weight=".30" />
 
         <TextView
             android:id="@+id/change_area"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_gravity="center_vertical"
             android:layout_weight=".30"
             android:fontFamily="@font/jalnan"
-            android:layout_gravity="center_vertical"
-            android:text="지역변경"
-            android:textSize="17sp"
-            android:textColor="@color/colorBlack"
             android:gravity="end"
-            android:paddingRight="20dp"/>
+            android:paddingRight="20dp"
+            android:text="지역변경"
+            android:textColor="@color/colorBlack"
+            android:textSize="17sp" />
 
     </LinearLayout>
 
@@ -74,53 +75,58 @@
         android:id="@+id/jeonnam_benefit_btn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginTop="512dp"
         android:background="@drawable/map_oval"
         android:fontFamily="@font/jalnan"
         android:gravity="center"
         android:text="전 남"
         android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/map_bottom_textview"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.279"
+        app:layout_constraintHorizontal_bias="0.401"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.792" />
 
     <Button
         android:id="@+id/seoul_benefit_btn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginTop="88dp"
+        android:layout_marginTop="42dp"
         android:background="@drawable/map_oval"
         android:fontFamily="@font/jalnan"
         android:gravity="center"
         android:lineSpacingExtra="5sp"
         android:text="서 울"
         android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/gyongi_benefit_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.313"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/incheon_benefit_btn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginTop="108dp"
+        android:layout_marginTop="62dp"
         android:background="@drawable/map_oval"
         android:fontFamily="@font/jalnan"
         android:gravity="center"
         android:text="인 천"
         android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/map_bottom_textview"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.108"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_toolbar"
-        app:layout_constraintHorizontal_bias="0.081"/>
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/gyongi_benefit_btn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginTop="156dp"
+        android:layout_marginTop="100dp"
         android:background="@drawable/map_oval"
         android:fontFamily="@font/jalnan"
         android:gravity="center"
@@ -129,163 +135,178 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.401"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <Button
         android:id="@+id/gangwon_benefit_btn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="28dp"
         android:background="@drawable/map_oval"
         android:fontFamily="@font/jalnan"
         android:gravity="center"
         android:text="강 원"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.669"
+        app:layout_constraintHorizontal_bias="0.695"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <Button
         android:id="@+id/choongnam_benefit_btn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginTop="240dp"
+        android:layout_marginTop="178dp"
         android:background="@drawable/map_oval"
         android:fontFamily="@font/jalnan"
         android:gravity="center"
         android:text="충 남"
         android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/map_bottom_textview"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.23"
+        app:layout_constraintHorizontal_bias="0.182"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/jeonbuk_benefit_btn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginTop="372dp"
+        android:layout_marginTop="288dp"
         android:background="@drawable/map_oval"
         android:fontFamily="@font/jalnan"
         android:gravity="center"
         android:text="전 북"
         android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/jeonnam_benefit_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.353"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/gwangju_benefit_btn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginTop="452dp"
+        android:layout_marginTop="384dp"
         android:background="@drawable/map_oval"
         android:fontFamily="@font/jalnan"
         android:gravity="center"
         android:text="광 주"
         android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/map_bottom_textview"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.353"
+        app:layout_constraintHorizontal_bias="0.182"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.147" />
 
     <Button
         android:id="@+id/choongbuk_benefit_btn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginTop="204dp"
+        android:layout_marginTop="132dp"
         android:background="@drawable/map_oval"
         android:fontFamily="@font/jalnan"
         android:gravity="center"
         android:text="충 북"
         android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/daejeon_benefit_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.572"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <Button
         android:id="@+id/sejong_benefit_btn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginTop="216dp"
+        android:layout_marginTop="168dp"
         android:background="@drawable/map_oval"
         android:fontFamily="@font/jalnan"
         android:gravity="center"
         android:text="세 종"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.401"
+        app:layout_constraintHorizontal_bias="0.378"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <Button
         android:id="@+id/daejeon_benefit_btn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginTop="276dp"
+        android:layout_marginTop="256dp"
         android:background="@drawable/map_oval"
         android:fontFamily="@font/jalnan"
         android:gravity="center"
         android:text="대 전"
         android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/daegu_benefit_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.524"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_toolbar" />
+        app:layout_constraintTop_toBottomOf="@id/map_toolbar"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/gyongbuk_benefit_btn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginTop="252dp"
+        android:layout_marginTop="176dp"
         android:background="@drawable/map_oval"
-        android:gravity="center"
         android:fontFamily="@font/jalnan"
+        android:gravity="center"
         android:text="경 북"
         android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/ulsan_benefit_btn"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.794"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_toolbar"
-        app:layout_constraintHorizontal_bias="0.824"/>
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/daegu_benefit_btn"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="288dp"
+        android:background="@drawable/map_oval"
+        android:fontFamily="@font/jalnan"
+        android:gravity="center"
+        android:text="대 구"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/gyongnam_benefit_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.623"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/gyongnam_benefit_btn"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginTop="368dp"
         android:background="@drawable/map_oval"
         android:fontFamily="@font/jalnan"
         android:gravity="center"
-        android:text="대 구"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.623"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_toolbar" />
-
-    <Button
-        android:id="@+id/gyongnam_benefit_btn"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="452dp"
-        android:background="@drawable/map_oval"
-        android:fontFamily="@font/jalnan"
-        android:gravity="center"
         android:text="경 남"
         android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/map_bottom_textview"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.595"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/busan_benefit_btn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginTop="420dp"
+        android:layout_marginTop="368dp"
         android:background="@drawable/map_oval"
         android:fontFamily="@font/jalnan"
         android:gravity="center"
@@ -294,37 +315,39 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.794"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <Button
         android:id="@+id/ulsan_benefit_btn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginTop="360dp"
+        android:layout_marginTop="288dp"
         android:background="@drawable/map_oval"
         android:fontFamily="@font/jalnan"
         android:gravity="center"
         android:text="울 산"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.908"
+        app:layout_constraintHorizontal_bias="0.911"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <Button
         android:id="@+id/jeju_benefit_btn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginTop="84dp"
+        android:layout_marginTop="25dp"
         android:background="@drawable/map_oval"
         android:fontFamily="@font/jalnan"
         android:gravity="center"
         android:text="제 주"
         android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/map_bottom_textview"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.142"
+        app:layout_constraintHorizontal_bias="0.207"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/jeonnam_benefit_btn" />
+        app:layout_constraintTop_toBottomOf="@+id/gwangju_benefit_btn"
+        app:layout_constraintVertical_bias="0.58" />
 
     <TextView
         android:id="@+id/map_bottom_textview"

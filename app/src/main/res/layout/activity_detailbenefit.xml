@@ -21,76 +21,114 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <!-- 공유 버튼, 좋아요 버튼 -->
-            <LinearLayout
-                android:id="@+id/share_and_liked_button"
+            <FrameLayout
+                android:id="@+id/review_top_horizon_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:orientation="horizontal"
-                android:weightSum="1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_weight=".10" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="1"
+                    android:orientation="horizontal">
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight=".50" />
+                    <ImageView
+                        android:id="@+id/welf_imageview"
+                        android:layout_width="0dp"
+                        android:layout_height="300dp"
+                        android:layout_weight=".60"/>
 
-                <ImageView
-                    android:id="@+id/review_share_imageview"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="10dp"
+                    <TextView
+                        android:id="@+id/welf_word_textview"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".40"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:background="@color/colorPrimaryDark"
+                        android:lineSpacingExtra="20sp"
+                        android:fontFamily="@font/jalnan"
+                        android:textSize="20dp"
+                        android:textColor="@color/colorMainWhite"
+                        android:gravity="center_horizontal|center"/>
+
+                </LinearLayout>
+
+                <!-- 공유 버튼, 좋아요 버튼 -->
+                <LinearLayout
+                    android:id="@+id/share_and_liked_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:layout_weight=".20"
-                    android:src="@drawable/share_black" />
+                    android:orientation="horizontal"
+                    android:weightSum="1">
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight=".015" />
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_weight=".10" />
 
-                <com.like.LikeButton
-                    android:id="@+id/favorite_btn"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_weight=".15"
-                    app:anim_scale_factor="10"
-                    app:icon_size="10dp"
-                    app:icon_type="star"
-                    app:like_drawable="@drawable/star_on"
-                    app:unlike_drawable="@drawable/star_off" />
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight=".70" />
 
-            </LinearLayout>
+                    <ImageView
+                        android:id="@+id/review_share_imageview"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_weight=".20"
+                        android:src="@drawable/share_black" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight=".015" />
+
+                    <!-- 즐겨찾기는 오픈베타 이후 다듬는다 -->
+                    <com.like.LikeButton
+                        android:id="@+id/favorite_btn"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:visibility="gone"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_weight=".15"
+                        app:anim_scale_factor="10"
+                        app:icon_size="10dp"
+                        app:icon_type="star"
+                        app:like_drawable="@drawable/star_on"
+                        app:unlike_drawable="@drawable/star_off" />
+
+                </LinearLayout>
+
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/welfare_desc_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-                android:fontFamily="@font/nanum_barun_gothic_bold"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/jalnan"
                 android:gravity="center"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
+                android:lineSpacingExtra="10sp"
                 android:text="여성장애인 출산비용 지원"
                 android:textColor="@color/colorBlack"
-                android:textSize="28sp"
+                android:textSize="22sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/share_and_liked_button" />
+                app:layout_constraintTop_toBottomOf="@+id/review_top_horizon_layout" />
 
             <LinearLayout
                 android:id="@+id/defail_welfare_tag"
@@ -134,13 +172,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
                 android:layout_marginEnd="10dp"
                 android:layout_weight=".60"
                 android:gravity="center"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/defail_welfare_tag">
+                app:layout_constraintTop_toBottomOf="@id/defail_welfare_tag"
+                app:layout_constraintBottom_toBottomOf="parent">
 
                 <LinearLayout
                     android:id="@+id/content_view"
@@ -157,18 +197,17 @@
                         android:layout_marginBottom="10dp"
                         android:fontFamily="@font/nanum_barun_gothic_bold"
                         android:text="내용"
-                        android:textColor="@color/colorBlack"
+                        android:textColor="@color/colorPrimaryDark"
                         android:textSize="18sp" />
 
                     <View
                         android:id="@+id/content_bottom_view"
-                        android:layout_width="wrap_content"
+                        android:layout_width="70dp"
                         android:layout_height="2dp"
-                        android:background="@color/colorBlack" />
+                        android:background="@color/colorGray_L" />
 
                 </LinearLayout>
 
-                <!-- 클베 이후 다듬고 내기 위해 리뷰 부분을 gone 처리함 -->
                 <LinearLayout
                     android:id="@+id/review_view"
                     android:layout_width="0dp"
@@ -186,17 +225,17 @@
                         android:layout_marginBottom="10dp"
                         android:fontFamily="@font/nanum_barun_gothic_bold"
                         android:text="리뷰"
-                        android:textColor="@color/colorGray_B"
+                        android:textColor="@color/colorBlack"
                         android:textSize="18sp" />
 
                     <!-- GONE으로 해놨다가 위의 텍스트뷰가 클릭되면 VISIBLE로 바꾼다
                      다른 걸 클릭하면 다시 GONE으로 바꿔 안 보이게 한다-->
                     <View
                         android:id="@+id/review_bottom_view"
-                        android:layout_width="wrap_content"
+                        android:layout_width="70dp"
                         android:layout_height="2dp"
-                        android:background="@color/colorBlack"
-                        android:visibility="gone" />
+                        android:background="@color/colorGray_L"
+                        android:visibility="gone"/>
 
                 </LinearLayout>
 
@@ -216,16 +255,16 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
                         android:fontFamily="@font/nanum_barun_gothic_bold"
-                        android:text="주변시설"
-                        android:textColor="@color/colorGray_B"
+                        android:text="주변센터"
+                        android:textColor="@color/colorBlack"
                         android:textSize="18sp" />
 
                     <View
                         android:id="@+id/facilities_bottom_view"
-                        android:layout_width="wrap_content"
+                        android:layout_width="70dp"
                         android:layout_height="2dp"
-                        android:background="@color/colorBlack"
-                        android:visibility="gone" />
+                        android:background="@color/colorGray_L"
+                        android:visibility="gone"/>
 
                 </LinearLayout>
 
@@ -234,6 +273,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight=".20"
+                    android:visibility="gone"
                     android:gravity="center"
                     android:orientation="vertical">
 
@@ -299,8 +339,9 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/all_review_scene"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorGray_B"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:background="@color/colorGray_L"
             android:layout_marginBottom="20dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -339,7 +380,6 @@
                             android:layout_gravity="center"
                             android:layout_marginTop="15dp"
                             android:fontFamily="@font/nanum_barun_gothic_bold"
-                            android:text="4.5"
                             android:textColor="@color/colorBlack"
                             android:textSize="35sp"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -434,6 +474,7 @@
                                 android:textColor="@color/colorBlack"/>
 
                             <ProgressBar
+                                android:id="@+id/easy_progressbar"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:progressDrawable="@drawable/review_progressbar_custom"
@@ -451,7 +492,7 @@
                             android:weightSum="1"
                             android:layout_marginStart="14dp"
                             android:layout_marginEnd="14dp"
-                            android:layout_marginTop="5dp">
+                            android:layout_marginTop="10dp">
 
                             <TextView
                                 android:layout_width="0dp"
@@ -462,6 +503,7 @@
                                 android:textColor="@color/colorBlack"/>
 
                             <ProgressBar
+                                android:id="@+id/hard_progressbar"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:progressDrawable="@drawable/review_progressbar_custom"
@@ -521,6 +563,7 @@
                                     android:textColor="@color/colorBlack"/>
 
                                 <ProgressBar
+                                    android:id="@+id/help_progressbar"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:progressDrawable="@drawable/review_progressbar_custom"
@@ -539,7 +582,7 @@
                                 android:layout_marginStart="14dp"
                                 android:layout_marginEnd="14dp"
                                 android:layout_marginBottom="20dp"
-                                android:layout_marginTop="5dp">
+                                android:layout_marginTop="10dp">
 
                                 <TextView
                                     android:layout_width="0dp"
@@ -550,6 +593,7 @@
                                     android:textColor="@color/colorBlack"/>
 
                                 <ProgressBar
+                                    android:id="@+id/help_not_progressbar"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:progressDrawable="@drawable/review_progressbar_custom"
@@ -663,178 +707,25 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- 지원 대상, 지원 내용, 문의처 들어있는 레이아웃, 리뷰 끝나고 gone 풀기 -->
+        <!-- 대상, 내용 파싱해 붙이는 뷰들 있는 레이아웃 -->
         <LinearLayout
             android:id="@+id/content_all_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:visibility="gone"
+            android:background="@color/colorGray_B"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/top_divider_view">
 
-            <!-- 적용대상은 누구일까요? 헤더 -->
-            <LinearLayout
-                android:id="@+id/header_layout"
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:orientation="horizontal"
-                android:weightSum="1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/top_divider_view">
-
-                <TextView
-                    android:id="@+id/detail_welfare_target"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="15dp"
-                    android:layout_weight=".80"
-                    android:fontFamily="@font/nanum_barun_gothic_bold"
-                    android:text="지원 대상이 어떻게 되나요?"
-                    android:textColor="@color/colorBlack"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <!-- 확장되서 나오는 레이아웃 -->
-            <LinearLayout
-                android:id="@+id/expandable_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/header_layout">
+                android:layout_margin="40dp"
+                app:cardCornerRadius="20dp">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:weightSum=".85"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight=".30"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:id="@+id/first_imageview"
-                            android:layout_width="95dp"
-                            android:layout_height="95dp"
-                            android:backgroundTint="@color/detail_gradation_color"
-                            android:background="@drawable/imageview_round"
-                            android:src="@drawable/student" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/jalnan"
-                            android:text="학생"
-                            android:textColor="@color/colorBlack"
-                            android:textSize="15sp" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight=".30"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:id="@+id/second_imageview"
-                            android:layout_width="95dp"
-                            android:layout_height="95dp"
-                            android:background="@drawable/imageview_round"
-                            android:backgroundTint="@color/detail_gradation_color"
-                            android:src="@drawable/old" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/jalnan"
-                            android:text="중장년·노인"
-                            android:textColor="@color/colorBlack"
-                            android:textSize="15sp" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/detail_support_target_textview"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginTop="10dp"
-                    android:fontFamily="@font/nanum_barun_gothic_bold"
-                    android:text="자세한 지원 대상을 확인하시려면 여기를 클릭!"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="15sp" />
-
-            </LinearLayout>
-
-            <View
-                android:id="@+id/divider_view"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_margin="20dp"
-                android:background="@color/colorGray_L"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/expandable_layout" />
-
-            <LinearLayout
-                android:id="@+id/welfare_detail_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:orientation="horizontal"
-                android:weightSum="1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/divider_view">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:layout_weight=".80"
-                    android:fontFamily="@font/nanum_barun_gothic_bold"
-                    android:text="어떤 것을 지원해주나요?"
-                    android:textColor="@color/colorBlack"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <!-- 혜택 상세내용 확장 시 나오는 레이아웃 -->
-            <LinearLayout
-                android:id="@+id/detail_expandable_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/welfare_detail_content">
-
-                <LinearLayout
-                    android:id="@+id/support_content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
@@ -842,107 +733,401 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
                         android:fontFamily="@font/nanum_barun_gothic_bold"
-                        android:lineSpacingExtra="8sp"
-                        android:text="청년인건비 지원 : 청년 1인당 월 200만원 (기업부담 10% 포함),
-창업기업 교육지원 및 청년 직무능력 향상 교육 등"
+                        android:text="당신도 혜택을 받을 수 있는지 확인해 보세요"
                         android:textColor="@color/colorBlack"
-                        android:textSize="15sp" />
+                        android:gravity="center"/>
 
-                    <TextView
-                        android:id="@+id/median_income_base_table_textview"
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1.5dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginStart="40dp"
+                        android:layout_marginEnd="40dp"
+                        android:layout_gravity="center"
+                        android:background="@color/colorGray_B"/>
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
-                        android:fontFamily="@font/nanum_barun_gothic_bold"
-                        android:lineSpacingExtra="6sp"
-                        android:text="중위소득 기준표를 참고하시려면 여기를 클릭!"
-                        android:textColor="@color/colorPrimaryDark"
-                        android:textSize="15sp" />
+                        android:layout_marginStart="40dp"
+                        android:layout_marginBottom="15dp"
+                        android:layout_marginEnd="40dp"
+                        android:orientation="horizontal"
+                        android:weightSum="1">
+
+                        <TextView
+                            android:id="@+id/first_target_textview"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".50"
+                            android:paddingBottom="10dp"
+                            android:lineSpacingExtra="6sp"
+                            android:fontFamily="@font/nanum_barun_gothic_bold"
+                            android:text="대상0"
+                            android:textSize="17sp"
+                            android:textColor="@color/colorBlack"/>
+
+                        <TextView
+                            android:id="@+id/first_target"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".50"
+                            android:gravity="end"
+                            android:fontFamily="@font/jalnan"
+                            android:layout_gravity="center"
+                            android:text="상세조건"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/colorBlack"/>
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
-            </LinearLayout>
-            <!-- 혜택 상세내용 확장 시 나오는 레이아웃 끝 -->
+            </androidx.cardview.widget.CardView>
 
-            <View
-                android:id="@+id/detail_divider_view"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_margin="20dp"
-                android:background="@color/colorGray_L"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/detail_expandable_layout" />
-
-            <LinearLayout
-                android:id="@+id/welfare_detail_call"
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:orientation="horizontal"
-                android:weightSum="1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/detail_divider_view">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:layout_weight=".80"
-                    android:fontFamily="@font/nanum_barun_gothic_bold"
-                    android:text="어디에 문의하면 되나요?"
-                    android:textColor="@color/colorBlack"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/welfare_detail_call_expandable"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/welfare_detail_call">
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="20dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="15dp"
-                        android:background="@drawable/keyword_round_textview"
-                        android:fontFamily="@font/nanum_barun_gothic_bold"
-                        android:padding="8dp"
-                        android:text="02-1234-5678"
-                        android:textColor="@color/colorBlack"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"
-                        android:background="@drawable/keyword_round_textview"
                         android:fontFamily="@font/nanum_barun_gothic_bold"
-                        android:padding="8dp"
-                        android:text="www.urbene-fit.com"
+                        android:text="이런 혜택들이 당신을 기다리고 있어요"
                         android:textColor="@color/colorBlack"
-                        android:textSize="12sp" />
+                        android:gravity="center"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1.5dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginStart="40dp"
+                        android:layout_marginEnd="40dp"
+                        android:layout_gravity="center"
+                        android:background="@color/colorGray_B"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="1"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp">
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:visibility="gone"
+                            android:layout_weight=".40"/>
+
+                        <TextView
+                            android:id="@+id/first_benefit"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginStart="40dp"
+                            android:layout_marginEnd="40dp"
+                            android:lineSpacingExtra="6sp"
+                            android:fontFamily="@font/nanum_barun_gothic_bold"
+                            android:text="혜택0"
+                            android:textSize="17sp"
+                            android:textColor="@color/colorBlack"/>
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
-            </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
         </LinearLayout>
+
+<!--         지원 대상, 지원 내용, 문의처 들어있는 레이아웃, 리뷰 끝나고 gone 풀기-->
+<!--        <LinearLayout-->
+<!--            android:id="@+id/content_all_layout"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/top_divider_view">-->
+
+<!--            &lt;!&ndash; 적용대상은 누구일까요? 헤더 &ndash;&gt;-->
+<!--            <LinearLayout-->
+<!--                android:id="@+id/header_layout"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:weightSum="1"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/top_divider_view">-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/detail_welfare_target"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:layout_marginStart="15dp"-->
+<!--                    android:layout_weight=".95"-->
+<!--                    android:fontFamily="@font/nanum_barun_gothic_bold"-->
+<!--                    android:text="당신도 혜택을 받을 수 있는지 확인해 보세요"-->
+<!--                    android:textColor="@color/colorBlack"-->
+<!--                    android:textSize="20sp"-->
+<!--                    android:textStyle="bold" />-->
+
+<!--            </LinearLayout>-->
+
+<!--            &lt;!&ndash; 확장되서 나오는 레이아웃 &ndash;&gt;-->
+<!--            <LinearLayout-->
+<!--                android:id="@+id/expandable_layout"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:gravity="center"-->
+<!--                android:orientation="vertical"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/header_layout">-->
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:weightSum=".85"-->
+<!--                    android:gravity="center"-->
+<!--                    android:orientation="horizontal">-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight=".30"-->
+<!--                        android:gravity="center"-->
+<!--                        android:orientation="vertical">-->
+
+<!--                        <ImageView-->
+<!--                            android:id="@+id/first_imageview"-->
+<!--                            android:layout_width="95dp"-->
+<!--                            android:layout_height="95dp"-->
+<!--                            android:backgroundTint="@color/detail_gradation_color"-->
+<!--                            android:background="@drawable/imageview_round"-->
+<!--                            android:src="@drawable/student" />-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_gravity="center"-->
+<!--                            android:fontFamily="@font/jalnan"-->
+<!--                            android:text="학생"-->
+<!--                            android:textColor="@color/colorBlack"-->
+<!--                            android:textSize="15sp" />-->
+
+<!--                    </LinearLayout>-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight=".30"-->
+<!--                        android:gravity="center"-->
+<!--                        android:orientation="vertical">-->
+
+<!--                        <ImageView-->
+<!--                            android:id="@+id/second_imageview"-->
+<!--                            android:layout_width="95dp"-->
+<!--                            android:layout_height="95dp"-->
+<!--                            android:background="@drawable/imageview_round"-->
+<!--                            android:backgroundTint="@color/detail_gradation_color"-->
+<!--                            android:src="@drawable/old" />-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_gravity="center"-->
+<!--                            android:fontFamily="@font/jalnan"-->
+<!--                            android:text="중장년·노인"-->
+<!--                            android:textColor="@color/colorBlack"-->
+<!--                            android:textSize="15sp" />-->
+
+<!--                    </LinearLayout>-->
+
+<!--                </LinearLayout>-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/detail_support_target_textview"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginStart="15dp"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:fontFamily="@font/nanum_barun_gothic_bold"-->
+<!--                    android:text="자세한 지원 대상을 확인하시려면 여기를 클릭!"-->
+<!--                    android:textColor="@color/colorPrimaryDark"-->
+<!--                    android:textSize="15sp" />-->
+
+<!--            </LinearLayout>-->
+
+<!--            <View-->
+<!--                android:id="@+id/divider_view"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="1dp"-->
+<!--                android:layout_margin="20dp"-->
+<!--                android:background="@color/colorGray_L"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/expandable_layout" />-->
+
+<!--            <LinearLayout-->
+<!--                android:id="@+id/welfare_detail_content"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:weightSum="1"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/divider_view">-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginStart="15dp"-->
+<!--                    android:layout_weight=".80"-->
+<!--                    android:fontFamily="@font/nanum_barun_gothic_bold"-->
+<!--                    android:text="어떤 것을 지원해주나요?"-->
+<!--                    android:textColor="@color/colorBlack"-->
+<!--                    android:textSize="20sp"-->
+<!--                    android:textStyle="bold" />-->
+
+<!--            </LinearLayout>-->
+
+<!--            &lt;!&ndash; 혜택 상세내용 확장 시 나오는 레이아웃 &ndash;&gt;-->
+<!--            <LinearLayout-->
+<!--                android:id="@+id/detail_expandable_layout"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="20dp"-->
+<!--                android:layout_marginEnd="20dp"-->
+<!--                android:orientation="horizontal"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/welfare_detail_content">-->
+
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/support_content"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="vertical">-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/welf_content_detail"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="20dp"-->
+<!--                        android:fontFamily="@font/nanum_barun_gothic_bold"-->
+<!--                        android:lineSpacingExtra="8sp"-->
+<!--                        android:text="청년인건비 지원 : 청년 1인당 월 200만원 (기업부담 10% 포함),-->
+<!--창업기업 교육지원 및 청년 직무능력 향상 교육 등"-->
+<!--                        android:textColor="@color/colorBlack"-->
+<!--                        android:textSize="15sp" />-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/median_income_base_table_textview"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="20dp"-->
+<!--                        android:fontFamily="@font/nanum_barun_gothic_bold"-->
+<!--                        android:lineSpacingExtra="6sp"-->
+<!--                        android:text="중위소득 기준표를 참고하시려면 여기를 클릭!"-->
+<!--                        android:textColor="@color/colorPrimaryDark"-->
+<!--                        android:textSize="15sp" />-->
+
+<!--                </LinearLayout>-->
+
+<!--            </LinearLayout>-->
+<!--            &lt;!&ndash; 혜택 상세내용 확장 시 나오는 레이아웃 끝 &ndash;&gt;-->
+
+<!--            <View-->
+<!--                android:id="@+id/detail_divider_view"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="1dp"-->
+<!--                android:layout_margin="20dp"-->
+<!--                android:background="@color/colorGray_L"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/detail_expandable_layout" />-->
+
+<!--            <LinearLayout-->
+<!--                android:id="@+id/welfare_detail_call"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:weightSum="1"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/detail_divider_view">-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginStart="15dp"-->
+<!--                    android:layout_weight=".80"-->
+<!--                    android:fontFamily="@font/nanum_barun_gothic_bold"-->
+<!--                    android:text="어디에 문의하면 되나요?"-->
+<!--                    android:textColor="@color/colorBlack"-->
+<!--                    android:textSize="20sp"-->
+<!--                    android:textStyle="bold" />-->
+
+<!--            </LinearLayout>-->
+
+<!--            <LinearLayout-->
+<!--                android:id="@+id/welfare_detail_call_expandable"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginBottom="20dp"-->
+<!--                android:orientation="horizontal">-->
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginStart="15dp"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:orientation="horizontal">-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/welf_contact_detail"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginEnd="15dp"-->
+<!--                        android:background="@drawable/keyword_round_textview"-->
+<!--                        android:fontFamily="@font/nanum_barun_gothic_bold"-->
+<!--                        android:padding="8dp"-->
+<!--                        android:text="02-1234-5678"-->
+<!--                        android:textColor="@color/colorBlack"-->
+<!--                        android:textSize="12sp" />-->
+
+<!--                </LinearLayout>-->
+
+<!--            </LinearLayout>-->
+
+<!--        </LinearLayout>-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

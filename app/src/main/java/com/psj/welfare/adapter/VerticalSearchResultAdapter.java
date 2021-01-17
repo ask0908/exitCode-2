@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.psj.welfare.Data.SearchItem;
 import com.psj.welfare.R;
 
@@ -55,31 +56,51 @@ public class VerticalSearchResultAdapter extends RecyclerView.Adapter<VerticalSe
         switch (list.get(position).getWelf_category())
         {
             case "일자리 지원" :
-                holder.search_result_imageview.setImageResource(R.drawable.counseling);
+                Glide.with(context)
+                        .load(R.drawable.job)
+                        .into(holder.search_result_imageview);
                 break;
 
             case "카드 지원" :
-                holder.search_result_imageview.setImageResource(R.drawable.loan);
+                Glide.with(context)
+                        .load(R.drawable.card_support)
+                        .into(holder.search_result_imageview);
+                break;
+
+            case "인력 지원" :
+                Glide.with(context)
+                        .load(R.drawable.person_support)
+                        .into(holder.search_result_imageview);
                 break;
 
             case "현금 지원" :
-                holder.search_result_imageview.setImageResource(R.drawable.cash);
+                Glide.with(context)
+                        .load(R.drawable.goods_support)
+                        .into(holder.search_result_imageview);
                 break;
 
             case "현물 지원" :
-                holder.search_result_imageview.setImageResource(R.drawable.loan);
+                Glide.with(context)
+                        .load(R.drawable.goods_support)
+                        .into(holder.search_result_imageview);
                 break;
 
             case "대출 지원" :
-                holder.search_result_imageview.setImageResource(R.drawable.loan);
+                Glide.with(context)
+                        .load(R.drawable.loan)
+                        .into(holder.search_result_imageview);
                 break;
 
             case "임대 지원" :
-                holder.search_result_imageview.setImageResource(R.drawable.house);
+                Glide.with(context)
+                        .load(R.drawable.rent_support)
+                        .into(holder.search_result_imageview);
                 break;
 
             case "보험 지원" :
-                holder.search_result_imageview.setImageResource(R.drawable.cash);
+                Glide.with(context)
+                        .load(R.drawable.insurance_support)
+                        .into(holder.search_result_imageview);
                 break;
 
             default:

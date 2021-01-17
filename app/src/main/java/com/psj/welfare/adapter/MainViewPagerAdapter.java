@@ -23,11 +23,8 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter
     {
         super(fm);
         list.add(new MainFragment());
-//        list.add(new TestMainFragment());
         list.add(new PushGatherFragment());
-        // TODO : 검색 화면 UI 조정 끝나면 SearchFragment로 되돌리기
         list.add(new SearchFragment());
-//        list.add(new TestSearchFragment());
         list.add(new MyPageFragment());
     }
 

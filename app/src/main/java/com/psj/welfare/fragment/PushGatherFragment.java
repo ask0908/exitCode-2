@@ -45,9 +45,10 @@ public class PushGatherFragment extends Fragment
     PushGatherAdapter adapter;
     PushGatherAdapter.ItemClickListener itemClickListener;
 
+    // 토큰값을 확인할 때 사용할 쉐어드
     SharedPreferences app_pref;
 
-    String welf_name, push_title, push_body, push_date, token;
+    String welf_name, welf_local, push_title, push_body, push_date, token;
 
     public PushGatherFragment()
     {
@@ -79,12 +80,43 @@ public class PushGatherFragment extends Fragment
         app_pref = getActivity().getSharedPreferences("app_pref", 0);
         token = app_pref.getString("token", "");
 
+        /* 서버에 저장된 푸시 데이터들을 가져오는 메서드 */
         getPushData();
 
         push_layout_recycler = view.findViewById(R.id.push_layout_recycler);
         push_layout_recycler.setHasFixedSize(true);
         push_layout_recycler.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         push_layout_recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+    }
+
+    void changePushStatus()
+    {
+        app_pref = getActivity().getSharedPreferences("app_pref", 0);
+        String token = app_pref.getString("token", "");
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        Call<String> call = apiInterface.changePushStatus(token, "customizedRecv");
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e("changePushStatus()", "성공 : " + result);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
     }
 
     /* 서버에 저장된 푸시 데이터들을 가져오는 메서드 */
@@ -102,8 +134,9 @@ public class PushGatherFragment extends Fragment
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    Log.e(TAG, "쉐어드에 저장된 서버 토큰으로 뽑은 결과 = " + response.body());
+                    Log.e(TAG, "서버에서 받은 푸시 알림 데이터 = " + response.body());
                     messageParsing(response.body());
+                    changePushStatus();
                 }
             }
 
@@ -127,11 +160,13 @@ public class PushGatherFragment extends Fragment
             {
                 JSONObject push_object = jsonArray.getJSONObject(i);
                 welf_name = push_object.getString("welf_name");
+                welf_local = push_object.getString("welf_local");
                 push_title = push_object.getString("title");
                 push_body = push_object.getString("content");
                 push_date = push_object.getString("update_date");
                 PushGatherItem item = new PushGatherItem();
                 item.setWelf_name(welf_name);
+                item.setWelf_local(welf_local);
                 item.setPush_gather_title(push_title);
                 item.setPush_gather_desc(push_body);
                 item.setPush_gather_date(push_date);
@@ -150,8 +185,13 @@ public class PushGatherFragment extends Fragment
             {
                 String welf_name = list.get(position).getWelf_name();
                 // 혜택 이름을 뽑고 푸시를 클릭하면 해당 액티비티로 이동하도록 한다
+                Log.e(TAG, "알림 화면에서 선택한 혜택명 : " + welf_name);
+                Log.e(TAG, "push_title : " + push_title);
+                Log.e(TAG, "push_body : " + push_body);
+                Log.e(TAG, "push_date : " + push_date);
                 Intent intent = new Intent(getActivity(), DetailBenefitActivity.class);
                 intent.putExtra("name", welf_name);
+                intent.putExtra("welf_local", welf_local);
                 startActivity(intent);
             }
         });

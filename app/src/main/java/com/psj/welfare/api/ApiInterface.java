@@ -16,6 +16,8 @@ import retrofit2.http.Query;
 * 언제 어떤 걸 호출하고 어떤 걸 요청하는가? */
 public interface ApiInterface
 {
+	// ===================================================================================================
+	// Legacy method
 	/**
 	 * LoginActivity에서 구글 로그인 시 로그인할 때 어떤 플랫폼으로 로그인하는지 등의 정보를 서버로 보내 저장하는 메서드
 	 * 카톡 회원탈퇴 처리 후 테스트 결과 정상 작동 확인
@@ -153,8 +155,10 @@ public interface ApiInterface
 			@Field("email") String email,
 			@Field("welf_name") String welf_name
 	);
+	// ===================================================================================================
 
-	/* 리뷰 관련 메서드 */
+	/* ↓ 리뷰 관련 메서드 */
+	// ===================================================================================================
 	/**
 	 * 서버에 저장된 혜택 리뷰 목록을 조회하는 기능
 	 * 인자로 리뷰를 보고자 하는 정책의 이름, 안드/iOS 중 어떤 타입인지를 명시해서 서버로 넘겨준다
@@ -177,7 +181,7 @@ public interface ApiInterface
 	 * ],
 	 * "TotalCount":3
 	 */
-	@GET("review")
+	@GET("https://www.urbene-fit.com/review")
 	Call<String> getReview(
 			@Query("type") String type,
 			@Query("welf_id") String welf_id
@@ -193,6 +197,9 @@ public interface ApiInterface
 	 * @param content - 리뷰 내용 정보
 	 * @param imageReqBody - 이미지 파일 정보
 	 * @param imageFile - 이미지 파일
+	 * @param difficulty_level - 쉬워요, 어려워요
+	 * @param satisfaction - 도움이 됐어요, 도움이 안 됐어요
+	 * @param star_count - 1~5 사이 정수
 	 * @return
 	 */
 	@Multipart
@@ -202,7 +209,10 @@ public interface ApiInterface
 			@Part("welf_id") int welf_id,
 			@Part("content") String content,
 			@Part("file") RequestBody imageReqBody,
-			@Part MultipartBody.Part imageFile
+			@Part MultipartBody.Part imageFile,
+			@Part("difficulty_level") String difficulty_level,
+			@Part("satisfaction") String satisfaction,
+			@Part("star_count") String star_count
 	);
 
 	/**
@@ -222,7 +232,10 @@ public interface ApiInterface
 			@Part("review_id") int review_id,
 			@Part("content") String content,
 			@Part("file") RequestBody imageReqBody,
-			@Part MultipartBody.Part imageFile
+			@Part MultipartBody.Part imageFile,
+			@Part("difficulty_level") String difficulty_level,
+			@Part("satisfaction") String satisfaction,
+			@Part("star_count") String star_count
 	);
 
 	/**
@@ -246,6 +259,9 @@ public interface ApiInterface
 			@Field("type") String type
 	);
 
+
+	/* ↓ 지도 관련 메서드 */
+	// ===================================================================================================
 	/**
 	 * MainFragment 하단의 내 주변 혜택 찾기 버튼 클릭 시, 지역별 혜택 개수들을 가져오는 메서드
 	 * MapActivity, MapDetailActivity에서 사용
@@ -260,6 +276,9 @@ public interface ApiInterface
 			@Query("userAgent") String userAgent
 	);
 
+
+	/* ↓ 로그인 알림 메서드 */
+	// ===================================================================================================
 	/**
 	 * LoginActivity에서 카카오 로그인 시 서버로 OS 이름, 플랫폼, fcm 토큰값, 유저 이메일 정보를 보내 저장하는 메서드
 	 * LoginActivity에서 사용
@@ -278,27 +297,8 @@ public interface ApiInterface
 			@Field("platform") String platform
 	);
 
-	/**
-	 * 유저 정보를 보내면 서버에서 질문지와 키워드 정보를 받는 메서드
-	 * @param nickname - 유저 닉네임
-	 * @param age - 유저 나이
-	 * @param gender - 유저 성별
-	 * @param city - 유저 거주 도시
-	 * @param platform - kakao
-	 * @param email - 유저 이메일
-	 * @return
-	 */
-	@FormUrlEncoded
-	@POST("https://www.urbene-fit.com/user")
-	Call<String> sendKeyword(
-			@Field("nickName") String nickname,
-			@Field("age") String age,
-			@Field("gender") String gender,
-			@Field("city") String city,
-			@Field("platform") String platform,
-			@Field("email") String email
-	);
-
+	/* ↓ 푸시 관련 메서드 */
+	// ===================================================================================================
 	/**
 	 * 로그인 시 서버에서 받는 토큰을 넘겨 푸시 알림 데이터들을 받아오는 메서드
 	 * @param login_token - 로그인 시 서버에서 생성되는 토큰
@@ -312,6 +312,23 @@ public interface ApiInterface
 	);
 
 	/**
+	 * 사용자가 알림을 받으면 수신 상태값을 변경하는 기능
+	 * PushGaterFragment에서 사용
+	 * @param login_token - 로그인 시 서버에서 생성되는 토큰
+	 * @param type - "customizedRecv" 고정
+	 * @return
+	 */
+	@FormUrlEncoded
+	@POST("https://www.urbene-fit.com/push")
+	Call<String> changePushStatus(
+			@Field("login_token") String login_token,
+			@Field("type") String type
+	);
+	// ===================================================================================================
+
+	/* ↓ 사용자 정보(나이, 성별, 지역, 닉네임) 관련 메서드 */
+	// ===================================================================================================
+	/**
 	 * 내 정보를 클릭했을 때 서버에서 사용자 정보를 조회해서 가져오는 메서드
 	 * @param login_token - 로그인 시 서버에서 생성되는 토큰
 	 * @return - {"Status":"200","Message":"","is_push":"false"}
@@ -324,6 +341,7 @@ public interface ApiInterface
 	/**
 	 * 유저가 푸시알림설정 스위치를 on으로 두면 true, off로 두면 false를 서버로 보내 기존 값을 수정해 저장하는 메서드
 	 * @param login_token - 로그인 시 서버에서 생성되는 토큰
+	 * @param type - "push" 고정
 	 * @param is_push - 스위치의 T/F 값
 	 * @return - 알림 설정 값이 같으면 : {"Status":"200","Message":"유저 정보가 동일합니다."}
 	 * 			 알림 설정 값이 다르면 : {"Status":"200","Message":"유저 정보 수정이 완료되었습니다.","is_push":"false"}
@@ -332,12 +350,65 @@ public interface ApiInterface
 	@PUT("https://www.urbene-fit.com/user")
 	Call<String> putPushSetting(
 			@Field("login_token") String login_token,
+			@Field("type") String type,
 			@Field("is_push") String is_push
 	);
 
 	/**
+	 * 사용자 정보(나이, 성별, 지역, 닉네임)를 입력받으면 서버에 저장하는 메서드
+	 * GetUserInformationActivity에서 사용됨, 테스트해야 함
+	 * @param login_token - 로그인 시 서버에서 생성되는 토큰 (필수)
+	 * @param user_nickname - 유저가 입력한 닉네임 (필수)
+	 * @param age - 유저 나이
+	 * @param gender - 유저 성별(남자, 여자)
+	 * @param city - 유저의 거주 지역
+	 * @return - {
+	 * 				"Status":"200",
+	 * 				"Message":[
+	 * 						{
+	 * 						"age_group":"10대",
+	 * 						"gender":"여자",
+	 * 						"interest":"10대,가출,검정고시,통신비,자퇴,퇴학,중학생,고등학생,소년소녀가정,조손가정,한부모가족,가정위탁,성범죄"
+	 * 						}
+	 * 						]
+	 * 				}
+	 */
+	@FormUrlEncoded
+	@POST("https://www.urbene-fit.com/user")
+	Call<String> registerUserInfo(
+			@Field("login_token") String login_token,
+			@Field("nickName") String user_nickname,
+			@Field("age") String age,
+			@Field("gender") String gender,
+			@Field("city") String city
+	);
+
+	/**
+	 * 사용자가 관심있는 관심사를 수정하는 기능
+	 * ChoiceKeywordActivity에서 사용됨
+	 * @param login_token - 로그인 시 서버에서 생성되는 토큰
+	 * @param type - 요청 타입(interest)
+	 * @param interest - 사용자의 관심사 정보(10대,가출,검정고시,통신비,자퇴,...)
+	 * @return - {
+	 * 			"Status":"200",
+	 * 			"Message":"사용자 관심사 등록이 완료되었습니다."
+	 * 			}
+	 */
+	@FormUrlEncoded
+	@PUT("https://www.urbene-fit.com/user")
+	Call<String> registerUserInterest(
+			@Field("login_token") String login_token,
+			@Field("type") String type,
+			@Field("interest") String interest
+	);
+	// ===================================================================================================
+
+	/* ↓ 혜택 데이터 조회 관련 메서드 */
+	// ===================================================================================================
+	/**
 	 * 아래 인자를 서버로 넘겨서, 해당하는 혜택 정보를 조회하는 메서드
-	 * @param type - detail 고정(혜택 정보 조회)
+	 * DetailBenefitActivity에서 사용
+	 * @param type - "detail" 고정(혜택 정보 조회)
 	 * @param local - 혜택이 제공되는 지역의 이름
 	 * @param welf_name - 혜택 이름
 	 * @param login_token - 로그인 시 서버에서 받는 토큰값
@@ -459,69 +530,6 @@ public interface ApiInterface
 	);
 
 	/**
-	 * 사용자 정보(나이, 성별, 지역, 닉네임)를 입력받으면 서버에 저장하는 메서드
-	 * GetUserInformationActivity에서 사용됨, 테스트해야 함
-	 * @param login_token - 로그인 시 서버에서 생성되는 토큰 (필수)
-	 * @param user_nickname - 유저가 입력한 닉네임 (필수)
-	 * @param age - 유저 나이
-	 * @param gender - 유저 성별(남자, 여자)
-	 * @param city - 유저의 거주 지역
-	 * @return - {
-	 * 				"Status":"200",
-	 * 				"Message":[
-	 * 						{
-	 * 						"age_group":"10대",
-	 * 						"gender":"여자",
-	 * 						"interest":"10대,가출,검정고시,통신비,자퇴,퇴학,중학생,고등학생,소년소녀가정,조손가정,한부모가족,가정위탁,성범죄"
-	 * 						}
-	 * 						]
-	 * 				}
-	 */
-	@FormUrlEncoded
-	@POST("https://www.urbene-fit.com/user")
-	Call<String> registerUserInfo(
-			@Field("login_token") String login_token,
-			@Field("nickName") String user_nickname,
-			@Field("age") String age,
-			@Field("gender") String gender,
-			@Field("city") String city
-	);
-
-	/**
-	 * 사용자가 관심있는 관심사를 등록하는 기능
-	 * ChoiceKeywordActivity에서 사용됨
-	 * @param login_token - 로그인 시 서버에서 생성되는 토큰
-	 * @param type - 요청 타입(interest)
-	 * @param interest - 사용자의 관심사 정보(10대,가출,검정고시,통신비,자퇴,...)
-	 * @return - {
-	 * 			"Status":"200",
-	 * 			"Message":"사용자 관심사 등록이 완료되었습니다."
-	 * 			}
-	 */
-	@FormUrlEncoded
-	@PUT("https://www.urbene-fit.com/user")
-	Call<String> registerUserInterest(
-			@Field("login_token") String login_token,
-			@Field("type") String type,
-			@Field("interest") String interest
-	);
-
-	/**
-	 * 유튜브 영상 정보를 받아오는 메서드
-	 * @return - {
-	 * 			"Status":"200",
-	 * 			"Message":[
-	 * 			{
-	 * 			"thumbnail":"https://i.ytimg.com/vi/V16hJ4ACn_A/default.jpg",
-	 * 			"videoId":"V16hJ4ACn_A",
-	 * 			"title":"잘 알려지지 않은 3가지 혜택! 꼭 받으세요~"
-	 * 			},...(중략)...
-	 * 			"TotalCount":6
-	 */
-	@GET("https://www.urbene-fit.com/youtube")
-	Call<String> getYoutubeInformation();
-
-	/**
 	 * 사용자 관심사에 따라 관련된 혜택을 보여주는 기능
 	 * MainFragment에서 사용 중
 	 * @param login_token - 로그인 시 서버에서 받는 토큰값
@@ -545,24 +553,24 @@ public interface ApiInterface
 			@Query("type") String type,
 			@Query("userAgent") String userAgent
 	);
+	// ===================================================================================================
 
+	/* ↓ 유튜브 관련 메서드 */
+	// ===================================================================================================
 	/**
-	 * 사용자 로그를 서버로 보내는 메서드
-	 * @param os_type - 기기 정보(안드로이드 고정)
-	 * @param os_version - 해당 기기들의 버전 정보
-	 * @param login_token - 로그인 시 서버에서 받는 토큰값
-	 * @param content - 요청하는 파라미터값 정보
-	 * @param request_value - API 통신 시 보낸 파라미터값
-	 * @return - 없음
+	 * 유튜브 영상 정보를 받아오는 메서드
+	 * @return - {
+	 * 			"Status":"200",
+	 * 			"Message":[
+	 * 			{
+	 * 			"thumbnail":"https://i.ytimg.com/vi/V16hJ4ACn_A/default.jpg",
+	 * 			"videoId":"V16hJ4ACn_A",
+	 * 			"title":"잘 알려지지 않은 3가지 혜택! 꼭 받으세요~"
+	 * 			},...(중략)...
+	 * 			"TotalCount":6
 	 */
-	@FormUrlEncoded
-	@POST("https://www.urbene-fit.com/log")
-	Call<String> sendLog(
-			@Field("os_type") String os_type,
-			@Field("os_version") String os_version,
-			@Field("login_token") String login_token,
-			@Field("content") String content,
-			@Field("request_value") String request_value
-	);
+	@GET("https://www.urbene-fit.com/youtube")
+	Call<String> getYoutubeInformation();
+	// ===================================================================================================
 
 }
