@@ -1,6 +1,5 @@
 package com.psj.welfare.activity;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -103,8 +102,8 @@ public class MainTabLayoutActivity extends AppCompatActivity
                         if (sharedPreferences.getString("user_category", "").equals(""))
                         {
                             // 키워드 쉐어드가 비어있으면 로그인 화면으로 이동시킨다
-                            Intent intent = new Intent(MainTabLayoutActivity.this, LoginActivity.class);
-                            startActivity(intent);
+//                            Intent intent = new Intent(MainTabLayoutActivity.this, LoginActivity.class);
+//                            startActivity(intent);
                         }
                         break;
                 }

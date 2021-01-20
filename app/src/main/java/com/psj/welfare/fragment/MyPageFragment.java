@@ -30,7 +30,9 @@ import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.psj.welfare.R;
 import com.psj.welfare.activity.GetUserInformationActivity;
+import com.psj.welfare.activity.LoginActivity;
 import com.psj.welfare.activity.MyInfoUpdateActivity;
+import com.psj.welfare.activity.PersonalInformationActivity;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.OnSingleClickListener;
@@ -50,12 +52,12 @@ public class MyPageFragment extends Fragment
 {
     private final String TAG = "MyPageFragment";
 
-    LinearLayout account_layout;
+    LinearLayout account_layout, benefit_type_layout, terms_location_layout, push_noti_layout;
 
-    ImageView kakao_profile_image, move_update_personal_imageview;
+    ImageView kakao_profile_image, move_update_personal_imageview, privacy_policy_imageview;
     TextView kakao_name, account_platform_text;
     Switch push_noti_switch;
-    Button account_btn, benefit_type_btn, terms_location_based_btn, privacy_policy_btn;
+    Button account_btn, benefit_type_btn, terms_location_based_btn, privacy_policy_btn, mypage_login_btn;
     Toolbar mypage_toolbar;
 
     private SharedPreferences sharedPreferences;
@@ -90,6 +92,11 @@ public class MyPageFragment extends Fragment
 
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
         server_token = sharedPreferences.getString("token", "");
+        // 서버에서 전송받은 토큰이 있다면 로그인한 것이므로 "로그인하러 가기" 버튼을 안 보이게 처리한다
+        if (!server_token.equals(""))
+        {
+            mypage_login_btn.setVisibility(View.GONE);
+        }
 
         mypage_toolbar.setTitle("마이페이지");
         // 프래그먼트에서 툴바를 사용하기 위한 처리
@@ -99,11 +106,12 @@ public class MyPageFragment extends Fragment
         }
 
         profile_image = sharedPreferences.getString(getString(R.string.get_kakao_image), "");
-        if (sharedPreferences.getString(getString(R.string.get_kakao_name), "") != null)
+        if (!sharedPreferences.getString("nickname", "").equals("") || !sharedPreferences.getString("user_area", "").equals("") ||
+        !sharedPreferences.getString("user_age", "").equals("") || !sharedPreferences.getString("user_gender", "").equals(""))
         {
             kakao_nick = sharedPreferences.getString(getString(R.string.get_kakao_name), "");
             kakao_name.setText(kakao_nick);
-            account_platform_text.setText(getString(R.string.set_kakao_account));
+//            account_platform_text.setText(getString(R.string.set_kakao_account));
         }
         else
         {
@@ -157,13 +165,35 @@ public class MyPageFragment extends Fragment
         });
 
         // 혜택 유형
-        benefit_type_btn.setOnClickListener(v -> Toast.makeText(getActivity(), getString(R.string.not_yet), Toast.LENGTH_SHORT).show());
+        benefit_type_layout.setOnClickListener(v -> Toast.makeText(getActivity(), getString(R.string.not_yet), Toast.LENGTH_SHORT).show());
 
         // 위치기반 서비스 이용약관
-        terms_location_based_btn.setOnClickListener(v -> Toast.makeText(getActivity(), getString(R.string.not_yet), Toast.LENGTH_SHORT).show());
+        terms_location_layout.setOnClickListener(v -> Toast.makeText(getActivity(), getString(R.string.not_yet), Toast.LENGTH_SHORT).show());
 
         // 개인정보처리방침
-        privacy_policy_btn.setOnClickListener(v -> Toast.makeText(getActivity(), getString(R.string.not_yet), Toast.LENGTH_SHORT).show());
+        privacy_policy_btn.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), PersonalInformationActivity.class);
+            startActivity(intent);
+        });
+        privacy_policy_imageview.setOnClickListener(new OnSingleClickListener()
+        {
+            @Override
+            public void onSingleClick(View v)
+            {
+                Intent intent = new Intent(getActivity(), PersonalInformationActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        mypage_login_btn.setOnClickListener(new OnSingleClickListener()
+        {
+            @Override
+            public void onSingleClick(View v)
+            {
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                startActivity(intent);
+            }
+        });
 
         // 이름 우측의 >를 누르면 개인정보 수정 액티비티로 이동한다
         move_update_personal_imageview.setOnClickListener(v -> {
@@ -259,21 +289,28 @@ public class MyPageFragment extends Fragment
         });
     }
 
+    /* getUserInfo()로 서버에서 받은 JSON 값을 파싱할 때 사용하는 메서드 */
     private void jsonParsing(String response)
     {
         try
         {
             JSONObject jsonObject = new JSONObject(response);
-            checked = jsonObject.getString(getString(R.string.push_value));
+            checked = jsonObject.getString("is_push");
         }
         catch (JSONException e)
         {
             e.printStackTrace();
         }
         // 비로그인 상태에서 이 화면으로 들어가면 값이 없어서 죽기 때문에 이 예외처리 해야 함
+        // 스위치 체크 상태를 바꾸기 전에 기본 정보, 키워드를 입력받았는지 확인하고 모든 정보를 입력받았다면 그 때 스위치 값을 바꾼다
+        // 카톡 닉네임도 정보를 다 입력한 상태여야만 보이게 한다
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
         String token = sharedPreferences.getString("token", "");
-        if (!token.equals(""))
+        if (!token.equals("") && !sharedPreferences.getString("user_category", "").equals("") &&
+        !sharedPreferences.getString("user_area", "").equals("") &&
+        !sharedPreferences.getString("user_category", "").equals("") &&
+        !sharedPreferences.getString("user_age", "").equals("") &&
+        !sharedPreferences.getString("user_gender", "").equals(""))
         {
             if (checked.equals(getString(R.string.is_true)))
             {
@@ -284,11 +321,19 @@ public class MyPageFragment extends Fragment
                 push_noti_switch.setChecked(false);
             }
         }
+        else
+        {
+            kakao_name.setText("");
+        }
     }
 
     private void init(View view)
     {
         account_layout = view.findViewById(R.id.account_layout);
+        benefit_type_layout = view.findViewById(R.id.benefit_type_layout);
+        terms_location_layout = view.findViewById(R.id.terms_location_layout);
+        push_noti_layout = view.findViewById(R.id.push_noti_layout);
+
         mypage_toolbar = view.findViewById(R.id.mypage_toolbar);
         kakao_profile_image = view.findViewById(R.id.kakao_profile_image);
         account_btn = view.findViewById(R.id.account_btn);
@@ -296,9 +341,12 @@ public class MyPageFragment extends Fragment
         benefit_type_btn = view.findViewById(R.id.benefit_type_btn);
         terms_location_based_btn = view.findViewById(R.id.terms_location_based_btn);
         privacy_policy_btn = view.findViewById(R.id.privacy_policy_btn);
+        mypage_login_btn = view.findViewById(R.id.mypage_login_btn);
+
         kakao_name = view.findViewById(R.id.kakao_name);
         account_platform_text = view.findViewById(R.id.account_platform_text);
         move_update_personal_imageview = view.findViewById(R.id.move_update_personal_imageview);
+        privacy_policy_imageview = view.findViewById(R.id.privacy_policy_imageview);
     }
 
 }

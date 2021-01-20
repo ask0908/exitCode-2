@@ -811,7 +811,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"
                         android:fontFamily="@font/nanum_barun_gothic_bold"
-                        android:text="이런 혜택들이 당신을 기다리고 있어요"
+                        android:text="당신이 받을 혜택에 대해 설명해 드릴게요"
                         android:textColor="@color/colorBlack"
                         android:gravity="center"/>
 

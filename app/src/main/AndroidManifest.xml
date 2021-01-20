@@ -22,8 +22,9 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
+        <activity android:name=".activity.PersonalInformationActivity"/>
         <activity android:name=".Test.MyPage.TestChangeMyInformActivity" />
-        <activity android:name=".Test.Review.TestReviewWriteActivity"/>
+        <activity android:name=".Test.Review.TestReviewWriteActivity" />
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,9 +35,9 @@
         <activity android:name=".activity.ChoiceKeywordActivity" />
         <activity android:name=".activity.SearchResultActivity" />
         <activity android:name=".activity.YoutubeActivity" />
-        <activity android:name=".activity.ChangeUserInformationActivity" />
-        <activity android:name=".activity.ReviewUpdateActivity"
-            android:theme="@style/ReviewTheme"/>
+        <activity
+            android:name=".activity.ReviewUpdateActivity"
+            android:theme="@style/ReviewTheme" />
         <activity android:name=".activity.GetUserInformationActivity" />
         <activity android:name=".activity.CalculatorResultActivity" />
         <activity
@@ -50,7 +51,7 @@
         <activity
             android:name=".activity.ReviewActivity"
             android:parentActivityName=".activity.DetailBenefitActivity"
-            android:theme="@style/ReviewTheme"/>
+            android:theme="@style/ReviewTheme" />
         <activity android:name=".activity.TestActivity" />
         <activity android:name=".activity.Compatibility.Compatibility_FourthActivity" />
         <activity android:name=".Test.CompatibilityTestActivity" />
@@ -76,7 +77,7 @@
 
         <activity android:name=".activity.MainTabLayoutActivity" />
         <activity android:name=".activity.ResultBenefitActivity" />
-        <activity android:name=".activity.LoginActivity"/>
+        <activity android:name=".activity.LoginActivity" />
         <activity android:name=".activity.DetailBenefitActivity" />
 
         <service

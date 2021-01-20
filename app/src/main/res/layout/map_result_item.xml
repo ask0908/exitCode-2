@@ -11,27 +11,6 @@
     android:paddingEnd="25dp"
     app:cardCornerRadius="25dp">
 
-<!--    <ImageView-->
-<!--        android:id="@+id/map_result_benefit_btn"-->
-<!--        android:layout_width="50dp"-->
-<!--        android:layout_height="50dp"-->
-<!--        android:layout_gravity="end"-->
-<!--        android:layout_marginTop="22dp"-->
-<!--        android:layout_marginEnd="22.5dp"-->
-<!--        android:src="@drawable/add_black" />-->
-
-<!--    <TextView-->
-<!--        android:id="@+id/map_result_benefit_name"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:layout_marginTop="35dp"-->
-<!--        android:fontFamily="@font/jalnan"-->
-<!--        android:lineSpacingExtra="11.5sp"-->
-<!--        android:paddingEnd="88.8dp"-->
-<!--        android:text="의료수급권자 영유아건강검진비 지원"-->
-<!--        android:textColor="@color/colorBlack"-->
-<!--        android:textSize="21.5sp" />-->
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/benefit_layout"
         android:layout_width="match_parent"
@@ -52,7 +31,6 @@
             android:shadowDx="-2"
             android:shadowDy="-2"
             android:shadowRadius="3"
-            android:text="스타트업 청년일자리 지원사업"
             android:textColor="@color/colorMainWhite"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -64,7 +42,6 @@
             android:layout_height="150dp"
             android:layout_marginStart="30dp"
             android:layout_marginTop="16dp"
-            android:src="@drawable/counseling"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.586"
             app:layout_constraintStart_toEndOf="@id/map_result_benefit_name"
@@ -79,7 +56,6 @@
             android:background="@drawable/keyword_round_textview_purple"
             android:fontFamily="@font/nanum_barun_gothic_bold"
             android:padding="12dp"
-            android:text="#서울"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -188,14 +188,6 @@
                 android:textColor="@color/colorBlack"
                 android:textSize="20sp" />
 
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight=".20"
-                android:layout_marginTop="3dp"
-                android:src="@drawable/arrow_right_black"
-                android:layout_gravity="center"/>
-
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView

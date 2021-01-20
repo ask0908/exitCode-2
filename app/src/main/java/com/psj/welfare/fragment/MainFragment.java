@@ -190,9 +190,9 @@ public class MainFragment extends Fragment
 
         recommend_welfare_textview = view.findViewById(R.id.recommend_welfare_textview);
         recommend_welfare_count = view.findViewById(R.id.recommend_welfare_count);
-        userOrderedWelfare();
         // 로그인해서 카톡 정보가 있다면 유저이름을 따와서 텍스트뷰에 넣는다
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+
         if (!sharedPreferences.getString("nickname", "").equals(""))
         {
             String kakao_name = sharedPreferences.getString("nickname", "");
@@ -229,7 +229,6 @@ public class MainFragment extends Fragment
         // 기본 정보 입력 화면으로 이동시킨다
         find_welfare_btn.setOnClickListener(v -> {
             Log.e(TAG, "클릭됨");
-//            Intent intent = new Intent(getActivity(), GetUserInformationActivity.class);
             Intent intent = new Intent(getActivity(), LoginActivity.class);
             startActivity(intent);
         });
@@ -242,7 +241,6 @@ public class MainFragment extends Fragment
         viewPager2.setAdapter(new TestViewPagerAdapter(getActivity(), list));
 
         // 사용자 기본 정보(나이, 성별, 지역)가 있는 경우 & 로그인한 경우 뷰페이저를 gone으로 돌린다
-        // 로그인한 경우에 대한 예외처리는 아직
         if (!sharedPreferences.getString("user_area", "").equals("") || !sharedPreferences.getString("user_nickname", "").equals("")
                 || !sharedPreferences.getString("user_gender", "").equals(""))
         {
@@ -257,6 +255,14 @@ public class MainFragment extends Fragment
         /* 맞춤 혜택 보여주는 가로 리사이클러뷰 선언, 처리 */
         recom_recycler = view.findViewById(R.id.recom_recycler);
         recom_recycler.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
+        /* 맞춤 혜택을 위한 개인정보, 관심사 데이터가 없다면 맞춤 혜택을 보여주지 말아야 한다 */
+        if (sharedPreferences.getString("user_category", "").equals("") || sharedPreferences.getString("user_area", "").equals("")
+                || sharedPreferences.getString("user_age", "").equals("") || sharedPreferences.getString("user_gender", "").equals(""))
+        {
+            recommend_welfare_textview.setVisibility(View.GONE);
+            recommend_welfare_count.setVisibility(View.GONE);
+            recom_recycler.setVisibility(View.GONE);
+        }
 
         /* 카톡 회원탈퇴 버튼. 구글 로그인 테스트 위해 집어넣었음 */
         kakao_unlink_btn = view.findViewById(R.id.kakao_unlink_btn);
@@ -416,21 +422,6 @@ public class MainFragment extends Fragment
         });
 
         Log.e(TAG, "메인에서 count_int = " + count_int);
-//        if (count_int > 10)
-//        {
-//            Log.e(TAG, "10보다 큰 경우 돌입");
-//            SpannableString count_span = new SpannableString(recommend_welfare_count.getText().toString());
-//            count_span.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 5, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//            recommend_welfare_count.setText(count_span);
-//        }
-//        else if (count_int < 10)
-//        {
-//            Log.e(TAG, "10보다 작은 경우 돌입");
-//            SpannableString count_span = new SpannableString(recommend_welfare_count.getText().toString());
-//            count_span.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 5, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//            recommend_welfare_count.setText(count_span);
-//        }
-
     }
 
     /* 유저 관심사에 따라 관련 혜택들을 보여주는 메서드, 처음에 액티비티가 켜질 때 혜택들을 제대로 받아오지 못하는 경우가 있다
@@ -505,16 +496,16 @@ public class MainFragment extends Fragment
         {
             recommend_welfare_textview.setVisibility(View.GONE);
             recommend_welfare_count.setVisibility(View.GONE);
+            recom_recycler.setVisibility(View.GONE);
         }
         // 맞춤 혜택 보여주는 가로 리사이클러뷰의 어댑터 설정
         recommendAdapter = new RecommendAdapter(getActivity(), list, recom_itemClickListener);
         recommendAdapter.setOnItemClickListener((view, pos) ->
         {
             String name = list.get(pos).getWelf_name();
-            String tag = "#" + list.get(pos).getTag().replace(";;", " #");
             Log.e(TAG, "선택한 혜택명 = " + name);
-            Log.e(TAG, list.get(pos).getWelf_category().replace(";; ", ", "));
-            Log.e(TAG, list.get(pos).getWelf_local());
+            Log.e(TAG, "선택된 하위 카테고리 = " + list.get(pos).getWelf_category());
+            Log.e(TAG, "선택된 하위 카테고리 리스트의 크기 = " + list.size());
             // 맞춤 혜택 클릭 시 혜택 상세보기 페이지로 혜택명을 갖고 이동한다
             // 혜택명은 상세보기 페이지에서 서버로 넘겨 혜택의 내용들을 가져올 때 사용한다
             Intent intent = new Intent(getActivity(), DetailBenefitActivity.class);
@@ -526,14 +517,12 @@ public class MainFragment extends Fragment
 
         if (count_int > 9)
         {
-            Log.e(TAG, "10보다 큰 경우 돌입");
             SpannableString count_span = new SpannableString(recommend_welfare_count.getText().toString());
             count_span.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 5, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             recommend_welfare_count.setText(count_span);
         }
         else
         {
-            Log.e(TAG, "10보다 작은 경우 돌입");
             SpannableString count_span = new SpannableString(recommend_welfare_count.getText().toString());
             count_span.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 5, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             recommend_welfare_count.setText(count_span);
@@ -694,7 +683,6 @@ public class MainFragment extends Fragment
     {
         super.onResume();
         getYoutubeInformation();
-        /* 맞춤 혜택들을 가로 리사이클러뷰에 담아 보여주는 메서드 */
-//        userOrderedWelfare();
+        userOrderedWelfare();
     }
 }

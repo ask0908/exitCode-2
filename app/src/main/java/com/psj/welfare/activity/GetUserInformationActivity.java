@@ -571,5 +571,4 @@ public class GetUserInformationActivity extends AppCompatActivity
             }
         });
     }
-
 }
