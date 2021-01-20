@@ -89,6 +89,10 @@
         <item name="android:layout_height">2dp</item>
     </style>
 
+    <style name="switch_font" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="fontFamily">@font/jalnan</item>
+    </style>
+
     <!-- MainTabLayoutActivity의 하단 탭 배경화면 설정 -->
 <!--    <style name="Base.Widget.Design.TabLayout" parent="android:Widget">-->
 <!--        <item name="tabBackground">@drawable/tab_background</item>-->

@@ -11,10 +11,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.psj.welfare.Data.SearchItem;
 import com.psj.welfare.R;
 
+import java.util.Collections;
 import java.util.List;
 
 /* SearchResultActivity의 세로 리사이클러뷰에 쓰이는 어댑터 */
@@ -51,56 +51,197 @@ public class VerticalSearchResultAdapter extends RecyclerView.Adapter<VerticalSe
         holder.search_result_textview.setText(item.getWelf_name());
         holder.search_welf_local_textview.setText("#" + item.getWelf_local());
 
-        Log.e("키워드 검색 후", "카테고리 = " + list.get(position).getWelf_category());
+//        Log.e("키워드 검색 후", "카테고리 = " + list.get(position).getWelf_category());
+        // 첫 번째 요소만 빼고 뒤의 요소를 전부 쳐낸다
+        List<String> item_list = Collections.singletonList(list.get(position).getWelf_category());
+        for (int i = 0; i < item_list.size(); i++)
+        {
+            Log.e("ccc", "item_list = " + item_list);
+        }
+        // 리스트의 요소 뒤에 붙어있는 ;; 같은 구분자들을 전부 공백으로 바꾼다
+        StringBuilder listToString = new StringBuilder();
+        for (String str : item_list)
+        {
+            listToString.append(str);
+        }
+        // split한 결과의 첫 번째 요소를 변수에 담아 이 변수값을 통해 어떤 이미지를 띄울지 정한다
+        String after_str = listToString.toString().split(";;")[0];
+        Log.e("ccc", ";;와 그 뒤의 문자열 지운 결과 : " + after_str);
 
         switch (list.get(position).getWelf_category())
         {
             case "일자리 지원" :
-                Glide.with(context)
-                        .load(R.drawable.job)
-                        .into(holder.search_result_imageview);
+//                Glide.with(context)
+//                        .load(R.drawable.job)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.job);
                 break;
 
             case "카드 지원" :
-                Glide.with(context)
-                        .load(R.drawable.card_support)
-                        .into(holder.search_result_imageview);
+//                Glide.with(context)
+//                        .load(R.drawable.card_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.card_support);
                 break;
 
             case "인력 지원" :
-                Glide.with(context)
-                        .load(R.drawable.person_support)
-                        .into(holder.search_result_imageview);
+//                Glide.with(context)
+//                        .load(R.drawable.person_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.person_support);
                 break;
 
             case "현금 지원" :
-                Glide.with(context)
-                        .load(R.drawable.goods_support)
-                        .into(holder.search_result_imageview);
+//                Glide.with(context)
+//                        .load(R.drawable.goods_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.goods_support);
                 break;
 
             case "현물 지원" :
-                Glide.with(context)
-                        .load(R.drawable.goods_support)
-                        .into(holder.search_result_imageview);
+//                Glide.with(context)
+//                        .load(R.drawable.goods_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.goods_support);
                 break;
 
             case "대출 지원" :
-                Glide.with(context)
-                        .load(R.drawable.loan)
-                        .into(holder.search_result_imageview);
+//                Glide.with(context)
+//                        .load(R.drawable.loan_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.loan_support);
                 break;
 
             case "임대 지원" :
-                Glide.with(context)
-                        .load(R.drawable.rent_support)
-                        .into(holder.search_result_imageview);
+//                Glide.with(context)
+//                        .load(R.drawable.rent_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.rent_support);
                 break;
 
             case "보험 지원" :
-                Glide.with(context)
-                        .load(R.drawable.insurance_support)
-                        .into(holder.search_result_imageview);
+//                Glide.with(context)
+//                        .load(R.drawable.insurance_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.insurance_support);
+                break;
+
+            case "법률 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.law_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.law_support);
+                break;
+
+            case "상담 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.counseling_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.counseling_support);
+                break;
+
+            case "물품 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.goods_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.goods_support);
+                break;
+
+            case "재활 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.recover_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.recover_support);
+                break;
+
+            case "창업 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.foundation_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.foundation_support);
+                break;
+
+            case "진료 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.medical_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.medical_support);
+                break;
+
+            case "활동 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.activity_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.activity_support);
+                break;
+
+            case "서비스 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.service_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.service_support);
+                break;
+
+            case "치료 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.care_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.care_support);
+                break;
+
+            case "감면 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.tax_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.tax_support);
+                break;
+
+            case "멘토링 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.mentor_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.mentor_support);
+                break;
+
+            case "정보 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.information_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.information_support);
+                break;
+
+            case "숙식 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.room_board_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.room_board_support);
+                break;
+
+            case "문화체험 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.culture_support)
+//                        .into(holder.search_result_imageview);
+                holder.search_result_imageview.setImageResource(R.drawable.culture_support);
+                break;
+
+            case "취업 지원" :
+                holder.search_result_imageview.setImageResource(R.drawable.job_hunt_support);
+                break;
+
+            case "교육 지원" :
+                holder.search_result_imageview.setImageResource(R.drawable.learning_support);
+                break;
+
+            case "교육지원" :
+                holder.search_result_imageview.setImageResource(R.drawable.learning_support);
+                break;
+
+            case "공간 지원" :
+                holder.search_result_imageview.setImageResource(R.drawable.counseling_support);
+                break;
+
+            case "사업화 지원" :
+                holder.search_result_imageview.setImageResource(R.drawable.office_support);
                 break;
 
             default:

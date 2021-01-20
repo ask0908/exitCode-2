@@ -364,13 +364,4 @@ public class ResultBenefitActivity extends AppCompatActivity
         });
         bottom_recycler.setAdapter(bottom_adapter);
     }
-
-    @Override
-    protected void onPause()
-    {
-        super.onPause();
-//        favor_data.clear();
-//        list.clear();
-//        top_list.clear();
-    }
 }

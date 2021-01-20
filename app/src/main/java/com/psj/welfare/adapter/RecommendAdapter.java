@@ -1,6 +1,7 @@
 package com.psj.welfare.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.psj.welfare.Data.RecommendItem;
 import com.psj.welfare.R;
 
+import java.util.Collections;
 import java.util.List;
 
 /* MainFragment에서 추천 혜택들을 가로 리사이클러뷰로 보여줄 때 사용하는 어댑터 */
@@ -48,60 +49,203 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.Reco
     public void onBindViewHolder(@NonNull RecommendAdapter.RecommendViewHolder holder, int position)
     {
         RecommendItem item = list.get(position);
-        String final_tag = "";
         holder.recommend_welf_name.setText(item.getWelf_name());
         // 서버에서 받은 데이터에 들어있는 구분자를 해시태그로 바꾼다
         holder.recommend_local.setText("#" + list.get(position).getWelf_local());
-        switch (list.get(position).getWelf_category())
+        Log.e("ddd", "welf_category : " + list.get(position).getWelf_category());
+        // 첫 번째 요소만 빼고 뒤의 요소를 전부 쳐낸다
+        List<String> item_list = Collections.singletonList(list.get(position).getWelf_category());
+        for (int i = 0; i < item_list.size(); i++)
+        {
+            Log.e("ddd", "item_list = " + item_list);
+        }
+        // 리스트의 요소 뒤에 붙어있는 ;; 같은 구분자들을 전부 공백으로 바꾼다
+        StringBuilder listToString = new StringBuilder();
+        for (String str : item_list)
+        {
+            listToString.append(str);
+        }
+        String after_str = listToString.toString().split(";;")[0];
+        Log.e("ddd", ";;와 그 뒤의 문자열 지운 결과 : " + after_str);
+        switch (after_str)
         {
             case "일자리 지원" :
-                Glide.with(context)
-                        .load(R.drawable.counseling)
-                        .into(holder.recommend_welf_image);
+//                Glide.with(context)
+//                        .load(R.drawable.job)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.job);
                 break;
 
             case "카드 지원" :
-                Glide.with(context)
-                        .load(R.drawable.loan)
-                        .into(holder.recommend_welf_image);
+//                Glide.with(context)
+//                        .load(R.drawable.card_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.card_support);
+                break;
+
+            case "인력 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.person_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.person_support);
                 break;
 
             case "현금 지원" :
-                Glide.with(context)
-                        .load(R.drawable.cash)
-                        .into(holder.recommend_welf_image);
+//                Glide.with(context)
+//                        .load(R.drawable.goods_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.goods_support);
                 break;
 
             case "현물 지원" :
-                Glide.with(context)
-                        .load(R.drawable.loan)
-                        .into(holder.recommend_welf_image);
+//                Glide.with(context)
+//                        .load(R.drawable.goods_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.goods_support);
                 break;
 
             case "대출 지원" :
-                Glide.with(context)
-                        .load(R.drawable.loan)
-                        .into(holder.recommend_welf_image);
+//                Glide.with(context)
+//                        .load(R.drawable.loan_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.loan_support);
                 break;
 
             case "임대 지원" :
-                Glide.with(context)
-                        .load(R.drawable.house)
-                        .into(holder.recommend_welf_image);
+//                Glide.with(context)
+//                        .load(R.drawable.rent_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.rent_support);
                 break;
 
             case "보험 지원" :
-                Glide.with(context)
-                        .load(R.drawable.cash)
-                        .into(holder.recommend_welf_image);
+//                Glide.with(context)
+//                        .load(R.drawable.insurance_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.insurance_support);
+                break;
+
+            case "법률 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.law_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.law_support);
+                break;
+
+            case "상담 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.counseling_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.counseling_support);
+                break;
+
+            case "물품 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.goods_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.goods_support);
+                break;
+
+            case "재활 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.recover_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.recover_support);
+                break;
+
+            case "창업 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.foundation_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.foundation_support);
+                break;
+
+            case "진료 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.medical_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.medical_support);
+                break;
+
+            case "활동 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.activity_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.activity_support);
+                break;
+
+            case "서비스 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.service_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.service_support);
+                break;
+
+            case "치료 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.care_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.care_support);
+                break;
+
+            case "감면 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.tax_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.tax_support);
+                break;
+
+            case "멘토링 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.mentor_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.mentor_support);
+                break;
+
+            case "정보 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.information_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.information_support);
+                break;
+
+            case "숙식 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.room_board_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.room_board_support);
+                break;
+
+            case "문화체험 지원" :
+//                Glide.with(context)
+//                        .load(R.drawable.culture_support)
+//                        .into(holder.recommend_welf_image);
+                holder.recommend_welf_image.setImageResource(R.drawable.culture_support);
+                break;
+
+            case "취업 지원" :
+                holder.recommend_welf_image.setImageResource(R.drawable.job_hunt_support);
+                break;
+
+            case "교육 지원" :
+                holder.recommend_welf_image.setImageResource(R.drawable.learning_support);
+                break;
+
+            case "교육지원" :
+                holder.recommend_welf_image.setImageResource(R.drawable.learning_support);
+                break;
+
+            case "공간 지원" :
+                holder.recommend_welf_image.setImageResource(R.drawable.counseling_support);
+                break;
+
+            case "사업화 지원" :
+                holder.recommend_welf_image.setImageResource(R.drawable.office_support);
                 break;
 
             default:
                 break;
         }
-//        String tag = item.getTag().replace(";; ", ";;");
-//        String final_tag = tag.replace(";;", " #");
-//        holder.recommend_tag.setText("#" + final_tag);
     }
 
     @Override

@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.borjabravo.readmoretextview.ReadMoreTextView;
-import com.bumptech.glide.Glide;
 import com.hedgehog.ratingbar.RatingBar;
 import com.kakao.kakaolink.v2.KakaoLinkResponse;
 import com.kakao.kakaolink.v2.KakaoLinkService;
@@ -167,9 +166,10 @@ public class DetailBenefitActivity extends AppCompatActivity
     ProgressBar help_progressbar, help_not_progressbar;
 
     // 클릭하면 다이얼로그 나오는 상세조건 텍스트뷰
-    TextView first_target, second_target, third_target;
+    TextView first_target;
     // 혜택 내용을 보여줄 텍스트뷰
-    TextView first_benefit, second_benefit, third_benefit;
+    TextView first_benefit;
+
     String first_welf_target;
     String first_welf_content;
     // 대상을 넣을 리스트
@@ -365,14 +365,14 @@ public class DetailBenefitActivity extends AppCompatActivity
             Log.e(TAG, "인텐트로 가져온 지역명 = " + push_welf_local);
         }
 
-        if (getIntent().hasExtra("area"))
-        {
-            Intent intent = getIntent();
-            map_detail_area = intent.getStringExtra("area");
-            Log.e(TAG, "map_detail_area : " + map_detail_area);
-        }
+//        if (getIntent().hasExtra("area"))
+//        {
+//            Intent intent = getIntent();
+//            map_detail_area = intent.getStringExtra("area");
+//            Log.e(TAG, "map_detail_area : " + map_detail_area);
+//        }
 
-        Log.e(TAG, "getWelfareInformation()에 넣을 혜택명 : " + detail_data);
+//        Log.e(TAG, "getWelfareInformation()에 넣을 혜택명 : " + detail_data);
         /* 혜택의 상세정보를 가져오는 메서드, detail_data에 null이 들어간다 */
         getWelfareInformation();
 
@@ -491,7 +491,7 @@ public class DetailBenefitActivity extends AppCompatActivity
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         // "detail", local(지역 정보), welf_name(혜택 이름), login_token(유저 인증용 토큰 정보), 사용자 로그
         Call<String> call = apiInterface.getWelfareInformation("detail", push_welf_local, push_welf_name, token, LogUtil.getUserLog());
-        Log.e("혜택 상세보기 페이지", "type = detail, push_welf_local = " + push_welf_local + ", push_welf_name = " + push_welf_name +
+        Log.e(TAG, "type = detail, push_welf_local = " + push_welf_local + ", push_welf_name = " + push_welf_name +
                 ", token = " + token + ", " + LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
@@ -739,14 +739,12 @@ public class DetailBenefitActivity extends AppCompatActivity
             {
                 if (welf_image.equals("기본 이미지") && welf_wording.equals("기본 문구"))
                 {
-                    Glide.with(DetailBenefitActivity.this)
-                            .load(R.drawable.detail_main_img)
-                            .into(welf_imageview);
-                    welf_word_textview.setText("기저귀, 분유값 절약하는 스마트한 방법");
+                    welf_imageview.setImageResource(R.drawable.detail_main_img);
+                    welf_word_textview.setText("쉽고\n빠르게\n혜택을\n받아보세요");
                 }
                 else
                 {
-                    // 데이터가 있으면 각 뷰에 넣는다
+                    /* 나중에 서버에 이미지, 문구 추가되면 그걸 가져와서 각 뷰에 넣는다 */
                 }
             }
 
@@ -801,18 +799,25 @@ public class DetailBenefitActivity extends AppCompatActivity
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < tag_list.size(); i++)
                 {
-                    sb.append(tag_list.get(i) + ", ");
+                    sb.append("#" + tag_list.get(i) + ", ");
                 }
                 String sb_result = sb.toString();
                 Log.e("ff", "콤마 붙임 : " + sb_result);
                 // 마지막의 ',' 문자를 지운다
-                first_welf_target = sb_result.substring(0, sb_result.lastIndexOf(","));
-                Log.e("ff", "최종적으로 다이얼로그에 보여야 하는 문구 : " + first_welf_target);
-//                if (!sb_result.equals("") && sb_result.length() > 0 && sb_result.charAt(sb_result.length() - 1) == ',')
-//                {
-//                    first_welf_target = sb_result.substring(0, sb_result.length() - 1);
-//                    Log.e("ff", "최종적으로 다이얼로그에 보여야 하는 문구 : " + first_welf_target);
-//                }
+                String erase_str = "";
+                if (!sb_result.equals(""))
+                {
+                    erase_str = sb_result.substring(0, sb_result.lastIndexOf(","));
+                    Log.e("ff", "마지막의 콤마 삭제 : " + erase_str);
+                }
+                // 콤마를 개행문자로 바꿔서 다이얼로그를 누르면 최종적으로 보일 문자열을 만든다
+                erase_str = erase_str.replaceAll(", ", "\n");
+                Log.e(TAG, "콤마->개행문자 변경 결과 : " + erase_str);
+                if (!erase_str.equals("") && erase_str.lastIndexOf("\n") != -1)
+                {
+                    first_welf_target = erase_str.substring(0, erase_str.lastIndexOf("\n"));
+                }
+                Log.e(TAG, "최종적으로 다이얼로그에 보여야 하는 문구 : " + first_welf_target);
             }
 
             symbolChange(welf_target, welf_contents, welf_contact);
@@ -845,49 +850,35 @@ public class DetailBenefitActivity extends AppCompatActivity
         {
             String target_line = welf_target.replace("^;", "\n");
             String target_comma = target_line.replace(";;", ",");
-            Log.e(TAG, "welf_target의 ;;를 ,로 변환한 결과 : " + target_comma);
+//            Log.e(TAG, "welf_target의 ;;를 ,로 변환한 결과 : " + target_comma);
             /* 받은 데이터에서 ,를 구분자로 스플릿해서 String[]에 담는다 */
             String[] str = target_comma.split(", ");
             for (int i = 0; i < str.length; i++)
             {
-                Log.e(TAG, "', '를 구분자로 스플릿한 결과 = " + str[i]);
+//                Log.e(TAG, "', '를 구분자로 스플릿한 결과 = " + str[i]);
                 target_list.add(str[i]);
             }
-//            if (target_list.size() == 0)
-//            {
-//                first_target.setVisibility(View.GONE);
-//            }
-//            else if (target_list.size() == 1)
-//            {
-//                first_welf_target = target_list.get(0);
-//                Log.e(TAG, "target_list의 크기가 1인 경우 : " + first_welf_target);
-//            }
-//            else if (target_list.size() == 2)
-//            {
-//                first_welf_target = target_list.get(0);
-//                second_welf_target = target_list.get(1);
-//                Log.e(TAG, "target_list의 크기가 2인 경우 : " + first_welf_target + ", " + second_welf_target);
-//            }
         }
         if (welf_content != null)
         {
             String contents_line = welf_content.replace("^;", "\n");
             String contents_comma = contents_line.replace(";;", ",");
-            Log.e(TAG, "welf_content의 ;;를 ,로 변환한 결과 : " + contents_comma);
+            Log.e("xx", "welf_content의 ;;를 ,로 변환한 결과 : " + contents_comma);
             /* 지원내용에 ;; 특수문자를 변환한 내용을 넣는다 */
             first_benefit.setText(contents_comma);
             String[] str = contents_comma.split(", ");
             for (int i = 0; i < str.length; i++)
             {
-                Log.e(TAG, "내용의 ', '를 구분자로 스플릿한 결과 : " + str[i]);
+                Log.e("xx", "내용의 ', '를 구분자로 스플릿한 결과 : " + str[i]);
                 content_list.add(str[i]);
             }
-            Log.e(TAG, "content_list 크기 : " + content_list.size());
+            Log.e("xx", "content_list 크기 : " + content_list.size());
             for (int i = 0; i < content_list.size(); i++)
             {
-                Log.e(TAG, "content_list = " + content_list.get(i) + ", ");
-                first_welf_content = content_list.get(i);
+//                Log.e(TAG, "content_list = " + content_list.get(i) + ", ");
+                first_welf_content = content_list.get(i) + "\n";
             }
+            Log.e("xx", "first_welf_content = " + first_welf_content);
 //            welf_content_detail.setText(contents_comma);
         }
         if (welf_contact != null)

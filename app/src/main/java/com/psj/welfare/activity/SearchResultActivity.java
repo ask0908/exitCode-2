@@ -213,6 +213,8 @@ public class SearchResultActivity extends AppCompatActivity
         {
             String name = top_list.get(pos).getWelf_category();
             Log.e(TAG, "선택한 하위 카테고리명 = " + name);
+            // 선택한 하위 카테고리에 속하는 정책들을 하단 리사이클러뷰에 표시한다
+            // 이 메서드의 JSON 파싱 메서드가 호출되면, 이 파싱 메서드 안에서 해당 하위 카테고리를 상징하는 이미지를 아이템에 set한다
             searchSubCategoryWelfare(name, keyword);
         });
 
@@ -241,6 +243,7 @@ public class SearchResultActivity extends AppCompatActivity
             String name = name_list.get(pos).getWelf_name();
             String local = name_list.get(pos).getWelf_local();
             Log.e(TAG, "선택한 혜택명 = " + name);
+            Log.e(TAG, "카테고리 : " + name_list.get(pos).getWelf_category());
             Intent intent = new Intent(SearchResultActivity.this, DetailBenefitActivity.class);
             intent.putExtra("name", name);
             intent.putExtra("welf_local", local);
@@ -320,6 +323,7 @@ public class SearchResultActivity extends AppCompatActivity
             String name = name_list.get(pos).getWelf_name();
             String local = name_list.get(pos).getWelf_local();
             Log.e(TAG, "선택한 혜택명 = " + name);
+            Log.e(TAG, "카테고리 : " + name_list.get(pos).getWelf_category());
             // 혜택 이름을 선택하면 이 이름을 갖고 액티비티를 이동해서 선택한 혜택의 상세 정보를 보여준다
             Intent intent = new Intent(SearchResultActivity.this, DetailBenefitActivity.class);
             intent.putExtra("name", name);

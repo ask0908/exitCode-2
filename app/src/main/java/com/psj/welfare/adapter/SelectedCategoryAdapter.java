@@ -1,6 +1,7 @@
 package com.psj.welfare.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.psj.welfare.Data.CategorySearchResultItem;
 import com.psj.welfare.R;
 
+import java.util.Collections;
 import java.util.List;
 
 /* ResultBenefitActivity의 가로 리사이클러뷰(category_recycler)에 쓰는 어댑터 */
@@ -21,8 +23,6 @@ public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCatego
     private Context context;
     private List<CategorySearchResultItem> list;
     private ItemClickListener itemClickListener;
-
-    public static int selected_item = 0;
 
     public void setOnItemClickListener(ItemClickListener itemClickListener)
     {
@@ -58,7 +58,21 @@ public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCatego
     public void onBindViewHolder(@NonNull SelectedCategoryAdapter.SelectedCategoryViewHolder holder, int position)
     {
         CategorySearchResultItem item = list.get(position);
-        holder.category_btn.setText(item.getWelf_category());
+        // 현금 지원 뒤에 ;;가 붙어서 이것에 대한 예외처리
+        List<String> item_list = Collections.singletonList(list.get(position).getWelf_category());
+        for (int i = 0; i < item_list.size(); i++)
+        {
+            Log.e("zzz", "item_list = " + item_list);
+        }
+        StringBuilder listToString = new StringBuilder();
+        for (String str : item_list)
+        {
+            listToString.append(str);
+        }
+        Log.e("zzz", "listToString : " + listToString);
+        String after_str = listToString.toString().split(";;")[0];
+//        holder.category_btn.setText(item.getWelf_category());
+        holder.category_btn.setText(after_str);
     }
 
     @Override

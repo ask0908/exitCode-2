@@ -67,7 +67,7 @@ public class MapDetailActivity extends AppCompatActivity
     String number_of_benefit;
 
     // 서버에서 받는 JSON 값을 파싱할 때 쓸 변수
-    String parent_category, welf_name, welf_category, tag;
+    String parent_category, welf_name, welf_category, tag, welf_local;
 
     // 상단 리사이클러뷰에 나오는 카테고리를 눌렀을 때 서버에서 가져오는 데이터를 파싱하기 위해 사용하는 변수
     String second_welf_name, second_parent_category, second_welf_category, second_tag, second_welf_local, second_count;
@@ -570,7 +570,6 @@ public class MapDetailActivity extends AppCompatActivity
             Intent see_detail_intent = new Intent(MapDetailActivity.this, DetailBenefitActivity.class);
             see_detail_intent.putExtra("name", name);
             see_detail_intent.putExtra("welf_local", area);
-            Log.e(TAG, "area = " + area);
             startActivity(see_detail_intent);
         });
         map_result_recyclerview.setAdapter(map_adapter);
@@ -630,6 +629,7 @@ public class MapDetailActivity extends AppCompatActivity
                 item.setKeyword_tag(second_tag);
                 item.setParent_category(second_parent_category);
                 item.setWelf_name(second_welf_name);
+                item.setWelf_local(second_welf_local);
                 second_item_list.add(item);
             }
         }
@@ -653,11 +653,10 @@ public class MapDetailActivity extends AppCompatActivity
         map_adapter.setOnItemClickListener((view, position) ->
         {
             String name = second_item_list.get(position).getWelf_name();
-            Log.e(TAG, "혜택 이름 = " + name);
+            String second_local = second_item_list.get(position).getWelf_local();
             Intent see_detail_intent = new Intent(MapDetailActivity.this, DetailBenefitActivity.class);
             see_detail_intent.putExtra("name", name);
-            see_detail_intent.putExtra("welf_local", area);
-            Log.e(TAG, "area = " + area);
+            see_detail_intent.putExtra("welf_local", second_local);
             startActivity(see_detail_intent);
         });
         map_result_recyclerview.setAdapter(map_adapter);
