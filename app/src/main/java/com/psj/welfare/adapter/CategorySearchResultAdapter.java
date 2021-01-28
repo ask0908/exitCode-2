@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.psj.welfare.Data.CategorySearchResultItem;
@@ -201,6 +202,7 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
 
     public static class CategorySearchResultViewHolder extends RecyclerView.ViewHolder
     {
+        CardView category_search_item;
         ImageView result_imageview;
         TextView result_textview, welf_local_textview;
         ItemClickListener itemClickListener;
@@ -209,11 +211,12 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
         {
             super(view);
 
+            category_search_item = view.findViewById(R.id.category_search_item);
             welf_local_textview = view.findViewById(R.id.welf_local_textview);
             result_imageview = view.findViewById(R.id.result_imageview);
             result_textview = view.findViewById(R.id.category_search_result_title);
             this.itemClickListener = itemClickListener;
-            result_textview.setOnClickListener(v -> {
+            category_search_item.setOnClickListener(v -> {
                 int pos = getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION && itemClickListener != null)
                 {

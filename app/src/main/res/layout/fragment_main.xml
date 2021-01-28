@@ -102,9 +102,11 @@
                         android:layout_weight=".40"
                         android:background="@drawable/shadow_button_layer_list"
                         android:fontFamily="@font/jalnan"
-                        android:text="혜택찾기"
+                        android:padding="10dp"
+                        android:lineSpacingExtra="6sp"
+                        android:text="혜택 찾기"
                         android:textColor="@color/colorPrimaryDark"
-                        android:textSize="15sp"
+                        android:textSize="18sp"
                         android:translationZ="10dp" />
 
                 </LinearLayout>

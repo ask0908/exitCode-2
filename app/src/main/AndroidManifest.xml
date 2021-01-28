@@ -22,7 +22,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
-        <activity android:name=".activity.PersonalInformationActivity"/>
+        <activity android:name=".activity.PersonalInformationActivity" />
         <activity android:name=".Test.MyPage.TestChangeMyInformActivity" />
         <activity android:name=".Test.Review.TestReviewWriteActivity" />
         <activity android:name=".activity.SplashActivity">
@@ -86,6 +86,16 @@
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
+        </service>
+        <service
+            android:name=".api.MyFirebaseInstanceIDService"
+            android:enabled="false"
+            android:exported="false"
+            tools:ignore="InnerclassSeparator" />
+        <service android:name="com.google.firebase.components.ComponentDiscoveryService">
+            <meta-data
+                android:name="com.google.firebase.components:com.google.firebase.iid.Registrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
         </service>
     </application>
 

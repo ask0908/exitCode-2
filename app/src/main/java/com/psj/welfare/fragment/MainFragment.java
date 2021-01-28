@@ -47,6 +47,7 @@ import com.psj.welfare.adapter.HorizontalYoutubeAdapter;
 import com.psj.welfare.adapter.RecommendAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.custom.OnSingleClickListener;
 import com.psj.welfare.util.GpsTracker;
 import com.psj.welfare.util.LogUtil;
 
@@ -226,11 +227,28 @@ public class MainFragment extends Fragment
         }
         map_btn = view.findViewById(R.id.map_btn);
         find_welfare_btn = view.findViewById(R.id.find_welfare_btn);
-        // 기본 정보 입력 화면으로 이동시킨다
+        // 비로그인 시에만 보이는 레이아웃, 누르면 맞춤 혜택 찾으러 가겠냐는 다이얼로그를 띄우고 예를 누르면 이동시킨다
         find_welfare_btn.setOnClickListener(v -> {
             Log.e(TAG, "클릭됨");
-            Intent intent = new Intent(getActivity(), LoginActivity.class);
-            startActivity(intent);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("맞춤 혜택을 확인하시려면 먼저 로그인이 필요해요\n로그인하시겠어요?")
+                    .setPositiveButton("예", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            dialog.dismiss();
+                            Intent intent = new Intent(getActivity(), LoginActivity.class);
+                            startActivity(intent);
+                        }
+                    }).setNegativeButton("아니오", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    dialog.dismiss();
+                }
+            }).show();
         });
 
         /* 비로그인 때만 보이는 뷰페이저 */
@@ -322,103 +340,107 @@ public class MainFragment extends Fragment
         });
 
         // 내 주변 혜택 찾기 버튼
-        map_btn.setOnClickListener(v ->
+        map_btn.setOnClickListener(new OnSingleClickListener()
         {
-            // 유저의 위치정보를 찾는 클래스의 객체 생성(Fragment기 때문에 인자로 getActivity()를 넣어야 함!!)
-            gpsTracker = new GpsTracker(getActivity());
+            @Override
+            public void onSingleClick(View v)
+            {
+                // 유저의 위치정보를 찾는 클래스의 객체 생성(Fragment기 때문에 인자로 getActivity()를 넣어야 함!!)
+                gpsTracker = new GpsTracker(getActivity());
 
-            // 유저의 위치에서 위도, 경도값을 가져와 변수에 저장
-            double latitude = gpsTracker.getLatitude();
-            double longitude = gpsTracker.getLongitude();
+                // 유저의 위치에서 위도, 경도값을 가져와 변수에 저장
+                double latitude = gpsTracker.getLatitude();
+                double longitude = gpsTracker.getLongitude();
 
-            // 위도, 경도값으로 주소를 만들어 String 변수에 저장
-            String address = getCurrentAddress(latitude, longitude);
+                // 위도, 경도값으로 주소를 만들어 String 변수에 저장
+                String address = getCurrentAddress(latitude, longitude);
 
-            // String 변수 안의 값을 " "을 기준으로 split해서 'OO구' 글자를 빼낸다
-            split_list = new ArrayList<>();
-            String[] result = address.split(" ");
-            split_list.addAll(Arrays.asList(result));
+                // String 변수 안의 값을 " "을 기준으로 split해서 'OO구' 글자를 빼낸다
+                split_list = new ArrayList<>();
+                String[] result = address.split(" ");
+                split_list.addAll(Arrays.asList(result));
 
-            // OO시, OO구에 대한 정보를 각각 변수에 집어넣는다
-            city = split_list.get(1);
-            district = split_list.get(2);
+                // OO시, OO구에 대한 정보를 각각 변수에 집어넣는다
+                city = split_list.get(1);
+                district = split_list.get(2);
 
-            // 들어있는 값에 따라 지역명을 바꿔서 변수에 저장한다
-            if (address.contains("서울특별시"))
-            {
-                user_area = "서울";
-            }
-            if (address.contains("인천광역시"))
-            {
-                user_area = "인천";
-            }
-            if (address.contains("강원도"))
-            {
-                user_area = "강원";
-            }
-            if (address.contains("경기"))
-            {
-                user_area = "경기";
-            }
-            if (address.contains("충청북도"))
-            {
-                user_area = "충북";
-            }
-            if (address.contains("충청남도"))
-            {
-                user_area = "충남";
-            }
-            if (address.contains("세종시"))
-            {
-                user_area = "세종시";
-            }
-            if (address.contains("대전시"))
-            {
-                user_area = "대전시";
-            }
-            if (address.contains("경상북도"))
-            {
-                user_area = "경북";
-            }
-            if (address.contains("울산"))
-            {
-                user_area = "울산";
-            }
-            if (address.contains("대구"))
-            {
-                user_area = "대구";
-            }
-            if (address.contains("부산광역시"))
-            {
-                user_area = "부산";
-            }
-            if (address.contains("경상남도"))
-            {
-                user_area = "경남";
-            }
-            if (address.contains("전라북도"))
-            {
-                user_area = "전북";
-            }
-            if (address.contains("광주광역시"))
-            {
-                user_area = "광주";
-            }
-            if (address.contains("전라남도"))
-            {
-                user_area = "전남";
-            }
-            if (address.contains("제주도"))
-            {
-                user_area = "제주";
-            }
+                // 들어있는 값에 따라 지역명을 바꿔서 변수에 저장한다
+                if (address.contains("서울특별시"))
+                {
+                    user_area = "서울";
+                }
+                if (address.contains("인천광역시"))
+                {
+                    user_area = "인천";
+                }
+                if (address.contains("강원도"))
+                {
+                    user_area = "강원";
+                }
+                if (address.contains("경기"))
+                {
+                    user_area = "경기";
+                }
+                if (address.contains("충청북도"))
+                {
+                    user_area = "충북";
+                }
+                if (address.contains("충청남도"))
+                {
+                    user_area = "충남";
+                }
+                if (address.contains("세종시"))
+                {
+                    user_area = "세종";
+                }
+                if (address.contains("대전시"))
+                {
+                    user_area = "대전";
+                }
+                if (address.contains("경상북도"))
+                {
+                    user_area = "경북";
+                }
+                if (address.contains("울산"))
+                {
+                    user_area = "울산";
+                }
+                if (address.contains("대구"))
+                {
+                    user_area = "대구";
+                }
+                if (address.contains("부산광역시"))
+                {
+                    user_area = "부산";
+                }
+                if (address.contains("경상남도"))
+                {
+                    user_area = "경남";
+                }
+                if (address.contains("전라북도"))
+                {
+                    user_area = "전북";
+                }
+                if (address.contains("광주광역시"))
+                {
+                    user_area = "광주";
+                }
+                if (address.contains("전라남도"))
+                {
+                    user_area = "전남";
+                }
+                if (address.contains("제주도"))
+                {
+                    user_area = "제주";
+                }
 
-            // 변환이 끝난 지역명은 인텐트에 담아서 지도 화면으로 보낸다
-            Intent intent = new Intent(getActivity(), MapActivity.class);
-            intent.putExtra("user_area", user_area);
-            intent.putExtra("city", city);
-            intent.putExtra("district", district);
-            startActivity(intent);
+                // 변환이 끝난 지역명은 인텐트에 담아서 지도 화면으로 보낸다
+                Intent intent = new Intent(getActivity(), MapActivity.class);
+                intent.putExtra("user_area", user_area);
+                intent.putExtra("city", city);
+                intent.putExtra("district", district);
+                startActivity(intent);
+            }
         });
 
         Log.e(TAG, "메인에서 count_int = " + count_int);

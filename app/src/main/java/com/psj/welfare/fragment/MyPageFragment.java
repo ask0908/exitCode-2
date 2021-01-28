@@ -60,7 +60,7 @@ public class MyPageFragment extends Fragment
     Button account_btn, benefit_type_btn, terms_location_based_btn, privacy_policy_btn, mypage_login_btn;
     Toolbar mypage_toolbar;
 
-    private SharedPreferences sharedPreferences;
+    SharedPreferences sharedPreferences;
     String profile_image, kakao_nick, server_token;
     String checked;
     boolean fcm_canceled;
@@ -132,9 +132,18 @@ public class MyPageFragment extends Fragment
             @Override
             public void onSingleClick(View v)
             {
-                Intent intent = new Intent(getActivity(), GetUserInformationActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+                sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+                if (sharedPreferences.getString("user_category", "").equals(""))
+                {
+                    // 키값을 가져왔을 때 value가 없으면 이동시키지 않는다
+                }
+                else
+                {
+                    // value 값이 있으면 로그인을 했다는 거니까 이 때만 개인정보 수정 화면으로 이동시킨다
+                    Intent intent = new Intent(getActivity(), GetUserInformationActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -273,18 +282,19 @@ public class MyPageFragment extends Fragment
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    jsonParsing(response.body());
+                    String result = response.body();
+                    jsonParsing(result);
                 }
                 else
                 {
-//                    Logger.e("onResponse() 실패 = " + response.body());
+                    Log.e(TAG, "실패 : " + response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
             {
-//                Log.e("getUserInfo()", "에러 = " + t.getMessage());
+                Log.e(TAG, "에러 : " + t.getMessage());
             }
         });
     }
