@@ -330,6 +330,7 @@ public interface ApiInterface
 	// ===================================================================================================
 	/**
 	 * 내 정보를 클릭했을 때 서버에서 사용자 정보를 조회해서 가져오는 메서드
+	 * MyPageFragment에서 사용
 	 * @param login_token - 로그인 시 서버에서 생성되는 토큰
 	 * @return - {"Status":"200","Message":"","is_push":"false"}
 	 */
@@ -340,6 +341,7 @@ public interface ApiInterface
 
 	/**
 	 * 유저가 푸시알림설정 스위치를 on으로 두면 true, off로 두면 false를 서버로 보내 기존 값을 수정해 저장하는 메서드
+	 * MyPageFragment에서 사용
 	 * @param login_token - 로그인 시 서버에서 생성되는 토큰
 	 * @param type - "push" 고정
 	 * @param is_push - 스위치의 T/F 값

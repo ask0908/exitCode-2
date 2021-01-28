@@ -94,7 +94,6 @@ public class SearchFragment extends Fragment
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
             {
-
                 if (actionId == EditorInfo.IME_ACTION_SEARCH)
                 {
                     Log.e(TAG, "검색 키워드 : " + searching.getText());

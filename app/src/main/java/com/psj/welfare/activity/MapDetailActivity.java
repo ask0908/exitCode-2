@@ -1,11 +1,16 @@
 package com.psj.welfare.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -41,6 +46,7 @@ public class MapDetailActivity extends AppCompatActivity
     private final String TAG = this.getClass().getSimpleName();
 
     TextView map_result_textview;
+    EditText map_detail_search_edittext;
     // 상단 카테고리 리사이클러뷰, 하단 혜택명 나오는 리사이클러뷰
     RecyclerView result_keyword_recyclerview, map_result_recyclerview;
 
@@ -92,6 +98,21 @@ public class MapDetailActivity extends AppCompatActivity
 
         /* 서버에서 지역별 혜택 개수 받아오는 메서드 */
         getNumberOfBenefit();
+
+        map_detail_search_edittext = findViewById(R.id.map_detail_search_edittext);
+        map_detail_search_edittext.setOnEditorActionListener(new TextView.OnEditorActionListener()
+        {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+            {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH)
+                {
+                    performSearch(map_detail_search_edittext.getText().toString());
+                    return true;
+                }
+                return false;
+            }
+        });
 
         map_result_textview = findViewById(R.id.map_result_textview);
         // 전체, 학생 등 카테고리를 가로로 보여주는 리사이클러뷰
@@ -453,6 +474,16 @@ public class MapDetailActivity extends AppCompatActivity
         }
     }
 
+    private void performSearch(String search)
+    {
+        InputMethodManager imm = (InputMethodManager) MapDetailActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(map_detail_search_edittext.getWindowToken(), 0);
+        Log.e(TAG, "performSearch() 안으로 들어온 검색 키워드 : " + search);
+        Intent intent = new Intent(MapDetailActivity.this, SearchResultActivity.class);
+        intent.putExtra("search", search);
+        startActivity(intent);
+    }
+
     /* 서버에서 지역별 혜택 개수 받아오는 메서드 */
     void getNumberOfBenefit()
     {
@@ -518,7 +549,7 @@ public class MapDetailActivity extends AppCompatActivity
                 {
                     if (keyword_list.get(j).getParent_category().equals(keywordItem.getParent_category()))
                     {
-                        Log.e(TAG, "서버에서 받은 카테고리명들 확인" + keyword_list.get(j).getParent_category());
+                        Log.e(TAG, "서버에서 받은 카테고리명들 확인 : " + keyword_list.get(j).getParent_category());
                         isDuplicate = true;
                         break;
                     }

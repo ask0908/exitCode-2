@@ -263,7 +263,7 @@
             android:background="@drawable/edittext_rectangle"
             android:hint="최대 20자까지 입력해 주세요"
             android:ems="10"
-            android:maxLength="20"
+            android:maxLength="40"
             android:lines="13" />
 
         <TextView

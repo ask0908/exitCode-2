@@ -88,7 +88,7 @@
             android:gravity="start|center"
             android:text="개인정보 수정"
             android:textColor="@color/colorBlack"
-            android:textSize="22sp" />
+            android:textSize="17sp" />
 
         <ImageView
             android:id="@+id/account_imageview"
@@ -103,7 +103,7 @@
         android:id="@+id/push_noti_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:orientation="horizontal"
         android:paddingStart="20dp"
@@ -115,7 +115,7 @@
             android:layout_weight=".70"
             android:fontFamily="@font/jalnan"
             android:text="푸쉬알림설정"
-            android:textSize="22sp"
+            android:textSize="17sp"
             android:textColor="@color/colorBlack"/>
 
         <Switch
@@ -163,7 +163,7 @@
             android:gravity="start|center"
             android:text="혜택유형"
             android:textColor="@color/colorBlack"
-            android:textSize="22sp" />
+            android:textSize="17sp" />
 
         <ImageView
             android:id="@+id/benefit_type_imageview"
@@ -178,7 +178,7 @@
         android:id="@+id/terms_location_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:orientation="horizontal"
         android:paddingStart="20dp"
         android:weightSum="1">
@@ -193,7 +193,7 @@
             android:gravity="start|center"
             android:text="위치기반 서비스 이용약관"
             android:textColor="@color/colorBlack"
-            android:textSize="22sp" />
+            android:textSize="17sp" />
 
         <ImageView
             android:id="@+id/terms_location_based_imageview"
@@ -207,7 +207,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:orientation="horizontal"
         android:paddingStart="20dp"
         android:weightSum="1">
@@ -222,7 +222,7 @@
             android:gravity="start|center"
             android:text="개인정보처리방침"
             android:textColor="@color/colorBlack"
-            android:textSize="22sp" />
+            android:textSize="17sp" />
 
         <ImageView
             android:id="@+id/privacy_policy_imageview"
@@ -237,7 +237,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:orientation="horizontal"
         android:weightSum="1">
 
@@ -248,7 +248,7 @@
             android:fontFamily="@font/jalnan"
             android:text="버전정보"
             android:textColor="@color/colorBlack"
-            android:textSize="22sp" />
+            android:textSize="17sp" />
 
         <TextView
             android:layout_width="0dp"
@@ -265,7 +265,7 @@
         android:layout_height="70dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/btn_primary_dark"
         android:fontFamily="@font/jalnan"
         android:text="로그인하러 가기"

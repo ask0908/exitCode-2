@@ -54,7 +54,7 @@ public class ResultBenefitActivity extends AppCompatActivity
     private CategorySearchResultAdapter.ItemClickListener bottom_itemClickListener;
     List<CategorySearchResultItem> list;
 
-    // 하위 카테고리를 담을 리스트
+    // 가로 리사이클러뷰에 넣을 하위 카테고리를 담을 리스트
     List<CategorySearchResultItem> top_list;
 
     // 세로 리사이클러뷰에 넣을 혜택 이름(welf_name)을 넣을 리스트
@@ -214,7 +214,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                 CategorySearchResultItem top_item = new CategorySearchResultItem();
                 top_item.setWelf_category(welf_category);
 
-                Log.e("jsonParse()", top_item.getWelf_category());
+                Log.e("jsonParse() : ", top_item.getWelf_category());
                 boolean hasDuplicate = false;   // for-loop 안에서 하위 카테고리 이름 중복 여부 확인 시 사용
                 for (int j = 0; j < top_list.size(); j++)
                 {
