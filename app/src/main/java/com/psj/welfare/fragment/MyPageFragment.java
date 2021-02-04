@@ -1,8 +1,10 @@
 package com.psj.welfare.fragment;
 
+import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -26,6 +28,9 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.kakao.auth.Session;
+import com.kakao.usermgmt.UserManagement;
+import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.psj.welfare.R;
@@ -33,6 +38,7 @@ import com.psj.welfare.activity.GetUserInformationActivity;
 import com.psj.welfare.activity.LoginActivity;
 import com.psj.welfare.activity.MyInfoUpdateActivity;
 import com.psj.welfare.activity.PersonalInformationActivity;
+import com.psj.welfare.activity.SplashActivity;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.OnSingleClickListener;
@@ -40,6 +46,8 @@ import com.psj.welfare.custom.OnSingleClickListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 import retrofit2.Call;
@@ -52,9 +60,9 @@ public class MyPageFragment extends Fragment
 {
     private final String TAG = "MyPageFragment";
 
-    LinearLayout account_layout, benefit_type_layout, terms_location_layout, push_noti_layout;
+    LinearLayout account_layout, benefit_type_layout, terms_location_layout, push_noti_layout, privacy_policy_layout, user_layout;
 
-    ImageView kakao_profile_image, move_update_personal_imageview, privacy_policy_imageview;
+    ImageView kakao_profile_image, move_update_personal_imageview, privacy_policy_imageview, account_imageview;
     TextView kakao_name, account_platform_text;
     Switch push_noti_switch;
     Button account_btn, benefit_type_btn, terms_location_based_btn, privacy_policy_btn, mypage_login_btn;
@@ -62,7 +70,7 @@ public class MyPageFragment extends Fragment
 
     SharedPreferences sharedPreferences;
     String profile_image, kakao_nick, server_token;
-    String checked;
+    String checked, encode_str;
     boolean fcm_canceled;
 
     public MyPageFragment()
@@ -93,9 +101,10 @@ public class MyPageFragment extends Fragment
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
         server_token = sharedPreferences.getString("token", "");
         // 서버에서 전송받은 토큰이 있다면 로그인한 것이므로 "로그인하러 가기" 버튼을 안 보이게 처리한다
+        // 서버에서 전송받은 토큰이 있다면 로그인한 것이므로 "로그아웃" 글자로 보이게 한다
         if (!server_token.equals(""))
         {
-            mypage_login_btn.setVisibility(View.GONE);
+            mypage_login_btn.setText("로그아웃");
         }
 
         mypage_toolbar.setTitle("마이페이지");
@@ -111,7 +120,7 @@ public class MyPageFragment extends Fragment
         {
             kakao_nick = sharedPreferences.getString(getString(R.string.get_kakao_name), "");
             kakao_name.setText(kakao_nick);
-//            account_platform_text.setText(getString(R.string.set_kakao_account));
+            account_platform_text.setText(getString(R.string.set_kakao_account));
         }
         else
         {
@@ -126,28 +135,50 @@ public class MyPageFragment extends Fragment
 
         getUserInfo();
 
-        // 계정 설정
-        account_layout.setOnClickListener(new OnSingleClickListener()
+        // 개인정보 수정
+        account_btn.setOnClickListener(new OnSingleClickListener()
         {
             @Override
             public void onSingleClick(View v)
             {
-                sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
-                if (sharedPreferences.getString("user_category", "").equals(""))
-                {
-                    // 키값을 가져왔을 때 value가 없으면 이동시키지 않는다
-                }
-                else
-                {
-                    // value 값이 있으면 로그인을 했다는 거니까 이 때만 개인정보 수정 화면으로 이동시킨다
-                    Intent intent = new Intent(getActivity(), GetUserInformationActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                }
+                Intent intent = new Intent(getActivity(), GetUserInformationActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
             }
         });
 
-        // 푸시 알림 설정 스위치, 로그인할 때마다 뜨니까 귀찮은데 이거 어떻게 고칠까
+        account_imageview.setOnClickListener(new OnSingleClickListener()
+        {
+            @Override
+            public void onSingleClick(View v)
+            {
+                Intent intent = new Intent(getActivity(), GetUserInformationActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
+
+//        account_layout.setOnClickListener(new OnSingleClickListener()
+//        {
+//            @Override
+//            public void onSingleClick(View v)
+//            {
+//                Toast.makeText(getActivity(), "클릭", Toast.LENGTH_SHORT).show();
+//                Intent intent = new Intent(getActivity(), GetUserInformationActivity.class);
+////                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                startActivity(intent);
+////                sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+////                if (!sharedPreferences.getString("user_category", "").equals("") && !sharedPreferences.getBoolean("logout", false))
+////                {
+////                    // value 값이 있고 logout이 false면 로그인을 했다는 거니까 이 때만 개인정보 수정 화면으로 이동시킨다
+////                    Intent intent = new Intent(getActivity(), GetUserInformationActivity.class);
+////                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+////                    startActivity(intent);
+////                }
+//            }
+//        });
+
+        // 푸시 알림 설정 스위치
         push_noti_switch.setOnCheckedChangeListener((buttonView, isChecked) ->
         {
             if (isChecked)
@@ -176,15 +207,8 @@ public class MyPageFragment extends Fragment
         // 혜택 유형
         benefit_type_layout.setOnClickListener(v -> Toast.makeText(getActivity(), getString(R.string.not_yet), Toast.LENGTH_SHORT).show());
 
-        // 위치기반 서비스 이용약관
-        terms_location_layout.setOnClickListener(v -> Toast.makeText(getActivity(), getString(R.string.not_yet), Toast.LENGTH_SHORT).show());
-
-        // 개인정보처리방침
-        privacy_policy_btn.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), PersonalInformationActivity.class);
-            startActivity(intent);
-        });
-        privacy_policy_imageview.setOnClickListener(new OnSingleClickListener()
+        // 이용약관
+        terms_location_layout.setOnClickListener(new OnSingleClickListener()
         {
             @Override
             public void onSingleClick(View v)
@@ -194,24 +218,106 @@ public class MyPageFragment extends Fragment
             }
         });
 
+        // 개인정보처리방침
+        privacy_policy_layout.setOnClickListener(new OnSingleClickListener()
+        {
+            @Override
+            public void onSingleClick(View v)
+            {
+                Intent intent = new Intent(getActivity(), PersonalInformationActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // 로그인하러 가기 or 로그아웃 버튼
         mypage_login_btn.setOnClickListener(new OnSingleClickListener()
         {
             @Override
             public void onSingleClick(View v)
             {
-                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                startActivity(intent);
+                if (mypage_login_btn.getText().toString().equals("로그아웃"))
+                {
+                    // 로그아웃 누를 경우 한번 더 의사확인
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage("로그아웃 하시겠어요?")
+                            .setPositiveButton("예", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+                                    dialog.dismiss();
+                                    Log.e(TAG, "로그아웃 클릭");
+                                    if (Session.getCurrentSession().getTokenInfo().getAccessToken() != null)
+                                    {
+                                        String aaa = Session.getCurrentSession().getTokenInfo().getAccessToken();
+                                        Log.e("로그아웃 이후 카카오 토큰 상태", aaa);
+                                        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                                        UserManagement.getInstance().requestLogout(new LogoutResponseCallback()
+                                        {
+                                            @Override
+                                            public void onCompleteLogout()
+                                            {
+                                                Log.e(TAG, "로그아웃 성공");
+                                                editor.putBoolean("logout", true);
+                                                editor.remove("user_nickname");
+                                                editor.apply();
+                                                Intent intent = new Intent(getActivity(), SplashActivity.class);
+                                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                startActivity(intent);
+                                                getActivity().finish();
+                                            }
+                                        });
+                                    }
+                                }
+                            })
+                            .setNegativeButton("아니오", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+                                    dialog.dismiss();
+                                }
+                            }).show();
+                }
+                else if (mypage_login_btn.getText().toString().equals("로그인하러 가기"))
+                {
+                    // 로그인하러 가기라면 로그인하러 이동한다
+                    sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putBoolean("logout", true);
+                    editor.apply();
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    startActivity(intent);
+                }
             }
         });
 
         // 이름 우측의 >를 누르면 개인정보 수정 액티비티로 이동한다
-        move_update_personal_imageview.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), MyInfoUpdateActivity.class);
-            startActivity(intent);
+        move_update_personal_imageview.setOnClickListener(new OnSingleClickListener()
+        {
+            @Override
+            public void onSingleClick(View v)
+            {
+                Intent intent = new Intent(getActivity(), MyInfoUpdateActivity.class);
+                startActivity(intent);
+            }
         });
 
-        /* 앱 설정 화면에서 볼 수 있는 알림 설정값을 가져오는 메서드. 값 확인 위해 사용 */
-        boolean aaa = NotificationManagerCompat.from(getActivity()).areNotificationsEnabled();
+        // logout 값이 true면 로그아웃한 거니까 로그아웃 상태에 맞게 뷰 상태를 바꾼다
+        if (sharedPreferences.getBoolean("logout", false))
+        {
+            kakao_name.setVisibility(View.GONE);
+            account_platform_text.setVisibility(View.GONE);
+            kakao_profile_image.setVisibility(View.GONE);
+            push_noti_switch.setChecked(false);
+            mypage_login_btn.setText("로그인하러 가기");
+            user_layout.setVisibility(View.GONE);
+            account_layout.setVisibility(View.GONE);
+            terms_location_layout.setVisibility(View.GONE);
+            privacy_policy_layout.setVisibility(View.GONE);
+        }
     }
 
     public boolean areNotiEnabled()
@@ -245,7 +351,10 @@ public class MyPageFragment extends Fragment
     {
         String is_push = String.valueOf(isPushed);
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.putPushSetting(server_token, "push", is_push);
+        encode("푸시 설정값 수정");
+        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+        String session = sharedPreferences.getString("sessionId", "");
+        Call<String> call = apiInterface.putPushSetting(session, encode_str, server_token, "push", is_push);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -270,11 +379,26 @@ public class MyPageFragment extends Fragment
         });
     }
 
+    /* 서버에서 받은 세션 id를 인코딩하는 메서드 */
+    private void encode(String str)
+    {
+        try
+        {
+            encode_str = URLEncoder.encode(str, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     /* 내 정보를 클릭했을 때 서버에서 사용자 정보를 조회해서 가져오는 메서드 */
     void getUserInfo()
     {
+        encode("서버의 사용자 정보 가져오기");
+        String session = sharedPreferences.getString("sessionId", "");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.getUserInfo(server_token);
+        Call<String> call = apiInterface.getUserInfo(session, encode_str, server_token);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -343,6 +467,8 @@ public class MyPageFragment extends Fragment
         benefit_type_layout = view.findViewById(R.id.benefit_type_layout);
         terms_location_layout = view.findViewById(R.id.terms_location_layout);
         push_noti_layout = view.findViewById(R.id.push_noti_layout);
+        privacy_policy_layout = view.findViewById(R.id.privacy_policy_layout);
+        user_layout = view.findViewById(R.id.user_layout);
 
         mypage_toolbar = view.findViewById(R.id.mypage_toolbar);
         kakao_profile_image = view.findViewById(R.id.kakao_profile_image);
@@ -357,6 +483,7 @@ public class MyPageFragment extends Fragment
         account_platform_text = view.findViewById(R.id.account_platform_text);
         move_update_personal_imageview = view.findViewById(R.id.move_update_personal_imageview);
         privacy_policy_imageview = view.findViewById(R.id.privacy_policy_imageview);
+        account_imageview = view.findViewById(R.id.account_imageview);
     }
 
 }

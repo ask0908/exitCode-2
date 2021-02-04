@@ -50,7 +50,6 @@ public class HorizontalSearchResultAdapter extends RecyclerView.Adapter<Horizont
     {
         SearchItem item = list.get(position);
         holder.category_btn.setText(item.getWelf_category());
-//        str_list.add(item.getParent_category());
     }
 
     @Override

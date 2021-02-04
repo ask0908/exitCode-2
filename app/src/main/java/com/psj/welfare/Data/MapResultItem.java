@@ -61,4 +61,5 @@ public class MapResultItem
     {
         this.welf_local = welf_local;
     }
+
 }

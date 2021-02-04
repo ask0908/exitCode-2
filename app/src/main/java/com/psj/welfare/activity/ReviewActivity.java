@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -28,6 +29,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -289,13 +291,71 @@ public class ReviewActivity extends AppCompatActivity
                 }
 
             case android.R.id.home:
-                finish();
-                return true;
+                int lengths = review_content_edit.getText().toString().length();
+                if (lengths > 0)
+                {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ReviewActivity.this);
+                    builder.setMessage("지금 나가시면 입력하신 내용들은 저장되지 않아요\n그래도 나가시겠어요?")
+                            .setPositiveButton("예", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+                                    dialog.dismiss();
+                                    finish();
+                                }
+                            })
+                            .setNegativeButton("아니오", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+                                    dialog.dismiss();
+                                }
+                            }).show();
+                }
+                else
+                {
+                    finish();
+                }
+                break;
 
             default:
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        int lengths = review_content_edit.getText().toString().length();
+        if (lengths > 0)
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(ReviewActivity.this);
+            builder.setMessage("지금 나가시면 입력하신 내용들은 저장되지 않아요\n그래도 나가시겠어요?")
+                    .setPositiveButton("예", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            dialog.dismiss();
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("아니오", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            dialog.dismiss();
+                        }
+                    }).show();
+        }
+        else
+        {
+            finish();
+        }
     }
 
     /* 리뷰 이미지, 텍스트를 같이 서버에 업로드하는 메서드
@@ -320,7 +380,12 @@ public class ReviewActivity extends AppCompatActivity
 //        Call<String> call = apiInterface.uploadReview(token, 1019, review_content_edit.getText().toString(), imageDescription, imagePart);
 
         int rate = (int) review_rate_edit.getRating();
-        int id = Integer.parseInt(review_id);
+        int id = 0;
+        if (!review_id.equals(""))
+        {
+            // review_id가 없으면?
+            id = Integer.parseInt(review_id);
+        }
         String star_count = String.valueOf(rate);
         Call<String> call = apiInterface.uploadReview(token, id, review_content_edit.getText().toString(), null, null,
                 difficulty, satisfaction, star_count);

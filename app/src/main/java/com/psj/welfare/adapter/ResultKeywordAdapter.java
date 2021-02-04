@@ -47,6 +47,7 @@ public class ResultKeywordAdapter extends RecyclerView.Adapter<ResultKeywordAdap
     {
         ResultKeywordItem item = lists.get(position);
         holder.keyword_category.setText(item.getParent_category());
+        holder.keyword_layout.setTag(position);
 //        holder.keyword_category.setOnClickListener(OnSingleClickListener -> {
 //            if (OnSingleClickListener.isSelected())
 //            {
@@ -103,6 +104,11 @@ public class ResultKeywordAdapter extends RecyclerView.Adapter<ResultKeywordAdap
     public interface ItemClickListener
     {
         void onItemClick(View view, int position);
+    }
+
+    public ResultKeywordItem getRBF(int position)
+    {
+        return lists != null ? lists.get(position) : null;
     }
 
 }

@@ -290,7 +290,8 @@ public class ReviewUpdateActivity extends AppCompatActivity
                         }).create().show();
 
             case android.R.id.home:
-                return true;
+                finish();
+                break;
 
             default:
                 break;

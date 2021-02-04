@@ -72,156 +72,90 @@ public class VerticalSearchResultAdapter extends RecyclerView.Adapter<VerticalSe
         switch (list.get(position).getWelf_category())
         {
             case "일자리 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.job)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.job);
                 break;
 
             case "카드 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.card_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.card_support);
                 break;
 
             case "인력 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.person_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.person_support);
                 break;
 
             case "현금 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.goods_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.goods_support);
                 break;
 
             case "현물 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.goods_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.goods_support);
                 break;
 
             case "대출 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.loan_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.loan_support);
                 break;
 
             case "임대 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.rent_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.rent_support);
                 break;
 
             case "보험 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.insurance_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.insurance_support);
                 break;
 
             case "법률 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.law_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.law_support);
                 break;
 
             case "상담 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.counseling_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.counseling_support);
                 break;
 
             case "물품 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.goods_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.goods_support);
                 break;
 
             case "재활 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.recover_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.recover_support);
                 break;
 
             case "창업 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.foundation_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.foundation_support);
                 break;
 
             case "진료 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.medical_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.medical_support);
                 break;
 
             case "활동 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.activity_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.activity_support);
                 break;
 
             case "서비스 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.service_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.service_support);
                 break;
 
             case "치료 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.care_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.care_support);
                 break;
 
             case "감면 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.tax_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.tax_support);
                 break;
 
             case "멘토링 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.mentor_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.mentor_support);
                 break;
 
             case "정보 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.information_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.information_support);
                 break;
 
             case "숙식 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.room_board_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.room_board_support);
                 break;
 
             case "문화체험 지원" :
-//                Glide.with(context)
-//                        .load(R.drawable.culture_support)
-//                        .into(holder.search_result_imageview);
                 holder.search_result_imageview.setImageResource(R.drawable.culture_support);
                 break;
 
@@ -243,6 +177,10 @@ public class VerticalSearchResultAdapter extends RecyclerView.Adapter<VerticalSe
 
             case "사업화 지원" :
                 holder.search_result_imageview.setImageResource(R.drawable.office_support);
+                break;
+
+            case "컨설팅 지원" :
+                holder.search_result_imageview.setImageResource(R.drawable.consulting);
                 break;
 
             default:

@@ -26,6 +26,8 @@ import com.psj.welfare.api.ApiInterface;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,6 +58,8 @@ public class ChoiceKeywordActivity extends AppCompatActivity
     SharedPreferences sharedPreferences;
 
     private Menu mOptionMenu;
+
+    String encode_str;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -127,7 +131,9 @@ public class ChoiceKeywordActivity extends AppCompatActivity
             str_server = sb.toString().substring(0, sb.toString().length() - 1);
         }
         Log.e(TAG, "str_server = " + str_server);
-        Call<String> call = apiInterface.registerUserInterest(token, "interest", str_server);
+        encode("키워드 선택 화면 진입");
+        String session = sharedPreferences.getString("sessionId", "");
+        Call<String> call = apiInterface.registerUserInterest(session, encode_str, token, "interest", str_server);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -150,6 +156,19 @@ public class ChoiceKeywordActivity extends AppCompatActivity
                 Log.e(TAG, "에러 : " + t.getMessage());
             }
         });
+    }
+
+    /* 서버에서 받은 세션 id를 인코딩하는 메서드 */
+    private void encode(String str)
+    {
+        try
+        {
+            encode_str = URLEncoder.encode(str, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private void jsonParsing(String result)

@@ -1,6 +1,7 @@
 package com.psj.welfare.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -18,6 +19,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,10 +44,12 @@ public class MapActivity extends AppCompatActivity
     // OO시, OO구 정보를 담을 변수
     String map_city, map_district;
     TextView map_bottom_textview, area_textview, change_area;
+    String encode_str;
 
     List<String> district_list, count_list;
     // 상세 보기로 이동할 때 혜택의 개수를 담아 보내기 위해 사용한 변수
     String count;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -72,8 +77,10 @@ public class MapActivity extends AppCompatActivity
         // 반투명 텍스트뷰를 누르면 바로 내 지역의 혜택을 보러 이동한다
         map_bottom_textview.setOnClickListener(v -> {
             Intent textview_intent = new Intent(MapActivity.this, MapDetailActivity.class);
+            sharedPreferences = getSharedPreferences("app_pref", 0);
+            String shared_area = sharedPreferences.getString("user_area", "");
             textview_intent.putExtra("area", user_area);
-            startActivity(textview_intent);
+//            textview_intent.putExtra("area", shared_area);
             textview_intent.putExtra("welf_count", count);
             Log.e(TAG, "user_area = " + user_area);
             startActivity(textview_intent);
@@ -93,6 +100,9 @@ public class MapActivity extends AppCompatActivity
     void getNumberOfBenefit()
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        String header = sharedPreferences.getString("sessionId", "");
+        encode("지도 화면 진입 및 지역별 혜택 개수 출력");
         Call<String> call = apiInterface.getNumberOfBenefit(user_area, "1", LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
@@ -113,6 +123,19 @@ public class MapActivity extends AppCompatActivity
                 Log.e("getUNumberOfBenefit()", "에러 : " + t.getMessage());
             }
         });
+    }
+
+    /* 서버에서 받은 세션 id를 인코딩하는 메서드 */
+    private void encode(String str)
+    {
+        try
+        {
+            encode_str = URLEncoder.encode(str, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     /* PHP 파일 보완으로 서버에서 전송되는 값이 바뀌어 JSON 파싱 함수 재구성 */
