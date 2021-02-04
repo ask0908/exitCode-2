@@ -1,6 +1,7 @@
 package com.psj.welfare.adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -85,6 +86,23 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         Log.e("ReviewAdapter", "getImage_url() : " + item.getImage_url());
         Log.e("ReviewAdapter", "getContent() : " + item.getContent());
         Log.e("ReviewAdapter", "별점 : " + item.getStar_count());
+
+        // 리뷰 작성자와 내 닉네임이 같을 때만 수정, 삭제 버튼을 보여줘야 한다
+        SharedPreferences sharedPreferences = context.getSharedPreferences("app_pref", 0);
+        String user_nickname = sharedPreferences.getString("user_nickname", "");
+        if (list.get(position).getWriter().equals(user_nickname))
+        {
+            holder.update_textview.setVisibility(View.VISIBLE);
+            holder.delete_textview.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            // 다른 경우엔 내가 작성한 리뷰가 아니니까 수정, 삭제 문구를 가린다
+            holder.update_textview.setVisibility(View.GONE);
+            holder.delete_textview.setVisibility(View.GONE);
+        }
+
+        // 별점 표시
         if (item.getStar_count() != 0.0)
         {
             Log.e("ReviewAdapter", "rate = " + item.getStar_count());
@@ -164,7 +182,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         private CardView cardView;
         private ImageView review_image;
 //        private RoundedImageView review_image;
-        private TextView review_writer, review_date, review_content;
+        private TextView review_writer, review_date, review_content, update_textview, delete_textview;
         private RatingBar review_rate;
         ItemClickListener itemClickListener;
 
@@ -179,8 +197,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             review_date = view.findViewById(R.id.review_date);
             review_content = view.findViewById(R.id.review_content);
             review_rate = view.findViewById(R.id.review_rate);
+            update_textview = view.findViewById(R.id.update_textview);
+            delete_textview = view.findViewById(R.id.delete_textview);
 
-            // 좋아요 버튼튼
+            // 좋아요 버튼
            like_layout = view.findViewById(R.id.like_layout);
 
             this.itemClickListener = itemClickListener;

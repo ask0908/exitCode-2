@@ -41,7 +41,7 @@
                 android:paddingBottom="20dp"
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:text="확인"
-                android:textColor="@color/colorMainBlue"
+                android:textColor="@color/colorPrimaryDark"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 

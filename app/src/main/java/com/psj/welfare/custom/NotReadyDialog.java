@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.psj.welfare.R;
 
+/* 준비중인 컨텐츠 다이얼로그 */
 public class NotReadyDialog
 {
     private Context context;

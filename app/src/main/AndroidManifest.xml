@@ -22,9 +22,8 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
+        <activity android:name=".Test.TestDetailBenefitActivity"/>
         <activity android:name=".activity.PersonalInformationActivity" />
-        <activity android:name=".Test.MyPage.TestChangeMyInformActivity" />
-        <activity android:name=".Test.Review.TestReviewWriteActivity" />
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

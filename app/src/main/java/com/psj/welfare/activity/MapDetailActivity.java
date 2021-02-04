@@ -2,6 +2,7 @@ package com.psj.welfare.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -33,6 +34,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,20 +83,40 @@ public class MapDetailActivity extends AppCompatActivity
     // 위 변수들을 담을 리스트
     List<MapResultItem> second_item_list;
 
+    SharedPreferences sharedPreferences;
+    String encode_str, all_str;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_detail);
 
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         Logger.addLogAdapter(new AndroidLogAdapter());
 
         keyword_list = new ArrayList<>();
         second_item_list = new ArrayList<>();
 
+        if (getIntent().hasExtra("area") || getIntent().hasExtra("welf_count"))
+        {
+            Intent intent = getIntent();
+            String map_area = intent.getStringExtra("area");
+            String map_welf_count = intent.getStringExtra("welf_count");
+            editor.putString("map_detail_area", map_area);
+            editor.putString("map_detail_welf_count", map_welf_count);
+            editor.apply();
+        }
         Intent intent = getIntent();
-        area = intent.getStringExtra("area");
-        welf_count = intent.getStringExtra("welf_count");
+//        area = intent.getStringExtra("area");
+//        welf_count = intent.getStringExtra("welf_count");
+        if (!sharedPreferences.getString("map_detail_area", "").equals("")
+                && !sharedPreferences.getString("map_detail_welf_count", "").equals(""))
+        {
+            area = sharedPreferences.getString("map_detail_area", "");
+            welf_count = sharedPreferences.getString("map_detail_welf_count", "");
+        }
         Log.e(TAG, "받아온 지역명 = " + area + ", 혜택 개수 = " + welf_count);
 
         /* 서버에서 지역별 혜택 개수 받아오는 메서드 */
@@ -484,10 +507,43 @@ public class MapDetailActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    /* 다른 상위 카테고리 눌렀다가 "전체" 눌렀을 때 처음 들어왔을 때와 같은 결과를 보여줘야 한다 */
+    void reGetNumberOfBenefit()
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        String header = sharedPreferences.getString("sessionId", "");
+        encode("지역 검색 결과 리스트 진입");
+        area = sharedPreferences.getString("map_detail_area", "");
+        Call<String> call = apiInterface.getNumberOfBenefit(area, "2", LogUtil.getUserLog());
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "다시 전체 눌렀을 때 결과 : " + result);
+                    jsonParse(result);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
+    }
+
     /* 서버에서 지역별 혜택 개수 받아오는 메서드 */
     void getNumberOfBenefit()
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        String header = sharedPreferences.getString("sessionId", "");
+        encode("지역 검색 결과 리스트 진입");
         Call<String> call = apiInterface.getNumberOfBenefit(area, "2", LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
@@ -512,6 +568,19 @@ public class MapDetailActivity extends AppCompatActivity
                 Log.e(TAG, "에러 : " + t.getMessage());
             }
         });
+    }
+
+    /* 서버에서 받은 세션 id를 인코딩하는 메서드 */
+    private void encode(String str)
+    {
+        try
+        {
+            encode_str = URLEncoder.encode(str, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     /* 서버에서 넘어온 JSONArray 안의 값들을 파싱해서 하단 리사이클러뷰에 보여주는 메서드 */
@@ -579,15 +648,37 @@ public class MapDetailActivity extends AppCompatActivity
         {
             Log.e(TAG, "try-catch 이후 for문 : " + keyword_list.get(i).getParent_category());
         }
+        /* 여기서 keyword_list 안의 값들을 쉐어드에 저장한 다음, 전체를 누르면 쉐어드의 값을 가져와서 그걸 토대로 검색할 수 있도록 해보자 */
+        // ArrayList 안의 데이터를 String으로 바꾼다
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < keyword_list.size(); i++)
+        {
+            stringBuilder.append(keyword_list.get(i).getParent_category()).append("|");
+        }
+        String sb_result = stringBuilder.toString();
+        Log.e(TAG, "stringBuilder : " + sb_result);
+
+        // 아래 처리를 하지 않으면 이 액티비티로 들어올 때마다 전체 카테고리 개수가 1개씩 증가한다
+        if (!keyword_list.get(0).getParent_category().equals("전체"))
+        {
+            keyword_list.add(0, new ResultKeywordItem("전체"));
+        }
+
         // 상단 리사이클러뷰 어댑터 처리
-//        keyword_list.add(0, new ResultKeywordItem("전체"));
         adapter = new ResultKeywordAdapter(this, keyword_list, keyword_click);
         adapter.setOnResultKeywordClickListener((view, position) ->
         {
-            String name = keyword_list.get(position).getParent_category();
-            Log.e(TAG, "상단 리사이클러뷰에서 선택한 카테고리명 = " + name);
-            // 선택한 카테고리명에 속하는 혜택들을 리사이클러뷰에 붙이는 메서드가 있다면 그걸 하단 리사이클러뷰에 붙인다
-            searchUpLevelCategory(name);
+            if (keyword_list.get(position).getParent_category().equals("전체"))
+            {
+                // 다른 카테고리를 선택해 결과를 조회한 후 다시 전체를 눌렀을 때 처음 이 화면에 들어왔을 때 봤던 검색결과를 다시 보여줘야 함
+                reGetNumberOfBenefit();
+            }
+            else
+            {
+                String name = keyword_list.get(position).getParent_category();
+                Log.e(TAG, "4. 상단 리사이클러뷰에서 선택한 카테고리명 = " + name);
+                searchUpLevelCategory(name);
+            }
         });
         result_keyword_recyclerview.setAdapter(adapter);
 
@@ -610,7 +701,9 @@ public class MapDetailActivity extends AppCompatActivity
     void searchUpLevelCategory(String select_category)
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.searchWelfareCategory("category_search", select_category, LogUtil.getUserLog());
+        SharedPreferences sharedPreferences = getSharedPreferences("app_pref", 0);
+        String header = sharedPreferences.getString("sessionId", "");
+        Call<String> call = apiInterface.searchWelfareCategory(header, "category_search", select_category, LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -636,7 +729,7 @@ public class MapDetailActivity extends AppCompatActivity
         });
     }
 
-    // 카테고리를 눌러 가져온 데이터들을 파싱하는 2번째 파싱 메서드
+    /* 카테고리를 눌러 가져온 데이터들을 파싱하는 2차 파싱 메서드 */
     private void second_parsing(String result)
     {
         item_list.clear();
@@ -671,10 +764,20 @@ public class MapDetailActivity extends AppCompatActivity
         adapter = new ResultKeywordAdapter(this, keyword_list, keyword_click);
         adapter.setOnResultKeywordClickListener((view, position) ->
         {
-            String name = keyword_list.get(position).getParent_category();
-            Log.e(TAG, "상단 리사이클러뷰에서 선택한 카테고리명 = " + name);
-            // 선택한 카테고리명에 속하는 혜택들을 리사이클러뷰에 붙이는 메서드가 있다면 그걸 하단 리사이클러뷰에 붙인다
-            searchUpLevelCategory(name);
+            if (keyword_list.get(position).getParent_category().equals("전체"))
+            {
+                // 다른 상위 카테고리를 누른 후 다시 전체를 눌렀을 때 처음과 같은 검색 결과를 보여줘야 한다
+                // 그럼 이 액티비티에 처음 들어왔을 때 검색어를 저장했다가 전체를 누르면 그 검색어를 통해 다시 서버에 요청하면 되지 않을까?
+                String name = sharedPreferences.getString("map_detail_area", "");
+                Log.e(TAG, "1. 상단 리사이클러뷰에서 선택한 카테고리명 = " + name);
+                reGetNumberOfBenefit();
+            }
+            else
+            {
+                String name = keyword_list.get(position).getParent_category();
+                Log.e(TAG, "2. 상단 리사이클러뷰에서 선택한 카테고리명 = " + name);
+                searchUpLevelCategory(name);
+            }
         });
         result_keyword_recyclerview.setAdapter(adapter);
 

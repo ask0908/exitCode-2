@@ -189,6 +189,10 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
                 holder.result_imageview.setImageResource(R.drawable.office_support);
                 break;
 
+            case "컨설팅 지원" :
+                holder.result_imageview.setImageResource(R.drawable.consulting);
+                break;
+
             default:
                 break;
         }

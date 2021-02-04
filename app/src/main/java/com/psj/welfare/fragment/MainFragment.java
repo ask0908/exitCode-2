@@ -31,8 +31,10 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
+import com.kakao.auth.Session;
 import com.kakao.network.ErrorResult;
 import com.kakao.usermgmt.UserManagement;
+import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.kakao.usermgmt.callback.UnLinkResponseCallback;
 import com.psj.welfare.Data.HorizontalYoutubeItem;
 import com.psj.welfare.Data.RecommendItem;
@@ -56,12 +58,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -79,6 +82,7 @@ public class MainFragment extends Fragment
 
     // 구글 로그인 테스트 위한 카톡 탈퇴 버튼
     Button kakao_unlink_btn;
+    Button kakao_logout_btn;
 
     // 지도 버튼
     Button map_btn;
@@ -138,6 +142,11 @@ public class MainFragment extends Fragment
 
     int count_int;
 
+    // 로그아웃 상태 체크에 사용할 변수
+    boolean loggedOut = false;
+
+    String encode_str;
+
     public MainFragment()
     {
     }
@@ -189,6 +198,7 @@ public class MainFragment extends Fragment
                     .check();
         }
 
+        recom_recycler = view.findViewById(R.id.recom_recycler);
         recommend_welfare_textview = view.findViewById(R.id.recommend_welfare_textview);
         recommend_welfare_count = view.findViewById(R.id.recommend_welfare_count);
         // 로그인해서 카톡 정보가 있다면 유저이름을 따와서 텍스트뷰에 넣는다
@@ -204,7 +214,6 @@ public class MainFragment extends Fragment
             recommend_welfare_textview.setText(spannableString);
         }
         // if문으로 맞춤 혜택 받아온 개수를 뽑아 10 미만인 경우, 10 이상인 경우 별로 각각 다른 위치를 강조해야 한다
-        Log.e(TAG, "메서드 밖의 count = " + count);
 //        if (Integer.parseInt(count) < 10)
 //        {
 //            SpannableString count_span = new SpannableString(recommend_welfare_count.getText().toString());
@@ -225,11 +234,27 @@ public class MainFragment extends Fragment
         {
             main_fragment_cardview.setVisibility(View.GONE);
         }
+        // 로그아웃한 상태고 닉네임이 없으면 혜택찾기 버튼 있는 카드뷰를 보이게 한다
+        if (sharedPreferences.getBoolean("logout", false) || sharedPreferences.getString("user_nickname", "").equals(""))
+        {
+            main_fragment_cardview.setVisibility(View.VISIBLE);
+            recommend_welfare_textview.setVisibility(View.GONE);
+            recommend_welfare_count.setVisibility(View.GONE);
+            recom_recycler.setVisibility(View.GONE);
+        }
+        // logout이 false면 로그인한 상태기 때문에 맞춤혜택들을 보여주고 혜택찾기 버튼을 없앤다
+        else if (!sharedPreferences.getBoolean("logout", false))
+        {
+            main_fragment_cardview.setVisibility(View.GONE);
+            recommend_welfare_textview.setVisibility(View.VISIBLE);
+            recommend_welfare_count.setVisibility(View.VISIBLE);
+            recom_recycler.setVisibility(View.VISIBLE);
+        }
         map_btn = view.findViewById(R.id.map_btn);
         find_welfare_btn = view.findViewById(R.id.find_welfare_btn);
+
         // 비로그인 시에만 보이는 레이아웃, 누르면 맞춤 혜택 찾으러 가겠냐는 다이얼로그를 띄우고 예를 누르면 이동시킨다
         find_welfare_btn.setOnClickListener(v -> {
-            Log.e(TAG, "클릭됨");
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage("맞춤 혜택을 확인하시려면 먼저 로그인이 필요해요\n로그인하시겠어요?")
                     .setPositiveButton("예", new DialogInterface.OnClickListener()
@@ -239,7 +264,19 @@ public class MainFragment extends Fragment
                         {
                             dialog.dismiss();
                             Intent intent = new Intent(getActivity(), LoginActivity.class);
-                            startActivity(intent);
+                            if (sharedPreferences.getBoolean("logout", false))
+                            {
+                                // logout이 true면 로그아웃한 상태니까 true
+                                loggedOut = true;
+                                intent.putExtra("loggedOut", loggedOut);
+                                startActivity(intent);
+                            }
+                            else
+                            {
+                                loggedOut = false;
+                                intent.putExtra("loggedOut", loggedOut);
+                                startActivity(intent);
+                            }
                         }
                     }).setNegativeButton("아니오", new DialogInterface.OnClickListener()
             {
@@ -271,7 +308,6 @@ public class MainFragment extends Fragment
         youtube_video_recyclerview.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
 
         /* 맞춤 혜택 보여주는 가로 리사이클러뷰 선언, 처리 */
-        recom_recycler = view.findViewById(R.id.recom_recycler);
         recom_recycler.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
         /* 맞춤 혜택을 위한 개인정보, 관심사 데이터가 없다면 맞춤 혜택을 보여주지 말아야 한다 */
         if (sharedPreferences.getString("user_category", "").equals("") || sharedPreferences.getString("user_area", "").equals("")
@@ -281,6 +317,39 @@ public class MainFragment extends Fragment
             recommend_welfare_count.setVisibility(View.GONE);
             recom_recycler.setVisibility(View.GONE);
         }
+
+        /* 카톡 로그아웃 버튼, 로그아웃하면 로그인 페이지로 리다이렉트하도록 한다? */
+        kakao_logout_btn = view.findViewById(R.id.kakao_logout_btn);
+        kakao_logout_btn.setOnClickListener(new OnSingleClickListener()
+        {
+            @Override
+            public void onSingleClick(View v)
+            {
+                Toast.makeText(getActivity(), "로그아웃 클릭", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "로그아웃 클릭");
+                if (Session.getCurrentSession().getTokenInfo().getAccessToken() != null)
+                {
+                    String aaa = Session.getCurrentSession().getTokenInfo().getAccessToken();
+                    Log.e("로그아웃 이후 카카오 토큰 상태", aaa);
+                    UserManagement.getInstance().requestLogout(new LogoutResponseCallback()
+                    {
+                        @Override
+                        public void onCompleteLogout()
+                        {
+                            Log.e(TAG, "로그아웃 성공");
+                            Intent intent = new Intent(getActivity(), LoginActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            getActivity().finish();
+                        }
+                    });
+                }
+                else
+                {
+                    Log.e(TAG, "카카오 토큰 없음");
+                }
+            }
+        });
 
         /* 카톡 회원탈퇴 버튼. 구글 로그인 테스트 위해 집어넣었음 */
         kakao_unlink_btn = view.findViewById(R.id.kakao_unlink_btn);
@@ -436,6 +505,7 @@ public class MainFragment extends Fragment
 
                 // 변환이 끝난 지역명은 인텐트에 담아서 지도 화면으로 보낸다
                 Intent intent = new Intent(getActivity(), MapActivity.class);
+                user_area = "서울";
                 intent.putExtra("user_area", user_area);
                 intent.putExtra("city", city);
                 intent.putExtra("district", district);
@@ -446,14 +516,29 @@ public class MainFragment extends Fragment
         Log.e(TAG, "메인에서 count_int = " + count_int);
     }
 
+    /* 서버에서 받은 세션 id를 인코딩하는 메서드 */
+    private void encode(String str)
+    {
+        try
+        {
+            encode_str = URLEncoder.encode(str, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     /* 유저 관심사에 따라 관련 혜택들을 보여주는 메서드, 처음에 액티비티가 켜질 때 혜택들을 제대로 받아오지 못하는 경우가 있다
     * 로그인 해야 맞춤 혜택이 보이도록 처리해야 함 */
     void userOrderedWelfare()
     {
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
         String token = sharedPreferences.getString("token", "");
-        Log.e("MainFragment - 맞춤 혜택 가로 리사이클러뷰", "token = " + token);
+        String session = sharedPreferences.getString("sessionId", "");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        encode("메인 화면 진입");
+        Log.e(TAG, "URLEncoder : " + encode_str);
         Call<String> call = apiInterface.userOrderedWelfare(token, "customized", LogUtil.getUserLog());   // 2번 인자는 customized로 고정이다
         call.enqueue(new Callback<String>()
         {
@@ -463,7 +548,7 @@ public class MainFragment extends Fragment
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-                    Log.e(TAG, "맞춤 혜택 결과 = " + result);
+                    Log.e(TAG, "관심사 따른 혜택 가져오기 : " + result);
                     recommendParsing(result);
                 }
                 else
@@ -525,9 +610,6 @@ public class MainFragment extends Fragment
         recommendAdapter.setOnItemClickListener((view, pos) ->
         {
             String name = list.get(pos).getWelf_name();
-            Log.e(TAG, "선택한 혜택명 = " + name);
-            Log.e(TAG, "선택된 하위 카테고리 = " + list.get(pos).getWelf_category());
-            Log.e(TAG, "선택된 하위 카테고리 리스트의 크기 = " + list.size());
             // 맞춤 혜택 클릭 시 혜택 상세보기 페이지로 혜택명을 갖고 이동한다
             // 혜택명은 상세보기 페이지에서 서버로 넘겨 혜택의 내용들을 가져올 때 사용한다
             Intent intent = new Intent(getActivity(), DetailBenefitActivity.class);
@@ -555,6 +637,8 @@ public class MainFragment extends Fragment
     void getYoutubeInformation()
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        String session = sharedPreferences.getString("sessionId", "");
+        encode("유튜브 영상 가져오기");
         Call<String> call = apiInterface.getYoutubeInformation();
         call.enqueue(new Callback<String>()
         {
@@ -564,7 +648,6 @@ public class MainFragment extends Fragment
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-                    Log.e("메인에서 유튜브 썸네일 클릭", "성공 : " + result);
                     jsonParsing(result);
                 }
                 else
@@ -609,13 +692,8 @@ public class MainFragment extends Fragment
         }
         for (int i = 0; i < lists.size(); i++)
         {
-            Log.e("youtube_id", lists.get(i).getYoutube_id());
             // for문을 돌면서 hashmap의 키값으로 video_id, value로 영상 제목을 넣는다
             youtube_hashmap.put(lists.get(i).getYoutube_name(), lists.get(i).getYoutube_id());
-        }
-        for (Map.Entry<String, String> element : youtube_hashmap.entrySet())
-        {
-            Log.e("유튜브 해시맵", String.format("키 -> %s, 값 -> %s", element.getKey(), element.getValue()));
         }
         adapter = new HorizontalYoutubeAdapter(getActivity(), lists, itemClickListener);
         // MainFragment에선 썸넬과 영상 제목만 알려주기 때문에, 썸넬을 클릭하면 액티비티를 이동해 그곳에서 유튜브 영상을 틀어준다
@@ -670,11 +748,11 @@ public class MainFragment extends Fragment
             return "주소 미발견";
         }
 
-        Log.e(TAG, "addresses 리스트 = " + addresses.toString());
         Address address = addresses.get(0);
         return address.getAddressLine(0) + "\n";
     }
 
+    /* 단말 위치를 가져올 수 있는지 상태를 체크하는 메서드 */
     public boolean checkLocationServicesStatus()
     {
         /* LocationManager : 시스템 위치 서비스에 대한 액세스 제공 */

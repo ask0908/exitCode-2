@@ -1,6 +1,7 @@
 package com.psj.welfare.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Spannable;
@@ -159,7 +160,9 @@ public class ResultBenefitActivity extends AppCompatActivity
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Log.e(TAG, "검색 키워드 = " + category);
-        Call<String> call = apiInterface.searchWelfareCategory("category_search", category, LogUtil.getUserLog());
+        SharedPreferences sharedPreferences = getSharedPreferences("app_pref", 0);
+        String header = sharedPreferences.getString("sessionId", "");
+        Call<String> call = apiInterface.searchWelfareCategory(header,"category_search", category, "test.change");
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -243,6 +246,9 @@ public class ResultBenefitActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
+
+        // 가로 리사이클러뷰에 쓸 어댑터의 리스트에 값들을 넣는다
+        top_list.add(0, new CategorySearchResultItem("전체"));
         up_adapter = new SelectedCategoryAdapter(ResultBenefitActivity.this, top_list, up_itemClickListener);
         up_adapter.setOnItemClickListener((view, position) ->
         {
@@ -253,6 +259,7 @@ public class ResultBenefitActivity extends AppCompatActivity
 
         // 쿼리 결과 개수로 몇 개가 검색됐는지 유저에게 알려준다
         result_benefit_title.setText("복지혜택 결과가 총 " + total_count + "개\n검색되었습니다");
+        /* total_count의 숫자가 1자리수/2자리수인 경우 각각 색깔 강조 처리 */
         if (Integer.parseInt(total_count) > 9)
         {
             SpannableString spannableString = new SpannableString(result_benefit_title.getText().toString());

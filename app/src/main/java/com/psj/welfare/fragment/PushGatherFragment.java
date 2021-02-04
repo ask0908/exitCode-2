@@ -48,7 +48,7 @@ public class PushGatherFragment extends Fragment
     // 토큰값을 확인할 때 사용할 쉐어드
     SharedPreferences app_pref;
 
-    String welf_name, welf_local, push_title, push_body, push_date, token;
+    String welf_name, welf_local, push_title, push_body, push_date, token, session;
 
     public PushGatherFragment()
     {
@@ -77,8 +77,6 @@ public class PushGatherFragment extends Fragment
             ((AppCompatActivity)getActivity()).setSupportActionBar(push_toolbar);
         }
         push_toolbar.setTitle("알림");
-        app_pref = getActivity().getSharedPreferences("app_pref", 0);
-        token = app_pref.getString("token", "");
 
         /* 서버에 저장된 푸시 데이터들을 가져오는 메서드 */
         getPushData();
@@ -126,6 +124,10 @@ public class PushGatherFragment extends Fragment
         String token = app_pref.getString("token", "");
         Log.e(TAG, "푸시 알림 목록 뽑을 때 토큰값 = " + token);
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        if (!app_pref.getString("sessionId", "").equals(""))
+        {
+            session = app_pref.getString("sessionId", "");
+        }
         Call<String> call = apiInterface.getPushData(token, "pushList");
         call.enqueue(new Callback<String>()
         {
@@ -146,6 +148,29 @@ public class PushGatherFragment extends Fragment
                 Log.e("getPushData()", "에러 = " + t.getMessage());
             }
         });
+//        if (!session.equals(""))
+//        {
+//            Call<String> call = apiInterface.getPushData(session, token, "pushList");
+//            call.enqueue(new Callback<String>()
+//            {
+//                @Override
+//                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
+//                {
+//                    if (response.isSuccessful() && response.body() != null)
+//                    {
+//                        Log.e(TAG, "서버에서 받은 푸시 알림 데이터 = " + response.body());
+//                        messageParsing(response.body());
+//                        changePushStatus();
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
+//                {
+//                    Log.e("getPushData()", "에러 = " + t.getMessage());
+//                }
+//            });
+//        }
     }
 
     /* 서버에서 받은 값들을 파싱해서 리사이클러뷰에 뿌리는 메서드 */
@@ -160,13 +185,11 @@ public class PushGatherFragment extends Fragment
             {
                 JSONObject push_object = jsonArray.getJSONObject(i);
                 welf_name = push_object.getString("welf_name");
-                welf_local = push_object.getString("welf_local");
                 push_title = push_object.getString("title");
                 push_body = push_object.getString("content");
                 push_date = push_object.getString("update_date");
                 PushGatherItem item = new PushGatherItem();
                 item.setWelf_name(welf_name);
-                item.setWelf_local(welf_local);
                 item.setPush_gather_title(push_title);
                 item.setPush_gather_desc(push_body);
                 item.setPush_gather_date(push_date);

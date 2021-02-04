@@ -6,6 +6,7 @@ import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -183,6 +184,8 @@ public interface ApiInterface
 	 */
 	@GET("https://www.urbene-fit.com/review")
 	Call<String> getReview(
+//			@Header("SessionId") String sessionId,
+//			@Header("Action") String action,
 			@Query("type") String type,
 			@Query("welf_id") String welf_id
 	);
@@ -271,6 +274,8 @@ public interface ApiInterface
 	 */
 	@GET("https://www.urbene-fit.com/map")
 	Call<String> getNumberOfBenefit(
+//			@Header("SessionId") String sessionId,
+//			@Header("Action") String action,
 			@Query("local") String local,
 			@Query("page_number") String page_number,
 			@Query("userAgent") String userAgent
@@ -291,6 +296,8 @@ public interface ApiInterface
 	@FormUrlEncoded
 	@POST("https://www.urbene-fit.com/login")
 	Call<String> sendUserTypeAndPlatform(
+//			@Header("SessionId") String sessionId,
+//			@Header("Action") String action,
 			@Field("email") String email,
 			@Field("fcm_token") String fcm_token,
 			@Field("osType") String osType,
@@ -307,6 +314,7 @@ public interface ApiInterface
 	 */
 	@GET("https://www.urbene-fit.com/push")
 	Call<String> getPushData(
+//			@Header("SessionId") String session,
 			@Query("login_token") String login_token,
 			@Query("type") String type
 	);
@@ -336,6 +344,8 @@ public interface ApiInterface
 	 */
 	@GET("https://www.urbene-fit.com/user")
 	Call<String> getUserInfo(
+			@Header("SessionId") String sessionId,
+			@Header("Action") String action,
 			@Query("login_token") String login_token
 	);
 
@@ -351,6 +361,8 @@ public interface ApiInterface
 	@FormUrlEncoded
 	@PUT("https://www.urbene-fit.com/user")
 	Call<String> putPushSetting(
+			@Header("SessionId") String sessionId,
+			@Header("Action") String action,
 			@Field("login_token") String login_token,
 			@Field("type") String type,
 			@Field("is_push") String is_push
@@ -378,6 +390,8 @@ public interface ApiInterface
 	@FormUrlEncoded
 	@POST("https://www.urbene-fit.com/user")
 	Call<String> registerUserInfo(
+			@Header("SessionId") String sessionId,
+			@Header("Action") String action,
 			@Field("login_token") String login_token,
 			@Field("nickName") String user_nickname,
 			@Field("age") String age,
@@ -399,6 +413,8 @@ public interface ApiInterface
 	@FormUrlEncoded
 	@PUT("https://www.urbene-fit.com/user")
 	Call<String> registerUserInterest(
+			@Header("SessionId") String sessionId,
+			@Header("Action") String action,
 			@Field("login_token") String login_token,
 			@Field("type") String type,
 			@Field("interest") String interest
@@ -466,7 +482,7 @@ public interface ApiInterface
 
 	/**
 	 * MainFragment에서 사용자가 선택한 카테고리에 속하는 혜택 데이터들을 가져오는 메서드 (혜택 상위 카테고리 검색)
-	 * ResultBenefitActivity에서 사용
+	 * ResultBenefitActivity, MapDetailActivity에서 사용
 	 * @param type - category_search(카테고리 기반 검색 요청을 의미하는 검색 타입)
 	 * @param category_keyword - 유저가 선택한 카테고리, 중복 선택 가능하며 구분자는 "|"로 구분함
 	 * @return - "중장년·노인|저소득층"으로 검색이 성공한 경우)
@@ -482,6 +498,7 @@ public interface ApiInterface
 	 */
 	@GET("https://www.urbene-fit.com/welf")
 	Call<String> searchWelfareCategory(
+			@Header("SessionId") String SessionId,
 			@Query("type") String type,
 			@Query("keyword") String category_keyword,
 			@Query("userAgent") String userAgent
@@ -551,6 +568,8 @@ public interface ApiInterface
 	 */
 	@GET("https://www.urbene-fit.com/welf")
 	Call<String> userOrderedWelfare(
+//			@Header("SessionId") String sessionId,
+//			@Header("Action") String action,
 			@Query("login_token") String login_token,
 			@Query("type") String type,
 			@Query("userAgent") String userAgent
@@ -572,7 +591,42 @@ public interface ApiInterface
 	 * 			"TotalCount":6
 	 */
 	@GET("https://www.urbene-fit.com/youtube")
-	Call<String> getYoutubeInformation();
+	Call<String> getYoutubeInformation(
+//			@Header("SessionId") String sessionId,
+//			@Header("Action") String action
+	);
+	// ===================================================================================================
+
+	/* ↓ 헤더에 세션 id, 로그인 토큰 넣어서 서버로 사용자 로그 전송하는 메서드 */
+	// ===================================================================================================
+
+	/**
+	 * 서버에서 받은 세션 id, 로그인 토큰을 헤더에 넣어 사용자 행동 로그를 서버로 전송하는 메서드
+	 * @param type - "home" 고정
+	 * @param token - 로그인 시 서버에서 받는 토큰
+	 * @return
+	 */
+	/**
+	 * 서버에서 받은 세션 id, 로그인 토큰을 헤더에 넣어 사용자 행동 로그를 서버로 전송하는 메서드
+	 * @param token - 로그인 시 서버에서 받는 토큰
+	 * @param sessionId - 서버에서 받은 세션 id, JSON 형식으로 오기 때문에 파싱 필요
+	 * @param type - 유저가 어떤 화면에서 어떤 행동을 했는지 판별하기 위한 변수, 각 화면 별로 입력해야 하는 값이 다름
+	 *        main : 처음 앱에 접속한 경우 사용 / home : 메인 화면 / login : 로그인 화면 / myPage : 마이페이지 화면 / search : 검색 화면 / youtube_review : 유튜버 리뷰 화면
+	 * @param action - 유저 행동 정보(앱 접속, 뒤로가기 실행 등)
+	 * @param keyword - 사용자가 검색한 정보(전남, 청년 등)
+	 * @param deviceInformation - 사용자 기기 정보(android|SM-432M|30)
+	 * @return
+	 */
+	@FormUrlEncoded
+	@POST("https://www.urbene-fit.com/log")
+	Call<String> userLog(
+			@Header("LoginToken") String token,
+			@Header("SessionId") String sessionId,
+			@Field("type") String type,
+			@Field("Action") String action,
+			@Field("keyword") String keyword,
+			@Field("userAgent") String deviceInformation
+	);
 	// ===================================================================================================
 
 }

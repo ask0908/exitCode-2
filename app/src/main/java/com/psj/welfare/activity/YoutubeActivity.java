@@ -1,6 +1,7 @@
 package com.psj.welfare.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -26,6 +27,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,9 +38,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/* 유튜버 리뷰 화면에는 선택한 유튜버의 영상 몇 개를 받아와서 스크롤뷰 안에 보여준다
-* 리사이클러뷰를 넣어서 아이템에 유튜브 플레이어를 넣고 이걸 보여주자
-* 이 화면에서 영상들을 어떻게 보여줄까? */
+/* 유튜브 영상 재생하는 액티비티. 밑에 재생중인 영상을 제외한 다른 영상들 리스트를 보여준다 */
 public class YoutubeActivity extends AppCompatActivity
 {
     private final String TAG = this.getClass().getSimpleName();
@@ -66,21 +67,26 @@ public class YoutubeActivity extends AppCompatActivity
     // 리스트에서 중복되는 영상 제거할 때 사용할 변수
     String video_name;
 
+    SharedPreferences sharedPreferences;
+    String encode_str;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_youtube);
 
+        // MainFragment에서 가져온 해시맵을 담을 해시맵
         get_youtube_hashmap = new HashMap<>();
         youtube_toolbar = findViewById(R.id.youtube_toolbar);
+        // 툴바 처리
         setSupportActionBar(youtube_toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("유튜버 혜택 소개");
 
         init();
 
-        // 인텐트 널체크한 후 안의 해시맵 데이터 꺼내기
+        // 인텐트 널체크 후 안의 해시맵 데이터 꺼내기
         if (getIntent().hasExtra("youtube_hashmap"))
         {
             Intent intent = getIntent();
@@ -94,6 +100,7 @@ public class YoutubeActivity extends AppCompatActivity
             first_title.setText(youtube_name);
         }
 
+        // 가져온 해시맵 안의 데이터 확인
         if (get_youtube_hashmap != null)
         {
             for (Map.Entry<String, String> element : get_youtube_hashmap.entrySet())
@@ -106,7 +113,6 @@ public class YoutubeActivity extends AppCompatActivity
         // first_title 텍스트뷰에 set된 텍스트와 일치하는 키값을 찾고, 그 키값에 매핑된 value값을 String 변수에 담는다
         key_name = (String) get_youtube_hashmap.get(youtube_name);
         video_name = (String) getkey(get_youtube_hashmap, key_name);
-        Log.e(TAG, "잘 찾아오나 확인 : " + video_name);
 
         // 서버에서 유튜브 데이터 가져오는 메서드
         getYoutubeInformation();
@@ -130,13 +136,16 @@ public class YoutubeActivity extends AppCompatActivity
         });
     }
 
+    // 재생중인 유튜브 영상과 같은 이름의 영상을 찾는 메서드
+    // JSON 값을 파싱할 때 중복되는 이름의 영상을 제외하고 밑의 영상 리스트에 넣는다
     public static Object getkey(HashMap<String, String> hashmap, Object value)
     {
-        for (Object o : hashmap.keySet())
+        for (Object obj : hashmap.keySet())
         {
-            if (hashmap.get(o).equals(value))
+            if (hashmap.get(obj).equals(value))
             {
-                return o;
+                // 여기서 재생중인 영상과 이름이 같은 영상 데이터가 리턴된다
+                return obj;
             }
         }
         return null;
@@ -144,6 +153,9 @@ public class YoutubeActivity extends AppCompatActivity
 
     void getYoutubeInformation()
     {
+        encode("유튜브 재생 화면 진입");
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        String session = sharedPreferences.getString("sessionId", "");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Call<String> call = apiInterface.getYoutubeInformation();
         call.enqueue(new Callback<String>()
@@ -171,6 +183,19 @@ public class YoutubeActivity extends AppCompatActivity
         });
     }
 
+    /* 서버에서 받은 세션 id를 인코딩하는 메서드 */
+    private void encode(String str)
+    {
+        try
+        {
+            encode_str = URLEncoder.encode(str, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     // 밑에 있는 리사이클러뷰에 다른 영상들의 썸네일과 이름을 보여줘야 한다
     private void jsonParsing(String result)
     {
@@ -195,17 +220,19 @@ public class YoutubeActivity extends AppCompatActivity
                 item.setThumbnail(thumbnail);
                 item.setUrl_id(url_id);
                 item.setTitle(title);
-//                other_list.add(item);
                 // for문으로 리스트를 돌면서 지금 재생중인 영상 제목과 일치하는 영상을 찾는다
                 boolean isDuplicated = false;
                 for (int j = 0; j < other_list.size(); j++)
                 {
+                    // video_name의 값은 서버에서 받아온 이름 중 재생중인 영상명과 일치하는 영상이다
+                    // 발견 시 true로 설정하고 for문 탈출
                     if (other_list.get(j).getTitle().equals(video_name))
                     {
                         isDuplicated = true;
                         break;
                     }
                 }
+                // false고 video_name과 다른 이름이 영상일 경우에만 하단 리사이클러뷰에서 사용하는 리스트에 데이터들을 넣어 화면에 뿌린다
                 if (!isDuplicated)
                 {
                     if (!item.getTitle().contains(video_name))
@@ -264,4 +291,14 @@ public class YoutubeActivity extends AppCompatActivity
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onBackPressed()
+    {
+        super.onBackPressed();
+        // 뒤로가기를 눌렀을 시 어디서 어디로 이동했다고 서버로 보낸다
+    }
+
+    /* 사용자 행동 정보 저장 메서드 */
+
 }

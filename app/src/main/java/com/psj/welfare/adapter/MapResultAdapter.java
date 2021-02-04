@@ -54,6 +54,10 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
     {
         MapResultItem item = lists.get(position);
         holder.map_result_benefit_name.setText(item.getWelf_name());
+        /* 하위 카테고리를 클릭하면 클릭한 아이템의 색이 빨갛게 변하고, 다른 걸 클릭하면 기존에 클릭한 아이템 색이 원래대로 돌아오고 새로 클릭한 아이템만 빨간색이 되도록 만들 것이다
+        * 1. 클릭한 아이템의 위치를 파악한다? 또는 클릭한 아이템의 색을 빨갛게 바꾼다 = boolean 변수 등을 써서 체크된 사실을 기록한다
+        * 2. 다른 아이템을 클릭하면 기존의 클릭되어져 있던 아이템의 상태를 원래대로 돌리고 새로 클릭한 아이템의 색깔을 바꾼다 */
+        holder.map_result_layout.setTag(position);
         // getWelf_category()로 받아온 결과에 특수문자가 섞여있으면 이 특문 이후의 문자열을 지우고 그 값을 set하고 싶다
 //        holder.map_result_local.setText(item.getWelf_category());
         List<String> item_list = Collections.singletonList(lists.get(position).getWelf_category());
@@ -184,6 +188,10 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
                 holder.map_result_benefit_image.setImageResource(R.drawable.office_support);
                 break;
 
+            case "컨설팅 지원" :
+                holder.map_result_benefit_image.setImageResource(R.drawable.consulting);
+                break;
+
             default:
                 break;
         }
@@ -229,6 +237,11 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
     public interface ItemClickListener
     {
         void onItemClick(View view, int position);
+    }
+
+    public MapResultItem getRBF(int position)
+    {
+        return lists != null ? lists.get(position) : null;
     }
 
 }
