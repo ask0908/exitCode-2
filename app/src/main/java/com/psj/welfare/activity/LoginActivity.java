@@ -43,6 +43,7 @@ import com.orhanobut.logger.Logger;
 import com.psj.welfare.R;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -94,7 +95,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     // 로그아웃 상태 체크용 변수
     boolean loggedOut;
 
-    String encode_str;
+    String encode_str, action_str;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -108,6 +109,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
         // 스플래시 화면에서 받은 FCM 토큰
         token = app_pref.getString("fcm_token", "");
+
+        // 서버로 사용자 로그 전송
+        userLog("로그인 화면 진입");
+
         if (getIntent().hasExtra("loggedOut"))
         {
             Intent intent = getIntent();
@@ -192,6 +197,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         {
             case R.id.fake_kakao:
                 Log.e(TAG, "fake_kakao 클릭");
+                userLog("카카오 로그인 버튼 클릭");
                 // performClick() : 정의되어 있던 뷰의 클릭 리스너를 호출하는 메서드. 클릭과 관련된 모든 액션을 수행한다
                 boolean what = real_kakao.performClick();
                 // 이곳에 오는 boolean 값은 항상 true다
@@ -405,6 +411,47 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
+    /* 로그인 화면으로 들어오면 로그인 화면에 들어왔다는 로그를 만들어 보낸다 */
+    void userLog(String user_action)
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        app_pref = getSharedPreferences("app_pref", 0);
+        String token;
+        if (app_pref.getString("token", "").equals(""))
+        {
+            token = null;
+        }
+        else
+        {
+            token = app_pref.getString("token", "");
+        }
+        String session = app_pref.getString("sessionId", "");
+        String action = encodeAction(user_action);
+        Call<String> call = apiInterface.userLog(token, session, "login", action, null, LogUtil.getUserLog());
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "로그인 화면 로그 전송 결과 = "  + result);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
+    }
+
     /* 서버에서 받은 세션 id를 인코딩하는 메서드 */
     private void encode(String str)
     {
@@ -416,6 +463,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         {
             e.printStackTrace();
         }
+    }
+
+    /* 서버로 한글을 보낼 때 그냥 보내면 안되고 인코딩해서 보내야 한다. 이 때 한글을 인코딩하는 메서드 */
+    private String encodeAction(String str)
+    {
+        try
+        {
+            str = URLEncoder.encode(str, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
+        return str;
     }
 
     class GoogleLogOut extends Thread

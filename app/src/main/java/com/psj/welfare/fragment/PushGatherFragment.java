@@ -49,6 +49,8 @@ public class PushGatherFragment extends Fragment
     SharedPreferences app_pref;
 
     String welf_name, welf_local, push_title, push_body, push_date, token, session;
+    // 푸시 알림 변수 바껴서 다시 생성, welf_name, welf_local은 일치
+    String welf_category, push_tag, welf_period, welf_end;
 
     public PushGatherFragment()
     {
@@ -87,10 +89,18 @@ public class PushGatherFragment extends Fragment
         push_layout_recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
+    /* 푸시 알림 받으면 수신 상태값을 변경하는 메서드 */
     void changePushStatus()
     {
         app_pref = getActivity().getSharedPreferences("app_pref", 0);
-        String token = app_pref.getString("token", "");
+        if (app_pref.getString("token", "").equals(""))
+        {
+            token = null;
+        }
+        else
+        {
+            token = app_pref.getString("token", "");
+        }
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Call<String> call = apiInterface.changePushStatus(token, "customizedRecv");
         call.enqueue(new Callback<String>()
@@ -117,7 +127,7 @@ public class PushGatherFragment extends Fragment
         });
     }
 
-    /* 서버에 저장된 푸시 데이터들을 가져오는 메서드 */
+    /* 서버에서 푸시 데이터들을 가져오는 메서드, 현재 푸시 알림이 나오지 않음 */
     void getPushData()
     {
         app_pref = getActivity().getSharedPreferences("app_pref", 0);
@@ -128,7 +138,7 @@ public class PushGatherFragment extends Fragment
         {
             session = app_pref.getString("sessionId", "");
         }
-        Call<String> call = apiInterface.getPushData(token, "pushList");
+        Call<String> call = apiInterface.getPushData(token, session, "pushList");
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -148,29 +158,6 @@ public class PushGatherFragment extends Fragment
                 Log.e("getPushData()", "에러 = " + t.getMessage());
             }
         });
-//        if (!session.equals(""))
-//        {
-//            Call<String> call = apiInterface.getPushData(session, token, "pushList");
-//            call.enqueue(new Callback<String>()
-//            {
-//                @Override
-//                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
-//                {
-//                    if (response.isSuccessful() && response.body() != null)
-//                    {
-//                        Log.e(TAG, "서버에서 받은 푸시 알림 데이터 = " + response.body());
-//                        messageParsing(response.body());
-//                        changePushStatus();
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
-//                {
-//                    Log.e("getPushData()", "에러 = " + t.getMessage());
-//                }
-//            });
-//        }
     }
 
     /* 서버에서 받은 값들을 파싱해서 리사이클러뷰에 뿌리는 메서드 */
@@ -188,11 +175,19 @@ public class PushGatherFragment extends Fragment
                 push_title = push_object.getString("title");
                 push_body = push_object.getString("content");
                 push_date = push_object.getString("update_date");
+                welf_category = push_object.getString("welf_category");
+                push_tag = push_object.getString("tag");
+                welf_period = push_object.getString("welf_period");
+                welf_end = push_object.getString("welf_end");
                 PushGatherItem item = new PushGatherItem();
                 item.setWelf_name(welf_name);
                 item.setPush_gather_title(push_title);
                 item.setPush_gather_desc(push_body);
                 item.setPush_gather_date(push_date);
+                item.setWelf_category(welf_category);
+                item.setTag(push_tag);
+                item.setWelf_period(welf_period);
+                item.setWelf_end(welf_end);
                 list.add(item);
             }
         }

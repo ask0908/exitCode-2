@@ -184,8 +184,8 @@ public interface ApiInterface
 	 */
 	@GET("https://www.urbene-fit.com/review")
 	Call<String> getReview(
-//			@Header("SessionId") String sessionId,
-//			@Header("Action") String action,
+			@Header("LoginToken") String token,
+			@Header("SessionId") String sessionId,
 			@Query("type") String type,
 			@Query("welf_id") String welf_id
 	);
@@ -268,17 +268,18 @@ public interface ApiInterface
 	/**
 	 * MainFragment 하단의 내 주변 혜택 찾기 버튼 클릭 시, 지역별 혜택 개수들을 가져오는 메서드
 	 * MapActivity, MapDetailActivity에서 사용
+	 * @param token - 로그인 시 서버에서 받는 토큰값
+	 * @param sessionId - 쉐어드에 저장된 세션 id
 	 * @param local - GPS 값을 통해 알아낸 유저의 현재 위치
 	 * @param page_number - 1번째 지도 화면, 2번째 지도 화면 구분을 위한 숫자
-	 * @return - 1로 요청했으면 전국 지역별 정책 개수, 2로 요청했으면 선택한 지역의 정책 제목들을 받는다. 받은 데이터는 파싱해서 뷰에 뿌려준다
+	 * @return
 	 */
 	@GET("https://www.urbene-fit.com/map")
 	Call<String> getNumberOfBenefit(
-//			@Header("SessionId") String sessionId,
-//			@Header("Action") String action,
+			@Header("LoginToken") String token,
+			@Header("SessionId") String sessionId,
 			@Query("local") String local,
-			@Query("page_number") String page_number,
-			@Query("userAgent") String userAgent
+			@Query("page_number") String page_number
 	);
 
 
@@ -308,14 +309,15 @@ public interface ApiInterface
 	// ===================================================================================================
 	/**
 	 * 로그인 시 서버에서 받는 토큰을 넘겨 푸시 알림 데이터들을 받아오는 메서드
-	 * @param login_token - 로그인 시 서버에서 생성되는 토큰
+	 * @param token - 로그인 시 서버에서 생성되는 토큰
+	 * @param session - 쉐어드에 저장된 세션 id
 	 * @param type - "pushList" 고정
 	 * @return - JSON 형태의 혜택 제목, 푸시 제목, 푸시 body, 푸시를 받은 날짜가 문자열 꼴로 나온다
 	 */
 	@GET("https://www.urbene-fit.com/push")
 	Call<String> getPushData(
-//			@Header("SessionId") String session,
-			@Query("login_token") String login_token,
+			@Header("LoginToken") String token,
+			@Header("SessionId") String session,
 			@Query("type") String type
 	);
 
@@ -426,6 +428,8 @@ public interface ApiInterface
 	/**
 	 * 아래 인자를 서버로 넘겨서, 해당하는 혜택 정보를 조회하는 메서드
 	 * DetailBenefitActivity에서 사용
+	 * @param token - 로그인 시 서버에서 받는 토큰
+	 * @param session - 쉐어드에 저장된 세션 id
 	 * @param type - "detail" 고정(혜택 정보 조회)
 	 * @param local - 혜택이 제공되는 지역의 이름
 	 * @param welf_name - 혜택 이름
@@ -448,6 +452,8 @@ public interface ApiInterface
 	 */
 	@GET("https://www.urbene-fit.com/welf")
 	Call<String> getWelfareInformation(
+			@Header("LoginToken") String token,
+			@Header("SessionId") String session,
 			@Query("type") String type,
 			@Query("local") String local,
 			@Query("welf_name") String welf_name,
@@ -475,6 +481,8 @@ public interface ApiInterface
 	 */
 	@GET("https://www.urbene-fit.com/welf")
 	Call<String> searchWelfare(
+			@Header("LoginToken") String token,
+			@Header("SessionId") String session,
 			@Query("type") String type,
 			@Query("keyword") String keyword,
 			@Query("userAgent") String userAgent
@@ -498,6 +506,7 @@ public interface ApiInterface
 	 */
 	@GET("https://www.urbene-fit.com/welf")
 	Call<String> searchWelfareCategory(
+			@Header("LoginToken") String token,
 			@Header("SessionId") String SessionId,
 			@Query("type") String type,
 			@Query("keyword") String category_keyword,
@@ -568,8 +577,6 @@ public interface ApiInterface
 	 */
 	@GET("https://www.urbene-fit.com/welf")
 	Call<String> userOrderedWelfare(
-//			@Header("SessionId") String sessionId,
-//			@Header("Action") String action,
 			@Query("login_token") String login_token,
 			@Query("type") String type,
 			@Query("userAgent") String userAgent
@@ -600,12 +607,6 @@ public interface ApiInterface
 	/* ↓ 헤더에 세션 id, 로그인 토큰 넣어서 서버로 사용자 로그 전송하는 메서드 */
 	// ===================================================================================================
 
-	/**
-	 * 서버에서 받은 세션 id, 로그인 토큰을 헤더에 넣어 사용자 행동 로그를 서버로 전송하는 메서드
-	 * @param type - "home" 고정
-	 * @param token - 로그인 시 서버에서 받는 토큰
-	 * @return
-	 */
 	/**
 	 * 서버에서 받은 세션 id, 로그인 토큰을 헤더에 넣어 사용자 행동 로그를 서버로 전송하는 메서드
 	 * @param token - 로그인 시 서버에서 받는 토큰

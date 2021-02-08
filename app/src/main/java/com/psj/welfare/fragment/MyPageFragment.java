@@ -1,14 +1,11 @@
 package com.psj.welfare.fragment;
 
 import android.app.AlertDialog;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -42,13 +38,13 @@ import com.psj.welfare.activity.SplashActivity;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.OnSingleClickListener;
+import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -63,14 +59,14 @@ public class MyPageFragment extends Fragment
     LinearLayout account_layout, benefit_type_layout, terms_location_layout, push_noti_layout, privacy_policy_layout, user_layout;
 
     ImageView kakao_profile_image, move_update_personal_imageview, privacy_policy_imageview, account_imageview;
-    TextView kakao_name, account_platform_text;
+    TextView kakao_name, account_platform_text, push_setting_text;
     Switch push_noti_switch;
     Button account_btn, benefit_type_btn, terms_location_based_btn, privacy_policy_btn, mypage_login_btn;
     Toolbar mypage_toolbar;
 
     SharedPreferences sharedPreferences;
     String profile_image, kakao_nick, server_token;
-    String checked, encode_str;
+    String checked;
     boolean fcm_canceled;
 
     public MyPageFragment()
@@ -97,6 +93,14 @@ public class MyPageFragment extends Fragment
         init(view);
 
         Logger.addLogAdapter(new AndroidLogAdapter());
+
+        push_setting_text.setOnClickListener(v -> {
+            /* 아래 인자로 인텐트를 이동시키면 핸드폰에 설치된 앱의 알림 설정 화면으로 이동된다
+            * 여기서 값이 T/F로 바뀌면 이 값을 받아와서 서버로 보내 알림 설정값을 바꾸는 흐름으로 스위치 로직을 바꾸면 원하는 기능이 만들어질 듯 */
+            Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, getContext().getPackageName());
+            startActivityForResult(intent, 0);
+        });
 
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
         server_token = sharedPreferences.getString("token", "");
@@ -246,6 +250,7 @@ public class MyPageFragment extends Fragment
                                 public void onClick(DialogInterface dialog, int which)
                                 {
                                     dialog.dismiss();
+                                    userLog("로그아웃 클릭");
                                     Log.e(TAG, "로그아웃 클릭");
                                     if (Session.getCurrentSession().getTokenInfo().getAccessToken() != null)
                                     {
@@ -287,6 +292,7 @@ public class MyPageFragment extends Fragment
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putBoolean("logout", true);
                     editor.apply();
+                    userLog("로그인 화면으로 이동");
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     startActivity(intent);
@@ -320,41 +326,15 @@ public class MyPageFragment extends Fragment
         }
     }
 
-    public boolean areNotiEnabled()
-    {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-        {
-            NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-            if (!manager.areNotificationsEnabled())
-            {
-                return false;
-            }
-            List<NotificationChannel> channels = manager.getNotificationChannels();
-            for (NotificationChannel channel : channels)
-            {
-                if (channel.getImportance() == NotificationManager.IMPORTANCE_NONE)
-                {
-                    Log.e(TAG, "channel = " + channel);
-                    return false;
-                }
-            }
-            return true;
-        }
-        else
-        {
-            return NotificationManagerCompat.from(getActivity()).areNotificationsEnabled();
-        }
-    }
-
     /* 유저가 푸시알림설정 스위치를 on으로 두면 true, off로 두면 false를 서버로 보내 기존 값을 수정해 저장하는 메서드 */
     void putPushSetting(boolean isPushed)
     {
         String is_push = String.valueOf(isPushed);
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        encode("푸시 설정값 수정");
+        String action = encode("푸시 설정값 수정");
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
         String session = sharedPreferences.getString("sessionId", "");
-        Call<String> call = apiInterface.putPushSetting(session, encode_str, server_token, "push", is_push);
+        Call<String> call = apiInterface.putPushSetting(session, action, server_token, "push", is_push);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -380,25 +360,26 @@ public class MyPageFragment extends Fragment
     }
 
     /* 서버에서 받은 세션 id를 인코딩하는 메서드 */
-    private void encode(String str)
+    private String encode(String str)
     {
         try
         {
-            encode_str = URLEncoder.encode(str, "UTF-8");
+            str = URLEncoder.encode(str, "UTF-8");
         }
         catch (UnsupportedEncodingException e)
         {
             e.printStackTrace();
         }
+        return str;
     }
 
     /* 내 정보를 클릭했을 때 서버에서 사용자 정보를 조회해서 가져오는 메서드 */
     void getUserInfo()
     {
-        encode("서버의 사용자 정보 가져오기");
+        String action = encode("서버의 사용자 정보 가져오기");
         String session = sharedPreferences.getString("sessionId", "");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.getUserInfo(session, encode_str, server_token);
+        Call<String> call = apiInterface.getUserInfo(session, action, server_token);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -421,6 +402,75 @@ public class MyPageFragment extends Fragment
                 Log.e(TAG, "에러 : " + t.getMessage());
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        // 설정화면 갔다 와서 실행할 처리 입력
+    }
+
+    /* onResume() : 사용자와 상호작용이 가능한 시점, 이벤트로 프래그먼트가 가려지기 전까지 이 메서드가 유지된다 */
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        userLog("마이페이지 진입");
+    }
+
+    /* 마이페이지에서 사용자들이 일으키는 이벤트 내용을 서버로 전송하는 메서드 */
+    void userLog(String user_action)
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+        String token;
+        if (sharedPreferences.getString("token", "").equals(""))
+        {
+            token = null;
+        }
+        else
+        {
+            token = sharedPreferences.getString("token", "");
+        }
+        String session = sharedPreferences.getString("sessionId", "");
+        String action = userAction(user_action);
+        Call<String> call = apiInterface.userLog(token, session, "myPage", action, null, LogUtil.getUserLog());
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "마이페이지 진입 후 로그 전송 결과 : " + result);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    private String userAction(String user_action)
+    {
+        try
+        {
+            user_action = URLEncoder.encode(user_action, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
+        return user_action;
     }
 
     /* getUserInfo()로 서버에서 받은 JSON 값을 파싱할 때 사용하는 메서드 */
@@ -484,6 +534,8 @@ public class MyPageFragment extends Fragment
         move_update_personal_imageview = view.findViewById(R.id.move_update_personal_imageview);
         privacy_policy_imageview = view.findViewById(R.id.privacy_policy_imageview);
         account_imageview = view.findViewById(R.id.account_imageview);
+
+        push_setting_text = view.findViewById(R.id.push_setting_text);
     }
 
 }

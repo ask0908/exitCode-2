@@ -505,7 +505,6 @@ public class MainFragment extends Fragment
 
                 // 변환이 끝난 지역명은 인텐트에 담아서 지도 화면으로 보낸다
                 Intent intent = new Intent(getActivity(), MapActivity.class);
-                user_area = "서울";
                 intent.putExtra("user_area", user_area);
                 intent.putExtra("city", city);
                 intent.putExtra("district", district);

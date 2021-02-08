@@ -1,6 +1,7 @@
 package com.psj.welfare.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Spannable;
@@ -75,6 +76,8 @@ public class SearchResultActivity extends AppCompatActivity
     // SearchFragment에서 editText에 입력한 검색 내용. 인텐트로 담아온다
     String keyword;
 
+    SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -109,8 +112,11 @@ public class SearchResultActivity extends AppCompatActivity
     /* 키워드와 일치하는 복지혜택들의 데이터를 서버에서 가져오는 메서드 */
     void searchWelfare(String keyword)
     {
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        String token = sharedPreferences.getString("token", "");
+        String session = sharedPreferences.getString("sessionId", "");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.searchWelfare("search", keyword, LogUtil.getUserLog());
+        Call<String> call = apiInterface.searchWelfare(token, session, "search", keyword, LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
             @Override

@@ -22,6 +22,7 @@ import com.psj.welfare.R;
 import com.psj.welfare.adapter.OtherYoutubeAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -68,7 +69,7 @@ public class YoutubeActivity extends AppCompatActivity
     String video_name;
 
     SharedPreferences sharedPreferences;
-    String encode_str;
+    String encode_str, encode_action;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -297,8 +298,57 @@ public class YoutubeActivity extends AppCompatActivity
     {
         super.onBackPressed();
         // 뒤로가기를 눌렀을 시 어디서 어디로 이동했다고 서버로 보낸다
+        userLog("유튜브 화면에서 뒤로가기 눌러 메인으로 이동");
     }
 
     /* 사용자 행동 정보 저장 메서드 */
+    void userLog(String user_action)
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        String token;
+        if (sharedPreferences.getString("token", "").equals(""))
+        {
+            token = null;
+        }
+        else
+        {
+            token = sharedPreferences.getString("token", "");
+        }
+        String sessionId = sharedPreferences.getString("sessionId", "");
+        String action = encodeAction(user_action);
+        Call<String> call = apiInterface.userLog(token, sessionId, "youtube_review", action, null, LogUtil.getUserLog());
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "유튜브 화면에서 백버튼 누름 : " + result);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    /* 서버로 한글을 보낼 때 그냥 보내면 안되고 인코딩해서 보내야 한다. 이 때 한글을 인코딩하는 메서드 */
+    private String encodeAction(String str)
+    {
+        try
+        {
+            str = URLEncoder.encode(str, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
+        return str;
+    }
 
 }

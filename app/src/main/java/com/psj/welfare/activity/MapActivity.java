@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.psj.welfare.R;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
-import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -101,9 +100,9 @@ public class MapActivity extends AppCompatActivity
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         sharedPreferences = getSharedPreferences("app_pref", 0);
-        String header = sharedPreferences.getString("sessionId", "");
-        encode("지도 화면 진입 및 지역별 혜택 개수 출력");
-        Call<String> call = apiInterface.getNumberOfBenefit(user_area, "1", LogUtil.getUserLog());
+        String token = sharedPreferences.getString("token", "");
+        String sessionId = sharedPreferences.getString("sessionId", "");
+        Call<String> call = apiInterface.getNumberOfBenefit(token, sessionId, user_area, "1");
         call.enqueue(new Callback<String>()
         {
             @Override

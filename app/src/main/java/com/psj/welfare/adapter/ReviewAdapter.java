@@ -1,6 +1,7 @@
 package com.psj.welfare.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.hedgehog.ratingbar.RatingBar;
 import com.psj.welfare.Data.ReviewItem;
 import com.psj.welfare.R;
+import com.psj.welfare.activity.ReviewUpdateActivity;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -83,12 +85,34 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         holder.review_date.setText(item.getCreate_date());
         float count = item.getStar_count();
         Log.e("ReviewAdapter", "getId() : " + item.getId());  // 닉네임이 출력된다
+        Log.e("ReviewAdapter", "getWriter() : " + item.getWriter());
         Log.e("ReviewAdapter", "getImage_url() : " + item.getImage_url());
         Log.e("ReviewAdapter", "getContent() : " + item.getContent());
         Log.e("ReviewAdapter", "별점 : " + item.getStar_count());
+        SharedPreferences sharedPreferences = context.getSharedPreferences("app_pref", 0);
+        // item.getWriter()랑 쉐어드에 저장된 닉네임이랑 비교해서 같으면 보여주고 다르면 안 보여주면 될 듯
+        if (!item.getWriter().equals(sharedPreferences.getString("user_nickname", "")))
+        {
+            // 다르니까 보여주지 않는다
+            holder.update_textview.setVisibility(View.GONE);
+            holder.delete_textview.setVisibility(View.GONE);
+        }
+        else
+        {
+            // 같은 경우에만 보여줘서 클릭할 수 있게 한다
+            holder.update_textview.setVisibility(View.VISIBLE);
+            holder.delete_textview.setVisibility(View.VISIBLE);
+        }
+        holder.update_textview.setOnClickListener(v -> {
+            Intent intent = new Intent(context, ReviewUpdateActivity.class);
+            context.startActivity(intent);
+        });
+        holder.delete_textview.setOnClickListener(v -> {
+            Intent intent = new Intent(context, ReviewUpdateActivity.class);
+            context.startActivity(intent);
+        });
 
         // 리뷰 작성자와 내 닉네임이 같을 때만 수정, 삭제 버튼을 보여줘야 한다
-        SharedPreferences sharedPreferences = context.getSharedPreferences("app_pref", 0);
         String user_nickname = sharedPreferences.getString("user_nickname", "");
         if (list.get(position).getWriter().equals(user_nickname))
         {

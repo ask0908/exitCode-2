@@ -198,6 +198,8 @@ public class DetailBenefitActivity extends AppCompatActivity
 
     String encode_str;
 
+    String send_id;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -249,6 +251,7 @@ public class DetailBenefitActivity extends AppCompatActivity
 
         /* findViewById() 모아놓은 메서드 */
         init();
+
         facilities_view.setVisibility(View.GONE);
         all_review_scene.setVisibility(View.GONE);
         content_bottom_view.setBackgroundColor(getColor(R.color.colorBlack));
@@ -378,6 +381,7 @@ public class DetailBenefitActivity extends AppCompatActivity
             push_welf_name = intent.getStringExtra("name");
             welfare_desc_title.setText(push_welf_name);
         }
+        Log.e(TAG, "push_welf_name = " + push_welf_name);
 
         if (getIntent().hasExtra("welf_local"))
         {
@@ -385,10 +389,7 @@ public class DetailBenefitActivity extends AppCompatActivity
             push_welf_local = intent.getStringExtra("welf_local");
             Log.e(TAG, "인텐트로 가져온 지역명 = " + push_welf_local);
         }
-
-        /* 혜택의 상세정보를 가져오는 메서드, detail_data에 null이 들어간다
-        * ContentFragment로 이동시킨다 */
-        getWelfareInformation();
+        Log.e(TAG, "push_welf_local = " + push_welf_local);
 
         // 공유 모양 이미지뷰 클릭 리스너
         review_share_imageview.setOnClickListener(v -> {
@@ -456,6 +457,48 @@ public class DetailBenefitActivity extends AppCompatActivity
             }
         });
 
+        /* 혜택의 상세정보를 가져오는 메서드, detail_data에 null이 들어간다
+         * ContentFragment로 이동시킨다 */
+        getWelfareInformation();
+
+        // 리뷰 작성 버튼
+        review_write_button.setOnClickListener(new OnSingleClickListener()
+        {
+            @Override
+            public void onSingleClick(View v)
+            {
+                // 리뷰 목록에 보이는 닉네임과 리뷰 작성을 누르는 유저의 닉네임이 같을 경우 이동하지 못하게 한다
+                // writer 변수에 저장돼있는 닉네임(리뷰 목록에 보이는 닉네임)과 쉐어드에 저장된 닉네임(리뷰 작성을 누르는 유저의 닉네임)을 비교해서 같을 경우
+                // 토스트로 리뷰 작성 불가를 알리고 다르다면(=작성한 적이 없다면) 리뷰 작성 화면으로 이동시킨다
+                // writer가 null이면 작성된 리뷰가 없다는 뜻이므로 리뷰 작성 화면으로 이동시킨다
+                if (writer == null)
+                {
+                    Intent intent = new Intent(DetailBenefitActivity.this, ReviewActivity.class);
+                    intent.putExtra("id", send_id);
+                    Log.e(TAG, "1. ReviewActivity로 보낼 혜택 id = " + send_id);
+                    startActivityForResult(intent, 1);
+                }
+                else if (!writer.equals(""))
+                {
+                    if (writer.equals(sharedPreferences.getString("user_nickname", "")))
+                    {
+                        // 선택한 리뷰의 작성자 닉네임 = 작성 버튼 누른 사람의 닉네임이 같으면 토스트로 작성 불가 알림
+                        Toast.makeText(DetailBenefitActivity.this, "한번 리뷰를 작성하시면 다른 리뷰를 작성하실 수 없습니다", Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+                        // 다른 경우 리뷰 작성화면으로 이동할 수 있도록 한다
+                        Intent intent = new Intent(DetailBenefitActivity.this, ReviewActivity.class);
+                        intent.putExtra("id", send_id);
+                        Log.e(TAG, "2. ReviewActivity로 보낼 혜택 id = " + send_id);
+                        startActivityForResult(intent, 1);
+                    }
+                }
+            }
+        });
+
+        getReview();
+
     }
 
     @Override
@@ -504,10 +547,9 @@ public class DetailBenefitActivity extends AppCompatActivity
     {
         String token = sharedPreferences.getString("token" ,"");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        // "detail", local(지역 정보), welf_name(혜택 이름), login_token(유저 인증용 토큰 정보), 사용자 로그
-        Call<String> call = apiInterface.getWelfareInformation("detail", push_welf_local, push_welf_name, token, LogUtil.getUserLog());
-        Log.e(TAG, "type = detail, push_welf_local = " + push_welf_local + ", push_welf_name = " + push_welf_name +
-                ", token = " + token + ", " + LogUtil.getUserLog());
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        String session = sharedPreferences.getString("sessionId", "");
+        Call<String> call = apiInterface.getWelfareInformation(token, session, "detail", push_welf_local, push_welf_name, token, LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -594,39 +636,41 @@ public class DetailBenefitActivity extends AppCompatActivity
     {
         super.onResume();
 
-        // 리뷰 작성 버튼
-        review_write_button.setOnClickListener(new OnSingleClickListener()
-        {
-            @Override
-            public void onSingleClick(View v)
-            {
-                // 리뷰 목록에 보이는 닉네임과 리뷰 작성을 누르는 유저의 닉네임이 같을 경우 이동하지 못하게 한다
-                // writer 변수에 저장돼있는 닉네임(리뷰 목록에 보이는 닉네임)과 쉐어드에 저장된 닉네임(리뷰 작성을 누르는 유저의 닉네임)을 비교해서 같을 경우
-                // 토스트로 리뷰 작성 불가를 알리고 다르다면(=작성한 적이 없다면) 리뷰 작성 화면으로 이동시킨다
-                // writer가 null이면 작성된 리뷰가 없다는 뜻이므로 리뷰 작성 화면으로 이동시킨다
-                if (writer == null)
-                {
-                    Intent intent = new Intent(DetailBenefitActivity.this, ReviewActivity.class);
-                    intent.putExtra("id", welf_id);
-                    startActivityForResult(intent, 1);
-                }
-                else if (!writer.equals(""))
-                {
-                    if (writer.equals(sharedPreferences.getString("user_nickname", "")))
-                    {
-                        // 선택한 리뷰의 작성자 닉네임 = 작성 버튼 누른 사람의 닉네임이 같으면 토스트로 작성 불가 알림
-                        Toast.makeText(DetailBenefitActivity.this, "한번 리뷰를 작성하시면 다른 리뷰를 작성하실 수 없습니다", Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                    {
-                        // 다른 경우 리뷰 작성화면으로 이동할 수 있도록 한다
-                        Intent intent = new Intent(DetailBenefitActivity.this, ReviewActivity.class);
-                        intent.putExtra("id", welf_id);
-                        startActivityForResult(intent, 1);
-                    }
-                }
-            }
-        });
+//        // 리뷰 작성 버튼
+//        review_write_button.setOnClickListener(new OnSingleClickListener()
+//        {
+//            @Override
+//            public void onSingleClick(View v)
+//            {
+//                // 리뷰 목록에 보이는 닉네임과 리뷰 작성을 누르는 유저의 닉네임이 같을 경우 이동하지 못하게 한다
+//                // writer 변수에 저장돼있는 닉네임(리뷰 목록에 보이는 닉네임)과 쉐어드에 저장된 닉네임(리뷰 작성을 누르는 유저의 닉네임)을 비교해서 같을 경우
+//                // 토스트로 리뷰 작성 불가를 알리고 다르다면(=작성한 적이 없다면) 리뷰 작성 화면으로 이동시킨다
+//                // writer가 null이면 작성된 리뷰가 없다는 뜻이므로 리뷰 작성 화면으로 이동시킨다
+//                if (writer == null)
+//                {
+//                    Intent intent = new Intent(DetailBenefitActivity.this, ReviewActivity.class);
+//                    intent.putExtra("id", send_id);
+//                    Log.e(TAG, "1. ReviewActivity로 보낼 혜택 id = " + send_id);
+//                    startActivityForResult(intent, 1);
+//                }
+//                else if (!writer.equals(""))
+//                {
+//                    if (writer.equals(sharedPreferences.getString("user_nickname", "")))
+//                    {
+//                        // 선택한 리뷰의 작성자 닉네임 = 작성 버튼 누른 사람의 닉네임이 같으면 토스트로 작성 불가 알림
+//                        Toast.makeText(DetailBenefitActivity.this, "한번 리뷰를 작성하시면 다른 리뷰를 작성하실 수 없습니다", Toast.LENGTH_SHORT).show();
+//                    }
+//                    else
+//                    {
+//                        // 다른 경우 리뷰 작성화면으로 이동할 수 있도록 한다
+//                        Intent intent = new Intent(DetailBenefitActivity.this, ReviewActivity.class);
+//                        intent.putExtra("id", send_id);
+//                        Log.e(TAG, "2. ReviewActivity로 보낼 혜택 id = " + send_id);
+//                        startActivityForResult(intent, 1);
+//                    }
+//                }
+//            }
+//        });
 
         // 내용 클릭
         content_view.setOnClickListener(new OnSingleClickListener()
@@ -734,6 +778,9 @@ public class DetailBenefitActivity extends AppCompatActivity
                 welf_image = inner_obj.getString("welf_image");
                 welf_wording = inner_obj.getString("welf_wording");
             }
+
+            Log.e(TAG, "welf_id = " + welf_id);
+            send_id = welf_id;
 
             // 이미지, 문구 처리
             if (!welf_image.equals("") && !welf_wording.equals(""))
@@ -885,9 +932,10 @@ public class DetailBenefitActivity extends AppCompatActivity
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         String session = sharedPreferences.getString("sessionId", "");
+        String token = sharedPreferences.getString("token", "");
         encode("리뷰 데이터 호출");
         /* review_id에는 리뷰의 idx를 가져와서 넣어야 한다 */
-        Call<String> call = apiInterface.getReview("list", welf_id);
+        Call<String> call = apiInterface.getReview(token, session, "list", welf_id);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -1061,34 +1109,34 @@ public class DetailBenefitActivity extends AppCompatActivity
         }
 
         review_adapter = new ReviewAdapter(DetailBenefitActivity.this, list, review_clickListener);
-        review_adapter.setOnItemClickListener(new ReviewAdapter.ItemClickListener()
-        {
-            @Override
-            public void onItemClick(View view, int position)
-            {
-                // 쉐어드에서 가져온 user_nickname 값과 writer 값을 가져와서 비교한 다음 일치하면 수정, 삭제를 할 수 있게 한다
-                String user_nickname = sharedPreferences.getString("user_nickname", "");
-                String writer_nickname = list.get(position).getWriter();
-                String review_content = list.get(position).getContent();
-                float star = list.get(position).getStar_count();
-                String star_count = String.valueOf(star);
-                String posting_id = list.get(position).getId();
-                Log.e(TAG, "작성자 = " + writer_nickname);
-                Log.e(TAG, "리뷰 내용 = " + review_content);
-                Log.e(TAG, "글 id = " + posting_id);
-                if (user_nickname.equals(writer_nickname))
-                {
-                    // 인텐트로 값들을 갖고 이동해 삭제할 수 있게 한다
-                    String image_url = list.get(position).getImage_url();
-                    Intent intent = new Intent(DetailBenefitActivity.this, ReviewUpdateActivity.class);
-                    intent.putExtra("image_url", image_url);
-                    intent.putExtra("content", review_content);
-                    intent.putExtra("id", posting_id);
-                    intent.putExtra("star_count", star_count);
-                    startActivity(intent);
-                }
-            }
-        });
+//        review_adapter.setOnItemClickListener(new ReviewAdapter.ItemClickListener()
+//        {
+//            @Override
+//            public void onItemClick(View view, int position)
+//            {
+//                // 쉐어드에서 가져온 user_nickname 값과 writer 값을 가져와서 비교한 다음 일치하면 수정, 삭제를 할 수 있게 한다
+//                String user_nickname = sharedPreferences.getString("user_nickname", "");
+//                String writer_nickname = list.get(position).getWriter();
+//                String review_content = list.get(position).getContent();
+//                float star = list.get(position).getStar_count();
+//                String star_count = String.valueOf(star);
+//                String posting_id = list.get(position).getId();
+//                Log.e(TAG, "작성자 = " + writer_nickname);
+//                Log.e(TAG, "리뷰 내용 = " + review_content);
+//                Log.e(TAG, "글 id = " + posting_id);
+//                if (user_nickname.equals(writer_nickname))
+//                {
+//                    // 인텐트로 값들을 갖고 이동해 삭제할 수 있게 한다
+//                    String image_url = list.get(position).getImage_url();
+//                    Intent intent = new Intent(DetailBenefitActivity.this, ReviewUpdateActivity.class);
+//                    intent.putExtra("image_url", image_url);
+//                    intent.putExtra("content", review_content);
+//                    intent.putExtra("id", posting_id);
+//                    intent.putExtra("star_count", star_count);
+//                    startActivity(intent);
+//                }
+//            }
+//        });
         review_recycler.setAdapter(review_adapter);
     }
 
