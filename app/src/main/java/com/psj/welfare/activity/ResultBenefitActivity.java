@@ -161,8 +161,9 @@ public class ResultBenefitActivity extends AppCompatActivity
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Log.e(TAG, "검색 키워드 = " + category);
         SharedPreferences sharedPreferences = getSharedPreferences("app_pref", 0);
-        String header = sharedPreferences.getString("sessionId", "");
-        Call<String> call = apiInterface.searchWelfareCategory(header,"category_search", category, "test.change");
+        String session = sharedPreferences.getString("sessionId", "");
+        String token = sharedPreferences.getString("token", "");
+        Call<String> call = apiInterface.searchWelfareCategory(token, session,"category_search", category, LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
             @Override

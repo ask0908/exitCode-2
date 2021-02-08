@@ -512,10 +512,11 @@ public class MapDetailActivity extends AppCompatActivity
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         sharedPreferences = getSharedPreferences("app_pref", 0);
-        String header = sharedPreferences.getString("sessionId", "");
+        String sessionId = sharedPreferences.getString("sessionId", "");
+        String token = sharedPreferences.getString("token", "");
         encode("지역 검색 결과 리스트 진입");
         area = sharedPreferences.getString("map_detail_area", "");
-        Call<String> call = apiInterface.getNumberOfBenefit(area, "2", LogUtil.getUserLog());
+        Call<String> call = apiInterface.getNumberOfBenefit(token, sessionId, area, "2");
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -542,9 +543,10 @@ public class MapDetailActivity extends AppCompatActivity
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         sharedPreferences = getSharedPreferences("app_pref", 0);
-        String header = sharedPreferences.getString("sessionId", "");
+        String sessionId = sharedPreferences.getString("sessionId", "");
+        String token = sharedPreferences.getString("token", "");
         encode("지역 검색 결과 리스트 진입");
-        Call<String> call = apiInterface.getNumberOfBenefit(area, "2", LogUtil.getUserLog());
+        Call<String> call = apiInterface.getNumberOfBenefit(token, sessionId, area, "2");
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -702,8 +704,9 @@ public class MapDetailActivity extends AppCompatActivity
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         SharedPreferences sharedPreferences = getSharedPreferences("app_pref", 0);
-        String header = sharedPreferences.getString("sessionId", "");
-        Call<String> call = apiInterface.searchWelfareCategory(header, "category_search", select_category, LogUtil.getUserLog());
+        String token = sharedPreferences.getString("token", "");
+        String session = sharedPreferences.getString("sessionId", "");
+        Call<String> call = apiInterface.searchWelfareCategory(token, session, "category_search", select_category, LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
             @Override

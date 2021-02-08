@@ -47,11 +47,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-/* 리뷰 텍스트뷰를 누르면 나오는 화면
- * 별점을 확인하고 핸드폰에서 이미지를 첨부해 리뷰를 쓸 수 있다 */
+/* 리뷰 작성 화면 */
 public class ReviewActivity extends AppCompatActivity
 {
-    private static final String TAG = "ReviewActivity";
+    public final String TAG = this.getClass().getSimpleName();
 
     private RatingBar review_rate_edit;
     private EditText review_content_edit;
@@ -87,12 +86,12 @@ public class ReviewActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review);
 
-        if (getIntent().hasExtra("id") && getIntent().hasExtra("id2"))
+        if (getIntent().hasExtra("id"))
         {
             Intent intent = getIntent();
             review_id = intent.getStringExtra("id");
-            Log.e(TAG, "받아온 id = " + review_id);
         }
+        Log.e(TAG, "받아온 id = " + review_id);
 
         setSupportActionBar(findViewById(R.id.review_toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -381,11 +380,7 @@ public class ReviewActivity extends AppCompatActivity
 
         int rate = (int) review_rate_edit.getRating();
         int id = 0;
-        if (!review_id.equals(""))
-        {
-            // review_id가 없으면?
-            id = Integer.parseInt(review_id);
-        }
+        id = Integer.parseInt(review_id);
         String star_count = String.valueOf(rate);
         Call<String> call = apiInterface.uploadReview(token, id, review_content_edit.getText().toString(), null, null,
                 difficulty, satisfaction, star_count);
@@ -417,11 +412,10 @@ public class ReviewActivity extends AppCompatActivity
 
     }
 
-    // 절대경로 얻는 메서드
+    // 절대경로 얻는 메서드(static 제거)
     @SuppressLint("NewApi")
-    public static String getPath(Context context, Uri uri) throws URISyntaxException
+    public String getPath(Context context, Uri uri) throws URISyntaxException
     {
-        Log.i(TAG, "getPath() 실행");
         final boolean needToCheckUri = Build.VERSION.SDK_INT >= 19;
         String selection = null;
         String[] selectionArgs = null;

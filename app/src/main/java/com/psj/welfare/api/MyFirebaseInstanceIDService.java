@@ -32,6 +32,6 @@ public class MyFirebaseInstanceIDService extends FirebaseMessagingService
         super.onNewToken(s);
         String token = FirebaseInstanceId.getInstance().getToken();
 //        FirebaseMessaging.getInstance().subscribeToTopic(SUBSCRIBE_TO);
-        Log.e("ㄹㄹㄹ", "onNewToken : " + token);
+        Log.e("FCM 토큰 서비스", "onNewToken : " + token);
     }
 }
