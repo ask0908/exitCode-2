@@ -49,7 +49,12 @@ public class VerticalSearchResultAdapter extends RecyclerView.Adapter<VerticalSe
     public void onBindViewHolder(@NonNull VerticalSearchResultAdapter.VerticalSearchResultViewHolder holder, int position)
     {
         SearchItem item = list.get(position);
-        holder.search_result_textview.setText(item.getWelf_name());
+        String welf_name = item.getWelf_name();
+        if (welf_name.contains(";; "))
+        {
+            welf_name = welf_name.replace(";; ", ", ");
+        }
+        holder.search_result_textview.setText(welf_name);
         holder.search_welf_local_textview.setText("#" + item.getWelf_local());
 
 //        Log.e("키워드 검색 후", "카테고리 = " + list.get(position).getWelf_category());

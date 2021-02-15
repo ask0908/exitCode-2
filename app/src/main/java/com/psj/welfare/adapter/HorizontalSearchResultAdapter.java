@@ -1,9 +1,11 @@
 package com.psj.welfare.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,8 +24,8 @@ public class HorizontalSearchResultAdapter extends RecyclerView.Adapter<Horizont
     private List<SearchItem> list;
     private ItemClickListener itemClickListener;
 
-    // 중복 처리에 사용하는 리스트
-//    List<String> str_list = new ArrayList<>();
+    // 아이템 색 바꿀 때 쓰는 변수
+    private int selected_position = -1;
 
     public void setOnItemClickListener(ItemClickListener itemClickListener)
     {
@@ -41,7 +43,7 @@ public class HorizontalSearchResultAdapter extends RecyclerView.Adapter<Horizont
     @Override
     public HorizontalSearchResultAdapter.HorizontalSearchResultViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        View view = LayoutInflater.from(context).inflate(R.layout.selected_category_item, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.unselected_category_item, parent, false);
         return new HorizontalSearchResultViewHolder(view, itemClickListener);
     }
 
@@ -50,6 +52,18 @@ public class HorizontalSearchResultAdapter extends RecyclerView.Adapter<Horizont
     {
         SearchItem item = list.get(position);
         holder.category_btn.setText(item.getWelf_category());
+
+        /* 필터 색 바꾸기 */
+        if (selected_position == position)
+        {
+            holder.sub_category_layout.setBackgroundResource(R.drawable.select_after);
+            holder.category_btn.setTextColor(Color.parseColor("#FFFFFF"));
+        }
+        else
+        {
+            holder.sub_category_layout.setBackgroundResource(R.drawable.rbf_btn_before);
+            holder.category_btn.setTextColor(Color.parseColor("#000000"));
+        }
     }
 
     @Override
@@ -60,6 +74,7 @@ public class HorizontalSearchResultAdapter extends RecyclerView.Adapter<Horizont
 
     public class HorizontalSearchResultViewHolder extends RecyclerView.ViewHolder
     {
+        LinearLayout sub_category_layout;
         TextView category_btn;
         ItemClickListener itemClickListener;
 
@@ -67,13 +82,19 @@ public class HorizontalSearchResultAdapter extends RecyclerView.Adapter<Horizont
         {
             super(view);
 
-            category_btn = view.findViewById(R.id.category_btn);
+            sub_category_layout = view.findViewById(R.id.search_category_layout);
+            category_btn = view.findViewById(R.id.search_category_btn);
+
             this.itemClickListener = itemClickListener;
             category_btn.setOnClickListener(v -> {
                 int pos = getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION && itemClickListener != null)
                 {
                     itemClickListener.onItemClick(v, pos);
+
+                    /* 필터 색 바꾸기 */
+                    selected_position = pos;
+                    notifyDataSetChanged();
                 }
             });
         }

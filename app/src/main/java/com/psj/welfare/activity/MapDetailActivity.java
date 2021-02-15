@@ -146,7 +146,6 @@ public class MapDetailActivity extends AppCompatActivity
         // 복지혜택 이름들을 세로로 보여주는 하단 리사이클러뷰
         map_result_recyclerview = findViewById(R.id.map_result_recyclerview);
         map_result_recyclerview.setHasFixedSize(true);
-//        map_result_recyclerview.addItemDecoration(new DividerItemDecoration(MapDetailActivity.this, DividerItemDecoration.VERTICAL));
         map_result_recyclerview.setLayoutManager(new LinearLayoutManager(this));
 
         // end 값이 25인 것은 1자리 숫자기 때문에 그 숫자만 색깔을 바꾸게 하기 위한 처리다.
@@ -686,6 +685,7 @@ public class MapDetailActivity extends AppCompatActivity
 
         // 어댑터 초기화, 이 때 for문 안에서 값이 들어간 List를 인자로 넣는다
         map_adapter = new MapResultAdapter(MapDetailActivity.this, item_list, itemClickListener);
+
         // 더보기 버튼 클릭 시 해당 혜택의 상세보기 화면으로 이동한다
         map_adapter.setOnItemClickListener((view, position) ->
         {

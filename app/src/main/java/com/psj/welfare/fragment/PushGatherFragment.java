@@ -132,13 +132,11 @@ public class PushGatherFragment extends Fragment
     {
         app_pref = getActivity().getSharedPreferences("app_pref", 0);
         String token = app_pref.getString("token", "");
-        Log.e(TAG, "푸시 알림 목록 뽑을 때 토큰값 = " + token);
+        String session = app_pref.getString("sessionId", "");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        if (!app_pref.getString("sessionId", "").equals(""))
-        {
-            session = app_pref.getString("sessionId", "");
-        }
         Call<String> call = apiInterface.getPushData(token, session, "pushList");
+        Log.e("푸시 확인", "세션 아이디 : " + session);
+        Log.e("푸시 확인", "토큰 : " + token);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -167,6 +165,13 @@ public class PushGatherFragment extends Fragment
         try
         {
             JSONObject jsonObject = new JSONObject(response);
+            if (!jsonObject.getString("Status").equals(""))
+            {
+                String status = jsonObject.getString("Status");
+                SharedPreferences.Editor editor = app_pref.edit();
+                editor.putString("push_status", status);
+                editor.apply();
+            }
             JSONArray jsonArray = jsonObject.getJSONArray("Message");
             for (int i = 0; i < jsonArray.length(); i++)
             {

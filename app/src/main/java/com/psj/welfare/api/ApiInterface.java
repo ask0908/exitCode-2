@@ -309,6 +309,7 @@ public interface ApiInterface
 	// ===================================================================================================
 	/**
 	 * 로그인 시 서버에서 받는 토큰을 넘겨 푸시 알림 데이터들을 받아오는 메서드
+	 * PushGatherFragment에서 사용
 	 * @param token - 로그인 시 서버에서 생성되는 토큰
 	 * @param session - 쉐어드에 저장된 세션 id
 	 * @param type - "pushList" 고정

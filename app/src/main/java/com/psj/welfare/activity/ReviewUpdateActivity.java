@@ -100,12 +100,12 @@ public class ReviewUpdateActivity extends AppCompatActivity
         token = sharedPreferences.getString("token", "");
 
         // getIntent() null 체크 후 안에 있는 데이터 꺼냄
-        if (getIntent().hasExtra("content") && getIntent().hasExtra("image_url") && getIntent().hasExtra("star_count"))
+        if (getIntent().hasExtra("content") && getIntent().hasExtra("star_count"))
         {
             Intent intent = getIntent();
             content = intent.getStringExtra("content");
-            image_url = intent.getStringExtra("image_url");
             star_count = intent.getStringExtra("star_count");
+            Log.e(TAG, "DetailBenefit에서 가져온 리뷰 내용 : " + content + ", image_url : " + image_url);
             // 별 카운트에 값이 있다면 그걸 상단의 별점바에 세팅한다
             if (star_count != null)
             {
@@ -118,7 +118,7 @@ public class ReviewUpdateActivity extends AppCompatActivity
             {
                 id = Integer.parseInt(before_id);
             }
-            Log.e(TAG, "DetailBenefit에서 가져온 리뷰 내용 : " + content + ", image_url : " + image_url);
+            /* 리뷰 수정 누르면 입력했던 내용 가져오도록 하는 중이었다 */
             // 자신이 작성한 리뷰 내용을 가져와 editText에 set
             review_content_update_edit.setText(content);
             // 리뷰 작성 시 사용했던 이미지를 가져와 set한다. 이 때 사진을 수정하지 않았을 경우 에러가 뜨기 때문에 기존에 첨부한 이미지의 경로를 가져와서
