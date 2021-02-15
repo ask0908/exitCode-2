@@ -1,6 +1,7 @@
 package com.psj.welfare.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,9 @@ public class ResultKeywordAdapter extends RecyclerView.Adapter<ResultKeywordAdap
     private Context context;
     private List<ResultKeywordItem> lists;
     private ItemClickListener itemClickListener;
+
+    // 아이템 색 바꿀 때 쓰는 변수
+    private int selected_position = -1;
 
     public void setOnResultKeywordClickListener(ItemClickListener itemClickListener)
     {
@@ -45,23 +49,22 @@ public class ResultKeywordAdapter extends RecyclerView.Adapter<ResultKeywordAdap
     @Override
     public void onBindViewHolder(@NonNull ResultKeywordAdapter.ResultKeywordViewHolder holder, int position)
     {
+        holder.setIsRecyclable(false);
         ResultKeywordItem item = lists.get(position);
         holder.keyword_category.setText(item.getParent_category());
         holder.keyword_layout.setTag(position);
-//        holder.keyword_category.setOnClickListener(OnSingleClickListener -> {
-//            if (OnSingleClickListener.isSelected())
-//            {
-//                holder.keyword_category.setBackground(ContextCompat.getDrawable(context, R.drawable.keyword_round_textview_purple));
-//                holder.keyword_category.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
-//                holder.keyword_category.setSelected(!holder.keyword_category.isSelected());
-//            }
-//            else
-//            {
-//                holder.keyword_category.setBackground(ContextCompat.getDrawable(context, R.drawable.keyword_round_textview));
-//                holder.keyword_category.setTextColor(ContextCompat.getColor(context, R.color.colorBlack));
-//                holder.keyword_category.setSelected(true);
-//            }
-//        });
+
+        /* 필터 색 바꾸기 */
+        if (selected_position == position)
+        {
+            holder.keyword_layout.setBackgroundResource(R.drawable.select_after);
+            holder.keyword_category.setTextColor(Color.parseColor("#FFFFFF"));
+        }
+        else
+        {
+            holder.keyword_layout.setBackgroundResource(R.drawable.rbf_btn_before);
+            holder.keyword_category.setTextColor(Color.parseColor("#000000"));
+        }
     }
 
     @Override
@@ -90,6 +93,10 @@ public class ResultKeywordAdapter extends RecyclerView.Adapter<ResultKeywordAdap
                 if (pos != RecyclerView.NO_POSITION && itemClickListener != null)
                 {
                     itemClickListener.onItemClick(v, pos);
+
+                    /* 필터 색 바꾸기 */
+                    selected_position = pos;
+                    notifyDataSetChanged();
                 }
             });
         }
@@ -104,11 +111,6 @@ public class ResultKeywordAdapter extends RecyclerView.Adapter<ResultKeywordAdap
     public interface ItemClickListener
     {
         void onItemClick(View view, int position);
-    }
-
-    public ResultKeywordItem getRBF(int position)
-    {
-        return lists != null ? lists.get(position) : null;
     }
 
 }

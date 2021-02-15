@@ -78,10 +78,6 @@ public class DetailBenefitActivity extends AppCompatActivity
 
     // 혜택명
     private TextView welfare_desc_title;
-    // 지원내용
-//    private TextView welf_content_detail;
-    // 연락처
-//    private TextView welf_contact_detail;
 
     private String detail_data;
     private String push_welf_name;
@@ -112,6 +108,7 @@ public class DetailBenefitActivity extends AppCompatActivity
     // 리뷰 보여주는 리사이클러뷰에 붙일 어댑터
     ReviewAdapter review_adapter;
     ReviewAdapter.ItemClickListener review_clickListener;
+    ReviewAdapter.DeleteClickListener deleteClickListener;
 
     // 리뷰 수정, 삭제 시 작성자와 유저 닉네임이 일치하는지 확인할 때 사용할 쉐어드
     SharedPreferences sharedPreferences;
@@ -196,8 +193,10 @@ public class DetailBenefitActivity extends AppCompatActivity
     ViewPager detail_viewpager;
     TabLayout detail_tab_layout;
 
+    // 로그에 한글 보낼 때 한글을 인코딩해서 저장할 때 쓰는 변수
     String encode_str;
 
+    // 리뷰 작성 화면 이동 시 유저와 작성자가 같은지 확인할 때 쓰는 변수
     String send_id;
 
     @Override
@@ -207,11 +206,10 @@ public class DetailBenefitActivity extends AppCompatActivity
         setContentView(R.layout.activity_detailbenefit);
 
         Logger.addLogAdapter(new AndroidLogAdapter());
-        // 더미데이터 있는 뷰라서 안 보이게 처리함
         sharedPreferences = getSharedPreferences("app_pref", 0);
         // 쉐어드에서 유저가 거주하는 지역명을 받아온다
         user_area = sharedPreferences.getString("user_area", "");
-        // 서울, 인천 뒤에 붙는 특별시/광역시 글자를 제거한다
+        // 서울, 인천 뒤에 붙는 특별시/광역시 글자를 제거해 서버에 요청할 때 쓸 수 있도록 가공한다
         if (user_area != null)
         {
             switch (user_area)
@@ -252,18 +250,17 @@ public class DetailBenefitActivity extends AppCompatActivity
         /* findViewById() 모아놓은 메서드 */
         init();
 
+        // 더미데이터 있는 뷰라서 안 보이게 처리함
         facilities_view.setVisibility(View.GONE);
+
         all_review_scene.setVisibility(View.GONE);
         content_bottom_view.setBackgroundColor(getColor(R.color.colorBlack));
+        review_textview.setTextColor(getColor(R.color.colorGray_B));
 
-        /* 뷰페이저 설정 */
+        /* 뷰페이저 설정 (나중에 구현) */
 //        DetailViewpagerAdapter detailViewpagerAdapter = new DetailViewpagerAdapter(getSupportFragmentManager());
 //        detail_viewpager.setAdapter(detailViewpagerAdapter);
 //        detail_tab_layout.setupWithViewPager(detail_viewpager);
-
-        /* BarChart로 가로 막대그래프 만들기
-        * https://github.com/blackfizz/EazeGraph */
-        review_chart.clearChart();
 
         // 리뷰 보여주는 리사이클러뷰 처리
         review_recycler = findViewById(R.id.review_recycler);
@@ -391,6 +388,13 @@ public class DetailBenefitActivity extends AppCompatActivity
         }
         Log.e(TAG, "push_welf_local = " + push_welf_local);
 
+        // "장애인 교통비;; 영상전화 사용료 지원" 혜택이 중간에 특수문자가 껴 있어서 이걸 제거하기 위한 처리
+        if (welfare_desc_title.getText().toString().contains(";; "))
+        {
+            String temp = welfare_desc_title.getText().toString().replace(";; ", ", ");
+            welfare_desc_title.setText(temp);
+        }
+
         // 공유 모양 이미지뷰 클릭 리스너
         review_share_imageview.setOnClickListener(v -> {
             /* 카카오 링크 적용 */
@@ -467,12 +471,38 @@ public class DetailBenefitActivity extends AppCompatActivity
             @Override
             public void onSingleClick(View v)
             {
-                // 리뷰 목록에 보이는 닉네임과 리뷰 작성을 누르는 유저의 닉네임이 같을 경우 이동하지 못하게 한다
-                // writer 변수에 저장돼있는 닉네임(리뷰 목록에 보이는 닉네임)과 쉐어드에 저장된 닉네임(리뷰 작성을 누르는 유저의 닉네임)을 비교해서 같을 경우
-                // 토스트로 리뷰 작성 불가를 알리고 다르다면(=작성한 적이 없다면) 리뷰 작성 화면으로 이동시킨다
-                // writer가 null이면 작성된 리뷰가 없다는 뜻이므로 리뷰 작성 화면으로 이동시킨다
-                if (writer == null)
+                // 비로그인한 유저가 눌렀을 경우 로그인하라는 메시지를 띄워 로그인을 유도한다
+                // 로그인 거절 시 다시 리뷰화면으로 돌아간다
+                if (sharedPreferences.getBoolean("logout", false))
                 {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(DetailBenefitActivity.this);
+                    builder.setMessage("리뷰를 작성하시려면 먼저 로그인이 필요해요.\n로그인 하시겠어요?")
+                            .setPositiveButton("예", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+                                    dialog.dismiss();
+                                    Intent intent = new Intent(DetailBenefitActivity.this, LoginActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            })
+                            .setNegativeButton("아니오", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+                                    dialog.dismiss();
+                                }
+                            }).show();
+                }
+                else if (writer == null)
+                {
+                    // 리뷰 목록에 보이는 닉네임과 리뷰 작성을 누르는 유저의 닉네임이 같을 경우 이동하지 못하게 한다
+                    // writer 변수에 저장돼있는 닉네임(리뷰 목록에 보이는 닉네임)과 쉐어드에 저장된 닉네임(리뷰 작성을 누르는 유저의 닉네임)을 비교해서 같을 경우
+                    // 토스트로 리뷰 작성 불가를 알리고 다르다면(=작성한 적이 없다면) 리뷰 작성 화면으로 이동시킨다
+                    // writer가 null이면 작성된 리뷰가 없다는 뜻이므로 리뷰 작성 화면으로 이동시킨다
                     Intent intent = new Intent(DetailBenefitActivity.this, ReviewActivity.class);
                     intent.putExtra("id", send_id);
                     Log.e(TAG, "1. ReviewActivity로 보낼 혜택 id = " + send_id);
@@ -635,6 +665,8 @@ public class DetailBenefitActivity extends AppCompatActivity
     protected void onResume()
     {
         super.onResume();
+        // 리뷰를 작성하면 이 메서드가 호출된다. 이 때 서버에서 리뷰 데이터를 가져오는 메서드를 호출해 갱신 효과를 낸다
+        getReview();
 
 //        // 리뷰 작성 버튼
 //        review_write_button.setOnClickListener(new OnSingleClickListener()
@@ -944,6 +976,7 @@ public class DetailBenefitActivity extends AppCompatActivity
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String detail = response.body();
+                    Log.e(TAG, "리뷰 조회 결과 : " + detail);
                     jsonParse(detail);
                 }
             }
@@ -1066,8 +1099,13 @@ public class DetailBenefitActivity extends AppCompatActivity
             total_review_count.setText("리뷰 " + review_count + "개");
         }
         // 가로 막대그래프에 데이터 set
+        /* BarChart로 가로 막대그래프 만들기 - 아래 링크에서 가져옴
+         * https://github.com/blackfizz/EazeGraph */
         if (five_point != null || four_point != null || three_point != null || two_point != null || one_point != null)
         {
+            // onCreate()에서 clearChart()로 데이터를 지울 경우 1점~5점이 놓인 순서가 꼬이거나 그래프가 개떡같이 출력되는 현상이 발생한다
+            // 그래서 onCreate()가 아닌 JSON 값을 파싱하고 set하기 전 clearChart()로 데이터를 지운 후, 파싱한 데이터를 붙여서 위의 현상을 수정했다
+            review_chart.clearChart();
             review_chart.addBar(new BarModel("5점", Float.parseFloat(five_point), 0xFFFF5549));
             review_chart.addBar(new BarModel("4점", Float.parseFloat(four_point), 0xFFFF5549));
             review_chart.addBar(new BarModel("3점", Float.parseFloat(three_point), 0xFFFF5549));
@@ -1077,6 +1115,7 @@ public class DetailBenefitActivity extends AppCompatActivity
         }
         else
         {
+            review_chart.clearChart();
             review_chart.addBar(new BarModel("5점", 0f, 0xFFFF5549));
             review_chart.addBar(new BarModel("4점", 0f, 0xFFFF5549));
             review_chart.addBar(new BarModel("3점", 0f, 0xFFFF5549));
@@ -1108,36 +1147,103 @@ public class DetailBenefitActivity extends AppCompatActivity
             help_not_progressbar.setProgress(0);
         }
 
-        review_adapter = new ReviewAdapter(DetailBenefitActivity.this, list, review_clickListener);
-//        review_adapter.setOnItemClickListener(new ReviewAdapter.ItemClickListener()
-//        {
-//            @Override
-//            public void onItemClick(View view, int position)
-//            {
-//                // 쉐어드에서 가져온 user_nickname 값과 writer 값을 가져와서 비교한 다음 일치하면 수정, 삭제를 할 수 있게 한다
-//                String user_nickname = sharedPreferences.getString("user_nickname", "");
-//                String writer_nickname = list.get(position).getWriter();
-//                String review_content = list.get(position).getContent();
-//                float star = list.get(position).getStar_count();
-//                String star_count = String.valueOf(star);
-//                String posting_id = list.get(position).getId();
-//                Log.e(TAG, "작성자 = " + writer_nickname);
-//                Log.e(TAG, "리뷰 내용 = " + review_content);
-//                Log.e(TAG, "글 id = " + posting_id);
-//                if (user_nickname.equals(writer_nickname))
-//                {
-//                    // 인텐트로 값들을 갖고 이동해 삭제할 수 있게 한다
+        review_adapter = new ReviewAdapter(DetailBenefitActivity.this, list, review_clickListener, deleteClickListener);
+        review_adapter.setOnDeleteClickListener(new ReviewAdapter.DeleteClickListener()
+        {
+            @Override
+            public void onDeleteClick(View view, int position)
+            {
+                String user_nickname = sharedPreferences.getString("user_nickname", "");
+                String writer_nickname = list.get(position).getWriter();
+                String posting_id = list.get(position).getId();
+                int id = Integer.parseInt(posting_id);
+                if (user_nickname.equals(writer_nickname))
+                {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(DetailBenefitActivity.this);
+                    builder.setTitle("리뷰 삭제")
+                            .setMessage("리뷰를 삭제하시겠습니까?\n삭제된 리뷰는 복구할 수 없습니다")
+                            .setPositiveButton("예", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+                                    deleteReview(id);
+                                    Toast.makeText(DetailBenefitActivity.this, "리뷰 삭제 완료", Toast.LENGTH_SHORT).show();
+                                    dialog.dismiss();
+                                    finish();
+                                }
+                            })
+                            .setNegativeButton("아니오", new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+                                    Toast.makeText(DetailBenefitActivity.this, "리뷰 삭제 취소", Toast.LENGTH_SHORT).show();
+                                    dialog.dismiss();
+                                }
+                            }).create().show();
+                }
+            }
+        });
+        review_adapter.setOnItemClickListener(new ReviewAdapter.ItemClickListener()
+        {
+            @Override
+            public void onItemClick(View view, int position)
+            {
+                // 쉐어드에서 가져온 user_nickname 값과 writer 값을 가져와서 비교한 다음 일치하면 수정, 삭제를 할 수 있게 한다
+                String user_nickname = sharedPreferences.getString("user_nickname", "");
+                String writer_nickname = list.get(position).getWriter();
+                String review_content = list.get(position).getContent();
+                float star = list.get(position).getStar_count();
+                String star_count = String.valueOf(star);
+                String posting_id = list.get(position).getId();
+                Log.e(TAG, "작성자 = " + writer_nickname);
+                Log.e(TAG, "리뷰 내용 = " + review_content);
+                Log.e(TAG, "글 id = " + posting_id);
+                if (user_nickname.equals(writer_nickname))
+                {
+                    // 인텐트로 값들을 갖고 이동해 삭제할 수 있게 한다
 //                    String image_url = list.get(position).getImage_url();
-//                    Intent intent = new Intent(DetailBenefitActivity.this, ReviewUpdateActivity.class);
+                    Intent intent = new Intent(DetailBenefitActivity.this, ReviewUpdateActivity.class);
 //                    intent.putExtra("image_url", image_url);
-//                    intent.putExtra("content", review_content);
-//                    intent.putExtra("id", posting_id);
-//                    intent.putExtra("star_count", star_count);
-//                    startActivity(intent);
-//                }
-//            }
-//        });
+                    intent.putExtra("content", review_content);
+                    intent.putExtra("id", posting_id);
+                    intent.putExtra("star_count", star_count);
+                    startActivity(intent);
+                }
+            }
+        });
         review_recycler.setAdapter(review_adapter);
+    }
+
+    // 리뷰 삭제 메서드
+    void deleteReview(int id)
+    {
+        String token = sharedPreferences.getString("token", "");
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        Call<String> call = apiInterface.deleteReview(token, id, "delete");
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "삭제 결과 = " + result);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
     }
 
 }

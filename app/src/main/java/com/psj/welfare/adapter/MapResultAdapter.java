@@ -53,10 +53,13 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
     public void onBindViewHolder(@NonNull MapResultAdapter.MapResultViewHolder holder, int position)
     {
         MapResultItem item = lists.get(position);
-        holder.map_result_benefit_name.setText(item.getWelf_name());
-        /* 하위 카테고리를 클릭하면 클릭한 아이템의 색이 빨갛게 변하고, 다른 걸 클릭하면 기존에 클릭한 아이템 색이 원래대로 돌아오고 새로 클릭한 아이템만 빨간색이 되도록 만들 것이다
-        * 1. 클릭한 아이템의 위치를 파악한다? 또는 클릭한 아이템의 색을 빨갛게 바꾼다 = boolean 변수 등을 써서 체크된 사실을 기록한다
-        * 2. 다른 아이템을 클릭하면 기존의 클릭되어져 있던 아이템의 상태를 원래대로 돌리고 새로 클릭한 아이템의 색깔을 바꾼다 */
+        // 제주도의 장애인 교통비;; 영상전화 사용료 지원 혜택의 중간에 ;;이 껴있어서 이걸 빼야 한다
+        String welf_name = item.getWelf_name();
+        if (welf_name.contains(";; "))
+        {
+            welf_name = welf_name.replace(";; ", ", ");
+        }
+        holder.map_result_benefit_name.setText(welf_name);
         holder.map_result_layout.setTag(position);
         // getWelf_category()로 받아온 결과에 특수문자가 섞여있으면 이 특문 이후의 문자열을 지우고 그 값을 set하고 싶다
 //        holder.map_result_local.setText(item.getWelf_category());
@@ -112,7 +115,7 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
                 holder.map_result_benefit_image.setImageResource(R.drawable.insurance_support);
                 break;
 
-            case "법률 지원" :
+            case "법률  지원" :
                 holder.map_result_benefit_image.setImageResource(R.drawable.law_support);
                 break;
 

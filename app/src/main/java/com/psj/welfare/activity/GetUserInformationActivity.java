@@ -88,12 +88,88 @@ public class GetUserInformationActivity extends AppCompatActivity
         setContentView(R.layout.activity_get_user_information);
 
         activity = GetUserInformationActivity.this;
+        age_toolbar = findViewById(R.id.get_information_toolbar);
         Logger.addLogAdapter(new AndroidLogAdapter());
 
         init();
         app_pref = getSharedPreferences("app_pref", 0);
         /* 서버에서 받은 유저 별 토큰값을 저장해 관심사를 보낼 때 사용한다 */
         token = app_pref.getString("token", "");
+
+        // 인텐트로 넘어왔을 때 값을 확인해서 MypageFragment에서 보낸 값과 일치할 경우 쉐어드에 저장된 유저의 정보를 가져와 set
+        if (getIntent().hasExtra("edit"))
+        {
+            Intent intent = getIntent();
+            int editable = intent.getIntExtra("edit", -1);
+            if (editable == 1)
+            {
+                String nickname = app_pref.getString("user_nickname", "");
+                String age = app_pref.getString("user_age", "");
+                String gender = app_pref.getString("user_gender", "");
+                String area = app_pref.getString("user_area", "");
+                // editText에 set
+                nickname_edittext.setText(nickname);
+                age_edittext.setText(age);
+
+                // radiobutton에 set
+                if (!gender.equals(""))
+                {
+                    if (gender.equals("남자"))
+                    {
+                        male_radiobutton.setChecked(true);
+                        female_radiobutton.setChecked(false);
+                    }
+                    else if (gender.equals("여자"))
+                    {
+                        female_radiobutton.setChecked(true);
+                        male_radiobutton.setChecked(false);
+                    }
+                }
+
+                // 지역에 따라 NumberPicker 선택값 변경
+                if (!area.equals(""))
+                {
+                    area_picker.setMinValue(0);
+                    area_picker.setMaxValue(first_area.length - 1);
+                    area_picker.setDisplayedValues(first_area);
+                    area_picker.setWrapSelectorWheel(false);
+                }
+            }
+        }
+        else
+        {
+            /* 성별 고르는 라디오 버튼 선언, 처리 */
+            gender = "선택 안함";   // 아직 어떤 라디오 버튼도 눌러지지 않아서 초기값은 선택 안함으로 한다
+            Log.e(TAG, "라디오 버튼 선택 안했을 때 gender 값 = " + gender);
+
+            radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+            {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId)
+                {
+                    if (checkedId == R.id.male_radiobutton)
+                    {
+                        gender = "남자";
+                        Log.e(TAG, "gender = " + gender);
+                    }
+                    else if (checkedId == R.id.female_radiobutton)
+                    {
+                        gender = "여자";
+                        Log.e(TAG, "gender = " + gender);
+                    }
+                }
+            });
+
+            setSupportActionBar(age_toolbar);
+            getSupportActionBar().setTitle("");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+            // 지역 선택하는 NumberPicker 처리
+            area_picker.setMinValue(0);
+            area_picker.setMaxValue(first_area.length - 1);
+            area_picker.setDisplayedValues(first_area);
+            area_picker.setWrapSelectorWheel(false);
+        }
 
         /* 화면의 빈 공간을 누르면 키보드가 사라지게 한다
          * 이걸 키보드가 올라왔을 때만 작동하도록 조건을 줘야 함. 들어오자마자 화면 터치하면 앱이 죽음 */
@@ -107,41 +183,37 @@ public class GetUserInformationActivity extends AppCompatActivity
 //            }
 //        });
 
-        // 성별 고르는 라디오 버튼 선언, 처리
-        gender = "선택 안함";   // 아직 어떤 라디오 버튼도 눌러지지 않아서 초기값은 선택 안함으로 한다
-        Log.e(TAG, "라디오 버튼 선택 안했을 때 gender 값 = " + gender);
-        radioGroup = findViewById(R.id.gender_radiogroup);
-        male_radiobutton = findViewById(R.id.male_radiobutton);
-        female_radiobutton = findViewById(R.id.female_radiobutton);
-
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-        {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId)
-            {
-                if (checkedId == R.id.male_radiobutton)
-                {
-                    gender = "남자";
-                    Log.e(TAG, "gender = " + gender);
-                }
-                else if (checkedId == R.id.female_radiobutton)
-                {
-                    gender = "여자";
-                    Log.e(TAG, "gender = " + gender);
-                }
-            }
-        });
-
-        age_toolbar = findViewById(R.id.get_information_toolbar);
-        setSupportActionBar(age_toolbar);
-        getSupportActionBar().setTitle("");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        // 지역 선택하는 NumberPicker 처리
-        area_picker.setMinValue(0);
-        area_picker.setMaxValue(first_area.length - 1);
-        area_picker.setDisplayedValues(first_area);
-        area_picker.setWrapSelectorWheel(false);
+//        /* 성별 고르는 라디오 버튼 선언, 처리 */
+//        gender = "선택 안함";   // 아직 어떤 라디오 버튼도 눌러지지 않아서 초기값은 선택 안함으로 한다
+//        Log.e(TAG, "라디오 버튼 선택 안했을 때 gender 값 = " + gender);
+//
+//        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+//        {
+//            @Override
+//            public void onCheckedChanged(RadioGroup group, int checkedId)
+//            {
+//                if (checkedId == R.id.male_radiobutton)
+//                {
+//                    gender = "남자";
+//                    Log.e(TAG, "gender = " + gender);
+//                }
+//                else if (checkedId == R.id.female_radiobutton)
+//                {
+//                    gender = "여자";
+//                    Log.e(TAG, "gender = " + gender);
+//                }
+//            }
+//        });
+//
+//        setSupportActionBar(age_toolbar);
+//        getSupportActionBar().setTitle("");
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//
+//        // 지역 선택하는 NumberPicker 처리
+//        area_picker.setMinValue(0);
+//        area_picker.setMaxValue(first_area.length - 1);
+//        area_picker.setDisplayedValues(first_area);
+//        area_picker.setWrapSelectorWheel(false);
 
         getUserArea(area_picker);
     }
@@ -349,6 +421,177 @@ public class GetUserInformationActivity extends AppCompatActivity
         nickname_edittext = findViewById(R.id.nickname_edittext);
         age_edittext = findViewById(R.id.age_edittext);
         area_picker = findViewById(R.id.area_picker);
+        radioGroup = findViewById(R.id.gender_radiogroup);
+        male_radiobutton = findViewById(R.id.male_radiobutton);
+        female_radiobutton = findViewById(R.id.female_radiobutton);
+    }
+
+    // 로그인 후 개인정보 수정 눌렀을 때 저장돼 있는 지역명에 따라 NumberPicker 값을 set하는 메서드드
+    private void setUserPickerValue(NumberPicker numberPicker, String area)
+    {
+        numberPicker.setMinValue(0);
+        numberPicker.setMaxValue(first_area.length - 1);
+        numberPicker.setWrapSelectorWheel(false);
+        for (int i = 0; i < first_area.length; i++)
+        {
+            switch (area)
+            {
+            case "서울" :
+                numberPicker.setValue(1);
+                break;
+
+            case "부산" :
+                numberPicker.setValue(2);
+                break;
+
+            case "대구" :
+                numberPicker.setValue(3);
+                break;
+
+            case "인천" :
+                numberPicker.setValue(4);
+                break;
+
+            case "광주" :
+                numberPicker.setValue(5);
+                break;
+
+            case "대전" :
+                numberPicker.setValue(6);
+                break;
+
+            case "울산" :
+                numberPicker.setValue(7);
+                break;
+
+            case "세종" :
+                numberPicker.setValue(8);
+                break;
+
+            case "경기도 가평군" :
+                numberPicker.setValue(10);
+                break;
+
+            case "경기도 고양시" :
+                numberPicker.setValue(11);
+                break;
+
+            case "경기도 과천시" :
+                numberPicker.setValue(12);
+                break;
+
+            case "경기도 광명시" :
+                numberPicker.setValue(13);
+                break;
+
+            case "경기도 광주시" :
+                numberPicker.setValue(14);
+                break;
+
+            case "경기도 구리시" :
+                numberPicker.setValue(15);
+                break;
+
+            case "경기도 군포시" :
+                numberPicker.setValue(16);
+                break;
+
+            case "경기도 남양주시" :
+                numberPicker.setValue(17);
+                break;
+
+            case "경기도 동두천시" :
+                numberPicker.setValue(18);
+                break;
+
+            case "경기도 부천시" :
+                numberPicker.setValue(19);
+                break;
+
+            case "경기도 성남시" :
+                numberPicker.setValue(20);
+                break;
+
+            case "경기도 수원시" :
+                numberPicker.setValue(21);
+                break;
+
+            case "경기도 시흥시" :
+                numberPicker.setValue(22);
+                break;
+
+            case "경기도 안산시" :
+                numberPicker.setValue(23);
+                break;
+
+            case "경기도 안성시" :
+                numberPicker.setValue(24);
+                break;
+
+            case "경기도 안양시" :
+                numberPicker.setValue(25);
+                break;
+
+            case "경기도 양주시" :
+                numberPicker.setValue(26);
+                break;
+
+            case "경기도 양평군" :
+                numberPicker.setValue(27);
+                break;
+
+            case "경기도 여주시" :
+                numberPicker.setValue(28);
+                break;
+
+            case "경기도 연천군" :
+                numberPicker.setValue(29);
+                break;
+
+            case "경기도 오산시" :
+                numberPicker.setValue(30);
+                break;
+
+            case "경기도 용인시" :
+                numberPicker.setValue(31);
+                break;
+
+            case "경기도 의왕시" :
+                numberPicker.setValue(32);
+                break;
+
+            case "경기도 의정부시" :
+                numberPicker.setValue(33);
+                break;
+
+            case "경기도 이천시" :
+                numberPicker.setValue(34);
+                break;
+
+            case "경기도 파주시" :
+                numberPicker.setValue(35);
+                break;
+
+            case "경기도 평택시" :
+                numberPicker.setValue(36);
+                break;
+
+            case "경기도 포천시" :
+                numberPicker.setValue(37);
+                break;
+
+            case "경기도 하남시" :
+                numberPicker.setValue(38);
+                break;
+
+            case "경기도 화성시" :
+                numberPicker.setValue(39);
+                break;
+
+            default:
+                break;
+            }
+        }
     }
 
     /* NumberPicker에서 지역을 선택하면 서버에 보내는 형태로 지역명을 변경해 변수에 저장하는 메서드 */

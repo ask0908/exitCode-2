@@ -2,18 +2,27 @@ package com.psj.welfare.activity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.psj.welfare.R;
 import com.psj.welfare.adapter.MainViewPagerAdapter;
+import com.psj.welfare.fragment.MainFragment;
+import com.psj.welfare.fragment.MyPageFragment;
+import com.psj.welfare.fragment.PushGatherFragment;
+import com.psj.welfare.fragment.SearchFragment;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 /* 메인 화면 등 프래그먼트 4개를 보여줄 액티비티 */
 public class MainTabLayoutActivity extends AppCompatActivity
@@ -24,6 +33,9 @@ public class MainTabLayoutActivity extends AppCompatActivity
     // 프래그먼트 별 화면을 표시할 뷰페이저
     ViewPager viewPager;
 
+    public static Stack<Fragment> fragmentStack;
+    Fragment mainFragment, mypageFragment, searchFragment, pushGatherFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -31,6 +43,14 @@ public class MainTabLayoutActivity extends AppCompatActivity
         setContentView(R.layout.activity_maintablayout);
 
         sharedPreferences = getSharedPreferences("app_pref", 0);
+
+        mainFragment = new MainFragment();
+        mypageFragment = new MyPageFragment();
+        searchFragment = new SearchFragment();
+        pushGatherFragment = new PushGatherFragment();
+        fragmentStack = new Stack<>();
+        fragmentStack.push(mainFragment);
+        FragmentManager fm = getSupportFragmentManager();
 
         viewPager = findViewById(R.id.main_viewpager);
         MainViewPagerAdapter adapter = new MainViewPagerAdapter(getSupportFragmentManager());
@@ -51,7 +71,13 @@ public class MainTabLayoutActivity extends AppCompatActivity
                 }
                 else if (position == 1)
                 {
+                    /* 여기서 알람 없다는 알람을 내볼까? 알람 스테이터스 값을 이곳으로 가져오면 좋겠는데 */
                     tab.setIcon(R.drawable.alarm_red);
+                    Log.e(TAG, "알람 탭 클릭");
+                    if (sharedPreferences.getString("push_status", "").equals("400"))
+                    {
+                        Toast.makeText(MainTabLayoutActivity.this, "현재 받은 알림이 없습니다", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else if (position == 2)
                 {
@@ -87,7 +113,9 @@ public class MainTabLayoutActivity extends AppCompatActivity
             }
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {}
+            public void onTabReselected(TabLayout.Tab tab)
+            {
+            }
         });
 
         LinearLayout tab_layout = (LinearLayout) tabLayout.getChildAt(0);
@@ -98,7 +126,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
             {
                 switch (event.getAction())
                 {
-                    case MotionEvent.ACTION_UP :
+                    case MotionEvent.ACTION_UP:
                         if (sharedPreferences.getString("user_category", "").equals(""))
                         {
                             // 키워드 쉐어드가 비어있으면 로그인 화면으로 이동시킨다
@@ -123,7 +151,5 @@ public class MainTabLayoutActivity extends AppCompatActivity
         {
             tabLayout.getTabAt(i).setIcon(image.get(i));
         }
-
     }
-
 }

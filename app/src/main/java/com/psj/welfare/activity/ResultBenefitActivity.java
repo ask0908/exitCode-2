@@ -254,7 +254,7 @@ public class ResultBenefitActivity extends AppCompatActivity
         up_adapter.setOnItemClickListener((view, position) ->
         {
             String name = top_list.get(position).getWelf_category();
-            Log.e(TAG, "상단 리사이클러뷰에서 선택한 아이템 이름 = " + name);
+//            Log.e(TAG, "상단 리사이클러뷰에서 선택한 아이템 이름 = " + name);
             searchUpLevelCategory(name);
         });
 

@@ -12,11 +12,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- 공유 버튼부터 내용, 리뷰, 주변시설, 신청기관까지 -->
+        <!-- 공유 버튼부터 내용, 리뷰까지 / 원래 match & wrap이었음 -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/detail_top_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -114,7 +114,7 @@
             <TextView
                 android:id="@+id/welfare_desc_title"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
@@ -128,7 +128,6 @@
                 android:textColor="@color/colorBlack"
                 android:textSize="22sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHeight_percent=".08"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/review_top_horizon_layout"
                 app:layout_constraintWidth_percent=".90" />
@@ -900,275 +899,6 @@
             </androidx.cardview.widget.CardView>
 
         </LinearLayout>
-
-        <!--         지원 대상, 지원 내용, 문의처 들어있는 레이아웃, 리뷰 끝나고 gone 풀기-->
-        <!--        <LinearLayout-->
-        <!--            android:id="@+id/content_all_layout"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:orientation="vertical"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/top_divider_view">-->
-
-        <!--            &lt;!&ndash; 적용대상은 누구일까요? 헤더 &ndash;&gt;-->
-        <!--            <LinearLayout-->
-        <!--                android:id="@+id/header_layout"-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:layout_marginTop="20dp"-->
-        <!--                android:orientation="horizontal"-->
-        <!--                android:weightSum="1"-->
-        <!--                app:layout_constraintEnd_toEndOf="parent"-->
-        <!--                app:layout_constraintStart_toStartOf="parent"-->
-        <!--                app:layout_constraintTop_toBottomOf="@+id/top_divider_view">-->
-
-        <!--                <TextView-->
-        <!--                    android:id="@+id/detail_welfare_target"-->
-        <!--                    android:layout_width="0dp"-->
-        <!--                    android:layout_height="wrap_content"-->
-        <!--                    android:layout_gravity="center"-->
-        <!--                    android:layout_marginStart="15dp"-->
-        <!--                    android:layout_weight=".95"-->
-        <!--                    android:fontFamily="@font/nanum_barun_gothic_bold"-->
-        <!--                    android:text="당신도 혜택을 받을 수 있는지 확인해 보세요"-->
-        <!--                    android:textColor="@color/colorBlack"-->
-        <!--                    android:textSize="20sp"-->
-        <!--                    android:textStyle="bold" />-->
-
-        <!--            </LinearLayout>-->
-
-        <!--            &lt;!&ndash; 확장되서 나오는 레이아웃 &ndash;&gt;-->
-        <!--            <LinearLayout-->
-        <!--                android:id="@+id/expandable_layout"-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:gravity="center"-->
-        <!--                android:orientation="vertical"-->
-        <!--                app:layout_constraintEnd_toEndOf="parent"-->
-        <!--                app:layout_constraintStart_toStartOf="parent"-->
-        <!--                app:layout_constraintTop_toBottomOf="@+id/header_layout">-->
-
-        <!--                <LinearLayout-->
-        <!--                    android:layout_width="match_parent"-->
-        <!--                    android:layout_height="wrap_content"-->
-        <!--                    android:layout_marginTop="10dp"-->
-        <!--                    android:weightSum=".85"-->
-        <!--                    android:gravity="center"-->
-        <!--                    android:orientation="horizontal">-->
-
-        <!--                    <LinearLayout-->
-        <!--                        android:layout_width="0dp"-->
-        <!--                        android:layout_height="wrap_content"-->
-        <!--                        android:layout_weight=".30"-->
-        <!--                        android:gravity="center"-->
-        <!--                        android:orientation="vertical">-->
-
-        <!--                        <ImageView-->
-        <!--                            android:id="@+id/first_imageview"-->
-        <!--                            android:layout_width="95dp"-->
-        <!--                            android:layout_height="95dp"-->
-        <!--                            android:backgroundTint="@color/detail_gradation_color"-->
-        <!--                            android:background="@drawable/imageview_round"-->
-        <!--                            android:src="@drawable/student" />-->
-
-        <!--                        <TextView-->
-        <!--                            android:layout_width="wrap_content"-->
-        <!--                            android:layout_height="wrap_content"-->
-        <!--                            android:layout_gravity="center"-->
-        <!--                            android:fontFamily="@font/jalnan"-->
-        <!--                            android:text="학생"-->
-        <!--                            android:textColor="@color/colorBlack"-->
-        <!--                            android:textSize="15sp" />-->
-
-        <!--                    </LinearLayout>-->
-
-        <!--                    <LinearLayout-->
-        <!--                        android:layout_width="0dp"-->
-        <!--                        android:layout_height="wrap_content"-->
-        <!--                        android:layout_weight=".30"-->
-        <!--                        android:gravity="center"-->
-        <!--                        android:orientation="vertical">-->
-
-        <!--                        <ImageView-->
-        <!--                            android:id="@+id/second_imageview"-->
-        <!--                            android:layout_width="95dp"-->
-        <!--                            android:layout_height="95dp"-->
-        <!--                            android:background="@drawable/imageview_round"-->
-        <!--                            android:backgroundTint="@color/detail_gradation_color"-->
-        <!--                            android:src="@drawable/old" />-->
-
-        <!--                        <TextView-->
-        <!--                            android:layout_width="wrap_content"-->
-        <!--                            android:layout_height="wrap_content"-->
-        <!--                            android:layout_gravity="center"-->
-        <!--                            android:fontFamily="@font/jalnan"-->
-        <!--                            android:text="중장년·노인"-->
-        <!--                            android:textColor="@color/colorBlack"-->
-        <!--                            android:textSize="15sp" />-->
-
-        <!--                    </LinearLayout>-->
-
-        <!--                </LinearLayout>-->
-
-        <!--                <TextView-->
-        <!--                    android:id="@+id/detail_support_target_textview"-->
-        <!--                    android:layout_width="match_parent"-->
-        <!--                    android:layout_height="wrap_content"-->
-        <!--                    android:layout_marginStart="15dp"-->
-        <!--                    android:layout_marginTop="10dp"-->
-        <!--                    android:fontFamily="@font/nanum_barun_gothic_bold"-->
-        <!--                    android:text="자세한 지원 대상을 확인하시려면 여기를 클릭!"-->
-        <!--                    android:textColor="@color/colorPrimaryDark"-->
-        <!--                    android:textSize="15sp" />-->
-
-        <!--            </LinearLayout>-->
-
-        <!--            <View-->
-        <!--                android:id="@+id/divider_view"-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="1dp"-->
-        <!--                android:layout_margin="20dp"-->
-        <!--                android:background="@color/colorGray_L"-->
-        <!--                app:layout_constraintEnd_toEndOf="parent"-->
-        <!--                app:layout_constraintStart_toStartOf="parent"-->
-        <!--                app:layout_constraintTop_toBottomOf="@+id/expandable_layout" />-->
-
-        <!--            <LinearLayout-->
-        <!--                android:id="@+id/welfare_detail_content"-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:layout_marginTop="20dp"-->
-        <!--                android:orientation="horizontal"-->
-        <!--                android:weightSum="1"-->
-        <!--                app:layout_constraintEnd_toEndOf="parent"-->
-        <!--                app:layout_constraintStart_toStartOf="parent"-->
-        <!--                app:layout_constraintTop_toBottomOf="@id/divider_view">-->
-
-        <!--                <TextView-->
-        <!--                    android:layout_width="0dp"-->
-        <!--                    android:layout_height="wrap_content"-->
-        <!--                    android:layout_marginStart="15dp"-->
-        <!--                    android:layout_weight=".80"-->
-        <!--                    android:fontFamily="@font/nanum_barun_gothic_bold"-->
-        <!--                    android:text="어떤 것을 지원해주나요?"-->
-        <!--                    android:textColor="@color/colorBlack"-->
-        <!--                    android:textSize="20sp"-->
-        <!--                    android:textStyle="bold" />-->
-
-        <!--            </LinearLayout>-->
-
-        <!--            &lt;!&ndash; 혜택 상세내용 확장 시 나오는 레이아웃 &ndash;&gt;-->
-        <!--            <LinearLayout-->
-        <!--                android:id="@+id/detail_expandable_layout"-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:layout_marginStart="20dp"-->
-        <!--                android:layout_marginEnd="20dp"-->
-        <!--                android:orientation="horizontal"-->
-        <!--                app:layout_constraintEnd_toEndOf="parent"-->
-        <!--                app:layout_constraintStart_toStartOf="parent"-->
-        <!--                app:layout_constraintTop_toBottomOf="@id/welfare_detail_content">-->
-
-        <!--                <LinearLayout-->
-        <!--                    android:id="@+id/support_content"-->
-        <!--                    android:layout_width="match_parent"-->
-        <!--                    android:layout_height="wrap_content"-->
-        <!--                    android:orientation="vertical">-->
-
-        <!--                    <TextView-->
-        <!--                        android:id="@+id/welf_content_detail"-->
-        <!--                        android:layout_width="match_parent"-->
-        <!--                        android:layout_height="wrap_content"-->
-        <!--                        android:layout_marginTop="20dp"-->
-        <!--                        android:fontFamily="@font/nanum_barun_gothic_bold"-->
-        <!--                        android:lineSpacingExtra="8sp"-->
-        <!--                        android:text="청년인건비 지원 : 청년 1인당 월 200만원 (기업부담 10% 포함),-->
-        <!--창업기업 교육지원 및 청년 직무능력 향상 교육 등"-->
-        <!--                        android:textColor="@color/colorBlack"-->
-        <!--                        android:textSize="15sp" />-->
-
-        <!--                    <TextView-->
-        <!--                        android:id="@+id/median_income_base_table_textview"-->
-        <!--                        android:layout_width="match_parent"-->
-        <!--                        android:layout_height="wrap_content"-->
-        <!--                        android:layout_marginTop="20dp"-->
-        <!--                        android:fontFamily="@font/nanum_barun_gothic_bold"-->
-        <!--                        android:lineSpacingExtra="6sp"-->
-        <!--                        android:text="중위소득 기준표를 참고하시려면 여기를 클릭!"-->
-        <!--                        android:textColor="@color/colorPrimaryDark"-->
-        <!--                        android:textSize="15sp" />-->
-
-        <!--                </LinearLayout>-->
-
-        <!--            </LinearLayout>-->
-        <!--            &lt;!&ndash; 혜택 상세내용 확장 시 나오는 레이아웃 끝 &ndash;&gt;-->
-
-        <!--            <View-->
-        <!--                android:id="@+id/detail_divider_view"-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="1dp"-->
-        <!--                android:layout_margin="20dp"-->
-        <!--                android:background="@color/colorGray_L"-->
-        <!--                app:layout_constraintEnd_toEndOf="parent"-->
-        <!--                app:layout_constraintStart_toStartOf="parent"-->
-        <!--                app:layout_constraintTop_toBottomOf="@+id/detail_expandable_layout" />-->
-
-        <!--            <LinearLayout-->
-        <!--                android:id="@+id/welfare_detail_call"-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:layout_marginTop="20dp"-->
-        <!--                android:orientation="horizontal"-->
-        <!--                android:weightSum="1"-->
-        <!--                app:layout_constraintEnd_toEndOf="parent"-->
-        <!--                app:layout_constraintStart_toStartOf="parent"-->
-        <!--                app:layout_constraintTop_toBottomOf="@id/detail_divider_view">-->
-
-        <!--                <TextView-->
-        <!--                    android:layout_width="0dp"-->
-        <!--                    android:layout_height="wrap_content"-->
-        <!--                    android:layout_marginStart="15dp"-->
-        <!--                    android:layout_weight=".80"-->
-        <!--                    android:fontFamily="@font/nanum_barun_gothic_bold"-->
-        <!--                    android:text="어디에 문의하면 되나요?"-->
-        <!--                    android:textColor="@color/colorBlack"-->
-        <!--                    android:textSize="20sp"-->
-        <!--                    android:textStyle="bold" />-->
-
-        <!--            </LinearLayout>-->
-
-        <!--            <LinearLayout-->
-        <!--                android:id="@+id/welfare_detail_call_expandable"-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:layout_marginBottom="20dp"-->
-        <!--                android:orientation="horizontal">-->
-
-        <!--                <LinearLayout-->
-        <!--                    android:layout_width="match_parent"-->
-        <!--                    android:layout_height="wrap_content"-->
-        <!--                    android:layout_marginStart="15dp"-->
-        <!--                    android:layout_marginTop="10dp"-->
-        <!--                    android:orientation="horizontal">-->
-
-        <!--                    <TextView-->
-        <!--                        android:id="@+id/welf_contact_detail"-->
-        <!--                        android:layout_width="wrap_content"-->
-        <!--                        android:layout_height="wrap_content"-->
-        <!--                        android:layout_marginEnd="15dp"-->
-        <!--                        android:background="@drawable/keyword_round_textview"-->
-        <!--                        android:fontFamily="@font/nanum_barun_gothic_bold"-->
-        <!--                        android:padding="8dp"-->
-        <!--                        android:text="02-1234-5678"-->
-        <!--                        android:textColor="@color/colorBlack"-->
-        <!--                        android:textSize="12sp" />-->
-
-        <!--                </LinearLayout>-->
-
-        <!--            </LinearLayout>-->
-
-        <!--        </LinearLayout>-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

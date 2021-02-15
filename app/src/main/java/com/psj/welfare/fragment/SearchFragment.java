@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -765,6 +766,27 @@ public class SearchFragment extends Fragment
         main_homeless.setSelected(false);
     }
 
+//    private void onBackPressed()
+//    {
+//        FragmentManager fm = getActivity().getSupportFragmentManager();
+//        fm.popBackStack();
+//    }
+
+
+    @Override
+    public void onAttach(@NonNull Context context)
+    {
+        super.onAttach(context);
+        OnBackPressedCallback callback = new OnBackPressedCallback(true)
+        {
+            @Override
+            public void handleOnBackPressed()
+            {
+                Log.e(TAG, "뒤로가기 버튼 누름");
+            }
+        };
+    }
+
     private void init(View view)
     {
         main_done = view.findViewById(R.id.main_done);
@@ -795,5 +817,4 @@ public class SearchFragment extends Fragment
         main_job_title = view.findViewById(R.id.main_job_title);
         main_homeless_title = view.findViewById(R.id.main_homeless_title);
     }
-
 }

@@ -1,7 +1,6 @@
 package com.psj.welfare.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,7 +21,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.hedgehog.ratingbar.RatingBar;
 import com.psj.welfare.Data.ReviewItem;
 import com.psj.welfare.R;
-import com.psj.welfare.activity.ReviewUpdateActivity;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -37,10 +35,17 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     private Context context;
     private List<ReviewItem> list;
     private ItemClickListener itemClickListener;
+    private DeleteClickListener deleteClickListener;
 
     public void setOnItemClickListener(ItemClickListener itemClickListener)
     {
         this.itemClickListener = itemClickListener;
+    }
+
+    /* 삭제 처리 테스트 */
+    public void setOnDeleteClickListener(DeleteClickListener deleteClickListener)
+    {
+        this.deleteClickListener = deleteClickListener;
     }
 
     public static final int SEC = 60;
@@ -49,11 +54,12 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     public static final int DAY = 30;
     public static final int MONTH = 12;
 
-    public ReviewAdapter(Context context, List<ReviewItem> list, ItemClickListener itemClickListener)
+    public ReviewAdapter(Context context, List<ReviewItem> list, ItemClickListener itemClickListener, DeleteClickListener deleteClickListener)
     {
         this.context = context;
         this.list = list;
         this.itemClickListener = itemClickListener;
+        this.deleteClickListener = deleteClickListener;
     }
 
     @NonNull
@@ -61,7 +67,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     public ReviewAdapter.ReviewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         View view = LayoutInflater.from(context).inflate(R.layout.review_item, parent, false);
-        return new ReviewViewHolder(view, itemClickListener);
+        return new ReviewViewHolder(view, itemClickListener, deleteClickListener);
     }
 
     @Override
@@ -103,14 +109,6 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             holder.update_textview.setVisibility(View.VISIBLE);
             holder.delete_textview.setVisibility(View.VISIBLE);
         }
-        holder.update_textview.setOnClickListener(v -> {
-            Intent intent = new Intent(context, ReviewUpdateActivity.class);
-            context.startActivity(intent);
-        });
-        holder.delete_textview.setOnClickListener(v -> {
-            Intent intent = new Intent(context, ReviewUpdateActivity.class);
-            context.startActivity(intent);
-        });
 
         // 리뷰 작성자와 내 닉네임이 같을 때만 수정, 삭제 버튼을 보여줘야 한다
         String user_nickname = sharedPreferences.getString("user_nickname", "");
@@ -209,8 +207,9 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         private TextView review_writer, review_date, review_content, update_textview, delete_textview;
         private RatingBar review_rate;
         ItemClickListener itemClickListener;
+        DeleteClickListener deleteClickListener;
 
-        public ReviewViewHolder(@NonNull View view, ItemClickListener itemClickListener)
+        public ReviewViewHolder(@NonNull View view, ItemClickListener itemClickListener, DeleteClickListener deleteClickListener)
         {
             super(view);
 
@@ -228,11 +227,20 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
            like_layout = view.findViewById(R.id.like_layout);
 
             this.itemClickListener = itemClickListener;
-            review_item_layout.setOnClickListener(v -> {
+            update_textview.setOnClickListener(v -> {
                 int pos = getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION && itemClickListener != null)
                 {
                     itemClickListener.onItemClick(v, pos);
+                }
+            });
+
+            this.deleteClickListener = deleteClickListener;
+            delete_textview.setOnClickListener(v -> {
+                int pos = getAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION && deleteClickListener != null)
+                {
+                    deleteClickListener.onDeleteClick(v, pos);
                 }
             });
         }
@@ -242,4 +250,11 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     {
         void onItemClick(View view, int position);
     }
+
+    /* 삭제 처리 테스트 */
+    public interface DeleteClickListener
+    {
+        void onDeleteClick(View view, int position);
+    }
+
 }

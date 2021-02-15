@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -99,7 +100,8 @@ public class MyPageFragment extends Fragment
             * 여기서 값이 T/F로 바뀌면 이 값을 받아와서 서버로 보내 알림 설정값을 바꾸는 흐름으로 스위치 로직을 바꾸면 원하는 기능이 만들어질 듯 */
             Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, getContext().getPackageName());
-            startActivityForResult(intent, 0);
+            intent.putExtra(Settings.EXTRA_CHANNEL_ID, "ch_push");
+            startActivity(intent);
         });
 
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
@@ -146,6 +148,7 @@ public class MyPageFragment extends Fragment
             public void onSingleClick(View v)
             {
                 Intent intent = new Intent(getActivity(), GetUserInformationActivity.class);
+                intent.putExtra("edit", 1);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }
@@ -162,25 +165,15 @@ public class MyPageFragment extends Fragment
             }
         });
 
-//        account_layout.setOnClickListener(new OnSingleClickListener()
-//        {
-//            @Override
-//            public void onSingleClick(View v)
-//            {
-//                Toast.makeText(getActivity(), "클릭", Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent(getActivity(), GetUserInformationActivity.class);
-////                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                startActivity(intent);
-////                sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
-////                if (!sharedPreferences.getString("user_category", "").equals("") && !sharedPreferences.getBoolean("logout", false))
-////                {
-////                    // value 값이 있고 logout이 false면 로그인을 했다는 거니까 이 때만 개인정보 수정 화면으로 이동시킨다
-////                    Intent intent = new Intent(getActivity(), GetUserInformationActivity.class);
-////                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-////                    startActivity(intent);
-////                }
-//            }
-//        });
+        boolean isAllowed = NotificationManagerCompat.from(getActivity()).areNotificationsEnabled();
+        if (isAllowed)
+        {
+            push_noti_switch.setChecked(true);
+        }
+        else
+        {
+            push_noti_switch.setChecked(false);
+        }
 
         // 푸시 알림 설정 스위치
         push_noti_switch.setOnCheckedChangeListener((buttonView, isChecked) ->
@@ -404,19 +397,21 @@ public class MyPageFragment extends Fragment
         });
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
-        // 설정화면 갔다 와서 실행할 처리 입력
-    }
-
     /* onResume() : 사용자와 상호작용이 가능한 시점, 이벤트로 프래그먼트가 가려지기 전까지 이 메서드가 유지된다 */
     @Override
     public void onResume()
     {
         super.onResume();
         userLog("마이페이지 진입");
+        boolean isAllowed = NotificationManagerCompat.from(getActivity()).areNotificationsEnabled();
+        if (isAllowed)
+        {
+            push_noti_switch.setChecked(true);
+        }
+        else
+        {
+            push_noti_switch.setChecked(false);
+        }
     }
 
     /* 마이페이지에서 사용자들이 일으키는 이벤트 내용을 서버로 전송하는 메서드 */
