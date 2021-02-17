@@ -61,10 +61,11 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
         CategorySearchResultItem item = list.get(position);
         holder.welf_local_textview.setText("#" + item.getWelf_local());
         holder.result_textview.setText(item.getWelf_name());
+        // ;; 구분자 지우기
         List<String> item_list = Collections.singletonList(list.get(position).getWelf_category());
         for (int i = 0; i < item_list.size(); i++)
         {
-            Log.e("ddd", "item_list = " + item_list);
+//            Log.e("ddd", "item_list = " + item_list);
         }
         // 리스트의 요소 뒤에 붙어있는 ;; 같은 구분자들을 전부 공백으로 바꾼다
         StringBuilder listToString = new StringBuilder();
@@ -73,7 +74,8 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
             listToString.append(str);
         }
         String after_str = listToString.toString().split(";;")[0];
-        Log.e("ddd", ";;와 그 뒤의 문자열 지운 결과 : " + after_str);
+        Log.e("테스트", "0번 인덱스 값 : " + after_str);
+//        Log.e("ddd", ";;와 그 뒤의 문자열 지운 결과 : " + after_str);
 
         switch (after_str)
         {

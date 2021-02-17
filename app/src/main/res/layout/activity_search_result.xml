@@ -21,7 +21,7 @@
             android:letterSpacing="0.02"
             android:lineSpacingExtra="6sp"
             android:padding="10dp"
-            android:text="복지 혜택 결과가 총 13개\n검색되었습니다"
+            android:text="로딩중..."
             android:textColor="@color/colorBlack"
             android:textSize="20sp" />
 

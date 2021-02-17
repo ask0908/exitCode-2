@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,292 +7,304 @@
     android:orientation="vertical"
     tools:context=".activity.ReviewActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/review_toolbar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent=".065"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/colorPrimaryDark">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/review_toolbar"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:background="@color/colorPrimaryDark">
+            android:gravity="center"
+            android:fontFamily="@font/jalnan"
+            android:text="혜택 리뷰 작성하기"
+            android:textColor="@color/colorMainWhite"
+            android:textSize="20sp"/>
 
-            <TextView
+    </androidx.appcompat.widget.Toolbar>
+
+    <TextView
+        android:id="@+id/rating_desc"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent=".042"
+        android:text="혜택에 대한 점수를 매겨주세요"
+        android:paddingStart="15dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/review_rate_edit"
+        app:layout_constraintTop_toBottomOf="@+id/review_toolbar"
+        android:fontFamily="@font/nanum_barun_gothic_bold"
+        android:textSize="20sp"
+        android:textColor="@color/colorBlack"
+        />
+
+    <RatingBar
+        android:id="@+id/review_rate_edit"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent=".582"
+        app:layout_constraintHeight_percent=".065"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/rating_under_view"
+        app:layout_constraintTop_toBottomOf="@+id/rating_desc"
+        android:numStars="5"
+        android:stepSize="1"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center"/>
+
+    <View
+        android:id="@+id/rating_under_view"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorGray_L"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/review_rate_edit"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"/>
+
+    <TextView
+        android:id="@+id/difficulty_textview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent=".042"
+        android:text="혜택 신청이 쉬우셨나요?"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rating_under_view"
+        android:fontFamily="@font/nanum_barun_gothic_bold"
+        android:textColor="@color/colorBlack"
+        android:textSize="20sp"
+        android:paddingStart="15dp"
+        android:layout_marginTop="20dp"/>
+
+    <LinearLayout
+        android:id="@+id/difficulty_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent=".055"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/difficulty_textview"
+        android:orientation="vertical"
+        android:layout_marginTop="5dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
+            android:gravity="center">
+
+            <RadioGroup
+                android:id="@+id/difficulty_radiogroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:fontFamily="@font/jalnan"
-                android:text="혜택 리뷰 작성하기"
-                android:textColor="@color/colorMainWhite"
-                android:textSize="20sp"/>
-
-        </androidx.appcompat.widget.Toolbar>
-
-        <TextView
-            android:id="@+id/rating_desc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="혜택에 대한 점수를 매겨주세요"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/review_toolbar"
-            android:fontFamily="@font/nanum_barun_gothic_bold"
-            android:textSize="20sp"
-            android:textColor="@color/colorBlack"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"/>
-
-        <RatingBar
-            android:id="@+id/review_rate_edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rating_desc"
-            android:numStars="5"
-            android:stepSize="1"
-            android:layout_marginTop="10dp"
-            android:layout_gravity="center"/>
-
-        <View
-            android:id="@+id/rating_under_view"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/colorGray_L"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/review_rate_edit"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"/>
-
-        <TextView
-            android:id="@+id/difficulty_textview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="혜택 신청이 쉬우셨나요?"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/rating_under_view"
-            android:fontFamily="@font/nanum_barun_gothic_bold"
-            android:textColor="@color/colorBlack"
-            android:textSize="20sp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"/>
-
-        <LinearLayout
-            android:id="@+id/difficulty_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/difficulty_textview"
-            android:orientation="vertical"
-            android:layout_marginTop="15dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="10dp"
-                android:gravity="center">
+                android:weightSum="1">
 
-                <RadioGroup
-                    android:id="@+id/difficulty_radiogroup"
-                    android:layout_width="match_parent"
+                <RadioButton
+                    android:id="@+id/easy_radiobutton"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight=".10"
+                    android:button="@null"
+                    android:background="@drawable/custom_checkbox"/>
+
+                <TextView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:weightSum="1">
+                    android:layout_weight=".30"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="@font/nanum_barun_gothic_bold"
+                    android:text="쉬워요"
+                    android:textColor="@color/colorBlack"/>
 
-                    <RadioButton
-                        android:id="@+id/easy_radiobutton"
-                        android:layout_width="0dp"
-                        android:layout_height="40dp"
-                        android:layout_weight=".10"
-                        android:button="@null"
-                        android:background="@drawable/custom_checkbox"/>
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight=".10"/>
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight=".30"
-                        android:layout_marginStart="5dp"
-                        android:fontFamily="@font/nanum_barun_gothic_bold"
-                        android:text="쉬워요"
-                        android:textColor="@color/colorBlack"/>
+                <RadioButton
+                    android:id="@+id/hard_radiobutton"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight=".10"
+                    android:button="@null"
+                    android:background="@drawable/custom_checkbox"/>
 
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_weight=".10"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".30"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="@font/nanum_barun_gothic_bold"
+                    android:text="어려워요"
+                    android:textColor="@color/colorBlack"/>
 
-                    <RadioButton
-                        android:id="@+id/hard_radiobutton"
-                        android:layout_width="0dp"
-                        android:layout_height="40dp"
-                        android:layout_weight=".10"
-                        android:button="@null"
-                        android:background="@drawable/custom_checkbox"/>
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight=".30"
-                        android:layout_marginStart="5dp"
-                        android:fontFamily="@font/nanum_barun_gothic_bold"
-                        android:text="어려워요"
-                        android:textColor="@color/colorBlack"/>
-
-                </RadioGroup>
-
-            </LinearLayout>
+            </RadioGroup>
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/satisfaction_textview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/difficulty_layout"
-            android:text="혜택이 실제로 도움이 되셨나요?"
-            android:fontFamily="@font/nanum_barun_gothic_bold"
-            android:layout_marginTop="30dp"
-            android:textSize="20sp"
-            android:textColor="@color/colorBlack"
-            android:layout_marginStart="20dp"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/satisfaction_textview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent=".042"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/difficulty_layout"
+        android:text="혜택이 실제로 도움이 되셨나요?"
+        android:fontFamily="@font/nanum_barun_gothic_bold"
+        android:layout_marginTop="30dp"
+        android:textSize="20sp"
+        android:textColor="@color/colorBlack"
+        android:paddingStart="15dp"/>
+
+    <LinearLayout
+        android:id="@+id/satisfaction_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent=".055"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/satisfaction_textview"
+        android:orientation="vertical"
+        android:layout_marginTop="5dp">
 
         <LinearLayout
-            android:id="@+id/satisfaction_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/satisfaction_textview"
-            android:orientation="vertical"
-            android:layout_marginTop="15dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="10dp"
-                android:gravity="center">
-
-                <RadioGroup
-                    android:id="@+id/satisfaction_radiogroup"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:weightSum="1">
-
-                    <RadioButton
-                        android:id="@+id/good_radiobutton"
-                        android:layout_width="0dp"
-                        android:layout_height="40dp"
-                        android:layout_weight=".10"
-                        android:button="@null"
-                        android:background="@drawable/custom_checkbox"/>
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight=".30"
-                        android:layout_marginStart="5dp"
-                        android:fontFamily="@font/nanum_barun_gothic_bold"
-                        android:text="도움이 됐어요"
-                        android:textColor="@color/colorBlack"/>
-
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_weight=".10"/>
-
-                    <RadioButton
-                        android:id="@+id/bad_radiobutton"
-                        android:layout_width="0dp"
-                        android:layout_height="40dp"
-                        android:layout_weight=".10"
-                        android:button="@null"
-                        android:background="@drawable/custom_checkbox"/>
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight=".30"
-                        android:layout_marginStart="5dp"
-                        android:fontFamily="@font/nanum_barun_gothic_bold"
-                        android:text="도움이 안 됐어요"
-                        android:textColor="@color/colorBlack"/>
-
-                </RadioGroup>
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <View
-            android:id="@+id/write_textview_divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/colorGray_L"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/satisfaction_layout"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"/>
-
-        <EditText
-            android:id="@+id/review_content_edit"
-            android:layout_width="match_parent"
-            android:layout_height="270dp"
-            android:layout_marginStart="10dp"
+            android:orientation="horizontal"
+            android:layout_marginStart="20dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginTop="20dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/write_textview_divider"
-            android:background="@drawable/edittext_rectangle"
-            android:hint="최대 20자까지 입력해 주세요"
-            android:ems="10"
-            android:maxLength="40"
-            android:lines="13" />
+            android:gravity="center">
 
-        <TextView
-            android:id="@+id/image_add_textview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="이미지 첨부"
-            android:fontFamily="@font/jalnan"
-            android:visibility="gone"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/review_content_edit"
-            android:textColor="@color/colorBlack"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="20dp"/>
+            <RadioGroup
+                android:id="@+id/satisfaction_radiogroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="1">
 
-        <ImageView
-            android:id="@+id/review_photo"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/image_add_textview"
-            android:visibility="gone"
-            android:scaleType="centerCrop"
-            android:layout_marginLeft="20dp"
-            android:src="@drawable/add_photo"/>
+                <RadioButton
+                    android:id="@+id/good_radiobutton"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight=".10"
+                    android:button="@null"
+                    android:background="@drawable/custom_checkbox"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".30"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="@font/nanum_barun_gothic_bold"
+                    android:text="도움이 됐어요"
+                    android:textColor="@color/colorBlack"/>
 
-</ScrollView>
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight=".10"/>
+
+                <RadioButton
+                    android:id="@+id/bad_radiobutton"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight=".10"
+                    android:button="@null"
+                    android:background="@drawable/custom_checkbox"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".30"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="@font/nanum_barun_gothic_bold"
+                    android:text="도움이 안 됐어요"
+                    android:textColor="@color/colorBlack"/>
+
+            </RadioGroup>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/write_textview_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorGray_L"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/satisfaction_layout"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"/>
+
+    <EditText
+        android:id="@+id/review_content_edit"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent=".421"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:padding="12dp"
+        android:gravity="top"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/write_textview_divider"
+        android:background="@drawable/edittext_rectangle"
+        android:hint="최대 165자까지 입력 가능합니다"
+        android:ems="10"
+        android:lines="13" />
+
+    <TextView
+        android:id="@+id/image_add_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="이미지 첨부"
+        android:fontFamily="@font/jalnan"
+        android:visibility="gone"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/review_content_edit"
+        android:textColor="@color/colorBlack"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"/>
+
+    <ImageView
+        android:id="@+id/review_photo"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image_add_textview"
+        android:visibility="gone"
+        android:scaleType="centerCrop"
+        android:layout_marginLeft="20dp"
+        android:src="@drawable/add_photo"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

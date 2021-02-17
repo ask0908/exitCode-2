@@ -71,10 +71,11 @@ public class MainTabLayoutActivity extends AppCompatActivity
                 }
                 else if (position == 1)
                 {
-                    /* 여기서 알람 없다는 알람을 내볼까? 알람 스테이터스 값을 이곳으로 가져오면 좋겠는데 */
                     tab.setIcon(R.drawable.alarm_red);
                     Log.e(TAG, "알람 탭 클릭");
-                    if (sharedPreferences.getString("push_status", "").equals("400"))
+                    // 서버에서 전송받은 상태 메시지가 400, 500인 경우 받은 알림이 없다는 메시지를 띄운다
+                    if (sharedPreferences.getString("push_status", "").equals("400") ||
+                            sharedPreferences.getString("push_status", "").equals("500"))
                     {
                         Toast.makeText(MainTabLayoutActivity.this, "현재 받은 알림이 없습니다", Toast.LENGTH_SHORT).show();
                     }

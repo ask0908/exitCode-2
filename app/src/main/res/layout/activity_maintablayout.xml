@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context=".activity.MainTabLayoutActivity">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -16,13 +16,21 @@
             android:id="@+id/main_viewpager"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight=".90" />
+            app:layout_constraintHeight_percent=".913"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/main_tab_layout"/>
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/main_tab_layout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight=".10"
+            app:layout_constraintHeight_percent=".087"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/main_viewpager"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:tabIndicatorColor="@color/colorPrimaryDark">
 
             <com.google.android.material.tabs.TabItem
@@ -58,6 +66,6 @@
 
         </com.google.android.material.tabs.TabLayout>
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
