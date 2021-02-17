@@ -4,9 +4,11 @@ import android.animation.ObjectAnimator;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,6 +23,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -48,6 +51,7 @@ import com.psj.welfare.adapter.ReviewAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.OnSingleClickListener;
+import com.psj.welfare.custom.RecyclerViewEmptySupport;
 import com.psj.welfare.util.LogUtil;
 
 import org.eazegraph.lib.charts.BarChart;
@@ -59,6 +63,8 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,7 +109,9 @@ public class DetailBenefitActivity extends AppCompatActivity
     String email, welf_name, isBookmark;
 
     // 리뷰 목록 보여주는 리사이클러뷰
-    private RecyclerView review_recycler;
+    private RecyclerViewEmptySupport review_recycler;
+    // 리뷰 없을 때 보여줄 텍스트뷰
+    TextView list_empty;
 
     // 리뷰 보여주는 리사이클러뷰에 붙일 어댑터
     ReviewAdapter review_adapter;
@@ -128,12 +136,6 @@ public class DetailBenefitActivity extends AppCompatActivity
     // MapDetailActivity에서 날아온 지역명
     String map_detail_area;
 
-    // 지원대상 텍스트 있는 레이아웃(헤더), 그 밑에 딸린 레이아웃
-//    LinearLayout mLinearLayoutHeader, mLinearLayout;
-
-    // 상세내용 텍스트 있는 레이아웃(헤더), 그 밑에 딸린 레이아웃
-//    LinearLayout welfare_detail_content_header, detail_expandable_layout;
-
     // 주변시설 텍스트 있는 레이아웃
     ConstraintLayout facilities_layout;
     RecyclerView facilities_recyclerview;
@@ -142,6 +144,9 @@ public class DetailBenefitActivity extends AppCompatActivity
     // 주변시설 텍스트와 하단 바가 있는 레이아웃
     LinearLayout facilities_view;
     View facilities_bottom_view, institution_bottom_view;
+
+    // 대상, 상세조건 텍스트뷰 있는 레이아웃
+    LinearLayout target_layout, condition_layout;
 
     // 연락처 레이아웃
 //    LinearLayout welfare_detail_call, welfare_detail_call_expandable;
@@ -172,7 +177,9 @@ public class DetailBenefitActivity extends AppCompatActivity
     // 혜택 내용을 보여줄 텍스트뷰
     TextView first_benefit;
 
+    // 다이얼로그 띄워서 대상에 대한 상세조건 보여주는 텍스트뷰
     String first_welf_target;
+    String erase_str;
     String first_welf_content;
     // 대상을 넣을 리스트
     List<String> target_list = new ArrayList<>();
@@ -198,6 +205,8 @@ public class DetailBenefitActivity extends AppCompatActivity
 
     // 리뷰 작성 화면 이동 시 유저와 작성자가 같은지 확인할 때 쓰는 변수
     String send_id;
+
+    String detail_target;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -254,7 +263,7 @@ public class DetailBenefitActivity extends AppCompatActivity
         facilities_view.setVisibility(View.GONE);
 
         all_review_scene.setVisibility(View.GONE);
-        content_bottom_view.setBackgroundColor(getColor(R.color.colorBlack));
+        content_bottom_view.setBackgroundColor(getColor(R.color.colorPrimaryDark));
         review_textview.setTextColor(getColor(R.color.colorGray_B));
 
         /* 뷰페이저 설정 (나중에 구현) */
@@ -264,10 +273,9 @@ public class DetailBenefitActivity extends AppCompatActivity
 
         // 리뷰 보여주는 리사이클러뷰 처리
         review_recycler = findViewById(R.id.review_recycler);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setReverseLayout(true);
-        linearLayoutManager.setStackFromEnd(true);
         review_recycler.setLayoutManager(new LinearLayoutManager(this));
+        list_empty = findViewById(R.id.list_empty);
+        review_recycler.setEmptyView(list_empty);
         review_recycler.setHasFixedSize(true);
 
         // 주변시설 리사이클러뷰
@@ -441,26 +449,6 @@ public class DetailBenefitActivity extends AppCompatActivity
             });
         });
 
-        // 상세조건 누를 때마다 각 대상에 맞는 상세정보가 다이얼로그로 나오게 한다
-        first_target.setOnClickListener(new OnSingleClickListener()
-        {
-            @Override
-            public void onSingleClick(View v)
-            {
-                AlertDialog.Builder builder = new AlertDialog.Builder(DetailBenefitActivity.this);
-                /* target_tag 넣기 */
-                builder.setMessage(first_welf_target)
-                        .setPositiveButton("확인", new DialogInterface.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which)
-                            {
-                                dialog.dismiss();
-                            }
-                        }).show();
-            }
-        });
-
         /* 혜택의 상세정보를 가져오는 메서드, detail_data에 null이 들어간다
          * ContentFragment로 이동시킨다 */
         getWelfareInformation();
@@ -524,6 +512,26 @@ public class DetailBenefitActivity extends AppCompatActivity
                         startActivityForResult(intent, 1);
                     }
                 }
+            }
+        });
+
+        // 상세조건 누를 때마다 각 대상에 맞는 상세정보가 다이얼로그로 나오게 한다
+        first_target.setOnClickListener(new OnSingleClickListener()
+        {
+            @Override
+            public void onSingleClick(View v)
+            {
+                AlertDialog.Builder builder = new AlertDialog.Builder(DetailBenefitActivity.this);
+                /* target_tag 넣기 */
+                builder.setMessage(erase_str)
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                dialog.dismiss();
+                            }
+                        }).show();
             }
         });
 
@@ -668,42 +676,6 @@ public class DetailBenefitActivity extends AppCompatActivity
         // 리뷰를 작성하면 이 메서드가 호출된다. 이 때 서버에서 리뷰 데이터를 가져오는 메서드를 호출해 갱신 효과를 낸다
         getReview();
 
-//        // 리뷰 작성 버튼
-//        review_write_button.setOnClickListener(new OnSingleClickListener()
-//        {
-//            @Override
-//            public void onSingleClick(View v)
-//            {
-//                // 리뷰 목록에 보이는 닉네임과 리뷰 작성을 누르는 유저의 닉네임이 같을 경우 이동하지 못하게 한다
-//                // writer 변수에 저장돼있는 닉네임(리뷰 목록에 보이는 닉네임)과 쉐어드에 저장된 닉네임(리뷰 작성을 누르는 유저의 닉네임)을 비교해서 같을 경우
-//                // 토스트로 리뷰 작성 불가를 알리고 다르다면(=작성한 적이 없다면) 리뷰 작성 화면으로 이동시킨다
-//                // writer가 null이면 작성된 리뷰가 없다는 뜻이므로 리뷰 작성 화면으로 이동시킨다
-//                if (writer == null)
-//                {
-//                    Intent intent = new Intent(DetailBenefitActivity.this, ReviewActivity.class);
-//                    intent.putExtra("id", send_id);
-//                    Log.e(TAG, "1. ReviewActivity로 보낼 혜택 id = " + send_id);
-//                    startActivityForResult(intent, 1);
-//                }
-//                else if (!writer.equals(""))
-//                {
-//                    if (writer.equals(sharedPreferences.getString("user_nickname", "")))
-//                    {
-//                        // 선택한 리뷰의 작성자 닉네임 = 작성 버튼 누른 사람의 닉네임이 같으면 토스트로 작성 불가 알림
-//                        Toast.makeText(DetailBenefitActivity.this, "한번 리뷰를 작성하시면 다른 리뷰를 작성하실 수 없습니다", Toast.LENGTH_SHORT).show();
-//                    }
-//                    else
-//                    {
-//                        // 다른 경우 리뷰 작성화면으로 이동할 수 있도록 한다
-//                        Intent intent = new Intent(DetailBenefitActivity.this, ReviewActivity.class);
-//                        intent.putExtra("id", send_id);
-//                        Log.e(TAG, "2. ReviewActivity로 보낼 혜택 id = " + send_id);
-//                        startActivityForResult(intent, 1);
-//                    }
-//                }
-//            }
-//        });
-
         // 내용 클릭
         content_view.setOnClickListener(new OnSingleClickListener()
         {
@@ -711,7 +683,7 @@ public class DetailBenefitActivity extends AppCompatActivity
             public void onSingleClick(View v)
             {
                 content_bottom_view.setVisibility(View.VISIBLE);
-                content_bottom_view.setBackgroundColor(getColor(R.color.colorBlack));
+                content_bottom_view.setBackgroundColor(getColor(R.color.colorPrimaryDark));
                 facilities_bottom_view.setVisibility(View.GONE);
                 facilities_layout.setVisibility(View.GONE);
                 all_review_scene.setVisibility(View.GONE);
@@ -740,7 +712,7 @@ public class DetailBenefitActivity extends AppCompatActivity
                 facilities_textview.setTextColor(getColor(R.color.colorGray_B));
                 review_textview.setTextColor(getColor(R.color.colorPrimaryDark));
                 review_bottom_view.setVisibility(View.VISIBLE);
-                review_bottom_view.setBackgroundColor(getColor(R.color.colorBlack));
+                review_bottom_view.setBackgroundColor(getColor(R.color.colorPrimaryDark));
                 isClicked = true;
                 getReview();
                 detail_benefit_scrollview.post(new Runnable()
@@ -762,7 +734,7 @@ public class DetailBenefitActivity extends AppCompatActivity
             }
         });
 
-        // 주변시설 클릭
+        // 주변시설 클릭 (아직 데이터 없어 안 보이게 처리함)
         facilities_view.setOnClickListener(new OnSingleClickListener()
         {
             @Override
@@ -784,7 +756,7 @@ public class DetailBenefitActivity extends AppCompatActivity
 
     }
 
-    // 서버에서 가져온 String 형태의 JSON 값들을 파싱한 뒤, 특수문자를 콤마로 바꿔서 뷰에 set하는 메서드
+    // 서버에서 가져온 String 형태의 혜택 정보 JSON 값들을 파싱한 뒤, 특수문자를 콤마로 바꿔서 뷰에 set하는 메서드
     /* GSON 써서도 해보자 */
     private void jsonParsing(String result)
     {
@@ -838,17 +810,19 @@ public class DetailBenefitActivity extends AppCompatActivity
 //                favorite_btn.setLiked(false);
 //            }
 
+            // 대상 데이터가 담긴 변수 널 체크
             if (!welfare_target.equals(""))
             {
                 // '/'를 ','로 바꿔서 set한다
-                String first_target = welfare_target.replace("/", ", ");
-                first_target_textview.setText(first_target);
+                detail_target = welfare_target.replace("/", ", ");
+                first_target_textview.setText(detail_target);
+                Log.e(TAG, "슬래시를 콤마로 바꾼 대상 : " + detail_target);
             }
+            Log.e(TAG, "if문 밖에서도 대상 나오는지 확인 : " + detail_target);
 
-            /* target_tag는 상세조건을 누르면 나오는 다이얼로그에서 보여준다 */
+            /* target_tag는 상세조건을 누르면 나오는 다이얼로그에서 보여준다. 아래는 구분자 제거하는 처리 */
             if (!welfare_target_tag.equals(""))
             {
-//                first_welf_target = welfare_target_tag;
                 String[] before_str = welfare_target_tag.split("#");
                 List<String> tag_list = new ArrayList<>();
                 for (String str : before_str)
@@ -858,13 +832,13 @@ public class DetailBenefitActivity extends AppCompatActivity
                 Log.e("ff", "태그의 # 제거 후 결과 : " + tag_list);
                 tag_list.remove(0);
                 Log.e("ff", "0번 지운 후 결과 : " + tag_list);
-                for (int i = 0; i < tag_list.size(); i++)
-                {
-                    String letter = tag_list.get(i);
-                    String replace_letter = letter.replaceAll("/", "");
-                    tag_list.set(i, replace_letter);
-                }
-                Log.e("ff", "'/' 문자열 지운 결과 : " + tag_list);
+//                for (int i = 0; i < tag_list.size(); i++)
+//                {
+//                    String letter = tag_list.get(i);
+//                    String replace_letter = letter.replaceAll("/", "");
+//                    tag_list.set(i, replace_letter);
+//                }
+//                Log.e("ff", "'/' 문자열 지운 결과 : " + tag_list);
                 for (int i = 0; i < tag_list.size(); i++)
                 {
                     String letter = tag_list.get(i);
@@ -881,7 +855,6 @@ public class DetailBenefitActivity extends AppCompatActivity
                 String sb_result = sb.toString();
                 Log.e("ff", "콤마 붙임 : " + sb_result);
                 // 마지막의 ',' 문자를 지운다
-                String erase_str = "";
                 if (!sb_result.equals(""))
                 {
                     erase_str = sb_result.substring(0, sb_result.lastIndexOf(","));
@@ -894,7 +867,7 @@ public class DetailBenefitActivity extends AppCompatActivity
                 {
                     first_welf_target = erase_str.substring(0, erase_str.lastIndexOf("\n"));
                 }
-                Log.e(TAG, "최종적으로 다이얼로그에 보여야 하는 문구 : " + first_welf_target);
+                Log.e(TAG, "최종적으로 다이얼로그에 보여야 하는 문구 : " + erase_str);
             }
 
             symbolChange(welf_target, welf_contents, welf_contact);
@@ -903,6 +876,126 @@ public class DetailBenefitActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
+
+        Log.e(TAG, "welfare_target : " + welfare_target);
+        Log.e(TAG, "welfare_target_tag : " + welfare_target_tag);
+
+        // 대상과 상세조건을 매칭시키기 위해 대상, 태그 split
+        String[] targets_array = welfare_target.split("/");
+        String[] conditions_array = welfare_target_tag.split("/");
+
+        Log.e(TAG, "대상 스플릿 결과 : " + Arrays.toString(targets_array));
+        Log.e(TAG, "상세조건 스플릿 결과 : " + Arrays.toString(conditions_array));
+
+        List<String> target_list = new ArrayList<>();
+        List<String> condition_list = new ArrayList<>();
+
+        Collections.addAll(target_list, targets_array);
+        Collections.addAll(condition_list, conditions_array);
+
+        for (int i = 0; i < target_list.size(); i++)
+        {
+            Log.e(TAG, "target_list = " + target_list.get(i));
+        }
+        for (int i = 0; i < condition_list.size(); i++)
+        {
+            Log.e(TAG, "condition_list = " + condition_list.get(i));
+        }
+
+        // 가로로 텍스트뷰가 있는 리니어 레이아웃을 카드뷰 레이아웃 안에 동적생성한다
+        // 동적으로 생성할 때 좌측에 대상 스플릿 결과를 인덱스 순서대로 setText()하고, 우측에는 상세조건 글자만을 둬서
+        // 좌측 결과 인덱스에 맞는 우측 결과 인덱스가 있는지 확인한 다음, 있는 경우엔 AlertDialog를 띄워 상세조건을 출력하고 없으면 우측 텍스트뷰만 GONE으로 만들어버린다
+        target_layout = findViewById(R.id.target_layout);
+        condition_layout = findViewById(R.id.condition_layout);
+
+        target_layout.setOrientation(LinearLayout.VERTICAL);
+        condition_layout.setOrientation(LinearLayout.VERTICAL);
+
+        LinearLayout.LayoutParams left_param = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 6.0f);
+        LinearLayout.LayoutParams right_param = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 4.0f);
+
+        final TextView[] myTextView = new TextView[target_list.size()];
+        final TextView[] rightTextView = new TextView[condition_list.size()];
+
+        for (int i = 0; i < target_list.size(); i++)
+        {
+            myTextView[i] = new TextView(this);
+            myTextView[i].setLayoutParams(left_param);
+//            Typeface face = Typeface.createFromAsset(getAssets(), "font/nanum_barun_gothic_bold.ttf");
+            // 폰트 설정은 아래처럼 Typeface 객체를 통해 설정할 수 있다
+            final Typeface face = ResourcesCompat.getFont(this, R.font.nanum_barun_gothic_bold);
+            myTextView[i].setTypeface(face);
+            myTextView[i].setText(target_list.get(i));  //
+            myTextView[i].setTextSize(17);
+            myTextView[i].setTextColor(getResources().getColor(R.color.colorBlack));
+            myTextView[i].setPadding(0, 0, 0, 10);
+            target_layout.addView(myTextView[i]);
+        }
+
+        // TODO : 여기에 클릭 리스너 달아서 왼쪽 대상이 실직자면 상세조건 눌렀을 경우 실직자에 대한 상세조건만 출력하도록 해야 한다
+        // TODO : 그리고 상세조건의 위치를 오른쪽으로 좀 더 붙이고 내용, 리뷰 밑에 생기는 검은 줄의 색을 colorPrimaryDark로 변경해야 한다
+        for (int i = 0; i < condition_list.size(); i++)
+        {
+            rightTextView[i] = new TextView(this);
+            rightTextView[i].setLayoutParams(right_param);
+            final Typeface face = ResourcesCompat.getFont(this, R.font.jalnan);
+            rightTextView[i].setTypeface(face);
+            rightTextView[i].setText("상세조건");
+            rightTextView[i].setTextSize(20);
+            rightTextView[i].setTextColor(getResources().getColor(R.color.colorBlack));
+            condition_layout.addView(rightTextView[i]);
+        }
+
+//        for (int i = 0; i < targets_array.length; i++)
+//        {
+//            TextView target_textview = new TextView(this);
+//            target_textview.setText(Arrays.toString(targets_array));
+//            LinearLayout dynamic = new LinearLayout(this);
+//            dynamic.setLayoutParams(param);
+//            dynamic.addView(target_textview);
+//            target_layout.addView(dynamic);
+//        }
+
+//        // detail_target에서 ", "를 기준으로 스플릿해서 String[]에 집어넣고, for문으로 hashmap에 put
+//        // erase_str에서 개행문자를 기준으로 스플릿해서 String[]에 집어넣고, for문으로 hashmap에 put
+//        String[] target_array = detail_target.split(", ");
+//        String[] condition_array = erase_str.split("\n");
+//
+//        // String[] -> ArrayList로 데이터 이전
+//        List<String> target_list = new ArrayList<>();
+//        List<String> condition_list = new ArrayList<>();
+//
+//        Collections.addAll(target_list, target_array);
+//        Collections.addAll(condition_list, condition_array);
+//        hashMap = new HashMap<>();
+
+//        for (int i = 0; i < target_list.size(); i++)
+//        {
+//            hashMap.put(target_list.get(i), null);
+////            for (int j = 0; j < condition_list.size(); j++)
+////            {
+////                hashMap.put(target_list.get(i), condition_list.get(j));
+////            }
+//        }
+//        for (int i = 0; i < condition_list.size(); i++)
+//        {
+//            hashMap.put(null, condition_list.get(i));
+//        }
+//
+//        for (Map.Entry<String, String> element : hashMap.entrySet())
+//        {
+//            Log.e(TAG, "해시맵 체크 : " + String.format("키 -> %s, 값 -> %s", element.getKey(), element.getValue()));
+//        }
+//
+//        for (int i = 0; i < target_list.size(); i++)
+//        {
+//            Log.e(TAG, "target_list = " + target_list.get(i));
+//        }
+//        for (int i = 0; i < condition_list.size(); i++)
+//        {
+//            Log.e(TAG, "condition_list = " + condition_list.get(i));
+//        }
+
     }
 
     // 더보기 기능
@@ -1009,6 +1102,7 @@ public class DetailBenefitActivity extends AppCompatActivity
         try
         {
             JSONObject jsonObject_total = new JSONObject(detail);
+            // 여기서 Status가 500이면(리뷰가 없을 경우) 리뷰가 없다는 뷰를 리사이클러뷰 위에 덧씌워서 출력한다?
             review_count = jsonObject_total.getString("TotalCount");
             JSONArray jsonArray = jsonObject_total.getJSONArray("Message");
             for (int i = 0; i < jsonArray.length(); i++)
@@ -1021,9 +1115,10 @@ public class DetailBenefitActivity extends AppCompatActivity
                 like_count = jsonObject.getString("like_count");
                 star_count = jsonObject.getString("star_count");
                 image_url = jsonObject.getString("image_url");
+
                 /* 아래 처리를 하지 않으면 아이템 개수는 정상적으로 서버에서 가져온 만큼 생성되지만, 표시될 땐 마지막으로 받은 데이터만 표시된다!!! */
                 ReviewItem value = new ReviewItem();
-                value.setId(id);    // id -> writer 변경
+                value.setId(id);
                 value.setContent(content);
                 value.setCreate_date(create_date);
                 value.setImage_url(image_url);

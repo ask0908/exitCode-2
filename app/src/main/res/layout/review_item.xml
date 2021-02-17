@@ -124,6 +124,7 @@
             android:id="@+id/like_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:visibility="invisible"
             android:layout_weight=".23"
             android:weightSum="1"
             app:layout_constraintStart_toStartOf="parent"

@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -33,44 +34,18 @@ public class ApiClient
                 .setLenient()
                 .create();
 
-        // rest api call 상태를 확인하는 메서드를 인터셉터로 끼워넣는다. 필요없다면 addInterceptor() 부분을 지우면 된다
-//        OkHttpClient client = new OkHttpClient.Builder()
-//                .addInterceptor(httpLoggingInterceptor())
-//                .build();
-
-//        OkHttpClient client = new OkHttpClient.Builder()
-//                .addInterceptor(new Interceptor() {
-//                    @Override
-//                    public Response intercept(Interceptor.Chain chain) throws IOException
-//                    {
-//                        Request newRequest  = chain.request().newBuilder()
-//                                .build();
-//                        return chain.proceed(newRequest)
-//                                .newBuilder()
-//                                .header("User-Agent", "fff")
-//                                .build();
-//                    }
-//                }).build();
-
-//        OkHttpClient client = new OkHttpClient();
-//        client.networkInterceptors().add(new UserAgentInterceptor("foo/bar"));
-//        Request request = new Request.Builder().url(BASE_URL).build();
-//        try
-//        {
-//            String result = client.newCall(request).execute().body().string();
-//        }
-//        catch (IOException e)
-//        {
-//            e.printStackTrace();
-//        }
+        // rest api call 상태를 확인하는 메서드를 인터셉터로 끼워넣는다. 필요없다면 아래의 .client(client) 부분을 지우면 된다
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(httpLoggingInterceptor())
+                .build();
 
         if (retrofit == null)
         {
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
-//                    .client(client)
                     .addConverterFactory(ScalarsConverterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create(gson))
+                    .client(client)
                     .build();
         }
         return retrofit;

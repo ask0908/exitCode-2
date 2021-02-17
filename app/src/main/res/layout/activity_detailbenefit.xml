@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- 공유 버튼부터 내용, 리뷰까지 / 원래 match & wrap이었음 -->
+        <!-- 공유 버튼부터 내용, 리뷰까지 -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/detail_top_layout"
             android:layout_width="match_parent"
@@ -727,8 +727,17 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent" />
 
+                        <!-- 리뷰가 1개도 없을 때 보여줄 뷰 (리사이클러뷰 재정의한 게 안 먹히면 사용) -->
+                        <TextView
+                            android:id="@+id/review_nothing_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="아직 작성된 리뷰가 없습니다"
+                            android:visibility="gone" />
+
                         <!-- 리뷰들을 보여줄 리사이클러뷰 -->
-                        <androidx.recyclerview.widget.RecyclerView
+                        <com.psj.welfare.custom.RecyclerViewEmptySupport
                             android:id="@+id/review_recycler"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -738,6 +747,19 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/bottom_divider_view" />
+
+                        <TextView
+                            android:id="@+id/list_empty"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/jalnan"
+                            android:layout_margin="20dp"
+                            android:text="아직 작성된 리뷰가 없습니다"
+                            android:textSize="17sp"
+                            android:gravity="center"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/bottom_divider_view"/>
 
                     </LinearLayout>
 
@@ -800,30 +822,54 @@
                         android:orientation="horizontal"
                         android:weightSum="1">
 
+                        <LinearLayout
+                            android:id="@+id/target_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".60"
+                            android:orientation="vertical">
+
+                            <!-- 여기에 대상 -->
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/condition_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".40"
+                            android:orientation="vertical">
+
+                            <!-- 여기에 상세조건 -->
+
+                        </LinearLayout>
+
                         <TextView
                             android:id="@+id/first_target_textview"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight=".50"
+                            android:layout_weight=".60"
                             android:fontFamily="@font/nanum_barun_gothic_bold"
                             android:lineSpacingExtra="6sp"
                             android:paddingBottom="10dp"
-                            android:text="대상0"
+                            android:text="로딩중"
                             android:textColor="@color/colorBlack"
-                            android:textSize="17sp" />
+                            android:textSize="17sp"
+                            android:visibility="gone" />
 
                         <TextView
                             android:id="@+id/first_target"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_weight=".50"
+                            android:layout_weight=".40"
                             android:fontFamily="@font/jalnan"
                             android:gravity="end"
                             android:text="상세조건"
                             android:textColor="@color/colorBlack"
                             android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:visibility="gone" />
 
                     </LinearLayout>
 

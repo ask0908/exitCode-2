@@ -547,7 +547,7 @@ public class MainFragment extends Fragment
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-                    Log.e(TAG, "관심사 따른 혜택 가져오기 : " + result);
+//                    Log.e(TAG, "관심사 따른 혜택 가져오기 : " + result);
                     recommendParsing(result);
                 }
                 else

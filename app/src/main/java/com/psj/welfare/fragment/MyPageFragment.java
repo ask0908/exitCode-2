@@ -105,6 +105,11 @@ public class MyPageFragment extends Fragment
         });
 
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+
+        if (!sharedPreferences.getString("user_nickname", "").equals(""))
+        {
+            kakao_name.setText(sharedPreferences.getString("user_nickname", ""));
+        }
         server_token = sharedPreferences.getString("token", "");
         // 서버에서 전송받은 토큰이 있다면 로그인한 것이므로 "로그인하러 가기" 버튼을 안 보이게 처리한다
         // 서버에서 전송받은 토큰이 있다면 로그인한 것이므로 "로그아웃" 글자로 보이게 한다
@@ -125,7 +130,7 @@ public class MyPageFragment extends Fragment
         !sharedPreferences.getString("user_age", "").equals("") || !sharedPreferences.getString("user_gender", "").equals(""))
         {
             kakao_nick = sharedPreferences.getString(getString(R.string.get_kakao_name), "");
-            kakao_name.setText(kakao_nick);
+//            kakao_name.setText(kakao_nick);
             account_platform_text.setText(getString(R.string.set_kakao_account));
         }
         else
@@ -176,6 +181,7 @@ public class MyPageFragment extends Fragment
         }
 
         // 푸시 알림 설정 스위치
+        // 스위치를 클릭할 때마다 알림 설정 화면이 2번 뜨는데 스위치를
         push_noti_switch.setOnCheckedChangeListener((buttonView, isChecked) ->
         {
             if (isChecked)
@@ -192,7 +198,6 @@ public class MyPageFragment extends Fragment
             {
                 putPushSetting(false);
                 fcm_canceled = false;
-//                sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean("fcm_canceled", fcm_canceled);
                 editor.apply();

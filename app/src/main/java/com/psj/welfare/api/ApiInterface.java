@@ -164,7 +164,7 @@ public interface ApiInterface
 	 * 서버에 저장된 혜택 리뷰 목록을 조회하는 기능
 	 * 인자로 리뷰를 보고자 하는 정책의 이름, 안드/iOS 중 어떤 타입인지를 명시해서 서버로 넘겨준다
 	 * DetailBenefitActivity에서 사용
-	 * @param type - list
+	 * @param type - "list" 고정
 	 * @param welf_id - 혜택 id 정보
 	 * @return - {
 	 * "Status":"200",
@@ -315,7 +315,7 @@ public interface ApiInterface
 	 * @param type - "pushList" 고정
 	 * @return - JSON 형태의 혜택 제목, 푸시 제목, 푸시 body, 푸시를 받은 날짜가 문자열 꼴로 나온다
 	 */
-	@GET("https://www.urbene-fit.com/push")
+	@GET("push")
 	Call<String> getPushData(
 			@Header("LoginToken") String token,
 			@Header("SessionId") String session,

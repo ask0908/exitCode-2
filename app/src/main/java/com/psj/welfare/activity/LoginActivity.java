@@ -345,7 +345,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     }
                     else
                     {
-                        Intent intent = new Intent(LoginActivity.this, GetUserInformationActivity.class);
+//                        Intent intent = new Intent(LoginActivity.this, GetUserInformationActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
                         editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
                         editor.putString(getString(R.string.get_kakao_name), result.getNickname());
                         editor.putString("kakao_email", result.getKakaoAccount().getEmail());

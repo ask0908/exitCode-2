@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.text.InputFilter;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
@@ -97,6 +98,11 @@ public class ReviewActivity extends AppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         init();
+
+        /* 리뷰 작성 시 165자 제한 */
+        review_content_edit.setFilters(new InputFilter[] {
+                new InputFilter.LengthFilter(165)
+        });
 
         /* 별점 밑 혜택 신청하면서 느낀 점을 라디오버튼으로 선택하게 한다 */
         difficulty_radiogroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
