@@ -165,44 +165,6 @@
 
             </LinearLayout>
 
-            <!-- 여기에 뷰페이저를 넣어야 함 -->
-            <!--            <com.google.android.material.tabs.TabLayout-->
-            <!--                android:id="@+id/detail_tab_layout"-->
-            <!--                android:layout_width="0dp"-->
-            <!--                android:layout_height="0dp"-->
-            <!--                android:layout_marginBottom="10dp"-->
-            <!--                app:layout_constraintWidth_percent=".90"-->
-            <!--                app:layout_constraintHeight_percent=".10"-->
-            <!--                app:layout_constraintStart_toStartOf="parent"-->
-            <!--                app:layout_constraintEnd_toEndOf="parent"-->
-            <!--                app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--                app:layout_constraintTop_toBottomOf="@+id/welfare_desc_title">-->
-
-            <!--                <com.google.android.material.tabs.TabItem-->
-            <!--                    android:id="@+id/content_tab_item"-->
-            <!--                    android:layout_width="wrap_content"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:text="내용" />-->
-
-            <!--                <com.google.android.material.tabs.TabItem-->
-            <!--                    android:id="@+id/review_tab_item"-->
-            <!--                    android:layout_width="wrap_content"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:text="리뷰" />-->
-
-            <!--                <com.google.android.material.tabs.TabItem-->
-            <!--                    android:id="@+id/facilities_tab_item"-->
-            <!--                    android:layout_width="wrap_content"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:text="주변센터" />-->
-
-            <!--            </com.google.android.material.tabs.TabLayout>-->
-
-            <!--            <androidx.viewpager.widget.ViewPager-->
-            <!--                android:id="@+id/detail_viewpager"-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="match_parent" />-->
-
             <!-- 내용, 신청방법, 리뷰 탭들이 가로로 배열된 레이아웃 -->
             <LinearLayout
                 android:id="@+id/content_and_others_view"
@@ -755,6 +717,7 @@
                             android:fontFamily="@font/jalnan"
                             android:layout_margin="20dp"
                             android:text="아직 작성된 리뷰가 없습니다"
+                            android:textColor="@color/colorBlack"
                             android:textSize="17sp"
                             android:gravity="center"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -822,27 +785,23 @@
                         android:orientation="horizontal"
                         android:weightSum="1">
 
+                        <!-- 대상 들어갈 레이아웃 -->
                         <LinearLayout
                             android:id="@+id/target_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight=".60"
-                            android:orientation="vertical">
+                            android:gravity="start"
+                            android:orientation="vertical"/>
 
-                            <!-- 여기에 대상 -->
-
-                        </LinearLayout>
-
+                        <!-- 상세조건 들어갈 레이아웃 -->
                         <LinearLayout
                             android:id="@+id/condition_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight=".40"
-                            android:orientation="vertical">
-
-                            <!-- 여기에 상세조건 -->
-
-                        </LinearLayout>
+                            android:gravity="end|center_vertical"
+                            android:orientation="vertical"/>
 
                         <TextView
                             android:id="@+id/first_target_textview"
