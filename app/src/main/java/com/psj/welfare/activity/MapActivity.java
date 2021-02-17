@@ -280,8 +280,6 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "서울");
             intent.putExtra("welf_count", String.valueOf(count_list.get(9)));
-//            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
-//            dialog.showNotReadyDialog();
             startActivity(intent);
         });
 
@@ -290,8 +288,6 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "경기");
             intent.putExtra("welf_count", String.valueOf(count_list.get(13)));
-//            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
-//            dialog.showNotReadyDialog();
             startActivity(intent);
         });
 
@@ -300,8 +296,6 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "강원");
             intent.putExtra("welf_count", String.valueOf(count_list.get(14)));
-//            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
-//            dialog.showNotReadyDialog();
             startActivity(intent);
         });
 
@@ -310,8 +304,6 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "충남");
             intent.putExtra("welf_count", String.valueOf(count_list.get(2)));
-//            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
-//            dialog.showNotReadyDialog();
             startActivity(intent);
         });
 
@@ -328,8 +320,6 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "세종");
             intent.putExtra("welf_count", String.valueOf(count_list.get(8)));
-//            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
-//            dialog.showNotReadyDialog();
             startActivity(intent);
         });
 
@@ -338,8 +328,6 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "대전");
             intent.putExtra("welf_count", String.valueOf(count_list.get(11)));
-//            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
-//            dialog.showNotReadyDialog();
             startActivity(intent);
         });
 
@@ -348,8 +336,6 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "경북");
             intent.putExtra("welf_count", String.valueOf(count_list.get(17)));
-//            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
-//            dialog.showNotReadyDialog();
             startActivity(intent);
         });
 
@@ -374,8 +360,6 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "경남");
             intent.putExtra("welf_count", String.valueOf(count_list.get(12)));
-//            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
-//            dialog.showNotReadyDialog();
             startActivity(intent);
         });
 
@@ -400,8 +384,6 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "대구");
             intent.putExtra("welf_count", String.valueOf(count_list.get(15)));
-//            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
-//            dialog.showNotReadyDialog();
             startActivity(intent);
         });
 
@@ -410,8 +392,6 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "광주");
             intent.putExtra("welf_count", String.valueOf(count_list.get(16)));
-//            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
-//            dialog.showNotReadyDialog();
             startActivity(intent);
         });
 
@@ -420,8 +400,6 @@ public class MapActivity extends AppCompatActivity
             Intent intent = new Intent(MapActivity.this, MapDetailActivity.class);
             intent.putExtra("area", "부산");
             intent.putExtra("welf_count", String.valueOf(count_list.get(10)));
-//            NotReadyDialog dialog = new NotReadyDialog(MapActivity.this);
-//            dialog.showNotReadyDialog();
             startActivity(intent);
         });
     }

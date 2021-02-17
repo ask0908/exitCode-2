@@ -832,13 +832,13 @@ public class DetailBenefitActivity extends AppCompatActivity
                 Log.e("ff", "태그의 # 제거 후 결과 : " + tag_list);
                 tag_list.remove(0);
                 Log.e("ff", "0번 지운 후 결과 : " + tag_list);
-//                for (int i = 0; i < tag_list.size(); i++)
-//                {
-//                    String letter = tag_list.get(i);
-//                    String replace_letter = letter.replaceAll("/", "");
-//                    tag_list.set(i, replace_letter);
-//                }
-//                Log.e("ff", "'/' 문자열 지운 결과 : " + tag_list);
+                for (int i = 0; i < tag_list.size(); i++)
+                {
+                    String letter = tag_list.get(i);
+                    String replace_letter = letter.replaceAll("/", "");
+                    tag_list.set(i, replace_letter);
+                }
+                Log.e("ff", "'/' 문자열 지운 결과 : " + tag_list);
                 for (int i = 0; i < tag_list.size(); i++)
                 {
                     String letter = tag_list.get(i);
@@ -877,19 +877,31 @@ public class DetailBenefitActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        Log.e(TAG, "welfare_target : " + welfare_target);
-        Log.e(TAG, "welfare_target_tag : " + welfare_target_tag);
+//        Log.e(TAG, "welfare_target : " + welfare_target);
+//        Log.e(TAG, "welfare_target_tag : " + welfare_target_tag);
 
         // 대상과 상세조건을 매칭시키기 위해 대상, 태그 split
         String[] targets_array = welfare_target.split("/");
         String[] conditions_array = welfare_target_tag.split("/");
+        Log.e(TAG, "conditions_array : " + Arrays.toString(conditions_array));
 
-        Log.e(TAG, "대상 스플릿 결과 : " + Arrays.toString(targets_array));
-        Log.e(TAG, "상세조건 스플릿 결과 : " + Arrays.toString(conditions_array));
+        for (int i = 0; i < conditions_array.length; i++)
+        {
+            conditions_array[i]  = conditions_array[i].replace("#", "\n#");
+        }
+        Log.e(TAG, "수정 후 conditions_array : " + Arrays.toString(conditions_array));
+
+        // String[] -> ArrayList
+        List<String> test = Arrays.asList(conditions_array);
+        Log.e(TAG, "conditions_array -> list : " + test);
+
+//        Log.e(TAG, "대상 스플릿 결과 : " + Arrays.toString(targets_array));
+//        Log.e(TAG, "상세조건 스플릿 결과 : " + Arrays.toString(conditions_array));
 
         List<String> target_list = new ArrayList<>();
         List<String> condition_list = new ArrayList<>();
 
+        // String[] -> ArrayList 데이터 이전
         Collections.addAll(target_list, targets_array);
         Collections.addAll(condition_list, conditions_array);
 
@@ -902,6 +914,9 @@ public class DetailBenefitActivity extends AppCompatActivity
             Log.e(TAG, "condition_list = " + condition_list.get(i));
         }
 
+        // condition_list에는 개행문자 없이 모든 태그가 붙어 있다. 이 때 # 앞에 개행문자를 넣고 싶다
+        Log.e(TAG, "condition_list 출력 : " + condition_list.toString());
+
         // 가로로 텍스트뷰가 있는 리니어 레이아웃을 카드뷰 레이아웃 안에 동적생성한다
         // 동적으로 생성할 때 좌측에 대상 스플릿 결과를 인덱스 순서대로 setText()하고, 우측에는 상세조건 글자만을 둬서
         // 좌측 결과 인덱스에 맞는 우측 결과 인덱스가 있는지 확인한 다음, 있는 경우엔 AlertDialog를 띄워 상세조건을 출력하고 없으면 우측 텍스트뷰만 GONE으로 만들어버린다
@@ -911,29 +926,30 @@ public class DetailBenefitActivity extends AppCompatActivity
         target_layout.setOrientation(LinearLayout.VERTICAL);
         condition_layout.setOrientation(LinearLayout.VERTICAL);
 
-        LinearLayout.LayoutParams left_param = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 6.0f);
-        LinearLayout.LayoutParams right_param = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 4.0f);
+        LinearLayout.LayoutParams left_param = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 9f);
+        left_param.setMargins(0, 10, 0, 20);
+        LinearLayout.LayoutParams right_param = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        right_param.setMargins(0, 0, 0, 20);
 
         final TextView[] myTextView = new TextView[target_list.size()];
         final TextView[] rightTextView = new TextView[condition_list.size()];
 
+        // 왼쪽 텍스트뷰(대상) 설정
         for (int i = 0; i < target_list.size(); i++)
         {
             myTextView[i] = new TextView(this);
             myTextView[i].setLayoutParams(left_param);
-//            Typeface face = Typeface.createFromAsset(getAssets(), "font/nanum_barun_gothic_bold.ttf");
             // 폰트 설정은 아래처럼 Typeface 객체를 통해 설정할 수 있다
             final Typeface face = ResourcesCompat.getFont(this, R.font.nanum_barun_gothic_bold);
             myTextView[i].setTypeface(face);
-            myTextView[i].setText(target_list.get(i));  //
-            myTextView[i].setTextSize(17);
+            myTextView[i].setText(target_list.get(i));
+            myTextView[i].setTextSize(15);
             myTextView[i].setTextColor(getResources().getColor(R.color.colorBlack));
             myTextView[i].setPadding(0, 0, 0, 10);
             target_layout.addView(myTextView[i]);
         }
 
-        // TODO : 여기에 클릭 리스너 달아서 왼쪽 대상이 실직자면 상세조건 눌렀을 경우 실직자에 대한 상세조건만 출력하도록 해야 한다
-        // TODO : 그리고 상세조건의 위치를 오른쪽으로 좀 더 붙이고 내용, 리뷰 밑에 생기는 검은 줄의 색을 colorPrimaryDark로 변경해야 한다
+        // 오른쪽 텍스트뷰(상세조건) 설정
         for (int i = 0; i < condition_list.size(); i++)
         {
             rightTextView[i] = new TextView(this);
@@ -941,60 +957,16 @@ public class DetailBenefitActivity extends AppCompatActivity
             final Typeface face = ResourcesCompat.getFont(this, R.font.jalnan);
             rightTextView[i].setTypeface(face);
             rightTextView[i].setText("상세조건");
-            rightTextView[i].setTextSize(20);
+            rightTextView[i].setTextSize(18);
             rightTextView[i].setTextColor(getResources().getColor(R.color.colorBlack));
+            // 좌측 대상과 맞는 조건만을 우측 상세조건을 누르면 보여줘야 한다
+            int tag_num = i; // 곧바로 for문에 사용한 i를 get(i) 꼴로 가져오면 에러가 나서 이렇게 해야 한다
+            rightTextView[i].setOnClickListener(v -> {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(condition_list.get(tag_num) + "\n").show();
+            });
             condition_layout.addView(rightTextView[i]);
         }
-
-//        for (int i = 0; i < targets_array.length; i++)
-//        {
-//            TextView target_textview = new TextView(this);
-//            target_textview.setText(Arrays.toString(targets_array));
-//            LinearLayout dynamic = new LinearLayout(this);
-//            dynamic.setLayoutParams(param);
-//            dynamic.addView(target_textview);
-//            target_layout.addView(dynamic);
-//        }
-
-//        // detail_target에서 ", "를 기준으로 스플릿해서 String[]에 집어넣고, for문으로 hashmap에 put
-//        // erase_str에서 개행문자를 기준으로 스플릿해서 String[]에 집어넣고, for문으로 hashmap에 put
-//        String[] target_array = detail_target.split(", ");
-//        String[] condition_array = erase_str.split("\n");
-//
-//        // String[] -> ArrayList로 데이터 이전
-//        List<String> target_list = new ArrayList<>();
-//        List<String> condition_list = new ArrayList<>();
-//
-//        Collections.addAll(target_list, target_array);
-//        Collections.addAll(condition_list, condition_array);
-//        hashMap = new HashMap<>();
-
-//        for (int i = 0; i < target_list.size(); i++)
-//        {
-//            hashMap.put(target_list.get(i), null);
-////            for (int j = 0; j < condition_list.size(); j++)
-////            {
-////                hashMap.put(target_list.get(i), condition_list.get(j));
-////            }
-//        }
-//        for (int i = 0; i < condition_list.size(); i++)
-//        {
-//            hashMap.put(null, condition_list.get(i));
-//        }
-//
-//        for (Map.Entry<String, String> element : hashMap.entrySet())
-//        {
-//            Log.e(TAG, "해시맵 체크 : " + String.format("키 -> %s, 값 -> %s", element.getKey(), element.getValue()));
-//        }
-//
-//        for (int i = 0; i < target_list.size(); i++)
-//        {
-//            Log.e(TAG, "target_list = " + target_list.get(i));
-//        }
-//        for (int i = 0; i < condition_list.size(); i++)
-//        {
-//            Log.e(TAG, "condition_list = " + condition_list.get(i));
-//        }
 
     }
 

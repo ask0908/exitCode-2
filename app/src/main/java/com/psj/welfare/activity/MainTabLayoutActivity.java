@@ -36,6 +36,9 @@ public class MainTabLayoutActivity extends AppCompatActivity
     public static Stack<Fragment> fragmentStack;
     Fragment mainFragment, mypageFragment, searchFragment, pushGatherFragment;
 
+    // 백버튼을 누른 시간을 저장하기 위한 변수
+    private long backKeyPressedTime = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -151,6 +154,23 @@ public class MainTabLayoutActivity extends AppCompatActivity
         for (int i = 0; i < image.size(); i++)
         {
             tabLayout.getTabAt(i).setIcon(image.get(i));
+        }
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        if (System.currentTimeMillis() > backKeyPressedTime + 2000)
+        {
+            backKeyPressedTime = System.currentTimeMillis();
+            Toast.makeText(this, "\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // 2초 이내에 뒤로가기 버튼을 한번 더 클릭 시 앱 종료
+        if (System.currentTimeMillis() <= backKeyPressedTime + 2000)
+        {
+            finish();
         }
     }
 }

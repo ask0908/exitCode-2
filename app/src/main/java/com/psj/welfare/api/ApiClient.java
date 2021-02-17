@@ -5,7 +5,6 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -35,9 +34,9 @@ public class ApiClient
                 .create();
 
         // rest api call 상태를 확인하는 메서드를 인터셉터로 끼워넣는다. 필요없다면 아래의 .client(client) 부분을 지우면 된다
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(httpLoggingInterceptor())
-                .build();
+//        OkHttpClient client = new OkHttpClient.Builder()
+//                .addInterceptor(httpLoggingInterceptor())
+//                .build();
 
         if (retrofit == null)
         {
@@ -45,7 +44,7 @@ public class ApiClient
                     .baseUrl(BASE_URL)
                     .addConverterFactory(ScalarsConverterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create(gson))
-                    .client(client)
+//                    .client(client)
                     .build();
         }
         return retrofit;
