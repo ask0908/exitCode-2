@@ -63,11 +63,13 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
         holder.map_result_layout.setTag(position);
         // getWelf_category()로 받아온 결과에 특수문자가 섞여있으면 이 특문 이후의 문자열을 지우고 그 값을 set하고 싶다
 //        holder.map_result_local.setText(item.getWelf_category());
+
+        /* 첫 번째 요소만 빼고 뒤의 요소를 전부 없애는 로직 */
         List<String> item_list = Collections.singletonList(lists.get(position).getWelf_category());
-        for (int i = 0; i < item_list.size(); i++)
-        {
-            Log.e("ddd", "item_list = " + item_list);
-        }
+//        for (int i = 0; i < item_list.size(); i++)
+//        {
+//            Log.e(TAG, "item_list = " + item_list);
+//        }
         // 리스트의 요소 뒤에 붙어있는 ;; 같은 구분자들을 전부 공백으로 바꾼다
         StringBuilder listToString = new StringBuilder();
         for (String str : item_list)
@@ -76,7 +78,7 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
         }
         String after_str = listToString.toString().split(";;")[0];
         holder.map_result_local.setText(after_str);
-        Log.e("ddd", ";;와 그 뒤의 문자열 지운 결과 : " + after_str);
+        Log.e(TAG, "1번째 OO 지원 : " + after_str);
         switch (after_str)
         {
             case "일자리 지원" :
@@ -193,6 +195,10 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
 
             case "컨설팅 지원" :
                 holder.map_result_benefit_image.setImageResource(R.drawable.consulting);
+                break;
+
+            case "홍보 지원" :
+                holder.map_result_benefit_image.setImageResource(R.drawable.campaign);
                 break;
 
             default:

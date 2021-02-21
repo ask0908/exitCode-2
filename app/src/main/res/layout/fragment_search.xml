@@ -117,8 +117,10 @@
 
                 <LinearLayout
                     android:id="@+id/main_job"
-                    android:layout_width="120dp"
-                    android:layout_height="45dp"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintWidth_percent=".3"
+                    app:layout_constraintHeight_percent="1"
                     android:layout_marginStart="4dp"
                     android:background="@drawable/search_fragment_after_layout"
                     android:gravity="center"
@@ -144,8 +146,10 @@
 
                 <LinearLayout
                     android:id="@+id/main_student"
-                    android:layout_width="120dp"
-                    android:layout_height="45dp"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintWidth_percent=".3"
+                    app:layout_constraintHeight_percent="1"
                     android:layout_marginStart="16dp"
                     android:background="@drawable/search_fragment_after_layout"
                     android:gravity="center"
@@ -153,8 +157,7 @@
                     android:padding="10dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/main_job"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0">
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
                         android:id="@+id/main_student_title"
@@ -180,11 +183,10 @@
                     android:orientation="vertical"
                     android:padding="10dp"
                     android:layout_marginEnd="10dp"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/main_student"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0">
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
                         android:id="@+id/main_living_title"
@@ -213,8 +215,10 @@
 
                 <LinearLayout
                     android:id="@+id/main_child"
-                    android:layout_width="120dp"
-                    android:layout_height="45dp"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintWidth_percent=".29"
+                    app:layout_constraintHeight_percent="1"
                     android:layout_marginStart="16dp"
                     android:background="@drawable/search_fragment_after_layout"
                     android:gravity="center"
@@ -269,8 +273,10 @@
 
                 <LinearLayout
                     android:id="@+id/main_pregnancy"
-                    android:layout_width="120dp"
-                    android:layout_height="45dp"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintWidth_percent=".29"
+                    app:layout_constraintHeight_percent="1"
                     android:layout_marginStart="16dp"
                     android:background="@drawable/search_fragment_after_layout"
                     android:gravity="center"
@@ -303,8 +309,10 @@
 
                 <LinearLayout
                     android:id="@+id/main_company"
-                    android:layout_width="120dp"
-                    android:layout_height="45dp"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintWidth_percent=".29"
+                    app:layout_constraintHeight_percent="1"
                     android:layout_marginStart="16dp"
                     android:background="@drawable/search_fragment_after_layout"
                     android:gravity="center"
@@ -331,8 +339,10 @@
 
                 <LinearLayout
                     android:id="@+id/main_homeless"
-                    android:layout_width="120dp"
-                    android:layout_height="45dp"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintWidth_percent=".29"
+                    app:layout_constraintHeight_percent="1"
                     android:layout_marginStart="16dp"
                     android:background="@drawable/search_fragment_after_layout"
                     android:gravity="center"
@@ -422,8 +432,10 @@
 
                 <LinearLayout
                     android:id="@+id/main_multicultural"
-                    android:layout_width="120dp"
-                    android:layout_height="45dp"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintWidth_percent=".29"
+                    app:layout_constraintHeight_percent="1"
                     android:layout_marginStart="16dp"
                     android:background="@drawable/search_fragment_after_layout"
                     android:gravity="center"

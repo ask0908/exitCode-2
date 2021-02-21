@@ -21,6 +21,8 @@ import java.util.List;
 /* SearchResultActivity의 세로 리사이클러뷰에 쓰이는 어댑터 */
 public class VerticalSearchResultAdapter extends RecyclerView.Adapter<VerticalSearchResultAdapter.VerticalSearchResultViewHolder>
 {
+    private final String TAG = "VerticalSearchResultAdapter";
+
     private Context context;
     private List<SearchItem> list;
     private VerticalItemClickListener itemClickListener;
@@ -58,11 +60,11 @@ public class VerticalSearchResultAdapter extends RecyclerView.Adapter<VerticalSe
         holder.search_welf_local_textview.setText("#" + item.getWelf_local());
 
 //        Log.e("키워드 검색 후", "카테고리 = " + list.get(position).getWelf_category());
-        // 첫 번째 요소만 빼고 뒤의 요소를 전부 쳐낸다
+        /* 첫 번째 요소만 빼고 뒤의 요소를 전부 없애는 로직 */
         List<String> item_list = Collections.singletonList(list.get(position).getWelf_category());
         for (int i = 0; i < item_list.size(); i++)
         {
-            Log.e("ccc", "item_list = " + item_list);
+            Log.e(TAG, "item_list = " + item_list);
         }
         // 리스트의 요소 뒤에 붙어있는 ;; 같은 구분자들을 전부 공백으로 바꾼다
         StringBuilder listToString = new StringBuilder();
@@ -70,11 +72,11 @@ public class VerticalSearchResultAdapter extends RecyclerView.Adapter<VerticalSe
         {
             listToString.append(str);
         }
-        // split한 결과의 첫 번째 요소를 변수에 담아 이 변수값을 통해 어떤 이미지를 띄울지 정한다
         String after_str = listToString.toString().split(";;")[0];
-        Log.e("ccc", ";;와 그 뒤의 문자열 지운 결과 : " + after_str);
+        Log.e(TAG, "첫 번째 OO 지원 : " + after_str);
 
-        switch (list.get(position).getWelf_category())
+        // split한 결과의 첫 번째 요소를 변수에 담아 이 변수값을 통해 어떤 이미지를 띄울지 정한다
+        switch (after_str)
         {
             case "일자리 지원" :
                 holder.search_result_imageview.setImageResource(R.drawable.job);
@@ -186,6 +188,10 @@ public class VerticalSearchResultAdapter extends RecyclerView.Adapter<VerticalSe
 
             case "컨설팅 지원" :
                 holder.search_result_imageview.setImageResource(R.drawable.consulting);
+                break;
+
+            case "홍보 지원" :
+                holder.search_result_imageview.setImageResource(R.drawable.campaign);
                 break;
 
             default:
