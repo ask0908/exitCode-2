@@ -18,9 +18,11 @@ import com.psj.welfare.R;
 import java.util.Collections;
 import java.util.List;
 
-/* ResultBenefitActivity의 세로 리사이클러뷰(관심사 선택)에 쓰는 어댑터 */
+/* ResultBenefitActivity의 세로 리사이클러뷰(선택한 OO 지원 필터에 따른 혜택 출력)에 쓰는 어댑터 */
 public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySearchResultAdapter.CategorySearchResultViewHolder>
 {
+    private final String TAG = "CategorySearchResultAdapter";
+
     private Context context;
     private List<CategorySearchResultItem> list;
     private ItemClickListener itemClickListener;
@@ -61,12 +63,13 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
         CategorySearchResultItem item = list.get(position);
         holder.welf_local_textview.setText("#" + item.getWelf_local());
         holder.result_textview.setText(item.getWelf_name());
-        // ;; 구분자 지우기
+
+        /* 첫 번째 요소만 빼고 뒤의 요소를 전부 없애는 로직 */
         List<String> item_list = Collections.singletonList(list.get(position).getWelf_category());
-        for (int i = 0; i < item_list.size(); i++)
-        {
+//        for (int i = 0; i < item_list.size(); i++)
+//        {
 //            Log.e("ddd", "item_list = " + item_list);
-        }
+//        }
         // 리스트의 요소 뒤에 붙어있는 ;; 같은 구분자들을 전부 공백으로 바꾼다
         StringBuilder listToString = new StringBuilder();
         for (String str : item_list)
@@ -74,8 +77,7 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
             listToString.append(str);
         }
         String after_str = listToString.toString().split(";;")[0];
-        Log.e("테스트", "0번 인덱스 값 : " + after_str);
-//        Log.e("ddd", ";;와 그 뒤의 문자열 지운 결과 : " + after_str);
+        Log.e(TAG, "1번째 OO 지원 : " + after_str);
 
         switch (after_str)
         {
@@ -195,6 +197,10 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
                 holder.result_imageview.setImageResource(R.drawable.consulting);
                 break;
 
+            case "홍보 지원" :
+                holder.result_imageview.setImageResource(R.drawable.campaign);
+                break;
+
             default:
                 break;
         }
@@ -221,6 +227,7 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
             welf_local_textview = view.findViewById(R.id.welf_local_textview);
             result_imageview = view.findViewById(R.id.result_imageview);
             result_textview = view.findViewById(R.id.category_search_result_title);
+
             this.itemClickListener = itemClickListener;
             category_search_item.setOnClickListener(v -> {
                 int pos = getAdapterPosition();

@@ -226,22 +226,8 @@ public class SearchResultActivity extends AppCompatActivity
 
         // 쿼리 결과 개수로 몇 개가 검색됐는지 유저에게 알려준다
         search_result_benefit_title.setText("복지 혜택 결과가 총 " + total_count + "개\n검색되었습니다");
-        /* total_count의 숫자가 1자리수/2자리수인 경우 각각 색깔 강조 처리 (100자리 이후도 색이 바뀌면 아래 주석부 삭제) */
-//        if (Integer.parseInt(total_count) > 9)
-//        {
-//            // 숫자가 2자리수인 경우
-//            SpannableString spannableString = new SpannableString(search_result_benefit_title.getText().toString());
-//            spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 12, 14, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//            search_result_benefit_title.setText(spannableString);
-//        }
-//        else if (Integer.parseInt(total_count) < 10)
-//        {
-//            // 숫자가 1자리수인 경우
-//            SpannableString spannableString = new SpannableString(search_result_benefit_title.getText().toString());
-//            spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 12, 13, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//            search_result_benefit_title.setText(spannableString);
-//        }
 
+        // 검색 결과 중 숫자를 빨간색으로 강조
         if (Integer.parseInt(total_count) < 10)
         {
             // 숫자가 1자리수인 경우
