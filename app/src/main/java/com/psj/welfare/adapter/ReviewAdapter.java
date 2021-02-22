@@ -90,11 +90,11 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         holder.review_content.setText(item.getContent());
         holder.review_date.setText(item.getCreate_date());
         float count = item.getStar_count();
-        Log.e("ReviewAdapter", "getId() : " + item.getId());  // 닉네임이 출력된다
-        Log.e("ReviewAdapter", "getWriter() : " + item.getWriter());
-        Log.e("ReviewAdapter", "getImage_url() : " + item.getImage_url());
-        Log.e("ReviewAdapter", "getContent() : " + item.getContent());
-        Log.e("ReviewAdapter", "별점 : " + item.getStar_count());
+//        Log.e("ReviewAdapter", "getId() : " + item.getId());  // 닉네임이 출력된다
+//        Log.e("ReviewAdapter", "getWriter() : " + item.getWriter());
+//        Log.e("ReviewAdapter", "getImage_url() : " + item.getImage_url());
+//        Log.e("ReviewAdapter", "getContent() : " + item.getContent());
+//        Log.e("ReviewAdapter", "별점 : " + item.getStar_count());
         SharedPreferences sharedPreferences = context.getSharedPreferences("app_pref", 0);
         // item.getWriter()랑 쉐어드에 저장된 닉네임이랑 비교해서 같으면 보여주고 다르면 안 보여주면 될 듯
         if (!item.getWriter().equals(sharedPreferences.getString("user_nickname", "")))
@@ -127,12 +127,12 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         // 별점 표시
         if (item.getStar_count() != 0.0)
         {
-            Log.e("ReviewAdapter", "rate = " + item.getStar_count());
+//            Log.e("ReviewAdapter", "rate = " + item.getStar_count());
             holder.review_rate.setStar(count);
         }
         else
         {
-            Log.e("ReviewAdapter", "rate = 0.0");
+//            Log.e("ReviewAdapter", "rate = 0.0");
         }
 
         // 시간 정보 가져오는 객체 생성 후 저장

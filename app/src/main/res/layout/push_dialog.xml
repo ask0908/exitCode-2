@@ -97,7 +97,7 @@
             android:text="확 인"
             android:textSize="20sp"
             android:textColor="@color/colorMainWhite"
-            android:background="@drawable/btn_done"
+            android:background="@drawable/btn_primary_dark"
             android:layout_marginTop="30dp"/>
 
     </LinearLayout>

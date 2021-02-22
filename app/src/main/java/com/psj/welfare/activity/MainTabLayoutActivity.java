@@ -16,13 +16,22 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.psj.welfare.R;
 import com.psj.welfare.adapter.MainViewPagerAdapter;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.fragment.MainFragment;
 import com.psj.welfare.fragment.MyPageFragment;
 import com.psj.welfare.fragment.PushGatherFragment;
 import com.psj.welfare.fragment.SearchFragment;
+import com.psj.welfare.util.LogUtil;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Stack;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /* 메인 화면 등 프래그먼트 4개를 보여줄 액티비티 */
 public class MainTabLayoutActivity extends AppCompatActivity
@@ -67,15 +76,16 @@ public class MainTabLayoutActivity extends AppCompatActivity
             @Override
             public void onTabSelected(TabLayout.Tab tab)
             {
-                int position = tab.getPosition();
+                final int position = tab.getPosition();
                 if (position == 0)
                 {
                     tab.setIcon(R.drawable.home_red);
+                    reHomeLog("다른 화면에서 홈 화면으로 진입");
                 }
                 else if (position == 1)
                 {
                     tab.setIcon(R.drawable.alarm_red);
-                    Log.e(TAG, "알람 탭 클릭");
+                    alarmLog("알람 화면 진입");
                     // 서버에서 전송받은 상태 메시지가 400, 500인 경우 받은 알림이 없다는 메시지를 띄운다
                     if (sharedPreferences.getString("push_status", "").equals("400") ||
                             sharedPreferences.getString("push_status", "").equals("500"))
@@ -85,14 +95,19 @@ public class MainTabLayoutActivity extends AppCompatActivity
                 }
                 else if (position == 2)
                 {
+                    Log.e("SearchFragment", "MainTabLayoutActivity - 검색 아이콘 클릭");
                     tab.setIcon(R.drawable.search_red);
+                    searchEnterLog("검색 화면 진입");
                 }
                 else if (position == 3)
                 {
                     tab.setIcon(R.drawable.mypage_red);
+                    mypageEnterLog("마이페이지 진입");
                 }
             }
 
+            // 하단 탭 선택 후 다른 탭을 선택하면 호출되는 메서드
+            // 검색 누른 후 알림 누르면 124번 줄의 else if문이 작동한다
             @Override
             public void onTabUnselected(TabLayout.Tab tab)
             {
@@ -122,6 +137,8 @@ public class MainTabLayoutActivity extends AppCompatActivity
             }
         });
 
+        /* 탭 레이아웃 안의 하단 탭 중 마이페이지를 눌렀을 때 로그인하지 않았다면 로그인 화면으로 유도하려고 했던 코드
+        * 현재 사용되지 않음 */
         LinearLayout tab_layout = (LinearLayout) tabLayout.getChildAt(0);
         tab_layout.getChildAt(3).setOnTouchListener(new View.OnTouchListener()
         {
@@ -155,6 +172,185 @@ public class MainTabLayoutActivity extends AppCompatActivity
         {
             tabLayout.getTabAt(i).setIcon(image.get(i));
         }
+    }
+
+    /* 마이페이지에 들어갔을 때 이벤트 내용을 서버로 전송하는 메서드 */
+    void mypageEnterLog(String user_action)
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        String token;
+        if (sharedPreferences.getString("token", "").equals(""))
+        {
+            token = null;
+        }
+        else
+        {
+            token = sharedPreferences.getString("token", "");
+        }
+        String session = sharedPreferences.getString("sessionId", "");
+        String action = userAction(user_action);
+        Call<String> call = apiInterface.userLog(token, session, "myPage", action, null, LogUtil.getUserLog());
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "마이페이지 진입 로그 전송 결과 : " + result);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    /* 검색 화면에 들어갔을 때 해당 이벤트 내용을 서버로 전송하는 메서드 */
+    void searchEnterLog(String search_action)
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        String token;
+        if (sharedPreferences.getString("token", "").equals(""))
+        {
+            token = null;
+        }
+        else
+        {
+            token = sharedPreferences.getString("token", "");
+        }
+        String session = sharedPreferences.getString("sessionId", "");
+        String action = userAction(search_action);
+        Call<String> call = apiInterface.userLog(token, session, "search", action, null, LogUtil.getUserLog());
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "검색 화면 진입 로그 전송 결과 : " + result);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    /* 알림 모아보는 화면으로 이동했을 때 서버로 사용자 행동을 전송하는 메서드 */
+    void alarmLog(String alarm_action)
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        String token;
+        if (sharedPreferences.getString("token", "").equals(""))
+        {
+            token = null;
+        }
+        else
+        {
+            token = sharedPreferences.getString("token", "");
+        }
+        String session = sharedPreferences.getString("sessionId", "");
+        String action = userAction(alarm_action);
+        Call<String> call = apiInterface.userLog(token, session, "push_list", action, null, LogUtil.getUserLog());
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "알림 모아보는 화면으로 이동하는 로그 전송 결과 : " + result);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    /* 다시 홈 화면으로 이동했을 경우 사용자 행동을 서버로 보내는 메서드 */
+    void reHomeLog(String home_action)
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        String token;
+        if (sharedPreferences.getString("token", "").equals(""))
+        {
+            token = null;
+        }
+        else
+        {
+            token = sharedPreferences.getString("token", "");
+        }
+        String session = sharedPreferences.getString("sessionId", "");
+        String action = userAction(home_action);
+        Call<String> call = apiInterface.userLog(token, session, "home", action, null, LogUtil.getUserLog());
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "다시 홈 화면으로 이동 로그 전송 결과 : " + result);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    /* 서버로 한글 보낼 때 인코딩해서 보내야 해서 만든 한글 인코딩 메서드
+    * 로그 내용을 전송할 때 한글은 반드시 아래 메서드에 넣어서 인코딩한 후 변수에 저장하고 그 변수를 서버로 전송해야 한다 */
+    private String userAction(String user_action)
+    {
+        try
+        {
+            user_action = URLEncoder.encode(user_action, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
+        return user_action;
     }
 
     @Override

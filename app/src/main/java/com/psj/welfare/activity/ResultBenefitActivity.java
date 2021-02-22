@@ -31,6 +31,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +40,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/* SearchFragment에서 관심사 선택 후 보여주는 조회 결과 화면 */
+/* SearchFragment에서 관심사 선택 후 보여주는 결과 조회 화면 */
 public class ResultBenefitActivity extends AppCompatActivity
 {
     public final String TAG = this.getClass().getSimpleName();
@@ -77,12 +79,16 @@ public class ResultBenefitActivity extends AppCompatActivity
     String second_welf_name, second_parent_category, second_welf_category, second_tag, second_welf_local, second_total_count;
 
     List<CategorySearchResultItem> test_list;
+    // 로그 전송 시 토큰값, 세션 id 필요한데 그 값들을 가져올 때 사용할 쉐어드
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_resultbenefit);
+
+        categoryChoiceLog("테마 키워드 선택 후 결과 화면으로 이동");
 
         result_benefit_title = findViewById(R.id.result_benefit_title);
         up_recycler = findViewById(R.id.category_recycler);           // 위의 가로 리사이클러뷰(카테고리 이름들 출력)
@@ -386,5 +392,68 @@ public class ResultBenefitActivity extends AppCompatActivity
             }
         });
         bottom_recycler.setAdapter(bottom_adapter);
+    }
+
+    /* 카테고리 선택 후 이동하는 결과 리스트 화면에 유저가 들어왔음을 로그로 보내는 메서드 */
+    void categoryChoiceLog(String category_action)
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        String token;
+        if (sharedPreferences.getString("token", "").equals(""))
+        {
+            token = null;
+        }
+        else
+        {
+            token = sharedPreferences.getString("token", "");
+        }
+        String session = sharedPreferences.getString("sessionId", "");
+        String action = userAction(category_action);
+        Call<String> call = apiInterface.userLog(token, session, "search_result", action, null, LogUtil.getUserLog());
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "검색 화면 진입 로그 전송 결과 : " + result);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    /* 서버로 한글 보낼 때 인코딩해서 보내야 해서 만든 한글 인코딩 메서드
+     * 로그 내용을 전송할 때 한글은 반드시 아래 메서드에 넣어서 인코딩한 후 변수에 저장하고 그 변수를 서버로 전송해야 한다 */
+    private String userAction(String user_action)
+    {
+        try
+        {
+            user_action = URLEncoder.encode(user_action, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
+        return user_action;
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        super.onBackPressed();
+        categoryChoiceLog("테마 키워드 화면에서 뒤로가기 누름");
     }
 }

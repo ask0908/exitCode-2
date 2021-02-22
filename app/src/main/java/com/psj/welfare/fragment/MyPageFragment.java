@@ -36,6 +36,7 @@ import com.psj.welfare.activity.LoginActivity;
 import com.psj.welfare.activity.MyInfoUpdateActivity;
 import com.psj.welfare.activity.PersonalInformationActivity;
 import com.psj.welfare.activity.SplashActivity;
+import com.psj.welfare.activity.TermsAndConditionsActivity;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.OnSingleClickListener;
@@ -125,18 +126,8 @@ public class MyPageFragment extends Fragment
             ((AppCompatActivity)getActivity()).setSupportActionBar(mypage_toolbar);
         }
 
+        // 프로필 이미지는 카톡 로그인에서 받아온 걸 사용한다
         profile_image = sharedPreferences.getString(getString(R.string.get_kakao_image), "");
-        if (!sharedPreferences.getString("nickname", "").equals("") || !sharedPreferences.getString("user_area", "").equals("") ||
-        !sharedPreferences.getString("user_age", "").equals("") || !sharedPreferences.getString("user_gender", "").equals(""))
-        {
-            kakao_nick = sharedPreferences.getString(getString(R.string.get_kakao_name), "");
-//            kakao_name.setText(kakao_nick);
-            account_platform_text.setText(getString(R.string.set_kakao_account));
-        }
-        else
-        {
-            account_platform_text.setText("");
-        }
         if (profile_image != null)
         {
             Glide.with(this)
@@ -144,6 +135,20 @@ public class MyPageFragment extends Fragment
                     .into(kakao_profile_image);
         }
 
+        // 닉네임을 입력한 경우 마이페이지에서 유저 닉네임을 보여준다
+        if (!sharedPreferences.getString("nickname", "").equals("") || !sharedPreferences.getString("user_area", "").equals("") ||
+        !sharedPreferences.getString("user_age", "").equals("") || !sharedPreferences.getString("user_gender", "").equals(""))
+        {
+            kakao_nick = sharedPreferences.getString(getString(R.string.get_kakao_name), "");
+            account_platform_text.setText(getString(R.string.set_kakao_account));
+        }
+        else
+        {
+            // 닉네임이 없으면 공백으로 둔다
+            account_platform_text.setText("");
+        }
+
+        // 서버에 저장된 유저 정보를 가져와 뷰에 뿌린다
         getUserInfo();
 
         // 개인정보 수정
@@ -174,14 +179,16 @@ public class MyPageFragment extends Fragment
         if (isAllowed)
         {
             push_noti_switch.setChecked(true);
+            Toast.makeText(getActivity(), "푸시 알림 설정 수신 완료", Toast.LENGTH_SHORT).show();
         }
         else
         {
             push_noti_switch.setChecked(false);
+            Toast.makeText(getActivity(), "푸시 알림 설정 거부 완료", Toast.LENGTH_SHORT).show();
         }
 
         // 푸시 알림 설정 스위치
-        // 스위치를 클릭할 때마다 알림 설정 화면이 2번 뜨는데 스위치를
+        // 스위치에는 클릭 리스너를 달지 않고 왼쪽 텍스트뷰에만 추가해서, 텍스트뷰를 누르면 설정 화면으로 이동해 값을 수정할 수 있게 한다
         push_noti_switch.setOnCheckedChangeListener((buttonView, isChecked) ->
         {
             if (isChecked)
@@ -215,12 +222,25 @@ public class MyPageFragment extends Fragment
             @Override
             public void onSingleClick(View v)
             {
-                Intent intent = new Intent(getActivity(), PersonalInformationActivity.class);
+                Intent intent = new Intent(getActivity(), TermsAndConditionsActivity.class);
+                startActivity(intent);
+            }
+        });
+        terms_location_based_btn.setOnClickListener(new OnSingleClickListener()
+        {
+            @Override
+            public void onSingleClick(View v)
+            {
+                Intent intent = new Intent(getActivity(), TermsAndConditionsActivity.class);
                 startActivity(intent);
             }
         });
 
         // 개인정보처리방침
+        privacy_policy_btn.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), PersonalInformationActivity.class);
+            startActivity(intent);
+        });
         privacy_policy_layout.setOnClickListener(new OnSingleClickListener()
         {
             @Override
@@ -402,12 +422,12 @@ public class MyPageFragment extends Fragment
         });
     }
 
-    /* onResume() : 사용자와 상호작용이 가능한 시점, 이벤트로 프래그먼트가 가려지기 전까지 이 메서드가 유지된다 */
+    /* onResume() : 사용자와 상호작용이 가능한 시점, 이벤트로 프래그먼트가 가려지기 전까지 이 메서드가 유지된다
+    * 여기서도 setChecked()를 통해 T/F를 설정해야 설정 화면을 껐을 때 변동된 값이 스위치에 반영된다 */
     @Override
     public void onResume()
     {
         super.onResume();
-        userLog("마이페이지 진입");
         boolean isAllowed = NotificationManagerCompat.from(getActivity()).areNotificationsEnabled();
         if (isAllowed)
         {
@@ -444,7 +464,7 @@ public class MyPageFragment extends Fragment
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-                    Log.e(TAG, "마이페이지 진입 후 로그 전송 결과 : " + result);
+                    Log.e(TAG, "로그인/로그아웃 로그 전송 결과 : " + result);
                 }
                 else
                 {

@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
 
     <application
         android:name=".kakao.App"
@@ -23,7 +23,8 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
-        <activity android:name=".Test.TestDetailBenefitActivity"/>
+        <activity android:name=".activity.TermsAndConditionsActivity"/>
+        <activity android:name=".Test.TestDetailBenefitActivity" />
         <activity android:name=".activity.PersonalInformationActivity" />
         <activity android:name=".activity.SplashActivity">
             <intent-filter>

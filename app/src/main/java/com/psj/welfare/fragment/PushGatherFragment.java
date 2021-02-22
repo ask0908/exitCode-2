@@ -206,10 +206,10 @@ public class PushGatherFragment extends Fragment
         {
             e.printStackTrace();
         }
-        Log.e("리사이클러뷰에 뿌릴 데이터", "welf_name : " + welf_name);
-        Log.e("리사이클러뷰에 뿌릴 데이터", "push_title : " + push_title);
-        Log.e("리사이클러뷰에 뿌릴 데이터", "push_body : " + push_body);
-        Log.e("리사이클러뷰에 뿌릴 데이터", "push_date : " + push_date);
+//        Log.e("리사이클러뷰에 뿌릴 데이터", "welf_name : " + welf_name);
+//        Log.e("리사이클러뷰에 뿌릴 데이터", "push_title : " + push_title);
+//        Log.e("리사이클러뷰에 뿌릴 데이터", "push_body : " + push_body);
+//        Log.e("리사이클러뷰에 뿌릴 데이터", "push_date : " + push_date);
         adapter = new PushGatherAdapter(getActivity(), list, itemClickListener);
         adapter.setOnItemClickListener(new PushGatherAdapter.ItemClickListener()
         {
@@ -247,5 +247,4 @@ public class PushGatherFragment extends Fragment
 
         return interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
     }
-
 }
