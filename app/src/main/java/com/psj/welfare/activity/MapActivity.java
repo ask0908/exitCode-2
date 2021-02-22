@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.psj.welfare.R;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -55,6 +56,9 @@ public class MapActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        // 사용자 로그 전송(유튜브 화면 진입)
+        userLog("유튜브 화면 진입");
 
         Intent intent = getIntent();
         user_area = intent.getStringExtra("user_area");
@@ -124,17 +128,59 @@ public class MapActivity extends AppCompatActivity
         });
     }
 
-    /* 서버에서 받은 세션 id를 인코딩하는 메서드 */
-    private void encode(String str)
+    /* 서버로 유튜브 화면에 들어온 사용자 로그를 보내는 메서드 */
+    void userLog(String action)
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        String token;
+        if (sharedPreferences.getString("token", "").equals(""))
+        {
+            token = null;
+        }
+        else
+        {
+            token = sharedPreferences.getString("token", "");
+        }
+        String session = sharedPreferences.getString("sessionId", "");
+        String user_action = userAction(action);
+        Call<String> call = apiInterface.userLog(token, session, "yotube_review", user_action, null, LogUtil.getUserLog());
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "검색 화면 진입 로그 전송 결과 : " + result);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    /* 서버로 로그 보내기 전 한글 문자열을 인코딩하는 메서드 */
+    private String userAction(String user_action)
     {
         try
         {
-            encode_str = URLEncoder.encode(str, "UTF-8");
+            user_action = URLEncoder.encode(user_action, "UTF-8");
         }
         catch (UnsupportedEncodingException e)
         {
             e.printStackTrace();
         }
+        return user_action;
     }
 
     /* PHP 파일 보완으로 서버에서 전송되는 값이 바뀌어 JSON 파싱 함수 재구성 */
@@ -427,5 +473,12 @@ public class MapActivity extends AppCompatActivity
         sejong_benefit_btn = findViewById(R.id.sejong_benefit_btn);
         gwangju_benefit_btn = findViewById(R.id.gwangju_benefit_btn);
         daegu_benefit_btn = findViewById(R.id.daegu_benefit_btn);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        super.onBackPressed();
+        userLog("지도 화면에서 뒤로가기 버튼 눌러 메인 화면으로 이동");
     }
 }

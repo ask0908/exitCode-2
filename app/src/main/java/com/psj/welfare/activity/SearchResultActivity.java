@@ -1,5 +1,6 @@
 package com.psj.welfare.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,6 +31,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,6 +62,9 @@ public class SearchResultActivity extends AppCompatActivity
     // 세로 리사이클러뷰에 넣을 혜택 이름(welf_name)을 넣을 리스트
     List<SearchItem> name_list;
 
+    // 서버에서 받은 JSONObject 안의 값들을 담을 변수, 검색 결과값이 없을 경우 판단 시 사용
+    String status;
+
     // 서버에서 받은 JSONArray 안의 값들을 담을 변수
     String welf_name, welf_local, parent_category, welf_category, tag;
 
@@ -84,6 +91,7 @@ public class SearchResultActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_result);
 
+        keywordSearchLog("키워드 입력 후 검색 버튼 눌러 결과 화면으로 이동");
         Logger.addLogAdapter(new AndroidLogAdapter());
 
         if (getIntent().hasExtra("search"))
@@ -142,12 +150,13 @@ public class SearchResultActivity extends AppCompatActivity
         });
     }
 
-    /* 서버에서 받은 값들을 파싱하는 메서드 */
+    /* 서버에서 받은 키워드 검색 결과값들을 파싱하는 메서드 */
     private void jsonParsing(String search_result)
     {
         try
         {
             JSONObject jsonObject = new JSONObject(search_result);
+            status = jsonObject.getString("Status");
             JSONArray jsonArray = jsonObject.getJSONArray("Message");
             for (int i = 0; i < jsonArray.length(); i++)
             {
@@ -207,9 +216,19 @@ public class SearchResultActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
-        for (int i = 0; i < top_list.size(); i++)
+        if (status.equals("500") || status.equals("404"))
         {
-            Log.e("ddd", "top_list = " + top_list.get(i).getWelf_category());
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("요청하신 검색어와 일치하는 검색 결과가 없습니다")
+                    .setPositiveButton("확인", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            dialog.dismiss();
+                            finish();
+                        }
+                    }).show();
         }
 
         // 가로 리사이클러뷰에 쓸 어댑터의 리스트에 값들을 넣는다
@@ -223,33 +242,40 @@ public class SearchResultActivity extends AppCompatActivity
             // 이 메서드의 JSON 파싱 메서드가 호출되면, 이 파싱 메서드 안에서 해당 하위 카테고리를 상징하는 이미지를 아이템에 set한다
             searchSubCategoryWelfare(name, keyword);
         });
-
-        // 쿼리 결과 개수로 몇 개가 검색됐는지 유저에게 알려준다
-        search_result_benefit_title.setText("복지 혜택 결과가 총 " + total_count + "개\n검색되었습니다");
-
-        // 검색 결과 중 숫자를 빨간색으로 강조
-        if (Integer.parseInt(total_count) < 10)
-        {
-            // 숫자가 1자리수인 경우
-            SpannableString spannableString = new SpannableString(search_result_benefit_title.getText().toString());
-            spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 12, 13, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            search_result_benefit_title.setText(spannableString);
-        }
-        else if (Integer.parseInt(total_count) > 9)
-        {
-            // 숫자가 2자리수인 경우
-            SpannableString spannableString = new SpannableString(search_result_benefit_title.getText().toString());
-            spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 12, 14, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            search_result_benefit_title.setText(spannableString);
-        }
-        else if (Integer.parseInt(total_count) > 99)
-        {
-            // 숫자가 3자리수인 경우
-            SpannableString spannableString = new SpannableString(search_result_benefit_title.getText().toString());
-            spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 12, 15, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            search_result_benefit_title.setText(spannableString);
-        }
         keyword_category_recycler.setAdapter(category_adapter);
+
+        /* 쿼리 결과 개수로 몇 개가 검색됐는지 유저에게 알려준다 */
+        if (total_count == null)
+        {
+            search_result_benefit_title.setText("검색 결과가 없습니다");
+        }
+        else
+        {
+            if (Integer.parseInt(total_count) != 0)
+            {
+                if (Integer.parseInt(total_count) < 10)
+                {
+                    // 숫자가 1자리수인 경우
+                    SpannableString spannableString = new SpannableString("복지 혜택 결과가 총 " + total_count + "개\n검색되었습니다");
+                    spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 12, 13, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    search_result_benefit_title.setText(spannableString);
+                }
+                else if (Integer.parseInt(total_count) > 9)
+                {
+                    // 숫자가 2자리수인 경우
+                    SpannableString spannableString = new SpannableString("복지 혜택 결과가 총 " + total_count + "개\n검색되었습니다");
+                    spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 12, 14, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    search_result_benefit_title.setText(spannableString);
+                }
+                else if (Integer.parseInt(total_count) > 99)
+                {
+                    // 숫자가 3자리수인 경우
+                    SpannableString spannableString = new SpannableString("복지 혜택 결과가 총 " + total_count + "개\n검색되었습니다");
+                    spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 12, 15, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    search_result_benefit_title.setText(spannableString);
+                }
+            }
+        }
 
         // 세로 리사이클러뷰(필터링 결과 출력)에 쓸 어댑터의 리스트에 값들을 넣는다
         adapter = new VerticalSearchResultAdapter(this, name_list, itemClickListener);
@@ -267,7 +293,7 @@ public class SearchResultActivity extends AppCompatActivity
         search_result_title_recycler.setAdapter(adapter);
     }
 
-    /* 가로 리사이클러뷰 클릭 리스너에서도 이 메서드를 호출해야 세로 리사이클러뷰에 쓰이는 리스트 안의 값들을 바꿀 수 있을 것이다 */
+    /* 가로 리사이클러뷰 클릭 리스너에서도 이 메서드를 호출해야 세로 리사이클러뷰에 쓰이는 리스트 안의 값들을 바꿀 수 있다 */
     void searchSubCategoryWelfare(String sub_category, String keyword)
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
@@ -348,4 +374,65 @@ public class SearchResultActivity extends AppCompatActivity
         search_result_title_recycler.setAdapter(adapter);
     }
 
+    void keywordSearchLog(String keyword_search_action)
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        String token;
+        if (sharedPreferences.getString("token", "").equals(""))
+        {
+            token = null;
+        }
+        else
+        {
+            token = sharedPreferences.getString("token", "");
+        }
+        String session = sharedPreferences.getString("sessionId", "");
+        String action = userAction(keyword_search_action);
+        Call<String> call = apiInterface.userLog(token, session, "search_result", action, null, LogUtil.getUserLog());
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "검색 화면 진입 로그 전송 결과 : " + result);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    /* 서버로 한글 보낼 때 인코딩해서 보내야 해서 만든 한글 인코딩 메서드
+     * 로그 내용을 전송할 때 한글은 반드시 아래 메서드에 넣어서 인코딩한 후 변수에 저장하고 그 변수를 서버로 전송해야 한다 */
+    private String userAction(String user_action)
+    {
+        try
+        {
+            user_action = URLEncoder.encode(user_action, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
+        return user_action;
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        super.onBackPressed();
+        keywordSearchLog("키워드 검색 결과 화면에서 뒤로가기 누름");
+    }
 }

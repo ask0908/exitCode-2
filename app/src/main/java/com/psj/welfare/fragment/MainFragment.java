@@ -512,7 +512,6 @@ public class MainFragment extends Fragment
             }
         });
 
-        Log.e(TAG, "메인에서 count_int = " + count_int);
     }
 
     /* 서버에서 받은 세션 id를 인코딩하는 메서드 */

@@ -14,7 +14,6 @@
         android:id="@+id/map_result_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:fontFamily="@font/jalnan"
         android:textSize="20sp"
         android:textColor="@color/colorBlack"

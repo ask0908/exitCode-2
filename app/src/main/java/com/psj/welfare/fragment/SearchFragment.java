@@ -2,6 +2,7 @@ package com.psj.welfare.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -15,7 +16,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,9 +34,10 @@ import java.util.ArrayList;
 * 카테고리 다중선택이 없어져서 이제 해시태그 키워드를 누르면, 그 카테고리에 관련된 혜택들만 보여준다 */
 public class SearchFragment extends Fragment
 {
-    public static final String TAG = "SearchFragment"; // 로그 찍을 때 사용하는 TAG
+    // 로그 찍을 때 사용하는 TAG
+    public final String TAG = "SearchFragment";
 
-    private EditText searching;
+    private EditText search_edittext;
 
     Toolbar search_toolbar;
 
@@ -51,7 +52,13 @@ public class SearchFragment extends Fragment
     // 유저에게 제공할 혜택들을 담을 ArrayList
     ArrayList<String> m_favorList;
 
+    // 조회하기 버튼
     Button main_done;
+
+    // 유저 로그 전송 시 세션값, 토큰값 가져오는 데 사용할 쉐어드
+    SharedPreferences sharedPreferences;
+    // 서버로 한글 보낼 때 그냥 보내면 안되고 인코딩해서 보내야 해서, 인코딩한 문자열을 저장할 변수
+    String encode_str;
 
     public SearchFragment()
     {
@@ -76,11 +83,12 @@ public class SearchFragment extends Fragment
 
         m_favorList = new ArrayList<>();
 
+        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
         init(view);
 
         recommend_search_textview = view.findViewById(R.id.recommend_search_textview);
         recent_search_history_textview = view.findViewById(R.id.recent_search_history_textview);
-        searching = view.findViewById(R.id.searching);
+        search_edittext = view.findViewById(R.id.search_edittext);
 
         search_toolbar = view.findViewById(R.id.search_toolbar);
         if ((AppCompatActivity)getActivity() != null)
@@ -90,17 +98,17 @@ public class SearchFragment extends Fragment
         search_toolbar.setTitle("검색");
 
         // 안드로이드 EditText 키보드에서 검색 버튼 추가 코드
-        searching.setOnEditorActionListener(new TextView.OnEditorActionListener()
+        search_edittext.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
             {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH)
                 {
-                    Log.e(TAG, "검색 키워드 : " + searching.getText());
+                    Log.e(TAG, "검색 키워드 : " + search_edittext.getText());
 //                    search_main.setVisibility(View.GONE);
                     // 검색 버튼 클릭 되었을 때 처리하는 기능
-                    performSearch(searching.getText().toString());
+                    performSearch(search_edittext.getText().toString());
                     return true;
                 }
 
@@ -712,22 +720,18 @@ public class SearchFragment extends Fragment
     public void performSearch(String search)
     {
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(searching.getWindowToken(), 0);
+        imm.hideSoftInputFromWindow(search_edittext.getWindowToken(), 0);
         Log.e(TAG, "performSearch() 안으로 들어온 검색 키워드 : " + search);
         Intent intent = new Intent(getActivity(), SearchResultActivity.class);
         intent.putExtra("search", search);
         startActivity(intent);
-        // 아래가 원래 작동하던 코드
-//        if (search != null)
-//        {
-//            searchWelfare(search);
-//        }
     }
 
     @Override
     public void onStart()
     {
         super.onStart();
+        Log.e(TAG, "onStart() 실행");
 
         main_child_title.setTextColor(getResources().getColor(R.color.colorMainWhite));
         main_child.setSelected(false);
@@ -766,27 +770,6 @@ public class SearchFragment extends Fragment
         main_homeless.setSelected(false);
     }
 
-//    private void onBackPressed()
-//    {
-//        FragmentManager fm = getActivity().getSupportFragmentManager();
-//        fm.popBackStack();
-//    }
-
-
-    @Override
-    public void onAttach(@NonNull Context context)
-    {
-        super.onAttach(context);
-        OnBackPressedCallback callback = new OnBackPressedCallback(true)
-        {
-            @Override
-            public void handleOnBackPressed()
-            {
-                Log.e(TAG, "뒤로가기 버튼 누름");
-            }
-        };
-    }
-
     private void init(View view)
     {
         main_done = view.findViewById(R.id.main_done);
@@ -817,4 +800,5 @@ public class SearchFragment extends Fragment
         main_job_title = view.findViewById(R.id.main_job_title);
         main_homeless_title = view.findViewById(R.id.main_homeless_title);
     }
+
 }

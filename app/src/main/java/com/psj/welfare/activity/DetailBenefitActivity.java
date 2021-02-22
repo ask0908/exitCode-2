@@ -214,6 +214,9 @@ public class DetailBenefitActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailbenefit);
 
+        /* 지도 화면에서 이곳으로 오든 검색이나 카테고리 조회해서 이곳으로 오든 detail로 로그를 보낸다 */
+        detailPageLog("혜택 상세보기 화면 진입");
+
         Logger.addLogAdapter(new AndroidLogAdapter());
         sharedPreferences = getSharedPreferences("app_pref", 0);
         // 쉐어드에서 유저가 거주하는 지역명을 받아온다
@@ -1311,6 +1314,62 @@ public class DetailBenefitActivity extends AppCompatActivity
                 Log.e(TAG, "에러 : " + t.getMessage());
             }
         });
+    }
+
+    /* 혜택 상세보기 화면에 들어온 유저 행동을 로그로 전송하는 메서드 */
+    void detailPageLog(String detail_action)
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        String token;
+        if (sharedPreferences.getString("token", "").equals(""))
+        {
+            token = null;
+        }
+        else
+        {
+            token = sharedPreferences.getString("token", "");
+        }
+        String session = sharedPreferences.getString("sessionId", "");
+        String action = userAction(detail_action);
+        Call<String> call = apiInterface.userLog(token, session, "detail", action, null, LogUtil.getUserLog());
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "검색 화면 진입 로그 전송 결과 : " + result);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    /* 서버로 한글 보낼 때 인코딩해서 보내야 해서 만든 한글 인코딩 메서드
+     * 로그 내용을 전송할 때 한글은 반드시 아래 메서드에 넣어서 인코딩한 후 변수에 저장하고 그 변수를 서버로 전송해야 한다 */
+    private String userAction(String user_action)
+    {
+        try
+        {
+            user_action = URLEncoder.encode(user_action, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
+        return user_action;
     }
 
 }

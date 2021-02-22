@@ -11,6 +11,7 @@ import com.psj.welfare.R;
 
 import java.text.SimpleDateFormat;
 
+// 푸시알림설정 스위치를 on으로 설정했을 때 나타나는 다이얼로그
 public class CustomPushPermitDialog
 {
     private Context context;

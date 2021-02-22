@@ -92,6 +92,7 @@ public class MapDetailActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_detail);
 
+        mapSearchLog("지도 화면에서 지역 검색 화면으로 이동");
         sharedPreferences = getSharedPreferences("app_pref", 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Logger.addLogAdapter(new AndroidLogAdapter());
@@ -799,4 +800,66 @@ public class MapDetailActivity extends AppCompatActivity
         map_result_recyclerview.setAdapter(map_adapter);
     }
 
+    /* 지도 화면에서 지역 선택 후 결과 리스트 화면으로 이동한 유저 로그를 서버로 보내는 메서드 */
+    void mapSearchLog(String map_action)
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        String token;
+        if (sharedPreferences.getString("token", "").equals(""))
+        {
+            token = null;
+        }
+        else
+        {
+            token = sharedPreferences.getString("token", "");
+        }
+        String session = sharedPreferences.getString("sessionId", "");
+        String action = userAction(map_action);
+        Call<String> call = apiInterface.userLog(token, session, "map_search", action, null, LogUtil.getUserLog());
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "검색 화면 진입 로그 전송 결과 : " + result);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    /* 서버로 한글 보낼 때 인코딩해서 보내야 해서 만든 한글 인코딩 메서드
+     * 로그 내용을 전송할 때 한글은 반드시 아래 메서드에 넣어서 인코딩한 후 변수에 저장하고 그 변수를 서버로 전송해야 한다 */
+    private String userAction(String user_action)
+    {
+        try
+        {
+            user_action = URLEncoder.encode(user_action, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
+        return user_action;
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        super.onBackPressed();
+        mapSearchLog("지역 검색 화면에서 지도 화면으로 뒤로가기 눌러 이동");
+    }
 }

@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.psj.welfare"
-        minSdkVersion 26
+        minSdkVersion 24
         targetSdkVersion 29
         versionCode 16
         versionName "16"
@@ -119,8 +119,6 @@ dependencies {
     implementation group: 'com.kakao.sdk', name: 'kakaolink', version:'1.16.0'
 
     implementation 'com.orhanobut:logger:2.2.0'
-
-    implementation 'org.greenrobot:eventbus:3.1.1'
 
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:chromecast-sender:0.23'
     implementation 'com.google.android.gms:play-services:8.4.0'

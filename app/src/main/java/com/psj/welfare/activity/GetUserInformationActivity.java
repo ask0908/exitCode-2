@@ -125,7 +125,6 @@ public class GetUserInformationActivity extends AppCompatActivity
                         male_radiobutton.setChecked(false);
                     }
                 }
-
                 // 지역에 따라 NumberPicker 선택값 변경
                 if (!area.equals(""))
                 {
