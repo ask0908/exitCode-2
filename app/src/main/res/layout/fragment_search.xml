@@ -489,19 +489,6 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <Button
-                android:id="@+id/main_done"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="60dp"
-                android:layout_marginRight="20dp"
-                android:visibility="gone"
-                android:background="@drawable/main_btn"
-                android:fontFamily="@font/jalnan"
-                android:text="혜택 조회하러 가기"
-                android:textColor="@color/colorMainWhite" />
-
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
