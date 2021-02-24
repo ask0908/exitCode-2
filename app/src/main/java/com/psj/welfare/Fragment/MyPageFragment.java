@@ -306,6 +306,7 @@ public class MyPageFragment extends Fragment
                                             {
                                                 Log.e(TAG, "로그아웃 성공");
                                                 editor.putBoolean("logout", true);
+                                                // 서버에서 user_nickname 값을 받아오기 때문에 로그아웃하면 이걸 지워야 한다
                                                 editor.remove("user_nickname");
                                                 editor.apply();
                                                 Bundle bundle = new Bundle();
@@ -356,10 +357,7 @@ public class MyPageFragment extends Fragment
         });
 
         // logout 값이 true면 로그아웃한 거니까 로그아웃 상태에 맞게 뷰 상태를 바꾼다
-        if (sharedPreferences.getBoolean("logout", false) && sharedPreferences.getString("user_age", "").equals("") ||
-                sharedPreferences.getString("user_nickname", "").equals("") ||
-                sharedPreferences.getString("user_gender", "").equals("") ||
-                sharedPreferences.getString("nickname", "").equals(""))
+        if (sharedPreferences.getBoolean("logout", false) || sharedPreferences.getString("user_age", "").equals(""))
         {
             kakao_name.setVisibility(View.GONE);
             account_platform_text.setVisibility(View.GONE);
@@ -370,6 +368,18 @@ public class MyPageFragment extends Fragment
             account_layout.setVisibility(View.GONE);
             terms_location_layout.setVisibility(View.GONE);
             privacy_policy_layout.setVisibility(View.GONE);
+        }
+        else
+        {
+            kakao_name.setVisibility(View.VISIBLE);
+            account_platform_text.setVisibility(View.VISIBLE);
+            kakao_profile_image.setVisibility(View.VISIBLE);
+            push_noti_switch.setChecked(false);
+            mypage_login_btn.setText("로그아웃");
+            user_layout.setVisibility(View.VISIBLE);
+            account_layout.setVisibility(View.VISIBLE);
+            terms_location_layout.setVisibility(View.VISIBLE);
+            privacy_policy_layout.setVisibility(View.VISIBLE);
         }
     }
 

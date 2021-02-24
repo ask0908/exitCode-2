@@ -207,15 +207,4 @@ public class SplashActivity extends AppCompatActivity
         }
         return false;
     }
-
-    // TODO : 로그인하지 않았을 때 화면이 이상하게 보이는 현상 있어서 처리한 것, 수정되면 삭제
-    @Override
-    protected void onPause()
-    {
-        super.onPause();
-        sharedPreferences = getSharedPreferences("app_pref", 0);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.clear();
-        editor.apply();
-    }
 }

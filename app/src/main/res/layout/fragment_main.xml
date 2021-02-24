@@ -151,7 +151,7 @@
             android:paddingStart="12dp"
             android:paddingTop="10dp"
             android:lineSpacingExtra="6sp"
-            android:text="아이디 님에게"
+            android:text=" 님에게"
             android:textColor="@color/colorBlack"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
