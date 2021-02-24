@@ -1,45 +1,26 @@
 {
   "project_info": {
-    "project_number": "541078772075",
-    "firebase_url": "https://loginapi-b8922.firebaseio.com",
-    "project_id": "loginapi-b8922",
-    "storage_bucket": "loginapi-b8922.appspot.com"
+    "project_number": "241551262045",
+    "project_id": "welfaremaster-b0ac0",
+    "storage_bucket": "welfaremaster-b0ac0.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:541078772075:android:d20be6eea0b4f1f93d142e",
+        "mobilesdk_app_id": "1:241551262045:android:c13044c5ac2262e84868b4",
         "android_client_info": {
-          "package_name": "com.psj.welfare"
+          "package_name": "com.benefit.welfare"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "541078772075-0sm2dp81vrcbehhh4mcbaqodgf525cqm.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.psj.welfare",
-            "certificate_hash": "c18c8b2d7a5ddd0bed2844cf6fe6278fff380883"
-          }
-        },
-        {
-          "client_id": "541078772075-pm53hvt4mflcdle1ne0rgsm86ucfem4t.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCCRq55bnH2L2BIZzsid6VAHcjlJx9jRb4"
+          "current_key": "AIzaSyDtelwD9XY7mIUNzHHFqGFnoqYtTtCTieY"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "541078772075-pm53hvt4mflcdle1ne0rgsm86ucfem4t.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

@@ -17,10 +17,7 @@
             android:id="@+id/choice_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/ToolbarTheme"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:theme="@style/ToolbarTheme"/>
 
         <TextView
             android:id="@+id/choice_description_textview"
@@ -32,10 +29,7 @@
             android:lineSpacingExtra="10sp"
             android:text="당신과 관련있는\n키워드들을 선택해 주세요"
             android:textColor="@color/colorBlack"
-            android:textSize="25sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/choice_toolbar" />
+            android:textSize="25sp"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/choice_keyword_recyclerview"
