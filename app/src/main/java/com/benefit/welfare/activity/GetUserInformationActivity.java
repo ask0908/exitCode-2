@@ -1,4 +1,4 @@
-package com.benefit.welfare.activity;
+package com.benefit.welfare.Activity;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -24,8 +24,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.benefit.welfare.R;
-import com.benefit.welfare.api.ApiClient;
-import com.benefit.welfare.api.ApiInterface;
+import com.benefit.welfare.API.ApiClient;
+import com.benefit.welfare.API.ApiInterface;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -1,4 +1,4 @@
-package com.benefit.welfare.fragment;
+package com.benefit.welfare.Fragment;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -31,16 +31,16 @@ import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.benefit.welfare.R;
-import com.benefit.welfare.activity.GetUserInformationActivity;
-import com.benefit.welfare.activity.LoginActivity;
-import com.benefit.welfare.activity.MyInfoUpdateActivity;
-import com.benefit.welfare.activity.PersonalInformationActivity;
-import com.benefit.welfare.activity.SplashActivity;
-import com.benefit.welfare.activity.TermsAndConditionsActivity;
-import com.benefit.welfare.api.ApiClient;
-import com.benefit.welfare.api.ApiInterface;
-import com.benefit.welfare.custom.OnSingleClickListener;
-import com.benefit.welfare.util.LogUtil;
+import com.benefit.welfare.Activity.GetUserInformationActivity;
+import com.benefit.welfare.Activity.LoginActivity;
+import com.benefit.welfare.Activity.MyInfoUpdateActivity;
+import com.benefit.welfare.Activity.PersonalInformationActivity;
+import com.benefit.welfare.Activity.SplashActivity;
+import com.benefit.welfare.Activity.TermsAndConditionsActivity;
+import com.benefit.welfare.API.ApiClient;
+import com.benefit.welfare.API.ApiInterface;
+import com.benefit.welfare.Custom.OnSingleClickListener;
+import com.benefit.welfare.Util.LogUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;

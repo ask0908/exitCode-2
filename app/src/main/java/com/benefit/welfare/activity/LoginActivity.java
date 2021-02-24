@@ -1,4 +1,4 @@
-package com.benefit.welfare.activity;
+package com.benefit.welfare.Activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -41,9 +41,9 @@ import com.nhn.android.naverlogin.ui.view.OAuthLoginButton;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.benefit.welfare.R;
-import com.benefit.welfare.api.ApiClient;
-import com.benefit.welfare.api.ApiInterface;
-import com.benefit.welfare.util.LogUtil;
+import com.benefit.welfare.API.ApiClient;
+import com.benefit.welfare.API.ApiInterface;
+import com.benefit.welfare.Util.LogUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;

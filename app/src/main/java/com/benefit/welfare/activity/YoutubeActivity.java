@@ -1,4 +1,4 @@
-package com.benefit.welfare.activity;
+package com.benefit.welfare.Activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,10 +19,10 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 import com.benefit.welfare.Data.OtherYoutubeItem;
 import com.benefit.welfare.Data.YoutubeItem;
 import com.benefit.welfare.R;
-import com.benefit.welfare.adapter.OtherYoutubeAdapter;
-import com.benefit.welfare.api.ApiClient;
-import com.benefit.welfare.api.ApiInterface;
-import com.benefit.welfare.util.LogUtil;
+import com.benefit.welfare.Adapter.OtherYoutubeAdapter;
+import com.benefit.welfare.API.ApiClient;
+import com.benefit.welfare.API.ApiInterface;
+import com.benefit.welfare.Util.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;

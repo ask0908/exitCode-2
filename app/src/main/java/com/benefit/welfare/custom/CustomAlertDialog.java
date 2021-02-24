@@ -1,4 +1,4 @@
-package com.benefit.welfare.custom;
+package com.benefit.welfare.Custom;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -8,7 +8,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.benefit.welfare.R;
-import com.benefit.welfare.activity.MainTabLayoutActivity;
+import com.benefit.welfare.Activity.MainTabLayoutActivity;
 
 public class CustomAlertDialog
 {

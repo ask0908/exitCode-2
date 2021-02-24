@@ -1,4 +1,4 @@
-package com.benefit.welfare.fragment;
+package com.benefit.welfare.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.benefit.welfare.R;
-import com.benefit.welfare.activity.Compatibility.Compatibility_FirstActivity;
+import com.benefit.welfare.Activity.Compatibility.Compatibility_FirstActivity;
 
 /* 복지국가 궁합 테스트 */
 public class MatchTestFragment extends Fragment

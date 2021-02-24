@@ -1,4 +1,4 @@
-package com.benefit.welfare.fragment;
+package com.benefit.welfare.Fragment;
 
 import android.Manifest;
 import android.app.ActivityOptions;
@@ -41,17 +41,17 @@ import com.benefit.welfare.Data.RecommendItem;
 import com.benefit.welfare.R;
 import com.benefit.welfare.Test.TestViewPagerAdapter;
 import com.benefit.welfare.Test.TestViewPagerData;
-import com.benefit.welfare.activity.DetailBenefitActivity;
-import com.benefit.welfare.activity.LoginActivity;
-import com.benefit.welfare.activity.MapActivity;
-import com.benefit.welfare.activity.YoutubeActivity;
-import com.benefit.welfare.adapter.HorizontalYoutubeAdapter;
-import com.benefit.welfare.adapter.RecommendAdapter;
-import com.benefit.welfare.api.ApiClient;
-import com.benefit.welfare.api.ApiInterface;
-import com.benefit.welfare.custom.OnSingleClickListener;
-import com.benefit.welfare.util.GpsTracker;
-import com.benefit.welfare.util.LogUtil;
+import com.benefit.welfare.Activity.DetailBenefitActivity;
+import com.benefit.welfare.Activity.LoginActivity;
+import com.benefit.welfare.Activity.MapActivity;
+import com.benefit.welfare.Activity.YoutubeActivity;
+import com.benefit.welfare.Adapter.HorizontalYoutubeAdapter;
+import com.benefit.welfare.Adapter.RecommendAdapter;
+import com.benefit.welfare.API.ApiClient;
+import com.benefit.welfare.API.ApiInterface;
+import com.benefit.welfare.Custom.OnSingleClickListener;
+import com.benefit.welfare.Util.GpsTracker;
+import com.benefit.welfare.Util.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;

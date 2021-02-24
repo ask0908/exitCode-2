@@ -1,4 +1,4 @@
-package com.benefit.welfare.activity;
+package com.benefit.welfare.Activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,9 +19,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.benefit.welfare.Data.ChoiceKeywordItem;
 import com.benefit.welfare.R;
-import com.benefit.welfare.adapter.ChoiceKeywordAdapter;
-import com.benefit.welfare.api.ApiClient;
-import com.benefit.welfare.api.ApiInterface;
+import com.benefit.welfare.Adapter.ChoiceKeywordAdapter;
+import com.benefit.welfare.API.ApiClient;
+import com.benefit.welfare.API.ApiInterface;
 
 import org.json.JSONException;
 import org.json.JSONObject;

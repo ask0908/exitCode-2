@@ -1,4 +1,4 @@
-package com.benefit.welfare.fragment;
+package com.benefit.welfare.Fragment;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,10 +19,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.benefit.welfare.Data.PushGatherItem;
 import com.benefit.welfare.R;
-import com.benefit.welfare.activity.DetailBenefitActivity;
-import com.benefit.welfare.adapter.PushGatherAdapter;
-import com.benefit.welfare.api.ApiClient;
-import com.benefit.welfare.api.ApiInterface;
+import com.benefit.welfare.Activity.DetailBenefitActivity;
+import com.benefit.welfare.Adapter.PushGatherAdapter;
+import com.benefit.welfare.API.ApiClient;
+import com.benefit.welfare.API.ApiInterface;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -1,4 +1,4 @@
-package com.benefit.welfare.activity.Compatibility;
+package com.benefit.welfare.Activity.Compatibility;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -25,9 +25,9 @@ import com.kakao.network.callback.ResponseCallback;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.benefit.welfare.R;
-import com.benefit.welfare.activity.MainTabLayoutActivity;
-import com.benefit.welfare.api.ApiClient;
-import com.benefit.welfare.api.ApiInterface;
+import com.benefit.welfare.Activity.MainTabLayoutActivity;
+import com.benefit.welfare.API.ApiClient;
+import com.benefit.welfare.API.ApiInterface;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -1,4 +1,4 @@
-package com.benefit.welfare.custom;
+package com.benefit.welfare.Custom;
 
 import android.app.Dialog;
 import android.content.Context;

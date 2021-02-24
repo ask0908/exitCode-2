@@ -1,4 +1,4 @@
-package com.benefit.welfare.adapter;
+package com.benefit.welfare.Adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;

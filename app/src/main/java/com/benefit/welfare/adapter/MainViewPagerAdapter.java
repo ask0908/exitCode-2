@@ -1,14 +1,14 @@
-package com.benefit.welfare.adapter;
+package com.benefit.welfare.Adapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.benefit.welfare.fragment.MainFragment;
-import com.benefit.welfare.fragment.MyPageFragment;
-import com.benefit.welfare.fragment.PushGatherFragment;
-import com.benefit.welfare.fragment.SearchFragment;
+import com.benefit.welfare.Fragment.MainFragment;
+import com.benefit.welfare.Fragment.MyPageFragment;
+import com.benefit.welfare.Fragment.PushGatherFragment;
+import com.benefit.welfare.Fragment.SearchFragment;
 
 import java.util.ArrayList;
 

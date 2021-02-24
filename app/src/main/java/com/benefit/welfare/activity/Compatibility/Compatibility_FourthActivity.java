@@ -1,4 +1,4 @@
-package com.benefit.welfare.activity.Compatibility;
+package com.benefit.welfare.Activity.Compatibility;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -13,8 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.benefit.welfare.R;
-import com.benefit.welfare.api.ApiClient;
-import com.benefit.welfare.api.ApiInterface;
+import com.benefit.welfare.API.ApiClient;
+import com.benefit.welfare.API.ApiInterface;
 
 import org.json.JSONException;
 import org.json.JSONObject;

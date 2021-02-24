@@ -1,4 +1,4 @@
-package com.benefit.welfare.fragment;
+package com.benefit.welfare.Fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -23,9 +23,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.benefit.welfare.R;
-import com.benefit.welfare.activity.ResultBenefitActivity;
-import com.benefit.welfare.activity.SearchResultActivity;
-import com.benefit.welfare.custom.CustomResultBenefitDialog;
+import com.benefit.welfare.Activity.ResultBenefitActivity;
+import com.benefit.welfare.Activity.SearchResultActivity;
+import com.benefit.welfare.Custom.CustomResultBenefitDialog;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package com.benefit.welfare.util;
+package com.benefit.welfare.Util;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
