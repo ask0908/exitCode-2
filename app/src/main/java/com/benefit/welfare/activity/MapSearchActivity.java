@@ -1,4 +1,4 @@
-package com.benefit.welfare.activity;
+package com.benefit.welfare.Activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.benefit.welfare.Data.MapSearchItem;
 import com.benefit.welfare.R;
-import com.benefit.welfare.adapter.MapSearchAdapter;
+import com.benefit.welfare.Adapter.MapSearchAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;

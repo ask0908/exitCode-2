@@ -7,7 +7,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.benefit.welfare.R;
-import com.benefit.welfare.adapter.DetailViewpagerAdapter;
+import com.benefit.welfare.Adapter.DetailViewpagerAdapter;
 
 public class TestDetailBenefitActivity extends AppCompatActivity
 {

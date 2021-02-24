@@ -1,4 +1,4 @@
-package com.benefit.welfare.fragment;
+package com.benefit.welfare.Fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

@@ -11,9 +11,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.benefit.welfare.R;
-import com.benefit.welfare.activity.Compatibility.Compatibility_SecondActivity;
-import com.benefit.welfare.api.ApiClient;
-import com.benefit.welfare.api.ApiInterface;
+import com.benefit.welfare.Activity.Compatibility.Compatibility_SecondActivity;
+import com.benefit.welfare.API.ApiClient;
+import com.benefit.welfare.API.ApiInterface;
 
 import org.json.JSONException;
 import org.json.JSONObject;

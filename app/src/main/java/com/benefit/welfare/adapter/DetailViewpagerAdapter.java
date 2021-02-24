@@ -1,4 +1,4 @@
-package com.benefit.welfare.adapter;
+package com.benefit.welfare.Adapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -6,9 +6,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.benefit.welfare.fragment.ContentFragment;
-import com.benefit.welfare.fragment.FacilitiesFragment;
-import com.benefit.welfare.fragment.ReviewFragment;
+import com.benefit.welfare.Fragment.ContentFragment;
+import com.benefit.welfare.Fragment.FacilitiesFragment;
+import com.benefit.welfare.Fragment.ReviewFragment;
 
 import java.util.ArrayList;
 

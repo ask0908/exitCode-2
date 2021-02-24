@@ -1,4 +1,4 @@
-package com.benefit.welfare.custom;
+package com.benefit.welfare.Custom;
 
 import android.content.Context;
 import android.util.AttributeSet;

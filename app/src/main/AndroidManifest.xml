@@ -23,40 +23,40 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
-        <activity android:name="com.benefit.welfare.activity.TermsAndConditionsActivity"/>
+        <activity android:name="com.benefit.welfare.Activity.TermsAndConditionsActivity"/>
         <activity android:name="com.benefit.welfare.Test.TestDetailBenefitActivity" />
-        <activity android:name="com.benefit.welfare.activity.PersonalInformationActivity" />
-        <activity android:name="com.benefit.welfare.activity.SplashActivity">
+        <activity android:name="com.benefit.welfare.Activity.PersonalInformationActivity" />
+        <activity android:name="com.benefit.welfare.Activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.benefit.welfare.activity.ChoiceKeywordActivity" />
-        <activity android:name="com.benefit.welfare.activity.SearchResultActivity" />
-        <activity android:name="com.benefit.welfare.activity.YoutubeActivity" />
+        <activity android:name="com.benefit.welfare.Activity.ChoiceKeywordActivity" />
+        <activity android:name="com.benefit.welfare.Activity.SearchResultActivity" />
+        <activity android:name="com.benefit.welfare.Activity.YoutubeActivity" />
         <activity
-            android:name="com.benefit.welfare.activity.ReviewUpdateActivity"
+            android:name="com.benefit.welfare.Activity.ReviewUpdateActivity"
             android:theme="@style/ReviewTheme" />
-        <activity android:name="com.benefit.welfare.activity.GetUserInformationActivity" />
-        <activity android:name="com.benefit.welfare.activity.CalculatorResultActivity" />
+        <activity android:name="com.benefit.welfare.Activity.GetUserInformationActivity" />
+        <activity android:name="com.benefit.welfare.Activity.CalculatorResultActivity" />
         <activity
-            android:name="com.benefit.welfare.activity.MyInfoUpdateActivity"
+            android:name="com.benefit.welfare.Activity.MyInfoUpdateActivity"
             android:theme="@style/ToolbarTheme" />
-        <activity android:name="com.benefit.welfare.activity.MapSearchActivity" />
-        <activity android:name="com.benefit.welfare.activity.MapDetailActivity" />
+        <activity android:name="com.benefit.welfare.Activity.MapSearchActivity" />
+        <activity android:name="com.benefit.welfare.Activity.MapDetailActivity" />
         <activity
-            android:name="com.benefit.welfare.activity.MapActivity"
+            android:name="com.benefit.welfare.Activity.MapActivity"
             android:theme="@style/ReviewTheme" />
         <activity
-            android:name="com.benefit.welfare.activity.ReviewActivity"
-            android:parentActivityName="com.benefit.welfare.activity.DetailBenefitActivity"
+            android:name="com.benefit.welfare.Activity.ReviewActivity"
+            android:parentActivityName="com.benefit.welfare.Activity.DetailBenefitActivity"
             android:theme="@style/ReviewTheme" />
-        <activity android:name="com.benefit.welfare.activity.TestActivity" />
-        <activity android:name="com.benefit.welfare.activity.Compatibility.Compatibility_FourthActivity" />
+        <activity android:name="com.benefit.welfare.Activity.TestActivity" />
+        <activity android:name="com.benefit.welfare.Activity.Compatibility.Compatibility_FourthActivity" />
         <activity android:name="com.benefit.welfare.Test.CompatibilityTestActivity" />
-        <activity android:name="com.benefit.welfare.activity.Compatibility.Compatibility_ResultActivity">
+        <activity android:name="com.benefit.welfare.Activity.Compatibility.Compatibility_ResultActivity">
             <intent-filter>
                 <action android:name="android:intent.action.VIEW" />
 
@@ -68,28 +68,28 @@
                     android:scheme="@string/kakao_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name="com.benefit.welfare.activity.Compatibility.Compatibility_ThirdActivity" />
-        <activity android:name="com.benefit.welfare.activity.Compatibility.Compatibility_SecondActivity" />
-        <activity android:name="com.benefit.welfare.activity.Compatibility.Compatibility_FirstActivity" />
+        <activity android:name="com.benefit.welfare.Activity.Compatibility.Compatibility_ThirdActivity" />
+        <activity android:name="com.benefit.welfare.Activity.Compatibility.Compatibility_SecondActivity" />
+        <activity android:name="com.benefit.welfare.Activity.Compatibility.Compatibility_FirstActivity" />
 
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_app_key" />
 
-        <activity android:name="com.benefit.welfare.activity.MainTabLayoutActivity" />
-        <activity android:name="com.benefit.welfare.activity.ResultBenefitActivity" />
-        <activity android:name="com.benefit.welfare.activity.LoginActivity" />
-        <activity android:name="com.benefit.welfare.activity.DetailBenefitActivity" />
+        <activity android:name="com.benefit.welfare.Activity.MainTabLayoutActivity" />
+        <activity android:name="com.benefit.welfare.Activity.ResultBenefitActivity" />
+        <activity android:name="com.benefit.welfare.Activity.LoginActivity" />
+        <activity android:name="com.benefit.welfare.Activity.DetailBenefitActivity" />
 
         <service
-            android:name="com.benefit.welfare.api.MyFirebaseMessagingService"
+            android:name="com.benefit.welfare.API.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <service
-            android:name="com.benefit.welfare.api.MyFirebaseInstanceIDService"
+            android:name="com.benefit.welfare.API.MyFirebaseInstanceIDService"
             android:enabled="false"
             android:exported="false"
             tools:ignore="InnerclassSeparator" />

@@ -1,4 +1,4 @@
-package com.benefit.welfare.util;
+package com.benefit.welfare.Util;
 
 import android.Manifest;
 import android.app.Service;

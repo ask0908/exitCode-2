@@ -1,4 +1,4 @@
-package com.benefit.welfare.activity;
+package com.benefit.welfare.Activity;
 
 import android.animation.ObjectAnimator;
 import android.content.DialogInterface;
@@ -46,13 +46,13 @@ import com.orhanobut.logger.Logger;
 import com.benefit.welfare.Data.ReviewItem;
 import com.benefit.welfare.Data.ReviewStatsItem;
 import com.benefit.welfare.R;
-import com.benefit.welfare.adapter.FacilitiesAdapter;
-import com.benefit.welfare.adapter.ReviewAdapter;
-import com.benefit.welfare.api.ApiClient;
-import com.benefit.welfare.api.ApiInterface;
-import com.benefit.welfare.custom.OnSingleClickListener;
-import com.benefit.welfare.custom.RecyclerViewEmptySupport;
-import com.benefit.welfare.util.LogUtil;
+import com.benefit.welfare.Adapter.FacilitiesAdapter;
+import com.benefit.welfare.Adapter.ReviewAdapter;
+import com.benefit.welfare.API.ApiClient;
+import com.benefit.welfare.API.ApiInterface;
+import com.benefit.welfare.Custom.OnSingleClickListener;
+import com.benefit.welfare.Custom.RecyclerViewEmptySupport;
+import com.benefit.welfare.Util.LogUtil;
 
 import org.eazegraph.lib.charts.BarChart;
 import org.eazegraph.lib.models.BarModel;

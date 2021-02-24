@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#fff"
-    tools:context=".activity.Compatibility.Compatibility_FirstActivity">
+    tools:context=".Activity.Compatibility.Compatibility_FirstActivity">
 
     <LinearLayout
         android:id="@+id/first_question_linear"

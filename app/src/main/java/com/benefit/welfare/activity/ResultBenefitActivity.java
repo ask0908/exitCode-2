@@ -1,4 +1,4 @@
-package com.benefit.welfare.activity;
+package com.benefit.welfare.Activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,11 +21,11 @@ import com.orhanobut.logger.Logger;
 import com.benefit.welfare.Data.CategorySearchResultItem;
 import com.benefit.welfare.Data.ResultBenefitItem;
 import com.benefit.welfare.R;
-import com.benefit.welfare.adapter.CategorySearchResultAdapter;
-import com.benefit.welfare.adapter.SelectedCategoryAdapter;
-import com.benefit.welfare.api.ApiClient;
-import com.benefit.welfare.api.ApiInterface;
-import com.benefit.welfare.util.LogUtil;
+import com.benefit.welfare.Adapter.CategorySearchResultAdapter;
+import com.benefit.welfare.Adapter.SelectedCategoryAdapter;
+import com.benefit.welfare.API.ApiClient;
+import com.benefit.welfare.API.ApiInterface;
+import com.benefit.welfare.Util.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;

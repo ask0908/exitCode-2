@@ -1,4 +1,4 @@
-package com.benefit.welfare.util;
+package com.benefit.welfare.Util;
 
 import android.os.Build;
 import android.util.Log;

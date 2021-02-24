@@ -1,4 +1,4 @@
-package com.benefit.welfare.activity;
+package com.benefit.welfare.Activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -24,11 +24,11 @@ import com.orhanobut.logger.Logger;
 import com.benefit.welfare.Data.MapResultItem;
 import com.benefit.welfare.Data.ResultKeywordItem;
 import com.benefit.welfare.R;
-import com.benefit.welfare.adapter.MapResultAdapter;
-import com.benefit.welfare.adapter.ResultKeywordAdapter;
-import com.benefit.welfare.api.ApiClient;
-import com.benefit.welfare.api.ApiInterface;
-import com.benefit.welfare.util.LogUtil;
+import com.benefit.welfare.Adapter.MapResultAdapter;
+import com.benefit.welfare.Adapter.ResultKeywordAdapter;
+import com.benefit.welfare.API.ApiClient;
+import com.benefit.welfare.API.ApiInterface;
+import com.benefit.welfare.Util.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
