@@ -101,6 +101,7 @@ public class GetUserInformationActivity extends AppCompatActivity
         app_pref = getSharedPreferences("app_pref", 0);
         /* 서버에서 받은 유저 별 토큰값을 저장해 관심사를 보낼 때 사용한다 */
         token = app_pref.getString("token", "");
+        Log.e(TAG, "여기 토큰값이 없음 : " + token);
 
         // 인텐트로 넘어왔을 때 값을 확인해서 MypageFragment에서 보낸 값과 일치할 경우 쉐어드에 저장된 유저의 정보를 가져와 set
         if (getIntent().hasExtra("edit"))
@@ -920,6 +921,13 @@ public class GetUserInformationActivity extends AppCompatActivity
                         @Override
                         public void onClick(DialogInterface dialog, int which)
                         {
+                            // 나갈 경우 쉐어드 안의 데이터를 삭제한다
+                            SharedPreferences.Editor editor = app_pref.edit();
+                            editor.remove("user_nickname");
+                            editor.remove("user_age");
+                            editor.remove("user_gender");
+                            editor.remove("user_area");
+                            editor.apply();
                             dialog.dismiss();
                             finish();
                         }

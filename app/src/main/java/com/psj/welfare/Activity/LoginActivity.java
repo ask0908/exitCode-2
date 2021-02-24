@@ -11,15 +11,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.psj.welfare.API.ApiClient;
-import com.psj.welfare.API.ApiInterface;
-import com.psj.welfare.R;
-import com.psj.welfare.Util.LogUtil;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -44,6 +39,10 @@ import com.kakao.util.exception.KakaoException;
 import com.nhn.android.naverlogin.OAuthLogin;
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton;
 import com.orhanobut.logger.Logger;
+import com.psj.welfare.API.ApiClient;
+import com.psj.welfare.API.ApiInterface;
+import com.psj.welfare.R;
+import com.psj.welfare.Util.LogUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,7 +58,7 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener
 {
     public final String TAG = this.getClass().getSimpleName();
-    SharedPreferences sharedPreferences;
+    SharedPreferences app_pref;
 
     public LoginActivity loginContext;
 
@@ -109,9 +108,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         analytics = FirebaseAnalytics.getInstance(this);
 
         // GetUserInformationActivity, ChoiceKeywordActivity 체크 위한 쉐어드 처리
-        sharedPreferences = getSharedPreferences(getString(R.string.shared_name), 0);
+        app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
         // 스플래시 화면에서 받은 FCM 토큰
-        token = sharedPreferences.getString("fcm_token", "");
+        token = app_pref.getString("fcm_token", "");
 
         // 서버로 사용자 로그 전송
         userLog("로그인 화면 진입");
@@ -130,30 +129,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         /* 앱 실행 시 카카오 서버의 로그인 토큰이 있으면 자동으로 로그인 수행  */
         // 카카오 SDK를 쓰기 위해 SessionCallback 객체화
-        if (!sharedPreferences.getString("user_age", "").equals(""))
-        {
-//            Intent intent = new Intent(this, GetUserInformationActivity.class);
-//            startActivity(intent);
-//            finish();
-            sessionCallback = new SessionCallback();
+        sessionCallback = new SessionCallback();
 
-            // 현재 Session 객체를 가져와서 상태 체크 후, 세션 상태 변화 콜백을 받기 위해 SessionCallback 콜백을 등록한다
-            // 인자로 들어가는 sessionCallback은 추가할 세션 콜백이다
-            Session.getCurrentSession().addCallback(sessionCallback);
+        // 현재 Session 객체를 가져와서 상태 체크 후, 세션 상태 변화 콜백을 받기 위해 SessionCallback 콜백을 등록한다
+        // 인자로 들어가는 sessionCallback은 추가할 세션 콜백이다
+        Session.getCurrentSession().addCallback(sessionCallback);
 
-            // 세션이 isOpenable 상태라면 SessionCallback 객체를 통해 로그인 시도
-            // 요청 결과는 KakaoAdapter의 ISessionCallback으로 전달된다
-            Session.getCurrentSession().checkAndImplicitOpen();
-        }
-//        sessionCallback = new SessionCallback();
-//
-//        // 현재 Session 객체를 가져와서 상태 체크 후, 세션 상태 변화 콜백을 받기 위해 SessionCallback 콜백을 등록한다
-//        // 인자로 들어가는 sessionCallback은 추가할 세션 콜백이다
-//        Session.getCurrentSession().addCallback(sessionCallback);
-//
-//        // 세션이 isOpenable 상태라면 SessionCallback 객체를 통해 로그인 시도
-//        // 요청 결과는 KakaoAdapter의 ISessionCallback으로 전달된다
-//        Session.getCurrentSession().checkAndImplicitOpen();
+        // 세션이 isOpenable 상태라면 SessionCallback 객체를 통해 로그인 시도
+        // 요청 결과는 KakaoAdapter의 ISessionCallback으로 전달된다
+        Session.getCurrentSession().checkAndImplicitOpen();
 
         real_kakao = findViewById(R.id.real_kakao);
 
@@ -169,7 +153,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 //        String keyhash = com.kakao.util.helper.Utility.getKeyHash(this);
 //        Log.e(TAG, "keyhash = " + keyhash);
 
-        // 카카오 로그인 시작. onClick(View v) 참고
+        // 카카오 로그인 시작. 195번 줄의 onClick() 참고
         fake_kakao.setOnClickListener(this);
 
         /* 구글 로그인 */
@@ -237,11 +221,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 }
                 else
                 {
-//                    Log.e(TAG, "카카오 버튼 클릭안됨");
+                    Log.e(TAG, "카카오 버튼 클릭안됨");
                     // what이 false라면 카카오 로그인은 성공했지만 유저 정보가 없는 경우이므로 유저 정보 받는 화면으로 이동시킨다
-                    Intent intent = new Intent(this, GetUserInformationActivity.class);
-                    startActivity(intent);
-                    finish();
+//                    Intent intent = new Intent(this, GetUserInformationActivity.class);
+//                    startActivity(intent);
+//                    finishAffinity();
                 }
                 break;
 
@@ -350,21 +334,49 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     {
                         kakao_email = result.getKakaoAccount().getEmail();
                     }
-                    sharedPreferences = getSharedPreferences(getString(R.string.shared_name), 0);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
+                    SharedPreferences.Editor editor = app_pref.edit();
                     Log.e(TAG, "result = " + result);
-                    String age = sharedPreferences.getString("user_age", "");
-                    String area = sharedPreferences.getString("user_area", "");
-                    String gender = sharedPreferences.getString("user_gender", "");
-                    String user_nickname = sharedPreferences.getString("user_nickname", "");
+                    Log.e(TAG, "result 본명 = " + result.getNickname());
+                    Log.e(TAG, "result 이메일 = " + result.getKakaoAccount().getEmail());
+                    String age = app_pref.getString("user_age", "");
+                    String area = app_pref.getString("user_area", "");
+                    String gender = app_pref.getString("user_gender", "");
+                    String user_nickname = app_pref.getString("user_nickname", "");
                     Log.e(TAG, "쉐어드의 age = " + age + ", 지역 = " + area + ", 성별 = " + gender + ", 닉네임 = " + user_nickname);
                     /* 사용자 정보(나이, 성별, 지역, 닉네임)를 입력받기 위해 이동한다. 기존에 입력된 정보가 있으면 MainTabLayoutActivity로 이동한다 */
-                    if (sharedPreferences.getBoolean("logout", false))
+                    if (!app_pref.getString("user_nickname", "").equals("") || !app_pref.getString("user_age", "").equals("") ||
+                            !app_pref.getString("user_gender", "").equals("") || !app_pref.getString("user_area", "").equals(""))
                     {
                         Intent login_intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
+                        editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
+                        editor.putString(getString(R.string.get_kakao_name), result.getNickname());
+                        editor.putString("kakao_email", result.getKakaoAccount().getEmail());
+                        editor.apply();
+                        login_intent.putExtra("name", result.getNickname());
+                        login_intent.putExtra("profile", result.getProfileImagePath());
+                        login_intent.putExtra("email", result.getKakaoAccount().getEmail());
                         login_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         sendUserTypeAndPlatform();
                         startActivity(login_intent);
+//                        finishAffinity();
+                        finish();
+                    }
+                    // 사용자 정보가 없으면 정보 받는 화면으로 이동한다
+                    else if (app_pref.getString("user_nickname", "").equals("") || app_pref.getString("user_age", "").equals("") ||
+                            app_pref.getString("user_gender", "").equals(""))
+                    {
+                        Intent intent = new Intent(LoginActivity.this, GetUserInformationActivity.class);
+                        editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
+                        editor.putString(getString(R.string.get_kakao_name), result.getNickname());
+                        editor.putString("kakao_email", result.getKakaoAccount().getEmail());
+                        editor.apply();
+                        intent.putExtra("name", result.getNickname());
+                        intent.putExtra("profile", result.getProfileImagePath());
+                        intent.putExtra("email", result.getKakaoAccount().getEmail());
+                        /* 서버로 osType, platform, FCM 토큰값 정보를 보내는 메서드 */
+                        sendUserTypeAndPlatform();
+                        startActivity(intent);
                         finish();
                     }
                     else
@@ -408,7 +420,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String platform = getString(R.string.main_platform);
 
         encode("카카오 로그인 시도");
-        String session = sharedPreferences.getString("sessionId", "");
+        String session = app_pref.getString("sessionId", "");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Call<String> call = apiInterface.sendUserTypeAndPlatform(email, token, os_type, platform);
         call.enqueue(new Callback<String>()
@@ -419,6 +431,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
+                    Log.e(TAG, "카카오 로그인 시 서버로 데이터 보낸 결과 : " + result);
                     tokenParsing(response.body());
                     Log.e(TAG, "카카오 로그인 성공 = " + result);
                 }
@@ -440,17 +453,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     void userLog(String user_action)
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        sharedPreferences = getSharedPreferences("app_pref", 0);
+        app_pref = getSharedPreferences("app_pref", 0);
         String token;
-        if (sharedPreferences.getString("token", "").equals(""))
+        if (app_pref.getString("token", "").equals(""))
         {
             token = null;
         }
         else
         {
-            token = sharedPreferences.getString("token", "");
+            token = app_pref.getString("token", "");
         }
-        String session = sharedPreferences.getString("sessionId", "");
+        String session = app_pref.getString("sessionId", "");
         String action = encodeAction(user_action);
         Call<String> call = apiInterface.userLog(token, session, "login", action, null, LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
@@ -585,8 +598,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void tokenParsing(String data)
     {
         // 서버에서 발급받은 토큰값을 저장할 쉐어드 준비
-        sharedPreferences = getSharedPreferences(getString(R.string.shared_name), 0);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
+        SharedPreferences.Editor editor = app_pref.edit();
         try
         {
             JSONObject token_object = new JSONObject(data);
@@ -597,73 +610,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         {
             e.printStackTrace();
         }
-        Log.e(TAG, "tokenParsing() - 쉐어드에 저장");
+        Log.e(TAG, "tokenParsing() - 쉐어드에 저장되는 토큰 : " + server_token);
         /* 다른 액티비티/프래그먼트에서도 활용해야 하기 때문에 서버에서 받은 토큰값을 쉐어드에 저장해 사용한다 */
         editor.putString("token", server_token);
         Log.e(TAG, "nickName = " + nickName);
         // logout이 true라면 로그아웃한 상태에서 로그인하는 거니까 서버에서 받은 닉네임 값을 쉐어드에 저장하고 메인 화면으로 이동시킨다
         // 이렇게 메인으로 이동한 경우 로그인했을 때처럼 맞춤 혜택을 보여줘야 한다
-        if (sharedPreferences.getBoolean("logout", false))
+        if (app_pref.getBoolean("logout", false))
         {
             editor.putString("user_nickname", nickName);
             editor.putBoolean("logout", false);
         }
         editor.apply();
-    }
-
-    /* 다시 구글 로그인할 때 사용하는 메서드 */
-    public void reLogin(String email, String token)
-    {
-        Log.e(TAG, "reLogin() 진입");
-        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Log.e(TAG, "이메일 : " + email + "\n토큰 : " + token);
-        Call<String> call = apiInterface.ReUser(email, token);
-        call.enqueue(new Callback<String>()
-        {
-            @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
-            {
-                if (response.isSuccessful() && response.body() != null)
-                {
-                    Log.e(TAG, "onResponse 재로그인 성공 : " + response.body());
-                    String relogin = response.body();
-                    try
-                    {
-                        JSONObject login_total = new JSONObject(relogin);
-                        String token_data;
-                        token_data = login_total.getString("token");
-
-                        SharedPreferences preferences = getSharedPreferences(getString(R.string.login_shared), MODE_PRIVATE);
-
-                        // 데이터를 저장 or 편집하기 위해 Editor 변수를 선언한다
-                        SharedPreferences.Editor editor = preferences.edit();
-                        editor.putString("serverToken", token_data);
-                        editor.apply();
-
-                        editor.commit();
-                    }
-                    catch (JSONException e)
-                    {
-                        e.printStackTrace();
-                    }
-                    Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
-                    startActivity(intent);
-                    finish();
-
-                }
-                else
-                {
-                    Log.e(TAG, "onResponse 실패");
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
-            {
-                Log.e(TAG, "onFailure : " + t.toString());
-
-            }
-        });
     }
 
 }
