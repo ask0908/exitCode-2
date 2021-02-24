@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:241551262045:android:c13044c5ac2262e84868b4",
+        "mobilesdk_app_id": "1:241551262045:android:97135efd3b0b1d614868b4",
         "android_client_info": {
-          "package_name": "com.benefit.welfare"
+          "package_name": "com.psj.welfare"
         }
       },
       "oauth_client": [],
@@ -20,7 +20,15 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "241551262045-25am1e58tho3s30toibstij69frp4da0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.UrBeneFit"
+              }
+            }
+          ]
         }
       }
     }
