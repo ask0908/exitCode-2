@@ -7,7 +7,7 @@ android {
     buildToolsVersion "30.0.1"
 
     defaultConfig {
-        applicationId "com.psj.welfare"
+        applicationId "com.benefit.welfare"
         minSdkVersion 24
         targetSdkVersion 29
         versionCode 16
@@ -39,7 +39,8 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     // Import the Firebase BoM
-    implementation platform('com.google.firebase:firebase-bom:25.12.0')
+    // bom을 쓰면 앱에서 항상 호환되는 파이어베이스 안드로이드 라이브러리 버전을 사용한다
+    implementation platform('com.google.firebase:firebase-bom:26.5.0')
     // Add the dependency for the Firebase SDK for Google Analytics
     // When using the BoM, don't specify versions in Firebase dependencies
     // 파이어베이스 구글 애널리틱스
