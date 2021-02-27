@@ -112,7 +112,7 @@ public class GetUserInformationActivity extends AppCompatActivity
             {
                 String nickname = app_pref.getString("user_nickname", "");
                 String age = app_pref.getString("user_age", "");
-                String gender = app_pref.getString("user_gender", "");
+                gender = app_pref.getString("user_gender", "");
                 String area = app_pref.getString("user_area", "");
                 // editText에 set
                 nickname_edittext.setText(nickname);
