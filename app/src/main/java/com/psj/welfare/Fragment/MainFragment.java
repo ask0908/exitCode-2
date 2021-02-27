@@ -212,8 +212,6 @@ public class MainFragment extends Fragment
         // 로그인해서 카톡 정보가 있다면 유저이름을 따와서 텍스트뷰에 넣는다
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
 
-        Log.e(TAG, "스플래시에서 처리 끝낸 토큰값 : " + sharedPreferences.getString("token", ""));
-
         if (!sharedPreferences.getString("nickname", "").equals(""))
         {
             String kakao_name = sharedPreferences.getString("nickname", "");

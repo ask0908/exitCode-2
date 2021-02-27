@@ -111,10 +111,20 @@ public class MyPageFragment extends Fragment
         });
 
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+        String written_nickname = sharedPreferences.getString("user_nickname", "");
+        Log.e(TAG, "유저가 작성한 닉네임 : " + written_nickname);
 
-        if (!sharedPreferences.getString("user_nickname", "").equals(""))
+//        if (!sharedPreferences.getString("user_nickname", "").equals(""))
+//        {
+//            kakao_name.setText(sharedPreferences.getString("user_nickname", ""));
+//        }
+        // TODO : equals() 있는 부분 앞에 널 체크 걸기
+        if (written_nickname != null)
         {
-            kakao_name.setText(sharedPreferences.getString("user_nickname", ""));
+            if (!written_nickname.equals(""))
+            {
+                kakao_name.setText(sharedPreferences.getString("user_nickname", ""));
+            }
         }
         server_token = sharedPreferences.getString("token", "");
         // 서버에서 전송받은 토큰이 있다면 로그인한 것이므로 "로그인하러 가기" 버튼을 안 보이게 처리한다

@@ -379,26 +379,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         startActivity(intent);
                         finish();
                     }
-                    else
-                    {
-//                        Intent intent = new Intent(LoginActivity.this, GetUserInformationActivity.class);
-                        Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
-                        editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
-                        editor.putString(getString(R.string.get_kakao_name), result.getNickname());
-                        editor.putString("kakao_email", result.getKakaoAccount().getEmail());
-                        editor.apply();
-                        // logout이 true라면 로그아웃한 상태에서 로그인하는 거니까 서버에서 받은 닉네임 값을 쉐어드에 저장하고 메인 화면으로 이동시킨다
-                        // 이렇게 메인으로 이동한 경우 로그인했을 때처럼 맞춤 혜택을 보여줘야 한다
-                        intent.putExtra("name", result.getNickname());
-                        intent.putExtra("profile", result.getProfileImagePath());
-                        intent.putExtra("email", result.getKakaoAccount().getEmail());
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        /* 서버로 osType, platform, FCM 토큰값 정보를 보내는 메서드 */
-                        sendUserTypeAndPlatform();
-                        // sendUserTypeAndPlatform() 처리 후 기본 정보 입력받는 화면으로 이동
-                        startActivity(intent);
-                        finish();
-                    }
+//                    else
+//                    {
+////                        Intent intent = new Intent(LoginActivity.this, GetUserInformationActivity.class);
+//                        Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
+//                        editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
+//                        editor.putString(getString(R.string.get_kakao_name), result.getNickname());
+//                        editor.putString("kakao_email", result.getKakaoAccount().getEmail());
+//                        editor.apply();
+//                        // logout이 true라면 로그아웃한 상태에서 로그인하는 거니까 서버에서 받은 닉네임 값을 쉐어드에 저장하고 메인 화면으로 이동시킨다
+//                        // 이렇게 메인으로 이동한 경우 로그인했을 때처럼 맞춤 혜택을 보여줘야 한다
+//                        intent.putExtra("name", result.getNickname());
+//                        intent.putExtra("profile", result.getProfileImagePath());
+//                        intent.putExtra("email", result.getKakaoAccount().getEmail());
+//                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                        /* 서버로 osType, platform, FCM 토큰값 정보를 보내는 메서드 */
+//                        sendUserTypeAndPlatform();
+//                        // sendUserTypeAndPlatform() 처리 후 기본 정보 입력받는 화면으로 이동
+//                        startActivity(intent);
+//                        finish();
+//                    }
                 }
             });
         }
