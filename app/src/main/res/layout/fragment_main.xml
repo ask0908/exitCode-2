@@ -26,16 +26,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- 로그인하면 보이지 않고 로그인 안 했을 때만 보여야 함? -->
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/test_view_pager2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/main_fragment_textview" />
-
         <Button
             android:id="@+id/kakao_unlink_btn"
             android:layout_width="wrap_content"

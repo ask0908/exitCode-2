@@ -27,8 +27,15 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
+import com.kakao.auth.Session;
+import com.kakao.network.ErrorResult;
+import com.kakao.usermgmt.UserManagement;
+import com.kakao.usermgmt.callback.LogoutResponseCallback;
+import com.kakao.usermgmt.callback.UnLinkResponseCallback;
 import com.psj.welfare.API.ApiClient;
 import com.psj.welfare.API.ApiInterface;
 import com.psj.welfare.Activity.DetailBenefitActivity;
@@ -41,18 +48,8 @@ import com.psj.welfare.Custom.OnSingleClickListener;
 import com.psj.welfare.Data.HorizontalYoutubeItem;
 import com.psj.welfare.Data.RecommendItem;
 import com.psj.welfare.R;
-import com.psj.welfare.Test.TestViewPagerAdapter;
-import com.psj.welfare.Test.TestViewPagerData;
 import com.psj.welfare.Util.GpsTracker;
 import com.psj.welfare.Util.LogUtil;
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.gun0912.tedpermission.PermissionListener;
-import com.gun0912.tedpermission.TedPermission;
-import com.kakao.auth.Session;
-import com.kakao.network.ErrorResult;
-import com.kakao.usermgmt.UserManagement;
-import com.kakao.usermgmt.callback.LogoutResponseCallback;
-import com.kakao.usermgmt.callback.UnLinkResponseCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -125,9 +122,6 @@ public class MainFragment extends Fragment
     RecommendAdapter.ItemClickListener recom_itemClickListener;
     List<RecommendItem> list;
 
-    // 테스트용 뷰페이저
-    ViewPager2 viewPager2;
-
     // 화면 우상단의 혜택찾기 버튼
     Button find_welfare_btn;
 
@@ -150,6 +144,11 @@ public class MainFragment extends Fragment
 
     // 구글 애널리틱스
     private FirebaseAnalytics analytics;
+
+    String check_nickname = null;
+    String check_age = null;
+    String check_area = null;
+    String check_gender = null;
 
     public MainFragment()
     {
@@ -200,10 +199,44 @@ public class MainFragment extends Fragment
         else
         {
             TedPermission.with(getActivity())
-                    .setRationaleMessage("너의 혜택은 서비스를 이용하시려면 위치 정보 권한 설정이 필요합니다")
+                    .setRationaleMessage("지역별 혜택 지도 기능을 이용하시려면 위치 정보 권한 설정이 필요합니다")
                     .setPermissionListener(permissionListener)
                     .setPermissions(REQUIRED_PERMISSIONS)
                     .check();
+        }
+
+        /* 유저 정보를 확인하고 없으면 다이얼로그를 띄워 입력하러 이동하게 유도 */
+        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+
+        // 로그아웃하지 않았는데도 사용자 정보가 없을 경우 정보 입력 화면으로 이동시킨다
+        if (sharedPreferences.getBoolean("logout", false))
+        {
+            if (sharedPreferences.getString("user_nickname", "").equals("") ||
+                    sharedPreferences.getString("user_age", "").equals("") ||
+                    sharedPreferences.getString("user_gender", "").equals("") ||
+                    sharedPreferences.getString("user_area", "").equals(""))
+            {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("아직 입력하지 않은 사용자 정보가 있습니다\n입력하시겠어요?")
+                        .setPositiveButton("예", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                // 바로 GetUserInformationActivity로 이동하면 토큰값이 불일치하는 경우가 있다
+                                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                intent.putExtra("not_yet", 100);
+                                startActivity(intent);
+                            }
+                        }).setNegativeButton("아니오", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        dialog.dismiss();
+                    }
+                }).show();
+            }
         }
 
         recom_recycler = view.findViewById(R.id.recom_recycler);
@@ -302,30 +335,17 @@ public class MainFragment extends Fragment
             }).show();
         });
 
-        /* 비로그인 때만 보이는 뷰페이저 */
-        viewPager2 = view.findViewById(R.id.test_view_pager2);
-        ArrayList<TestViewPagerData> list = new ArrayList<>();
-        list.add(new TestViewPagerData("당신이 놓치고 있는\n700개의 여성 혜택"));
-        list.add(new TestViewPagerData("당신을 위한 900개의 혜택\n바로 확인해 보세요"));
-        viewPager2.setAdapter(new TestViewPagerAdapter(getActivity(), list));
-
-        // 사용자 기본 정보(나이, 성별, 지역)가 있는 경우 & 로그인한 경우 뷰페이저를 gone으로 돌린다
-        if (!sharedPreferences.getString("user_area", "").equals("") || !sharedPreferences.getString("user_nickname", "").equals("")
-                || !sharedPreferences.getString("user_gender", "").equals(""))
-        {
-            viewPager2.setVisibility(View.GONE);
-        }
-
         /* 유튜브 영상을 보여주는 가로 리사이클러뷰 선언, 처리 */
-//        getYoutubeInformation(); // onResume()으로 이동
         youtube_video_recyclerview = view.findViewById(R.id.youtube_video_recyclerview);
         youtube_video_recyclerview.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
 
         /* 맞춤 혜택 보여주는 가로 리사이클러뷰 선언, 처리 */
         recom_recycler.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
         /* 맞춤 혜택을 위한 개인정보, 관심사 데이터가 없다면 맞춤 혜택을 보여주지 말아야 한다 */
-        if (sharedPreferences.getString("user_category", "").equals("") || sharedPreferences.getString("user_area", "").equals("")
-                || sharedPreferences.getString("user_age", "").equals("") || sharedPreferences.getString("user_gender", "").equals(""))
+        if (sharedPreferences.getString("user_category", "").equals("") ||
+                sharedPreferences.getString("user_area", "").equals("") ||
+                sharedPreferences.getString("user_age", "").equals("") ||
+                sharedPreferences.getString("user_gender", "").equals(""))
         {
             recommend_welfare_textview.setVisibility(View.GONE);
             recommend_welfare_count.setVisibility(View.GONE);

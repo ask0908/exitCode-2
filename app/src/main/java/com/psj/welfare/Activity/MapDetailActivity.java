@@ -81,20 +81,23 @@ public class MapDetailActivity extends AppCompatActivity
     String number_of_benefit;
 
     // 서버에서 받는 JSON 값을 파싱할 때 쓸 변수
-    String parent_category, welf_name, welf_category, tag, welf_local;
+    String parent_category, welf_name, welf_category, tag;
 
     // 상단 리사이클러뷰에 나오는 카테고리를 눌렀을 때 서버에서 가져오는 데이터를 파싱하기 위해 사용하는 변수
     String second_welf_name, second_parent_category, second_welf_category, second_tag, second_welf_local, second_count;
     // 위 변수들을 담을 리스트
     List<MapResultItem> second_item_list;
 
+    // 토큰값, 유저의 지역 정보 등을 가져올 때 사용할 쉐어드
     SharedPreferences sharedPreferences;
-    String encode_str, all_str;
+
+    // 서버로 한글 로그 보내기 전 한글을 인코딩해서 저장할 때 쓰는 변수
+    String encode_str;
 
     // 구글 애널리틱스
     private FirebaseAnalytics analytics;
 
-    // 인터넷 상태 확인 후 AlertDialog를 띄울 때 사용할 변수
+    // 인터넷 상태 확인 후 상태 따라 AlertDialog를 띄울 때 사용할 변수
     boolean isConnected = false;
 
     @Override
@@ -137,9 +140,6 @@ public class MapDetailActivity extends AppCompatActivity
             editor.putString("map_detail_welf_count", map_welf_count);
             editor.apply();
         }
-        Intent intent = getIntent();
-//        area = intent.getStringExtra("area");
-//        welf_count = intent.getStringExtra("welf_count");
         if (!sharedPreferences.getString("map_detail_area", "").equals("")
                 && !sharedPreferences.getString("map_detail_welf_count", "").equals(""))
         {
@@ -820,7 +820,8 @@ public class MapDetailActivity extends AppCompatActivity
                 searchUpLevelCategory(name);
             }
         });
-        result_keyword_recyclerview.setAdapter(adapter);
+        /* 여기서 한번 더 setAdapter()를 호출할 경우 선택된 필터의 색깔 유지가 되지 않고 첫 위치로 돌아간다. 호출하지 말자 */
+//        result_keyword_recyclerview.setAdapter(adapter);
 
         // 하단 리사이클러뷰의 어댑터 초기화, 이 때 for문 안에서 값이 들어간 List를 인자로 넣는다
         map_adapter = new MapResultAdapter(MapDetailActivity.this, second_item_list, itemClickListener);

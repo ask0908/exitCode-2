@@ -423,9 +423,9 @@ public class DetailBenefitActivity extends AppCompatActivity
             FeedTemplate params = FeedTemplate
                     // 제목, 이미지 url, 이미지 클릭 시 이동하는 위치?를 입력한다
                     // 이미지 url을 사용자 정의 파라미터로 전달하면 최대 2MB 이미지를 메시지에 담아 보낼 수 있다
-                    .newBuilder(ContentObject.newBuilder("똑똑~ 혜택 정보가 도착했어요~♥", benefit_image_url,
+                    .newBuilder(ContentObject.newBuilder("당신이 놓치고 있는 혜택", benefit_image_url,
                             LinkObject.newBuilder().setMobileWebUrl("'https://developers.kakao.com").build())
-                            .setDescrption("지금 바로 " + welfare_desc_title.getText().toString() + " 혜택의 정보를 확인해 보세요!")  // 제목 밑의 본문
+                            .setDescrption(welfare_desc_title.getText().toString())  // 제목 밑의 본문
                             .build())
                     .setSocial(SocialObject.newBuilder().build()).addButton(new ButtonObject("앱에서 보기", LinkObject.newBuilder()
                             .setWebUrl("https://www.urbene-fit.com")
@@ -433,13 +433,13 @@ public class DetailBenefitActivity extends AppCompatActivity
                             .setAndroidExecutionParams("key1=value1")
                             .setIosExecutionParams("key1=value1")
                             .build()))
-                    .setSocial(SocialObject.newBuilder().build()).addButton(new ButtonObject("웹에서 보기", LinkObject.newBuilder()
-                            .setWebUrl("https://www.urbene-fit.com")
-                            .setMobileWebUrl("https://developers.kakao.com")
-                            .setAndroidExecutionParams("key2=value2")
-                            .setIosExecutionParams("key2=value2")
-                            .build()))
-                    .setSocial(SocialObject.newBuilder().setLikeCount(10).setCommentCount(20).setSharedCount(30).build())   // 좋아요 수, 댓글(리뷰) 수, 공유된 회수 더미
+//                    .setSocial(SocialObject.newBuilder().build()).addButton(new ButtonObject("웹에서 보기", LinkObject.newBuilder()
+//                            .setWebUrl("https://www.urbene-fit.com")
+//                            .setMobileWebUrl("https://developers.kakao.com")
+//                            .setAndroidExecutionParams("key2=value2")
+//                            .setIosExecutionParams("key2=value2")
+//                            .build()))
+//                    .setSocial(SocialObject.newBuilder().setLikeCount(10).setCommentCount(20).setSharedCount(30).build())   // 좋아요 수, 댓글(리뷰) 수, 공유된 회수 더미
                     .build();
 
             Map<String, String> serverCallbackArgs = new HashMap<>();

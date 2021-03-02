@@ -73,13 +73,23 @@ public class SearchFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        return inflater.inflate(R.layout.fragment_search, container, false);
+        View view = inflater.inflate(R.layout.fragment_search, container, false);
+        init(view);
+
+        recommend_search_textview = view.findViewById(R.id.recommend_search_textview);
+        recent_search_history_textview = view.findViewById(R.id.recent_search_history_textview);
+        search_edittext = view.findViewById(R.id.search_edittext);
+
+        search_toolbar = view.findViewById(R.id.search_toolbar);
+        return view;
     }
 
+    /* 항상 onViewCreated()에서 findViewById()를 쓰고(뷰들이 완전히 생성됐기 때문) 뷰를 매개변수로 전달한다 */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
+        Log.e(TAG, "onViewCreated() 호출");
 
         if (getActivity() != null)
         {
@@ -88,13 +98,13 @@ public class SearchFragment extends Fragment
         m_favorList = new ArrayList<>();
 
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
-        init(view);
-
-        recommend_search_textview = view.findViewById(R.id.recommend_search_textview);
-        recent_search_history_textview = view.findViewById(R.id.recent_search_history_textview);
-        search_edittext = view.findViewById(R.id.search_edittext);
-
-        search_toolbar = view.findViewById(R.id.search_toolbar);
+//        init(view);
+//
+//        recommend_search_textview = view.findViewById(R.id.recommend_search_textview);
+//        recent_search_history_textview = view.findViewById(R.id.recent_search_history_textview);
+//        search_edittext = view.findViewById(R.id.search_edittext);
+//
+//        search_toolbar = view.findViewById(R.id.search_toolbar);
         if ((AppCompatActivity)getActivity() != null)
         {
             ((AppCompatActivity)getActivity()).setSupportActionBar(search_toolbar);

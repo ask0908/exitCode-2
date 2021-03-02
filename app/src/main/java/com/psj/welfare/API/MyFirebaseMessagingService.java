@@ -16,8 +16,12 @@ import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.psj.welfare.R;
 import com.psj.welfare.Activity.MainTabLayoutActivity;
+import com.psj.welfare.R;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService
 {
@@ -25,6 +29,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
     public static final String TAG = "[FCM Service]";
     String channelID = "ch_push";
+    String session, token;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage)
@@ -72,6 +77,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
+        // 푸시 아이템을 눌러 화면을 이동할 때 수신 알림값을 변경한다
+        changePushStatus();
+
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelID)
                 .setSmallIcon(R.drawable.etc)
                 .setContentTitle(title)
@@ -98,6 +106,43 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
     {
         super.onNewToken(token);
         Log.e(TAG, "Refreshed token : " + token);
+    }
+
+    void changePushStatus()
+    {
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        if (sharedPreferences.getString("token", "").equals(""))
+        {
+            token = null;
+        }
+        else
+        {
+            token = sharedPreferences.getString("token", "");
+        }
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        Call<String> call = apiInterface.changePushStatus(token, "customizedRecv");
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "수신 상태값 변경 성공 : " + result);
+                }
+                else
+                {
+                    Log.e(TAG, "수신 상태값 변경 실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
     }
 
 }

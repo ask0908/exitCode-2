@@ -2,6 +2,7 @@ package com.psj.welfare.Data;
 
 public class PushGatherItem
 {
+    private String pushId;              // 푸시 알림의 id 값
     private String welf_name;           // 복지혜택 이름
     private String welf_local;          // 혜택 실시 지역
     private String push_gather_title;   // 받았던 푸시의 제목
@@ -14,6 +15,16 @@ public class PushGatherItem
 
     public PushGatherItem()
     {
+    }
+
+    public String getPushId()
+    {
+        return pushId;
+    }
+
+    public void setPushId(String pushId)
+    {
+        this.pushId = pushId;
     }
 
     public String getWelf_name()

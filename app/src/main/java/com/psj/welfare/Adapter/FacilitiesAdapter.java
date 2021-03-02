@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.psj.welfare.R;
 
+/* 주변센터를 리사이클러뷰로 보여줄 때 쓰는 어댑터. 아직 필요없어서 안 씀 */
 public class FacilitiesAdapter extends RecyclerView.Adapter<FacilitiesAdapter.FacilitiesViewHolder>
 {
     private Context context;
