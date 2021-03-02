@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.InputFilter;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
@@ -15,6 +16,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
@@ -46,12 +49,17 @@ public class GetUserInformationActivity extends AppCompatActivity
 {
     private final String TAG = this.getClass().getSimpleName();
 
-    public static GetUserInformationActivity activity;
-
     Toolbar age_toolbar;
     // 닉네임, 나이 입력받는 editText
-    EditText nickname_edittext, age_edittext;
+    EditText nickname_edittext;
     int age;
+    // 나이 입력은 "19990101" 형태로 받는다
+    private DatePicker age_picker;
+//    private EditText age_editText;
+    private int year, month, day = 0;
+    String str_month, str_day;  // 월, 일이 10보다 작을 경우 앞에 0을 붙여야 하는데 0을 붙인 다음 저장할 때 사용할 변수
+    String result_date;         // 최종적으로 "19990101" 형태의 날짜를 담을 변수, 이 변수에 담긴 값은 쉐어드에 저장 및 서버로 보낸다
+
     String nickname;
 
     // 성별 입력받는 라디오 버튼
@@ -85,13 +93,20 @@ public class GetUserInformationActivity extends AppCompatActivity
     // 인터넷 상태 확인 후 AlertDialog를 띄울 때 사용할 변수
     boolean isConnected = false;
 
+    // 닉네임 중복 확인용 변수
+    String duplicateResult;
+
+    // 닉네임 중복체크 버튼
+    private Button duplicate_button;
+    private String user_nickname;
+    private boolean isDuplicated = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_user_information);
 
-        activity = GetUserInformationActivity.this;
         age_toolbar = findViewById(R.id.get_information_toolbar);
         setSupportActionBar(age_toolbar);
         getSupportActionBar().setTitle("");
@@ -101,7 +116,6 @@ public class GetUserInformationActivity extends AppCompatActivity
         app_pref = getSharedPreferences("app_pref", 0);
         /* 서버에서 받은 유저 별 토큰값을 저장해 관심사를 보낼 때 사용한다 */
         token = app_pref.getString("token", "");
-        Log.e(TAG, "여기 토큰값이 없음 : " + token);
 
         // 인텐트로 넘어왔을 때 값을 확인해서 MypageFragment에서 보낸 값과 일치할 경우 쉐어드에 저장된 유저의 정보를 가져와 set
         if (getIntent().hasExtra("edit"))
@@ -111,12 +125,12 @@ public class GetUserInformationActivity extends AppCompatActivity
             if (editable == 1)
             {
                 String nickname = app_pref.getString("user_nickname", "");
+                // TODO : 나이 받아와서 DatePicker에 붙여넣어야 한다
                 String age = app_pref.getString("user_age", "");
                 gender = app_pref.getString("user_gender", "");
                 String area = app_pref.getString("user_area", "");
                 // editText에 set
                 nickname_edittext.setText(nickname);
-                age_edittext.setText(age);
 
                 // radiobutton에 set
                 if (!gender.equals(""))
@@ -192,7 +206,7 @@ public class GetUserInformationActivity extends AppCompatActivity
 //            }
 //        });
 
-//        /* 성별 고르는 라디오 버튼 선언, 처리 */
+        /* 성별 고르는 라디오 버튼 선언, 처리 */
 //        gender = "선택 안함";   // 아직 어떤 라디오 버튼도 눌러지지 않아서 초기값은 선택 안함으로 한다
 //        Log.e(TAG, "라디오 버튼 선택 안했을 때 gender 값 = " + gender);
 //
@@ -226,6 +240,17 @@ public class GetUserInformationActivity extends AppCompatActivity
 
         getUserArea(area_picker);
 
+        /* 생년월일 고르는 DatePicker 콜백 */
+        age_picker.init(1970, 0, 1, new DatePicker.OnDateChangedListener()
+        {
+            @Override
+            public void onDateChanged(DatePicker view, int year, int month, int dayOfMonth)
+            {
+                datePickerChange(year, month, dayOfMonth);
+            }
+        });
+
+        /* 성별 선택하는 라디오버튼 클릭 리스너 */
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
             @Override
@@ -240,6 +265,40 @@ public class GetUserInformationActivity extends AppCompatActivity
                 {
                     gender = "여자";
                     Log.e(TAG, "gender = " + gender);
+                }
+            }
+        });
+
+        // 닉네임 입력 제한수 = 10
+        nickname_edittext.setFilters(new InputFilter[] { new InputFilter.LengthFilter(10) });
+
+        /* 닉네임 중복 처리 버튼 */
+        duplicate_button.setOnClickListener(v -> {
+            user_nickname = nickname_edittext.getText().toString();
+            if (user_nickname.length() > 10)
+            {
+                Toast.makeText(this, "닉네임은 최대 10자까지만 설정하실 수 있습니다", Toast.LENGTH_SHORT).show();
+            }
+            else if (user_nickname.length() < 1)
+            {
+                Toast.makeText(this, "닉네임을 입력해 주세요", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                // 닉네임이 1자 이상 10자 이하인 경우 쉐어드에 저장된 값과 같은지 확인
+                if (app_pref.getString("user_nickname", "").equals(user_nickname))
+                {
+                    // 같은 경우엔 동일한 닉네임이라고 알려준다
+                    isDuplicated = false;
+                    Log.e(TAG, "쉐어드에 저장된 닉네임과 일치함");
+                    Toast.makeText(this, "기존 닉네임과 일치합니다", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    // 같으면 별다른 처리를 하지 않고 boolean 변수를 false로 둔다
+                    isDuplicated = true;
+                    Log.e(TAG, "중복된 닉네임");
+                    duplicateNickname(user_nickname);
                 }
             }
         });
@@ -267,12 +326,8 @@ public class GetUserInformationActivity extends AppCompatActivity
         {
             case android.R.id.home:
                 // 좌상단 백버튼 눌렀을 시(뭔가를 입력했을 때만 나타나야 한다)
-
-                // 각 EditText 별 입력된 문자열 개수를 가져와서 이 개수가 일정 개수 이하면 다이얼로그가 나오도록 한다?
-                // 그럼 일정 개수 이상이면 안 나온다는 건가? 일정 개수 이상이어야 나오는 게 맞을 것 같다
                 int nicknames = nickname_edittext.getText().toString().length();
-                int ages = age_edittext.getText().toString().length();
-                if (nicknames > 0 || ages > 0)
+                if (nicknames > 0)
                 {
                     AlertDialog.Builder builder = new AlertDialog.Builder(GetUserInformationActivity.this);
                     builder.setMessage("지금 나가시면 입력했던 정보들은 저장되지 않아요\n그래도 나가시겠어요?")
@@ -303,6 +358,7 @@ public class GetUserInformationActivity extends AppCompatActivity
             case R.id.keyword_ok:
                 // 우상단 등록 버튼
                 SharedPreferences.Editor editor = app_pref.edit();
+                // 비행기 모드 여부 확인, true면 인터넷에 연결됐다는 것이고 false면 연결 안됐다는 것이다
                 isConnected = isNetworkConnected(this);
                 if (!isConnected)
                 {
@@ -323,124 +379,125 @@ public class GetUserInformationActivity extends AppCompatActivity
                 }
                 else
                 {
-                    // true인 경우 이동함
-                    int nickname_length = nickname_edittext.getText().length();
-                    if (age_edittext.getText().toString().equals(""))
+                    // true인 경우 인터넷이 연결돼 있으니 계속 진행
+                    if (!isDuplicated)
                     {
-                        Toast.makeText(GetUserInformationActivity.this, "나이를 입력해 주세요", Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "isDuplicated=false, 중복되지 않는 닉네임");
+                        int nickname_length = nickname_edittext.getText().length();
+                        if (nickname_length < 2)
+                        {
+                            // 아무것도 입력하지 않았으면 포커스 줘서 입력하라고 유도
+                            Toast.makeText(GetUserInformationActivity.this, "닉네임은 2글자 이상 입력해 주세요", Toast.LENGTH_SHORT).show();
+                            nickname_edittext.requestFocus();
+                            break;
+                        }
+
+                        if (gender.equals("선택 안함"))
+                        {
+                            Toast.makeText(GetUserInformationActivity.this, "성별을 선택해 주세요", Toast.LENGTH_SHORT).show();
+                            break;
+                        }
+
+                        if (user_area == null)
+                        {
+                            Toast.makeText(GetUserInformationActivity.this, "지역을 선택해 주세요", Toast.LENGTH_SHORT).show();
+                            break;
+                        }
+
+                        nickname = nickname_edittext.getText().toString();
+
+                        /* 키워드를 선택하기 위해 MainTabLayoutActivity가 아닌 ChoiceKeywordActivity로 이동되게 처리
+                         * MainTabLayoutActivity는 ChoiceKeywordActivity에서 필요한 작업을 다 마치면 이동하게 한다
+                         * 액티비티 이동은 registerUserInfo()에서 수행한다 */
+                        // 나이, 성별, 지역, 닉네임을 쉐어드, 서버에 저장한 뒤 액티비티 이동
+                        editor.putString("user_age", result_date);
+                        editor.putString("user_gender", gender);
+                        editor.putString("user_area", user_area);
+                        editor.putString("user_nickname", nickname);
+                        editor.apply();
+                        // 기본 정보가 다 입력되고 쉐어드에도 값이 저장되면 입력한 기본 정보들을 서버로 보내 저장한다
+                        registerUserInfo();
                     }
+                    // 중복된 아이디일 경우
                     else
                     {
-                        age = Integer.parseInt(age_edittext.getText().toString());
-                    }
-
-                    if (nickname_length < 2)
-                    {
-                        // 아무것도 입력하지 않았으면 포커스 줘서 입력하라고 유도
-                        Toast.makeText(GetUserInformationActivity.this, "닉네임은 2글자 이상 입력해 주세요", Toast.LENGTH_SHORT).show();
-                        nickname_edittext.requestFocus();
+                        Log.e(TAG, "중복된 닉이라 다음으로 넘어가지 않음!!!");
+                        Toast.makeText(this, "닉네임 중복체크를 해주시기 바랍니다", Toast.LENGTH_SHORT).show();
                         break;
                     }
-
-                    if (age > 115)   // 한국 최고령자 나이 이상 입력 시
-                    {
-                        Toast.makeText(GetUserInformationActivity.this, "정확한 나이를 입력해 주세요", Toast.LENGTH_SHORT).show();
-                        break;
-                    }
-
-                    if (gender.equals("선택 안함"))
-                    {
-                        Toast.makeText(GetUserInformationActivity.this, "성별을 선택해 주세요", Toast.LENGTH_SHORT).show();
-                        break;
-                    }
-
-                    if (user_area == null)
-                    {
-                        Toast.makeText(GetUserInformationActivity.this, "지역을 선택해 주세요", Toast.LENGTH_SHORT).show();
-                        break;
-                    }
-
-                    nickname = nickname_edittext.getText().toString();
-                    Log.e(TAG, "닉넴 : " + nickname + ", 나이 : " + age + "살, 성별 : " + gender + ", 지역 : " + user_area);
-
-                    /* 키워드를 선택하기 위해 MainTabLayoutActivity가 아닌 ChoiceKeywordActivity로 이동되게 처리
-                     * MainTabLayoutActivity는 ChoiceKeywordActivity에서 필요한 작업을 다 마치면 이동하게 한다
-                     * 액티비티 이동은 registerUserInfo()에서 수행한다 */
-                    // 나이, 성별, 지역, 닉네임을 쉐어드, 서버에 저장한 뒤 액티비티 이동
-                    editor.putString("user_age", String.valueOf(age));
-                    editor.putString("user_gender", gender);
-                    editor.putString("user_area", user_area);
-                    editor.putString("user_nickname", nickname);
-                    editor.apply();
-                    // 기본 정보가 다 입력되고 쉐어드에도 값이 저장되면 입력한 기본 정보들을 서버로 보내 저장한다
-                    registerUserInfo();
                 }
-//                SharedPreferences.Editor editor = app_pref.edit();
-//                int nickname_length = nickname_edittext.getText().length();
-//                if (age_edittext.getText().toString().equals(""))
-//                {
-//                    Toast.makeText(GetUserInformationActivity.this, "나이를 입력해 주세요", Toast.LENGTH_SHORT).show();
-//                }
-//                else
-//                {
-//                    age = Integer.parseInt(age_edittext.getText().toString());
-//                }
-//
-//                if (nickname_length < 2)
-//                {
-//                    // 아무것도 입력하지 않았으면 포커스 줘서 입력하라고 유도
-//                    Toast.makeText(GetUserInformationActivity.this, "닉네임은 2글자 이상 입력해 주세요", Toast.LENGTH_SHORT).show();
-//                    nickname_edittext.requestFocus();
-//                    break;
-//                }
-//
-//                if (age > 115)   // 한국 최고령자 나이 이상 입력 시
-//                {
-//                    Toast.makeText(GetUserInformationActivity.this, "정확한 나이를 입력해 주세요", Toast.LENGTH_SHORT).show();
-//                    break;
-//                }
-//
-//                if (gender.equals("선택 안함"))
-//                {
-//                    Toast.makeText(GetUserInformationActivity.this, "성별을 선택해 주세요", Toast.LENGTH_SHORT).show();
-//                    break;
-//                }
-//
-//                if (user_area == null)
-//                {
-//                    Toast.makeText(GetUserInformationActivity.this, "지역을 선택해 주세요", Toast.LENGTH_SHORT).show();
-//                    break;
-//                }
-//
-//                nickname = nickname_edittext.getText().toString();
-//                Log.e(TAG, "닉넴 : " + nickname + ", 나이 : " + age + "살, 성별 : " + gender + ", 지역 : " + user_area);
-//
-//                /* 키워드를 선택하기 위해 MainTabLayoutActivity가 아닌 ChoiceKeywordActivity로 이동되게 처리
-//                 * MainTabLayoutActivity는 ChoiceKeywordActivity에서 필요한 작업을 다 마치면 이동하게 한다
-//                 * 액티비티 이동은 registerUserInfo()에서 수행한다 */
-//                // 나이, 성별, 지역, 닉네임을 쉐어드, 서버에 저장한 뒤 액티비티 이동
-//                editor.putString("user_age", String.valueOf(age));
-//                editor.putString("user_gender", gender);
-//                editor.putString("user_area", user_area);
-//                editor.putString("user_nickname", nickname);
-//                editor.apply();
-//                // 기본 정보가 다 입력되고 쉐어드에도 값이 저장되면 입력한 기본 정보들을 서버로 보내 저장한다
-//                registerUserInfo();
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /* 닉네임 중복 확인 메서드 */
+    void duplicateNickname(String nickname)
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        Call<String> call = apiInterface.duplicateNickname(nickname, "nickNameCheck");
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "닉네임 중복 확인 결과 : " + result);
+                    duplicateParsing(result);
+                }
+                else
+                {
+                    Log.e(TAG, "실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    /* 서버에서 받은 닉네임 중복 검사 결과인 JSON 값을 파싱하는 메서드 */
+    private void duplicateParsing(String result)
+    {
+        try
+        {
+            JSONObject jsonObject = new JSONObject(result);
+            duplicateResult = jsonObject.getString("Result");
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
+        if (duplicateResult.equals("false"))
+        {
+            // 중복되지 않았으니 쓸 수 있는 닉네임이라고 알려준다
+            Toast.makeText(GetUserInformationActivity.this, "사용할 수 있는 닉네임입니다", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            // 중복이면 토스트로 중복이라고 알린다
+            Toast.makeText(GetUserInformationActivity.this, "중복된 닉네임입니다. 다른 닉네임을 입력해 주세요", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /* 사용자 정보를 서버에 저장하는 메서드 */
     void registerUserInfo()
     {
         server_token = app_pref.getString("token", "");
-        Log.e(TAG, "server_token = " + server_token);
+        Log.e(TAG, "유저 토큰 = " + server_token);
+        Log.e(TAG, "유저 닉네임 : " + nickname_edittext.getText().toString());
+        Log.e(TAG, "유저 생년월일 : " + result_date);
+        Log.e(TAG, "유저 성별 : " + gender);
+        Log.e(TAG, "유저 지역 : " + user_area);
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        encode("입력된 사용자 정보 저장");
-        String session = app_pref.getString("sessionId", "");
-        Call<String> call = apiInterface.registerUserInfo(session, encode_str, server_token, nickname_edittext.getText().toString(),
-                age_edittext.getText().toString(), gender, user_area);
+        // TODO : 나이를 20210228 형태로 받도록 UI를 수정하고 값도 바꿔야 한다
+        Call<String> call = apiInterface.registerUserInfo(server_token, nickname_edittext.getText().toString(), result_date, gender, user_area);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -449,12 +506,12 @@ public class GetUserInformationActivity extends AppCompatActivity
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-                    Log.e(TAG, "사용자 기본 정보 전송 결과 : " + result);
+                    Log.e(TAG, "registerUserInfo - 사용자 기본 정보 전송 결과 : " + result);
                     jsonParsing(result);
                 }
                 else
                 {
-                    Log.e(TAG, "실패 : " + response.body());
+                    Log.e(TAG, "registerUserInfo - 실패 : " + response.body());
                 }
             }
 
@@ -519,11 +576,13 @@ public class GetUserInformationActivity extends AppCompatActivity
     private void init()
     {
         nickname_edittext = findViewById(R.id.nickname_edittext);
-        age_edittext = findViewById(R.id.age_edittext);
+        age_picker = findViewById(R.id.age_picker);   // 나이를 생년월일로 받게 되면 그 때 사용
+//        age_editText = findViewById(R.id.age_edittext);
         area_picker = findViewById(R.id.area_picker);
         radioGroup = findViewById(R.id.gender_radiogroup);
         male_radiobutton = findViewById(R.id.male_radiobutton);
         female_radiobutton = findViewById(R.id.female_radiobutton);
+        duplicate_button = findViewById(R.id.duplicate_button);
     }
 
     // 로그인 후 개인정보 수정 눌렀을 때 저장돼 있는 지역명에 따라 NumberPicker 값을 set하는 메서드
@@ -907,12 +966,13 @@ public class GetUserInformationActivity extends AppCompatActivity
         });
     }
 
+    /* 작성 중 뒤로가기 눌렀을 경우 처리 */
     @Override
     public void onBackPressed()
     {
         int nicknames = nickname_edittext.getText().toString().length();
-        int ages = age_edittext.getText().toString().length();
-        if (nicknames > 0 || ages > 0)
+//        int ages = age_editText.getText().toString().length();
+        if (nicknames > 0)
         {
             AlertDialog.Builder builder = new AlertDialog.Builder(GetUserInformationActivity.this);
             builder.setMessage("지금 나가시면 입력했던 정보들은 저장되지 않아요\n그래도 나가시겠어요?")
@@ -921,13 +981,6 @@ public class GetUserInformationActivity extends AppCompatActivity
                         @Override
                         public void onClick(DialogInterface dialog, int which)
                         {
-                            // 나갈 경우 쉐어드 안의 데이터를 삭제한다
-                            SharedPreferences.Editor editor = app_pref.edit();
-                            editor.remove("user_nickname");
-                            editor.remove("user_age");
-                            editor.remove("user_gender");
-                            editor.remove("user_area");
-                            editor.apply();
                             dialog.dismiss();
                             finish();
                         }
@@ -945,6 +998,45 @@ public class GetUserInformationActivity extends AppCompatActivity
         {
             finish();
         }
+    }
+
+    /* 유저 나이를 생년월일로 받게 되면 그 때 사용 */
+    private void datePickerChange(int year, int month, int dayOfMonth)
+    {
+        SharedPreferences.Editor editor = app_pref.edit();
+        Log.e(TAG, "Year=" + year + " Month=" + (month + 1) + " day=" + dayOfMonth);
+        /* 1~9月일 경우 숫자 앞에 "0"을 붙인다 */
+        if ((month + 1) < 10)
+        {
+            str_month = "0" + (month + 1);
+            Log.e(TAG, "1. if문 안 : " + year + "년 " + str_month + "월 " + dayOfMonth + "일");
+            result_date = year + str_month + dayOfMonth;
+            if (dayOfMonth < 10)
+            {
+                /* 1~9日일 경우 숫자 앞에 "0"을 붙인다 */
+                str_day = "0" + dayOfMonth;
+                Log.e(TAG, "2. 내부 if문 안 : " + year + "년 " + str_month + "월 " + str_day + "일");
+                result_date = year + str_month + str_day;
+            }
+        }
+        if ((month + 1) > 9)
+        {
+            /* 10~12月일 경우 월은 추가 처리 없이 그대로 받는다 */
+            Log.e(TAG, "3. 다른 if문 안 : " + year + "년 " + (month + 1) + "월 " + dayOfMonth + "일");
+            result_date = "" + year + (month + 1) + dayOfMonth;
+            if (dayOfMonth < 10)
+            {
+                /* 10~12月일 경우에 일자가 1~9日일 경우 일 앞에 "0"을 붙인다 */
+                str_day = "0" + dayOfMonth;
+                Log.e(TAG, "4. 다른 if문의 내부 if문 안 : " + year + "년 " + str_month + "월 " + str_day + "일");
+                result_date = year + str_month + str_day;
+            }
+        }
+
+        /* 월, 일에 숫자 붙이는 처리를 완료한 후 최종적으로 출력되는 "19990101" 꼴의 날짜 값을 쉐어드에 저장하고 서버로 보낼 때 사용한다 */
+        Log.e(TAG, "최종 날짜 : " + result_date);
+        editor.putString("user_age", result_date);
+        editor.apply();
     }
 
     public boolean isNetworkConnected(Context context)

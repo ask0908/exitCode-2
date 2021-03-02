@@ -264,6 +264,7 @@ public interface ApiInterface
 
 
 	/* ↓ 지도 관련 메서드 */
+	// TODO : 지역별 결과 상세보기 화면에서 필터 눌렀을 때 호출하는 API를 이걸로 변경하기
 	// ===================================================================================================
 	/**
 	 * MainFragment 하단의 내 주변 혜택 찾기 버튼 클릭 시, 지역별 혜택 개수들을 가져오는 메서드
@@ -315,7 +316,7 @@ public interface ApiInterface
 	 * @param type - "pushList" 고정
 	 * @return - JSON 형태의 혜택 제목, 푸시 제목, 푸시 body, 푸시를 받은 날짜가 문자열 꼴로 나온다
 	 */
-	@GET("push")
+	@GET("https://www.urbene-fit.com/push")
 	Call<String> getPushData(
 			@Header("LoginToken") String token,
 			@Header("SessionId") String session,
@@ -333,6 +334,23 @@ public interface ApiInterface
 	@POST("https://www.urbene-fit.com/push")
 	Call<String> changePushStatus(
 			@Field("login_token") String login_token,
+			@Field("type") String type
+	);
+
+	/**
+	 * 유저가 알림을 확인했을 때 수신 상태값을 바꾸는 메서드
+	 * @param session - 세션 id
+	 * @param token - 로그인 시 서버에서 받는 토큰
+	 * @param pushId - 서버에서 알림 보내면 받는 것 같은데 이걸 넣어서 보내야 하는 듯
+	 * @param type - "pushRecv" 고정
+	 * @return
+	 */
+	@FormUrlEncoded
+	@POST("https://www.urbene-fit.com/push")
+	Call<String> checkUserWatchedPush(
+			@Header("SessionId") String session,
+			@Header("LoginToken") String token,
+			@Field("pushId") String pushId,
 			@Field("type") String type
 	);
 	// ===================================================================================================
@@ -393,8 +411,8 @@ public interface ApiInterface
 	@FormUrlEncoded
 	@POST("https://www.urbene-fit.com/user")
 	Call<String> registerUserInfo(
-			@Header("SessionId") String sessionId,
-			@Header("Action") String action,
+//			@Header("SessionId") String sessionId,
+//			@Header("Action") String action,
 			@Field("login_token") String login_token,
 			@Field("nickName") String user_nickname,
 			@Field("age") String age,
@@ -630,5 +648,23 @@ public interface ApiInterface
 			@Field("userAgent") String deviceInformation
 	);
 	// ===================================================================================================
+
+	/* ↓ 닉네임 중복 처리 메서드 */
+	// ===================================================================================================
+
+	/**
+	 * 닉네임 중복 처리 메서드
+	 * @param nickname - 사용자가 입력한 닉네임
+	 * @param type - "nickNameCheck" 고정
+	 * @return
+	 * 닉네임이 중복되는 경우 : {"Status":"200","Message":"닉네임이 중복되었습니다.","Result":"true"}
+	 * 닉네임이 중복되지 않는 경우 : {"Status":"200","Message":"닉네임이 중복되지 않았습니다.","Result":"false"}
+	 */
+	@FormUrlEncoded
+	@POST("https://www.urbene-fit.com/user")
+	Call<String> duplicateNickname(
+			@Field("nickName") String nickname,
+			@Field("type") String type
+	);
 
 }

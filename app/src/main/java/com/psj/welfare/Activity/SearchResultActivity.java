@@ -393,6 +393,28 @@ public class SearchResultActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
+        search_result_benefit_title.setText("복지혜택 결과가 총 " + second_total_count + "개\n검색되었습니다");
+        if (Integer.parseInt(second_total_count) < 10)
+        {
+            // 숫자가 1자리수인 경우
+            SpannableString spannableString = new SpannableString(search_result_benefit_title.getText().toString());
+            spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 11, 12, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            search_result_benefit_title.setText(spannableString);
+        }
+        else if (Integer.parseInt(second_total_count) > 9)
+        {
+            // 숫자가 2자리수인 경우
+            SpannableString spannableString = new SpannableString(search_result_benefit_title.getText().toString());
+            spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 11, 13, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            search_result_benefit_title.setText(spannableString);
+        }
+        else if (Integer.parseInt(second_total_count) > 9)
+        {
+            // 숫자가 3자리수인 경우
+            SpannableString spannableString = new SpannableString(search_result_benefit_title.getText().toString());
+            spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 11, 14, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            search_result_benefit_title.setText(spannableString);
+        }
         // 세로 리사이클러뷰에 쓸 어댑터의 리스트에 값들을 넣는다
         adapter = new VerticalSearchResultAdapter(this, name_list, itemClickListener);
         adapter.setOnItemClickListener((((view, pos) -> {

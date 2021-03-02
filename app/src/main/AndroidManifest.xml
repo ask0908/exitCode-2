@@ -25,7 +25,6 @@
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
         <activity android:name="com.psj.welfare.Activity.TermsAndConditionsActivity"/>
-        <activity android:name="com.psj.welfare.Test.TestDetailBenefitActivity" />
         <activity android:name="com.psj.welfare.Activity.PersonalInformationActivity" />
         <activity android:name="com.psj.welfare.Activity.SplashActivity">
             <intent-filter>
@@ -56,7 +55,6 @@
             android:theme="@style/ReviewTheme" />
         <activity android:name="com.psj.welfare.Activity.TestActivity" />
         <activity android:name="com.psj.welfare.Activity.Compatibility.Compatibility_FourthActivity" />
-        <activity android:name="com.psj.welfare.Test.CompatibilityTestActivity" />
         <activity android:name="com.psj.welfare.Activity.Compatibility.Compatibility_ResultActivity">
             <intent-filter>
                 <action android:name="android:intent.action.VIEW" />

@@ -56,12 +56,12 @@ public class HorizontalSearchResultAdapter extends RecyclerView.Adapter<Horizont
         /* 필터 색 바꾸기 */
         if (selected_position == position)
         {
-            holder.sub_category_layout.setBackgroundResource(R.drawable.select_after);
-            holder.category_btn.setTextColor(Color.parseColor("#FFFFFF"));
+            holder.sub_category_layout.setBackgroundResource(R.drawable.textlines_after);
+            holder.category_btn.setTextColor(Color.parseColor("#EE2F43"));
         }
         else
         {
-            holder.sub_category_layout.setBackgroundResource(R.drawable.rbf_btn_before);
+            holder.sub_category_layout.setBackgroundResource(R.drawable.textlines);
             holder.category_btn.setTextColor(Color.parseColor("#000000"));
         }
     }

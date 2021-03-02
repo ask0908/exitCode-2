@@ -76,7 +76,7 @@ public class ReviewActivity extends AppCompatActivity
     RadioGroup satisfaction_radiogroup;
 
     // 라디오 그룹에서 선택한 값 담을 변수
-    String difficulty, satisfaction = "";
+    String difficulty, satisfaction;
 
     // 선택해서 가져온 리뷰 아이디
     String review_id;
@@ -283,16 +283,28 @@ public class ReviewActivity extends AppCompatActivity
         {
             case R.id.review_done:
                 /* 이미지 전송 메서드 호출 */
-                if (difficulty.equals("") || satisfaction.equals(""))
+                if (difficulty == null || satisfaction == null)
                 {
                     Toast.makeText(this, "느낀점을 선택해 주세요", Toast.LENGTH_SHORT).show();
                     break;
                 }
                 else
                 {
-                    uploadReview();
-                    finish();
-                    break;
+                    // 작성한 리뷰가 없으면 토스트를 띄워서 작성 유도
+                    if (review_content_edit.getText().toString().equals(""))
+                    {
+                        Toast.makeText(this, "아직 리뷰가 작성되지 않았습니다", Toast.LENGTH_SHORT).show();
+                        break;
+                    }
+                    else
+                    {
+                        uploadReview();
+                        finish();
+                        break;
+                    }
+//                    uploadReview();
+//                    finish();
+//                    break;
                 }
 
             case android.R.id.home:
@@ -385,8 +397,7 @@ public class ReviewActivity extends AppCompatActivity
 //        Call<String> call = apiInterface.uploadReview(token, 1019, review_content_edit.getText().toString(), imageDescription, imagePart);
 
         int rate = (int) review_rate_edit.getRating();
-        int id = 0;
-        id = Integer.parseInt(review_id);
+        int id = Integer.parseInt(review_id);
         String star_count = String.valueOf(rate);
         Call<String> call = apiInterface.uploadReview(token, id, review_content_edit.getText().toString(), null, null,
                 difficulty, satisfaction, star_count);

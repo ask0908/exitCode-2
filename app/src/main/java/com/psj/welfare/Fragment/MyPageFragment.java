@@ -112,8 +112,6 @@ public class MyPageFragment extends Fragment
 
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
         String written_nickname = sharedPreferences.getString("user_nickname", "");
-        Log.e(TAG, "유저가 작성한 닉네임 : " + written_nickname);
-
 //        if (!sharedPreferences.getString("user_nickname", "").equals(""))
 //        {
 //            kakao_name.setText(sharedPreferences.getString("user_nickname", ""));
@@ -196,43 +194,24 @@ public class MyPageFragment extends Fragment
             }
         });
 
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         boolean isAllowed = NotificationManagerCompat.from(getActivity()).areNotificationsEnabled();
         if (isAllowed)
         {
+            putPushSetting(true);
             push_noti_switch.setChecked(true);
-            Toast.makeText(getActivity(), "푸시 알림 설정 수신 완료", Toast.LENGTH_SHORT).show();
+            fcm_canceled = true;
+            editor.putBoolean("fcm_canceled", fcm_canceled);
+            editor.apply();
         }
         else
         {
+            putPushSetting(false);
             push_noti_switch.setChecked(false);
-            Toast.makeText(getActivity(), "푸시 알림 설정 거부 완료", Toast.LENGTH_SHORT).show();
+            fcm_canceled = false;
+            editor.putBoolean("fcm_canceled", fcm_canceled);
+            editor.apply();
         }
-
-        // 푸시 알림 설정 스위치
-        // 스위치에는 클릭 리스너를 달지 않고 왼쪽 텍스트뷰에만 추가해서, 텍스트뷰를 누르면 설정 화면으로 이동해 값을 수정할 수 있게 한다
-        push_noti_switch.setOnCheckedChangeListener((buttonView, isChecked) ->
-        {
-            if (isChecked)
-            {
-                putPushSetting(true);
-                fcm_canceled = true;
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean("fcm_canceled", fcm_canceled);
-                editor.apply();
-//                CustomPushPermitDialog dialog = new CustomPushPermitDialog(getActivity());
-//                dialog.showPushDialog();
-            }
-            else
-            {
-                putPushSetting(false);
-                fcm_canceled = false;
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean("fcm_canceled", fcm_canceled);
-                editor.apply();
-//                CustomPushDenyDialog denyDialog = new CustomPushDenyDialog(getActivity());
-//                denyDialog.showDenyDialog();
-            }
-        });
 
         // 혜택 유형
         benefit_type_layout.setOnClickListener(v -> Toast.makeText(getActivity(), getString(R.string.not_yet), Toast.LENGTH_SHORT).show());
@@ -410,7 +389,7 @@ public class MyPageFragment extends Fragment
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-                    Log.e(TAG, "성공 : " + result);
+                    Log.e("putPushSetting()", "성공 : " + result);
                 }
                 else
                 {
@@ -565,14 +544,25 @@ public class MyPageFragment extends Fragment
         !sharedPreferences.getString("user_age", "").equals("") &&
         !sharedPreferences.getString("user_gender", "").equals(""))
         {
-            if (checked.equals(getString(R.string.is_true)))
+            if (checked != null)
             {
-                push_noti_switch.setChecked(true);
+                if (checked.equals(getString(R.string.is_true)))
+                {
+                    push_noti_switch.setChecked(true);
+                }
+                else
+                {
+                    push_noti_switch.setChecked(false);
+                }
             }
-            else
-            {
-                push_noti_switch.setChecked(false);
-            }
+//            if (checked.equals(getString(R.string.is_true)))
+//            {
+//                push_noti_switch.setChecked(true);
+//            }
+//            else
+//            {
+//                push_noti_switch.setChecked(false);
+//            }
         }
         else
         {
