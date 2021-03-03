@@ -343,7 +343,7 @@ public interface ApiInterface
 	 * @param token - 로그인 시 서버에서 받는 토큰
 	 * @param pushId - 서버에서 알림 보내면 받는 것 같은데 이걸 넣어서 보내야 하는 듯
 	 * @param type - "pushRecv" 고정
-	 * @return
+	 * @return - {"Status":"200","Message":"알림 상태 정보 수정이 완료되었습니다."}
 	 */
 	@FormUrlEncoded
 	@POST("https://www.urbene-fit.com/push")

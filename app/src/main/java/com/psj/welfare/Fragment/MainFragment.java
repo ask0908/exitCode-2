@@ -164,7 +164,17 @@ public class MainFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        return inflater.inflate(R.layout.fragment_main, container, false);
+        View view = inflater.inflate(R.layout.fragment_main, container, false);
+        recom_recycler = view.findViewById(R.id.recom_recycler);
+        recommend_welfare_textview = view.findViewById(R.id.recommend_welfare_textview);
+        recommend_welfare_count = view.findViewById(R.id.recommend_welfare_count);
+        main_fragment_cardview = view.findViewById(R.id.main_fragment_cardview);
+        map_btn = view.findViewById(R.id.map_btn);
+        find_welfare_btn = view.findViewById(R.id.find_welfare_btn);
+        youtube_video_recyclerview = view.findViewById(R.id.youtube_video_recyclerview);
+        kakao_logout_btn = view.findViewById(R.id.kakao_logout_btn);
+        kakao_unlink_btn = view.findViewById(R.id.kakao_unlink_btn);
+        return view;
     }
 
     @Override
@@ -239,9 +249,6 @@ public class MainFragment extends Fragment
             }
         }
 
-        recom_recycler = view.findViewById(R.id.recom_recycler);
-        recommend_welfare_textview = view.findViewById(R.id.recommend_welfare_textview);
-        recommend_welfare_count = view.findViewById(R.id.recommend_welfare_count);
         // 로그인해서 카톡 정보가 있다면 유저이름을 따와서 텍스트뷰에 넣는다
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
 
@@ -254,22 +261,8 @@ public class MainFragment extends Fragment
             spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 0, 3, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             recommend_welfare_textview.setText(spannableString);
         }
-        // if문으로 맞춤 혜택 받아온 개수를 뽑아 10 미만인 경우, 10 이상인 경우 별로 각각 다른 위치를 강조해야 한다
-//        if (Integer.parseInt(count) < 10)
-//        {
-//            SpannableString count_span = new SpannableString(recommend_welfare_count.getText().toString());
-//            count_span.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 5, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//            recommend_welfare_count.setText(count_span);
-//        }
-//        else if (Integer.parseInt(count) > 10)
-//        {
-//            SpannableString count_span = new SpannableString(recommend_welfare_count.getText().toString());
-//            count_span.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 5, 8, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//            recommend_welfare_count.setText(count_span);
-//        }
 
         youtube_hashmap = new HashMap<>();
-        main_fragment_cardview = view.findViewById(R.id.main_fragment_cardview);
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
         if (!sharedPreferences.getString("user_category", "").equals(""))
         {
@@ -284,15 +277,13 @@ public class MainFragment extends Fragment
             recom_recycler.setVisibility(View.GONE);
         }
         // logout이 false면 로그인한 상태기 때문에 맞춤혜택들을 보여주고 혜택찾기 버튼을 없앤다
-        else if (!sharedPreferences.getBoolean("logout", false))
+        else
         {
             main_fragment_cardview.setVisibility(View.GONE);
             recommend_welfare_textview.setVisibility(View.VISIBLE);
             recommend_welfare_count.setVisibility(View.VISIBLE);
             recom_recycler.setVisibility(View.VISIBLE);
         }
-        map_btn = view.findViewById(R.id.map_btn);
-        find_welfare_btn = view.findViewById(R.id.find_welfare_btn);
 
         // 비로그인 시에만 보이는 레이아웃, 누르면 맞춤 혜택 찾으러 가겠냐는 다이얼로그를 띄우고 예를 누르면 이동시킨다
         find_welfare_btn.setOnClickListener(v -> {
@@ -335,11 +326,10 @@ public class MainFragment extends Fragment
             }).show();
         });
 
-        /* 유튜브 영상을 보여주는 가로 리사이클러뷰 선언, 처리 */
-        youtube_video_recyclerview = view.findViewById(R.id.youtube_video_recyclerview);
+        /* 유튜브 영상을 보여주는 가로 리사이클러뷰 처리 */
         youtube_video_recyclerview.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
 
-        /* 맞춤 혜택 보여주는 가로 리사이클러뷰 선언, 처리 */
+        /* 맞춤 혜택 보여주는 가로 리사이클러뷰 처리 */
         recom_recycler.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
         /* 맞춤 혜택을 위한 개인정보, 관심사 데이터가 없다면 맞춤 혜택을 보여주지 말아야 한다 */
         if (sharedPreferences.getString("user_category", "").equals("") ||
@@ -353,7 +343,6 @@ public class MainFragment extends Fragment
         }
 
         /* 카톡 로그아웃 버튼, 로그아웃하면 로그인 페이지로 리다이렉트하도록 한다? */
-        kakao_logout_btn = view.findViewById(R.id.kakao_logout_btn);
         kakao_logout_btn.setOnClickListener(new OnSingleClickListener()
         {
             @Override
@@ -386,7 +375,6 @@ public class MainFragment extends Fragment
         });
 
         /* 카톡 회원탈퇴 버튼. 구글 로그인 테스트 위해 집어넣었음 */
-        kakao_unlink_btn = view.findViewById(R.id.kakao_unlink_btn);
         kakao_unlink_btn.setOnClickListener(v ->
         {
             final String appendMessage = getString(R.string.com_kakao_confirm_unlink);
@@ -573,7 +561,6 @@ public class MainFragment extends Fragment
         String session = sharedPreferences.getString("sessionId", "");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         encode("메인 화면 진입");
-        Log.e(TAG, "URLEncoder : " + encode_str);
         Call<String> call = apiInterface.userOrderedWelfare(token, "customized", LogUtil.getUserLog());   // 2번 인자는 customized로 고정이다
         call.enqueue(new Callback<String>()
         {
@@ -583,7 +570,6 @@ public class MainFragment extends Fragment
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-//                    Log.e(TAG, "관심사 따른 혜택 가져오기 : " + result);
                     recommendParsing(result);
                 }
                 else
@@ -657,16 +643,16 @@ public class MainFragment extends Fragment
         });
         recom_recycler.setAdapter(recommendAdapter);
 
-        if (count_int > 9)
+        if (count_int < 10)
         {
-            SpannableString count_span = new SpannableString(recommend_welfare_count.getText().toString());
-            count_span.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 5, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            SpannableString count_span = new SpannableString("복지혜택 " + count_int + "개를 추천해요");
+            count_span.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 5, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             recommend_welfare_count.setText(count_span);
         }
         else
         {
-            SpannableString count_span = new SpannableString(recommend_welfare_count.getText().toString());
-            count_span.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 5, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            SpannableString count_span = new SpannableString("복지혜택 " + count_int + "개를 추천해요");
+            count_span.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 5, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             recommend_welfare_count.setText(count_span);
         }
     }
@@ -675,8 +661,6 @@ public class MainFragment extends Fragment
     void getYoutubeInformation()
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        String session = sharedPreferences.getString("sessionId", "");
-        encode("유튜브 영상 가져오기");
         Call<String> call = apiInterface.getYoutubeInformation();
         call.enqueue(new Callback<String>()
         {

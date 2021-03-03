@@ -1,5 +1,6 @@
 package com.psj.welfare.Activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -133,6 +135,11 @@ public class MapActivity extends AppCompatActivity
     /* 지역별 혜택 개수 받아오는 메서드 */
     void getNumberOfBenefit()
     {
+        final ProgressDialog dialog = new ProgressDialog(MapActivity.this);
+        dialog.setMax(100);
+        dialog.setMessage("로딩중입니다...");
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.show();
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         sharedPreferences = getSharedPreferences("app_pref", 0);
         String token = sharedPreferences.getString("token", "");
@@ -145,6 +152,7 @@ public class MapActivity extends AppCompatActivity
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
+                    dialog.dismiss();
                     number_of_benefit = response.body();
                     Log.e(TAG, "number_of_benefit = " + number_of_benefit);
                     jsonParsing(number_of_benefit);
@@ -154,12 +162,14 @@ public class MapActivity extends AppCompatActivity
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
             {
+                dialog.dismiss();
+                Toast.makeText(MapActivity.this, "에러가 발생했습니다. 잠시 후 다시 시도해 주세요", Toast.LENGTH_SHORT).show();
                 Log.e("getUNumberOfBenefit()", "에러 : " + t.getMessage());
             }
         });
     }
 
-    /* 서버로 유튜브 화면에 들어온 사용자 로그를 보내는 메서드 */
+    /* 서버로 지도 화면에 들어온 사용자 로그를 보내는 메서드 */
     void userLog(String action)
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
@@ -174,8 +184,8 @@ public class MapActivity extends AppCompatActivity
             token = sharedPreferences.getString("token", "");
         }
         String session = sharedPreferences.getString("sessionId", "");
-        String user_action = userAction(action);
-        Call<String> call = apiInterface.userLog(token, session, "yotube_review", user_action, null, LogUtil.getUserLog());
+        String user_action = userAction("지도 화면 들어옴");
+        Call<String> call = apiInterface.userLog(token, session, "map", user_action, null, LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -232,7 +242,9 @@ public class MapActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
-        Log.e(TAG, "local 리스트 안의 값 = " + district_list.toString() + "\n숫자 리스트 안의 값 = " + count_list.toString());
+        Log.e(TAG, "local 리스트 안의 값 = " + district_list.toString());
+        Log.e(TAG, "숫자 리스트 안의 값 = " + count_list.toString());
+
         choongbuk_benefit_btn.setText("충 북\n(" + count_list.get(1) + ")");
         choongnam_benefit_btn.setText("충 남\n(" + count_list.get(2) + ")");
         jeju_benefit_btn.setText("제 주\n(" + count_list.get(3) + ")");

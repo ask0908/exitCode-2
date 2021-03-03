@@ -98,13 +98,6 @@ public class SearchFragment extends Fragment
         m_favorList = new ArrayList<>();
 
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
-//        init(view);
-//
-//        recommend_search_textview = view.findViewById(R.id.recommend_search_textview);
-//        recent_search_history_textview = view.findViewById(R.id.recent_search_history_textview);
-//        search_edittext = view.findViewById(R.id.search_edittext);
-//
-//        search_toolbar = view.findViewById(R.id.search_toolbar);
         if ((AppCompatActivity)getActivity() != null)
         {
             ((AppCompatActivity)getActivity()).setSupportActionBar(search_toolbar);

@@ -84,6 +84,13 @@ public class MyPageFragment extends Fragment
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
+        Log.e(TAG, "onActivityCreated() 호출");
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         return inflater.inflate(R.layout.fragment_my_page, container, false);
@@ -99,11 +106,11 @@ public class MyPageFragment extends Fragment
             analytics = FirebaseAnalytics.getInstance(getActivity());
         }
 
+        /* findViewById() 모아놓은 메서드 */
         init(view);
 
-        push_setting_text.setOnClickListener(v -> {
-            /* 아래 인자로 인텐트를 이동시키면 핸드폰에 설치된 앱의 알림 설정 화면으로 이동된다
-            * 여기서 값이 T/F로 바뀌면 이 값을 받아와서 서버로 보내 알림 설정값을 바꾸는 흐름으로 스위치 로직을 바꾸면 원하는 기능이 만들어질 듯 */
+        /* 푸시알림설정 레이아웃을 클릭하면 설정 화면으로 이동해서 설정값을 바꿀 수 있게 한다 */
+        push_noti_layout.setOnClickListener(v -> {
             Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, getContext().getPackageName());
             intent.putExtra(Settings.EXTRA_CHANNEL_ID, "ch_push");
@@ -112,10 +119,6 @@ public class MyPageFragment extends Fragment
 
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
         String written_nickname = sharedPreferences.getString("user_nickname", "");
-//        if (!sharedPreferences.getString("user_nickname", "").equals(""))
-//        {
-//            kakao_name.setText(sharedPreferences.getString("user_nickname", ""));
-//        }
         // TODO : equals() 있는 부분 앞에 널 체크 걸기
         if (written_nickname != null)
         {
@@ -194,12 +197,14 @@ public class MyPageFragment extends Fragment
             }
         });
 
+        /* 푸시 알림 허용 상태 저장 처리 */
         SharedPreferences.Editor editor = sharedPreferences.edit();
+        // 핸드폰의 설정 화면에서 이 앱의 푸시 알림 허용값을 가져와 boolean 변수에 저장하고 이에 따라 스위치 모양을 다르게 보여준다0
         boolean isAllowed = NotificationManagerCompat.from(getActivity()).areNotificationsEnabled();
         if (isAllowed)
         {
-            putPushSetting(true);
             push_noti_switch.setChecked(true);
+            putPushSetting(true);
             fcm_canceled = true;
             editor.putBoolean("fcm_canceled", fcm_canceled);
             editor.apply();

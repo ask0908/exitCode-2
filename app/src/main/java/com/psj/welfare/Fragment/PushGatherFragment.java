@@ -65,6 +65,13 @@ public class PushGatherFragment extends Fragment
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
+        Log.e(TAG, "onActivityCreated() 호출");
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         return inflater.inflate(R.layout.fragment_push_gather, container, false);
@@ -89,10 +96,7 @@ public class PushGatherFragment extends Fragment
         push_layout_recycler = view.findViewById(R.id.push_layout_recycler);
         push_layout_recycler.setHasFixedSize(true);
         push_layout_recycler.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-        linearLayoutManager.setReverseLayout(true);
-        linearLayoutManager.setStackFromEnd(true);
-        push_layout_recycler.setLayoutManager(linearLayoutManager);
+        push_layout_recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
     /* 푸시 알림 받으면 수신 상태값을 변경하는 메서드 */

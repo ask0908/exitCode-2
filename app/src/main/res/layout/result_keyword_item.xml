@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/keyword_layout"
     android:layout_width="160dp"
     android:layout_height="wrap_content"
-    android:id="@+id/keyword_layout"
     android:layout_marginStart="10dp"
-    android:background="@drawable/rbf_btn_before"
+    android:layout_marginEnd="10dp"
+    android:background="@drawable/textlines"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/keyword_category"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_gravity="center"
         android:fontFamily="@font/nanum_barun_gothic_bold"
         android:padding="15dp"
-        android:layout_gravity="center"
         android:text="전체"
         android:textColor="@color/colorBlack"
-        android:textSize="20sp"/>
+        android:textSize="20sp" />
 
 </LinearLayout>
