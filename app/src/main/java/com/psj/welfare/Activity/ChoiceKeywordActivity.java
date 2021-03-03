@@ -112,14 +112,19 @@ public class ChoiceKeywordActivity extends AppCompatActivity
         }
         else
         {
+            // 이곳으로 오는 경우는 쉐어드의 토큰이 DB에 저장된 토큰과 일치하지 않거나, 서버로 값을 보낼 때 이상하게 보내져서 결과값이 오지 않는 경우다
+            // 토큰문제인 경우가 더 많아서 로그인을 다시 시도하면 어떻게 되는지 확인해보자
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("인터넷 오류가 발생했습니다\n잠시 후 다시 시도해 주세요")
+            builder.setMessage("오류가 발생했습니다\n다시 로그인을 시도해 주세요")
                     .setPositiveButton("확인", new DialogInterface.OnClickListener()
                     {
                         @Override
                         public void onClick(DialogInterface dialog, int which)
                         {
                             dialog.dismiss();
+                            Intent intent = new Intent(ChoiceKeywordActivity.this, LoginActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
                             finishAffinity();
                         }
                     }).show();

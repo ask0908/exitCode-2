@@ -114,6 +114,39 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/keyword_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:paddingStart="20dp"
+        android:weightSum="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/account_layout">
+
+        <Button
+            android:id="@+id/keyword_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".80"
+            android:background="@color/fui_transparent"
+            android:fontFamily="@font/jalnan"
+            android:gravity="start|center"
+            android:text="개인정보 수정"
+            android:textColor="@color/colorBlack"
+            android:textSize="17sp" />
+
+        <ImageView
+            android:id="@+id/keyword_imageview"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight=".20"
+            android:src="@drawable/right_black" />
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/push_noti_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -121,7 +154,7 @@
         android:layout_marginEnd="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/account_layout"
+        app:layout_constraintTop_toBottomOf="@+id/keyword_layout"
         android:orientation="horizontal"
         android:paddingStart="20dp"
         android:weightSum="1">
@@ -287,14 +320,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintHeight_percent=".095"
-        app:layout_constraintVertical_bias=".810"
+        app:layout_constraintVertical_bias=".560"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/version_layout"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginTop="20dp"
         android:background="@drawable/btn_primary_dark"
         android:fontFamily="@font/jalnan"
         android:textColor="@color/colorMainWhite"/>

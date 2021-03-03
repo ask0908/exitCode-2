@@ -74,6 +74,9 @@ public class MapDetailActivity extends AppCompatActivity
     List<MapResultItem> item_list;
     /* ============================================================================== */
 
+    // 지도 화면에서 필터를 누르면 그 필터에 해당하는 데이터만 담을 리스트
+    List<MapResultItem> other_list;
+
     // 지도 화면에서 가져온 지역 정보를 담을 변수
     String area, welf_count;
 
@@ -130,6 +133,7 @@ public class MapDetailActivity extends AppCompatActivity
 
         keyword_list = new ArrayList<>();
         second_item_list = new ArrayList<>();
+        other_list = new ArrayList<>();
 
         if (getIntent().hasExtra("area") || getIntent().hasExtra("welf_count"))
         {
@@ -648,7 +652,6 @@ public class MapDetailActivity extends AppCompatActivity
                 {
                     if (keyword_list.get(j).getParent_category().equals(keywordItem.getParent_category()))
                     {
-                        Log.e(TAG, "서버에서 받은 카테고리명들 확인 : " + keyword_list.get(j).getParent_category());
                         isDuplicate = true;
                         break;
                     }
@@ -674,10 +677,6 @@ public class MapDetailActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
-        for (int i = 0; i < keyword_list.size(); i++)
-        {
-            Log.e(TAG, "try-catch 이후 for문 : " + keyword_list.get(i).getParent_category());
-        }
         /* 여기서 keyword_list 안의 값들을 쉐어드에 저장한 다음, 전체를 누르면 쉐어드의 값을 가져와서 그걸 토대로 검색할 수 있도록 해보자 */
         // ArrayList 안의 데이터를 String으로 바꾼다
         StringBuilder stringBuilder = new StringBuilder();
@@ -685,8 +684,6 @@ public class MapDetailActivity extends AppCompatActivity
         {
             stringBuilder.append(keyword_list.get(i).getParent_category()).append("|");
         }
-        String sb_result = stringBuilder.toString();
-        Log.e(TAG, "stringBuilder : " + sb_result);
 
         // 아래 처리를 하지 않으면 이 액티비티로 들어올 때마다 전체 카테고리 개수가 1개씩 증가한다
         if (!keyword_list.get(0).getParent_category().equals("전체"))
@@ -702,11 +699,67 @@ public class MapDetailActivity extends AppCompatActivity
             {
                 // 다른 카테고리를 선택해 결과를 조회한 후 다시 전체를 눌렀을 때 처음 이 화면에 들어왔을 때 봤던 검색결과를 다시 보여줘야 함
                 reGetNumberOfBenefit();
+                Log.e(TAG, "선택한 지역 : " + area);
+//                for (int i = 0; i < item_list.size(); i++)
+//                {
+//                    Log.e(TAG, "지역에서 파싱 후 item_list getWelf_name() : " + item_list.get(i).getWelf_name());
+//                    Log.e(TAG, "지역에서 파싱 후 item_list getParent_category() : " + item_list.get(i).getParent_category());
+//                    Log.e(TAG, "지역에서 파싱 후 item_list getWelf_category() : " + item_list.get(i).getWelf_category());
+//                    // 여기서 어떻게 해야?
+//                    // 1. 모든 데이터를 배열에 담는다. 그리고 필터링에 사용할 배열을 초기화한다
+//                    // 2. 청년을 누르면 parent_category가 청년인 데이터들만을 해서 필터링 배열에 담는다
+//                    // 3. 데이터가 담긴 필터링 배열을 ArrayList로 바꿔서 리사이클러뷰 어댑터에 넣어 유저에게 보여준다
+//                    // 4. 다른 필터를 누르면 필터링 배열 안의 데이터들을 전부 지우고 새 데이터로 채워넣어 3번을 반복한다
+//                    final MapResultItem[] test = new MapResultItem[item_list.size()];
+//                    Log.e(TAG, "필터링 배열 크기 : " + test.length);
+//                }
             }
             else
             {
                 String name = keyword_list.get(position).getParent_category();
                 Log.e(TAG, "4. 상단 리사이클러뷰에서 선택한 카테고리명 = " + name);
+
+                for (int i = 0; i < item_list.size(); i++)
+                {
+                    Log.e(TAG, "지역에서 파싱 후 item_list getWelf_name() : " + item_list.get(i).getWelf_name());
+                    Log.e(TAG, "지역에서 파싱 후 item_list getParent_category() : " + item_list.get(i).getParent_category());
+                    Log.e(TAG, "지역에서 파싱 후 item_list getWelf_category() : " + item_list.get(i).getWelf_category());
+                    // 여기서 어떻게 해야?
+                    // 1. 모든 데이터를 배열에 담는다. 그리고 필터링에 사용할 배열을 초기화한다
+                    // 2. 청년을 누르면 parent_category가 청년인 데이터들만을 해서 필터링 배열에 담는다
+                    // 3. 데이터가 담긴 필터링 배열을 ArrayList로 바꿔서 리사이클러뷰 어댑터에 넣어 유저에게 보여준다
+                    // 4. 다른 필터를 누르면 필터링 배열 안의 데이터들을 전부 지우고 새 데이터로 채워넣어 3번을 반복한다
+                }
+
+                // 청년, 저소득층, 육아·임신 등 parent_category가 들어 있는 필터를 누르면 그 필터에 해당하는 데이터들만 리사이클러뷰에 보여야 한다
+                boolean isDuplicated = false;
+                for (int i = 0; i < item_list.size(); i++)
+                {
+                    if (item_list.get(i).getParent_category().equals(name))
+                    {
+                        // item_list를 반복하며 유저가 선택한 필터명과 같은 parent_category인 정책은 따로 리스트에 넣는다
+                        isDuplicated = true;
+                        break;
+                    }
+                }
+                if (isDuplicated)
+                {
+                    other_list.addAll(item_list);
+                    map_adapter = new MapResultAdapter(MapDetailActivity.this, other_list, itemClickListener);
+                    map_adapter.setOnItemClickListener(((view1, position1) -> {
+                        String name2 = item_list.get(position).getWelf_name();
+                        Log.e(TAG, "혜택 이름 = " + name2);
+                        Bundle bundle = new Bundle();
+                        bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "지역 검색 화면에서 상세보기 화면으로 이동 (선택한 혜택 : " + name2 + ")");
+                        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+                        Intent see_detail_intent = new Intent(MapDetailActivity.this, DetailBenefitActivity.class);
+                        see_detail_intent.putExtra("name", name2);
+                        see_detail_intent.putExtra("welf_local", area);
+                        startActivity(see_detail_intent);
+                    }));
+                    map_result_recyclerview.setAdapter(map_adapter);
+                }
+
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "지역 검색 화면에서 선택한 하위 카테고리 : " + name);
                 analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
@@ -812,6 +865,7 @@ public class MapDetailActivity extends AppCompatActivity
             }
             else
             {
+                // 전체 말고 다른 필터를 선택했을 때
                 String name = keyword_list.get(position).getParent_category();
                 Log.e(TAG, "2. 상단 리사이클러뷰에서 선택한 카테고리명 = " + name);
                 Bundle bundle = new Bundle();

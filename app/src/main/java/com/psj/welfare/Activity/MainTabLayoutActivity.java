@@ -493,5 +493,4 @@ public class MainTabLayoutActivity extends AppCompatActivity
         }
         return false;
     }
-
 }

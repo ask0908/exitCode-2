@@ -894,9 +894,6 @@ public class DetailBenefitActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-//        Log.e(TAG, "welfare_target : " + welfare_target);
-//        Log.e(TAG, "welfare_target_tag : " + welfare_target_tag);
-
         // 대상과 상세조건을 매칭시키기 위해 대상, 태그 split
         String[] targets_array = welfare_target.split("/");
         String[] conditions_array = welfare_target_tag.split("/");
@@ -911,9 +908,6 @@ public class DetailBenefitActivity extends AppCompatActivity
         // String[] -> ArrayList
         List<String> test = Arrays.asList(conditions_array);
         Log.e(TAG, "conditions_array -> list : " + test);
-
-//        Log.e(TAG, "대상 스플릿 결과 : " + Arrays.toString(targets_array));
-//        Log.e(TAG, "상세조건 스플릿 결과 : " + Arrays.toString(conditions_array));
 
         List<String> target_list = new ArrayList<>();
         List<String> condition_list = new ArrayList<>();
@@ -1154,6 +1148,10 @@ public class DetailBenefitActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
+        Log.e(TAG, "신청이 쉬워요 점수 : " + easy);
+        Log.e(TAG, "신청이 어려워요 점수 : " + hard);
+        Log.e(TAG, "혜택이 도움됐어요 점수 : " + help);
+        Log.e(TAG, "별로 도움 안 됐어요 점수 : " + help_not);
 
         /* 뷰에 데이터 set */
         // 리뷰 평점 구하기
@@ -1190,7 +1188,7 @@ public class DetailBenefitActivity extends AppCompatActivity
          * https://github.com/blackfizz/EazeGraph */
         if (five_point != null || four_point != null || three_point != null || two_point != null || one_point != null)
         {
-            // onCreate()에서 clearChart()로 데이터를 지울 경우 1점~5점이 놓인 순서가 꼬이거나 그래프가 개떡같이 출력되는 현상이 발생한다
+            // onCreate()에서 clearChart()로 데이터를 지울 경우 1점~5점이 놓인 순서가 꼬이거나 그래프가 이상하게 출력되는 현상이 발생한다
             // 그래서 onCreate()가 아닌 JSON 값을 파싱하고 set하기 전 clearChart()로 데이터를 지운 후, 파싱한 데이터를 붙여서 위의 현상을 수정했다
             review_chart.clearChart();
             review_chart.addBar(new BarModel("5점", Float.parseFloat(five_point), 0xFFFF5549));
@@ -1214,8 +1212,17 @@ public class DetailBenefitActivity extends AppCompatActivity
         // 쉬워요, 어려워요 프로그레스 바
         if (easy != null || hard != null)
         {
-            easy_progressbar.setProgress(Integer.parseInt(easy));
-            hard_progressbar.setProgress(Integer.parseInt(hard));
+            float other_easy = Float.parseFloat(easy);
+            float other_hard = Float.parseFloat(hard);
+            float other_review_count = Float.parseFloat(review_count);
+            Log.e(TAG, "쉬워요 - other_easy : " + other_easy);
+            Log.e(TAG, "어려워요 - other_hard : " + other_easy);
+            Log.e(TAG, "쉬워요 - other_review_count : " + other_review_count);
+            float result_easy = ((other_easy / other_review_count) * 100);
+            float result_hard = ((other_hard / other_review_count) * 100);
+            Log.e(TAG, "쉬워요 비율 계산 결과 : " + result_easy);
+            easy_progressbar.setProgress((int) result_easy);
+            hard_progressbar.setProgress((int) result_hard);
         }
         else
         {
@@ -1225,8 +1232,16 @@ public class DetailBenefitActivity extends AppCompatActivity
         // 도움됐어요, 안됐어요 프로그레스 바
         if (help != null || help_not != null)
         {
-            help_progressbar.setProgress(Integer.parseInt(help));
-            help_not_progressbar.setProgress(Integer.parseInt(help_not));
+            float other_help = Float.parseFloat(help);
+            float other_help_not = Float.parseFloat(help_not);
+            float other_review_count = Float.parseFloat(review_count);
+            Log.e(TAG, "도움됐어요 - other_easy : " + other_help);
+            Log.e(TAG, "도움 안됐어요 - other_hard : " + other_help_not);
+            Log.e(TAG, "도움됐어요 - other_review_count : " + other_review_count);
+            float result_help = ((other_help / other_review_count) * 100);
+            float result_help_not = ((other_help_not / other_review_count) * 100);
+            help_progressbar.setProgress((int) result_help);
+            help_not_progressbar.setProgress((int) result_help_not);
         }
         else
         {

@@ -49,7 +49,6 @@ public class ResultKeywordAdapter extends RecyclerView.Adapter<ResultKeywordAdap
     @Override
     public void onBindViewHolder(@NonNull ResultKeywordAdapter.ResultKeywordViewHolder holder, int position)
     {
-        holder.setIsRecyclable(false);
         ResultKeywordItem item = lists.get(position);
         holder.keyword_category.setText(item.getParent_category());
         holder.keyword_layout.setTag(position);
@@ -57,12 +56,12 @@ public class ResultKeywordAdapter extends RecyclerView.Adapter<ResultKeywordAdap
         /* 필터 색 바꾸기 */
         if (selected_position == position)
         {
-            holder.keyword_layout.setBackgroundResource(R.drawable.select_after);
-            holder.keyword_category.setTextColor(Color.parseColor("#FFFFFF"));
+            holder.keyword_layout.setBackgroundResource(R.drawable.textlines_after);
+            holder.keyword_category.setTextColor(Color.parseColor("#EE2F43"));
         }
         else
         {
-            holder.keyword_layout.setBackgroundResource(R.drawable.rbf_btn_before);
+            holder.keyword_layout.setBackgroundResource(R.drawable.textlines);
             holder.keyword_category.setTextColor(Color.parseColor("#000000"));
         }
     }

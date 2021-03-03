@@ -69,6 +69,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
     public void showNotification(String title, String message, String icon)
     {
+        // 푸시 알림을 누르면 메인 화면으로 이동한다. MainTabLayoutActivity에서 처음 프래그먼트가 메인 화면이기 때문에 이 액티비티로 이동하면 바로 메인화면이 보인다
         Intent intent = new Intent(this, MainTabLayoutActivity.class);
         // 호출하는 Activity가 스택에 있을 경우, 해당 Activity를 최상위로 올리면서 그 위에 있던 Activity들을 모두 삭제하는 Flag
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -108,6 +109,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         Log.e(TAG, "Refreshed token : " + token);
     }
 
+    /* 사용자가 알림 받으면 상태값을 바꾸는 메서드 */
     void changePushStatus()
     {
         sharedPreferences = getSharedPreferences("app_pref", 0);

@@ -483,7 +483,6 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".40"
                                 android:max="100"
-                                android:progress="19"
                                 android:progressDrawable="@drawable/review_progressbar_custom" />
 
                         </LinearLayout>
@@ -512,7 +511,6 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".40"
                                 android:max="100"
-                                android:progress="81"
                                 android:progressDrawable="@drawable/review_progressbar_custom" />
 
                         </LinearLayout>

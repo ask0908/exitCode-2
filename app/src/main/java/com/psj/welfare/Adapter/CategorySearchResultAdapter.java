@@ -66,10 +66,6 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
 
         /* 첫 번째 요소만 빼고 뒤의 요소를 전부 없애는 로직 */
         List<String> item_list = Collections.singletonList(list.get(position).getWelf_category());
-//        for (int i = 0; i < item_list.size(); i++)
-//        {
-//            Log.e("ddd", "item_list = " + item_list);
-//        }
         // 리스트의 요소 뒤에 붙어있는 ;; 같은 구분자들을 전부 공백으로 바꾼다
         StringBuilder listToString = new StringBuilder();
         for (String str : item_list)
