@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -75,6 +74,7 @@ public class MapDetailActivity extends AppCompatActivity
     MapResultAdapter.ItemClickListener itemClickListener;
     // 하단 리사이클러뷰에 쓸 리스트
     List<MapResultItem> item_list;
+    List<MapResultItem> nameParsingList;
     /* ============================================================================== */
 
     // 지도 화면에서 필터를 누르면 그 필터에 해당하는 데이터만 담을 리스트
@@ -140,6 +140,7 @@ public class MapDetailActivity extends AppCompatActivity
         keyword_list = new ArrayList<>();
         second_item_list = new ArrayList<>();
         other_list = new ArrayList<>();
+        nameParsingList = new ArrayList<>();
 
         if (getIntent().hasExtra("area") || getIntent().hasExtra("welf_count"))
         {
@@ -650,8 +651,7 @@ public class MapDetailActivity extends AppCompatActivity
                 // 상단 리사이클러뷰에 넣을 키워드(welf_category)를 저장할 객체 생성
                 ResultKeywordItem keywordItem = new ResultKeywordItem();
                 keywordItem.setWelf_category(welf_category);
-
-                Log.e(TAG, "keywordItem.getWelf_category()로 가져온 값 : " + keywordItem.getWelf_category());
+                keywordItem.setWelf_name(welf_name);
 
                 // 상단 리사이클러뷰에 넣을 welf_category 값들에 붙어 있는 특수문자들을 파싱, 중복되지 않게 처리한다
                 // 객체가 가진 값에 ';; '이 포함되어 있을 경우 ';; '을 기준으로 split()한 후, 상단 리사이클러뷰 어댑터에 넣을 리스트(keyword_list)에 값들을 넣는다
@@ -671,6 +671,7 @@ public class MapDetailActivity extends AppCompatActivity
 //                        items.setWelf_category(category_array[j]);
 //                        keyword_list.add(items);
                         items.setWelf_category(category_array[j]);
+                        items.setWelf_name(keywordItem.getWelf_name());
                         keyword_list.add(items);
 //                        if (!items.getWelf_category().equals(keywordItem))
 //                        {
@@ -688,21 +689,16 @@ public class MapDetailActivity extends AppCompatActivity
 //                    {
 //                        keyword_list.add(category_array[i]);
 //                    }
-                    /**/
-                    // ;; 을 포함하고 있으면 ';; '을 기준으로 앞의 문자열을 객체에 저장한다
-                    // ';; '으로 split()한다
-//                    String aaa = keywordItem.getWelf_category().split(";; ")[0];
-//                    Log.e(TAG, "aaa : " + aaa);
                 }
                 else
                 {
                     ResultKeywordItem item1 = new ResultKeywordItem();
                     item1.setWelf_category(keywordItem.getWelf_category());
+                    item1.setWelf_name(keywordItem.getWelf_name());
                     if (!keyword_list.contains(item1))
                     {
                         keyword_list.add(item1);
                     }
-                    Log.e(TAG, "keyword_list 출력 : " + keyword_list.get(i).getWelf_category());
 
                     boolean hasDuplicate = false;
                     for (int j = 0; j < keyword_list.size(); j++)
@@ -715,32 +711,12 @@ public class MapDetailActivity extends AppCompatActivity
                     }
                     if (hasDuplicate)
                     {
-//                        if (!item1.getWelf_category().contains(keyword_list.get(i).getWelf_category()))
                         if (!keyword_list.get(i).getWelf_category().equals(item1.getWelf_category()))
                         {
                             keyword_list.add(item1);
                         }
                     }
-                    Log.e(TAG, "keyword_list 확인 : " + keyword_list.get(i).getWelf_category());
                 }
-
-                /* 아래 로그로 keyword_list에 중복된 값들이 모두 들어있는 것 확인함 */
-                Log.e(TAG, "if, else 문 거친 후 keyword_list : " + keyword_list.get(i).getWelf_category());
-
-                /* 중복처리를 어떻게 해야 할까?
-                 * 1. keyword_list에 값이 모두 들어있는 상태인 여기서 리스트의 값들을 꺼내고, 중복되는 데이터들은 하나씩만 들어가도록 처리한다
-                 * 2. if, else문 안에서 keyword_list에 값을 넣을 때 같은 값들이 들어있는지 체크한 후 중복되는 데이터들이 없게 add()한다 */
-
-                // keyword_list를 반복해서 안에 있는 값들을 모두 조회하고 겹치는 값들은 제외한다
-//                for (int j = 0; j < keyword_list.size(); j++)
-//                {
-//                    // for문으로 keyword_list의 크기만큼 반복하면서 안에 들어있는 데이터들을 확인한다
-//                    // 이 때 겹치는 게 있다면 지운다?
-//                }
-
-                List<ResultKeywordItem> list = keyword_list.stream().distinct().collect(Collectors.toList());
-                Log.e(TAG, "list = " + list.get(i).getWelf_category());
-
                 // 혜택 이름들을 보여주는 하단 리사이클러뷰의 어댑터에 넣을 List에
                 // for문이 반복된 만큼 생성된 DTO 객체들을 넣는다
                 item_list.add(item);
@@ -750,49 +726,69 @@ public class MapDetailActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
-        /* 중복처리 시도했는데 안됨 */
-//        ArrayList<ResultKeywordItem> arrayList = new ArrayList<>();
-//        for (ResultKeywordItem item : keyword_list)
-//        {
-//            if (!arrayList.contains(item))
-//            {
-//                arrayList.add(item);
-//            }
-//        }
 
-        // ArrayList 안의 데이터를 String으로 바꾼다
+        /* item_list는 서버에서 한 번에 받아온 OO 지역의 모든 혜택 데이터가 JSON 형태로 담겨져 있는 걸로 아는데, 아래는 그게 맞는지 확인하기 위한 로그다
+        * -> item_list는 서버에서 받은 데이터 전체를 갖고 있는 리스트다. 제네릭 안에 들어간 모델 클래스는 MapResultItem이다 */
+
+        /* 밑에서 OO 지원에 해당하는 혜택들만을 가져오게 하려는데 getWelf_name() 값을 확인한 결과 null이 나온다
+        * 그래서 밑에서 split()으로 welf_category만 처리하는 게 아니라 welf_name도 StringBuilder로 구분자 섞어서 이어붙인 다음, 파싱해서 배열에 넣고
+        * 배열에 들어간 welf_name들을 객체에 박아야 할 것 같다 */
+
+        /* 상단 리사이클러뷰에 들어갈 "OO 지원"의 중복처리 로직 시작 */
+        // ArrayList 안의 데이터를 중복처리하기 위해 먼저 StringBuilder에 넣는다
         StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder welfareNameBuilder = new StringBuilder();
         for (int i = 0; i < keyword_list.size(); i++)
         {
             stringBuilder.append(keyword_list.get(i).getWelf_category()).append(";;");
+//            if (keyword_list.get(i).getWelf_name() != null)
+//            {
+//                welfareNameBuilder.append(keyword_list.get(i).getWelf_name()).append(";;");
+//            }
         }
-        Log.e(TAG, "stringBuilder : " + stringBuilder.toString());
-        // |가 섞여서 오는데 이걸 구분자로 split()하고, 중복되는 것 없이 keyword_list에 들어가도록 해본다
-        String[] arr = stringBuilder.toString().split(";;");
-        for (int i = 0; i < arr.length; i++)
+        for (int i = 0; i < item_list.size(); i++)
         {
-            Log.e(TAG, ";;을 기준으로 split()한 결과 : " + arr[i]);
+            welfareNameBuilder.append(item_list.get(i).getWelf_name()).append(";;");
         }
+//        Log.e(TAG, "welfareNameBuilder : " + welfareNameBuilder.toString());
+        // ";;"가 섞여서 오는데 이걸 구분자로 split()하고, 중복되는 것 없이 keyword_list에 들어가도록 해본다
+        String[] arr = stringBuilder.toString().split(";;");
+        String[] nameArr = welfareNameBuilder.toString().split(";;");
+//        for (int i = 0; i < nameArr.length; i++)
+//        {
+//            Log.e(TAG, "';;'을 기준으로 welf_name을 split()한 결과 : " + nameArr[i]);
+//        }
         // split() 후 중복되는 것들을 없애는 처리를 한다
         arr = new HashSet<>(Arrays.asList(arr)).toArray(new String[0]);
+        nameArr = new HashSet<>(Arrays.asList(nameArr)).toArray(new String[0]);
+//        for (int i = 0; i < nameArr.length; i++)
+//        {
+//            Log.e(TAG, "Arrays.asList() 한 결과 : " + nameArr[i]);
+//        }
         // String[] arr 안에 들어있는 데이터 양만큼 반복문을 돌리며 setter로 welf_category를 넣기 위해 객체를 만들고, 아래 for문에서 setter로 값들을 박는다
         keyword_list.clear();
         for (int i = 0; i < arr.length; i++)
         {
-            Log.e(TAG, "arr을 중복처리한 결과 : " + arr[i]);
             ResultKeywordItem item = new ResultKeywordItem();
             item.setWelf_category(arr[i]);
-            Log.e(TAG, "item.getWelf_category() : " + item.getWelf_category());
+            // keyword_list에 setWelf_name()을 해서 'OO 지원'에 해당하는 혜택들을 넣어야 하는데 setter()의 인자로 뭘 넣어야 할까?
+            item.setWelf_name(nameArr[i]);
             keyword_list.add(item);
+            Log.e(TAG, "keyword_list getWelf_name : " + keyword_list.get(i).getWelf_name());
         }
-        for (int i = 0; i < keyword_list.size(); i++)
+
+//        map_adapter = new MapResultAdapter(MapDetailActivity.this, item_list, itemClickListener);
+        for (int i = 0; i < nameArr.length; i++)
         {
-            Log.e(TAG, "setWelf_category() 이후 keyword_list : " + keyword_list.get(i).getWelf_category());
+            MapResultItem item = new MapResultItem();   // ResultKeywordItem : 상단 리사이클러뷰에 쓰는 모델 클래스 / MapResultItem : 하단 리사이클러뷰에 쓰는 모델 클래스
+            item.setWelf_name(nameArr[i]);
+            nameParsingList.add(item);  // 여기서 구분자를 뺀 모든 혜택 이름이 담기게 된다
         }
 
         // 아래 처리를 하지 않으면 이 액티비티로 들어올 때마다 전체 카테고리 개수가 1개씩 증가한다
         // keyword_list 크기가 0일 경우 아래에서 에러가 발생한다
-        if (!keyword_list.get(0).getWelf_category().equals("전체"))
+        // 0309 15:06) && 연산자부터 뒤의 contains() 추가
+        if (!keyword_list.get(0).getWelf_category().equals("전체") && !keyword_list.contains("전체"))
         {
             keyword_list.add(0, new ResultKeywordItem("전체"));
         }
@@ -809,39 +805,141 @@ public class MapDetailActivity extends AppCompatActivity
             }
             else
             {
-                /* 전체가 아닌 다른 필터를 선택한 경우 */
+                /* 전체가 아닌 다른 필터를 선택한 경우, 여기서 선택한 'OO 지원'에 맞는 혜택들로 하단 리사이클러뷰 어댑터 초기화 시 사용되는 리스트를
+                * 채워야 한다 */
                 other_list.clear();
-                String name = keyword_list.get(position).getWelf_category();
-                Log.e(TAG, "4. 상단 리사이클러뷰에서 선택한 카테고리명 = " + name);
+                // 상단 리사이클러뷰에서 선택한 'OO 지원' 이름을 가져온다
+                String up_category = keyword_list.get(position).getWelf_category();
+                Log.e(TAG, "4. 상단 리사이클러뷰에서 선택한 카테고리명 = " + up_category);   // 선택한 상단 카테고리 이름 가져오는 것 확인
 
                 Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "지역 검색 화면에서 선택한 하위 카테고리 : " + name);
+                bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "지역 검색 화면에서 선택한 하위 카테고리 : " + up_category);
                 analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+
+                /* 선택한 OO 지원에 속하는 혜택들만을 리사이클러뷰에 보여주는 작업 처리부 */
+                // 현금 지원을 선택했으면 전체 데이터가 담긴 리스트에서 welf_category가 현금 지원인 혜택들을 리스트에 담아서 하단 리사이클러뷰 어댑터에 넣어야 한다
+                /**
+                 * 1. 전체 데이터가 담긴 리스트를 for문으로 반복한다
+                 * 2. 반복하면서 상단 리사이클러뷰에서 선택한 아이템(현금 지원)과 같은 welf_category를 가진 혜택들을 꺼내서
+                 *    하단 리사이클러뷰 어댑터에 사용할 리스트(list)에 넣는다
+                 * 3. list에 값들이 다 들어가게 되면 로그로 확인한 후 하단 리사이클러뷰 어댑터 초기화를 진행한다
+                 */
+//                List<MapResultItem> before_list = new ArrayList<>();    // 하단 리사이클러뷰 어댑터를 초기화할 때 인자로 박을 리스트
+//                MapResultItem item = new MapResultItem();               // 일치하는 데이터만 가져와서 before_list에 넣기 전에 객체에 담아야 하는데 그 때 사용할 객체
+//                for (int i = 0; i < keyword_list.size(); i++)
+//                {
+//                    // item_list에서 유저가 선택한 welf_category와 같은 welf_category인 데이터를 꺼낸다
+//                    // item_list에서 getWelf_category()로 데이터를 꺼내는데, keyword_list에서 getWelf_category()로 가져온 OO 지원과 일치하는 데이터만을 가져와야 한다
+//                    if (item_list.get(i).getWelf_category().equals(name))
+//                    {
+//                        item.setWelf_name(keyword_list.get(i).getWelf_name());
+//                        item.setWelf_category(keyword_list.get(i).getWelf_category());
+//                        before_list.add(item);
+//                    }
+//                }
+
+                // 유저가 선택한 OO 지원에 속하는 혜택들만을 리스트에 모두 담았는지 확인하기 위한 로그
+                // 지금은 필터 누른 것과 상관없이 서울 지역의 모든 혜택들을 다 가져오는데 이러면 안되고 서비스 지원을 누르면 welf_category가 서비스 지원인 혜택들만
+                // 가져와서 보여줄 수 있도록 해야 한다
+
+
+                // TODO : 이 안은 상단 리사이클러뷰 어댑터의 클릭 리스너 안이다
+                // 전체 데이터가 들어있는 리스트(item_list)에서 선택한 welf_category(up_category)와 일치하는 welf_category를 갖는 데이터만을 따로 리스트에 넣어야 한다
+                for (int i = 0; i < item_list.size(); i++)
+                {
+                    /* item_list에 들어있는 값들 확인 -> 모든 값들이 다 들어있는 리스트인 건 맞다 */
+                    MapResultItem item = new MapResultItem();
+                    if (item_list.get(i).getWelf_category().equals(keyword_list.get(position).getWelf_category()))
+                    {
+                        item.setWelf_category(keyword_list.get(position).getWelf_category());
+                        item.setWelf_name(item_list.get(i).getWelf_name());
+//                        item.setWelf_name(nameParsingList.get(position).getWelf_name());  // 이상한 거 나옴
+                        other_list.add(item);
+                    }
+//                    if (item_list.get(i).getWelf_category().equals(up_category))
+//                    {
+//                        item.setWelf_category(up_category);
+//                        item.setWelf_name(item_list.get(i).getWelf_name());
+//                        nameParsingList.add(item);
+//                    }
+                }
+                for (int i = 0; i < other_list.size(); i++)
+                {
+                    Log.e(TAG, "other_list size : " + other_list.size());
+                    Log.e(TAG, "other_list getWelf_category() : " + other_list.get(i).getWelf_category());
+                    Log.e(TAG, "other_list getWelf_name() : " + other_list.get(i).getWelf_name());  // <- 여기가 null이라서 이름이 보이지 않는다
+                }
+                map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 " + other_list.size() + "개입니다");
+                // int로 캐스팅된 값이 10 미만이라면 24~25 영역만 색을 바꾸도록 한다
+                if (other_list.size() < 10)
+                {
+                    SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                    spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 25, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    map_result_textview.setText(spannableString);
+                }
+                else
+                {
+                    SpannableString spannableString = new SpannableString(map_result_textview.getText().toString());
+                    spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark)), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    map_result_textview.setText(spannableString);
+                }
+
+                map_adapter = new MapResultAdapter(MapDetailActivity.this, other_list, itemClickListener);
+                map_result_recyclerview.setAdapter(map_adapter);
+
+
+//                // 하단 리사이클러뷰에 붙일 어댑터 초기화, 이 때 for문 안에서 값이 들어간 List를 인자로 넣는다
+//                map_adapter = new MapResultAdapter(MapDetailActivity.this, filter_list, itemClickListener);
+//
+//                // 아이템 클릭 시 해당 혜택의 상세보기 화면으로 이동한다
+//                map_adapter.setOnItemClickListener(((view1, position1) -> {
+//                    String clicked_name = filter_list.get(position).getWelf_name();
+//                    Log.e(TAG, "선택한 혜택 이름 : " + clicked_name);
+//                    Bundle bundles = new Bundle();
+//                    bundles.putString(FirebaseAnalytics.Param.SCREEN_NAME, "지역 검색 화면에서 상세보기 화면으로 이동 (선택한 혜택 : " + clicked_name + ")");
+//                    analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundles);
+//                    Intent see_detail_intent = new Intent(MapDetailActivity.this, DetailBenefitActivity.class);
+//                    see_detail_intent.putExtra("name", clicked_name);
+//                    see_detail_intent.putExtra("welf_local", area);
+//                    startActivity(see_detail_intent);
+//                }));
+////                map_adapter.notifyDataSetChanged();
+//                map_result_recyclerview.setAdapter(map_adapter);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 // 선택한 parent_category를 보여줄 리스트를 따로 만든다(other_list)
                 // other_list에 item_list 안의 데이터들을 이전한다
 
-
-//                Collection<String> filtered = Collections2.filter(item_list, Predicates.containsPattern("How"));
-
-
-                other_list.addAll(item_list);   // other_list에 모든 데이터 담겨진 것 확인
-                Log.e(TAG, "other_list 크기 : " + other_list.size());
-                // 상단 리사이클러뷰에서 선택한 parent_category가 other_list 안에서의 parent_category와 일치하는 경우에만 other_list를 채운다
-                // addAll()만 했기 때문에 모든 데이터가 다 들어가 있는데 이 중에서 선택한 parent_category로 필터링 과정을 거쳐야 한다
-                boolean isEqual = false;
-                for (int i = 0; i < other_list.size(); i++)
-                {
-                    if (!other_list.get(i).getWelf_category().equals(name))
-                    {
-//                        other_list.remove(other_list.get(i).getParent_category());
-                        isEqual = true;
-                        break;
-                    }
-                }
-                if (isEqual)
-                {
-                    //
-                }
+//                other_list.addAll(item_list);   // other_list에 모든 데이터 담겨진 것 확인
+//                Log.e(TAG, "other_list 크기 : " + other_list.size());
+//                // 상단 리사이클러뷰에서 선택한 parent_category가 other_list 안에서의 parent_category와 일치하는 경우에만 other_list를 채운다
+//                // addAll()만 했기 때문에 모든 데이터가 다 들어가 있는데 이 중에서 선택한 parent_category로 필터링 과정을 거쳐야 한다
+//                boolean isEqual = false;
+//                for (int i = 0; i < other_list.size(); i++)
+//                {
+//                    if (!other_list.get(i).getWelf_category().equals(name))
+//                    {
+////                        other_list.remove(other_list.get(i).getParent_category());
+//                        isEqual = true;
+//                        break;
+//                    }
+//                }
+//                if (isEqual)
+//                {
+//                    //
+//                }
 
                 /* 필터링 테스트2 */
 //                if (isEqual)

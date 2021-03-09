@@ -57,7 +57,7 @@ public class ResultKeywordAdapter extends RecyclerView.Adapter<ResultKeywordAdap
         holder.keyword_category.setText(item.getWelf_category());
         holder.keyword_layout.setTag(position);
 
-        /* 첫 번째 요소만 빼고 뒤의 요소를 전부 없애는 로직 */
+        /* 첫 번째 요소만 빼고 구분자 뒤의 요소를 전부 없애는 로직 */
         List<String> item_list = Collections.singletonList(lists.get(position).getWelf_category());
         for (int i = 0; i < item_list.size(); i++)
         {
@@ -91,9 +91,9 @@ public class ResultKeywordAdapter extends RecyclerView.Adapter<ResultKeywordAdap
         {
             listToString.append(str);
         }
-        Log.e("ResultKeywordAdapter", "listToString : " + listToString.toString());
+//        Log.e("ResultKeywordAdapter", "listToString : " + listToString.toString());
         String after_str = listToString.toString().split(";; ")[0];
-        Log.e("ResultKeywordAdapter", "';; ' 구분자 처리 후 : " + after_str);
+//        Log.e("ResultKeywordAdapter", "';; ' 구분자 처리 후 : " + after_str);
 
         for (int i = 0; i < lists.size(); i++)
         {
