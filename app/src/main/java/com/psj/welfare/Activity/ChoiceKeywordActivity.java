@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -85,14 +86,73 @@ public class ChoiceKeywordActivity extends AppCompatActivity
         choice_keyword_recyclerview.setHasFixedSize(true);
         choice_keyword_recyclerview.setLayoutManager(new GridLayoutManager(this, 2));
 
-        if (getIntent().hasExtra("age_group") || getIntent().hasExtra("user_gender") || getIntent().hasExtra("interest"))
+        // 쉐어드에 저장된 데이터 널 체크
+        // 연령대
+        if (sharedPreferences.getString("age_group", "") != null)
         {
-            Intent intent = getIntent();
-            age_group = intent.getStringExtra("age_group");
-            user_gender = intent.getStringExtra("user_gender");
-            interest = intent.getStringExtra("interest");
-            Log.e(TAG, "넘겨받은 age_group = " + age_group + ", user_gender = " + user_gender + ", interest = " + interest);
+            age_group = sharedPreferences.getString("age_group", "");
         }
+        else
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("저장된 연령대 정보가 없습니다.\n먼저 [개인정보 수정] 버튼을 눌러 개인정보를 입력해 주세요")
+                    .setCancelable(false)
+                    .setPositiveButton("예", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            dialog.dismiss();
+                            finish();
+                        }
+                    }).show();
+        }
+
+        getAllKeyword();
+
+        // 성별
+        if (sharedPreferences.getString("user_gender", "") != null)
+        {
+            user_gender = sharedPreferences.getString("user_gender", "");
+        }
+        else
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("저장된 성별 정보가 없습니다.\n먼저 [개인정보 수정] 버튼을 눌러 개인정보를 입력해 주세요")
+                    .setCancelable(false)
+                    .setPositiveButton("예", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            dialog.dismiss();
+                            finish();
+                        }
+                    }).show();
+        }
+
+        // 관심사
+        if (sharedPreferences.getString("interest", "") != null)
+        {
+            interest = sharedPreferences.getString("interest", "");
+        }
+        else
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("저장된 관심사 정보가 없습니다.\n먼저 [개인정보 수정] 버튼을 눌러 개인정보를 입력해 주세요")
+                    .setCancelable(false)
+                    .setPositiveButton("예", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            dialog.dismiss();
+                            finish();
+                        }
+                    }).show();
+        }
+
+        // 관심사 널 체크 후 값이 있다면 구분자를 기준으로 split하고 리스트에 추가한다
         if (interest != null)
         {
             split_list = interest.split(",");
@@ -102,6 +162,7 @@ public class ChoiceKeywordActivity extends AppCompatActivity
                 item.setInterest(str);
                 list.add(item);
             }
+            // split된 문자열들이 저장된 리스트를 리사이클러뷰 어댑터에 넣어서 유저에게 보여준다
             adapter = new ChoiceKeywordAdapter(this, list, itemClickListener);
             adapter.setOnItemClickListener((view, pos) ->
             {
@@ -152,6 +213,42 @@ public class ChoiceKeywordActivity extends AppCompatActivity
         return true;
     }
 
+    public void checkKeyword()
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        Log.e(TAG, "str_list = " + str_list);
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        String token = sharedPreferences.getString("token", "");
+        if (token != null)
+        {
+            Call<String> call = apiInterface.checkKeyword(token, "interest");
+            call.enqueue(new Callback<String>()
+            {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response)
+                {
+                    if (response.isSuccessful() && response.body() != null)
+                    {
+                        String result = response.body();
+                        Log.e(TAG, "사용자 관심사 조회 api 성공 : " + result);
+                        jsonParsing(result);
+                    }
+                    else
+                    {
+                        Log.e(TAG, "사용자 관심사 조회 실패 : " + response.body());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t)
+                {
+                    Log.e(TAG, "사용자 관심사 조회 에러 : " + t.getMessage());
+                }
+            });
+        }
+
+    }
+
     // 좌상단 뒤로가기 버튼을 누르면 사용자 개인정보(나이, 성별, 지역, 닉네임)을 입력받는 화면으로 돌아간다
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item)
@@ -164,35 +261,105 @@ public class ChoiceKeywordActivity extends AppCompatActivity
 
             case R.id.keyword_ok :
                 Log.e(TAG, "str_list = " + str_list);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                isConnected = isNetworkConnected(this);
-                if (!isConnected)
+                if (str_list.size() == 0)
                 {
-                    // false면 다이얼로그 띄움
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
-                            .setCancelable(false)
-                            .setPositiveButton("예", new DialogInterface.OnClickListener()
-                            {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which)
-                                {
-                                    dialog.dismiss();
-                                    Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
-                                    startActivity(intent);
-                                }
-                            }).show();
+                    // 아무것도 선택하지 않으면 여기로 오는지 확인해야 함
+                    Toast.makeText(this, "최소 1개를 선택하셔야 합니다", Toast.LENGTH_SHORT).show();
+                    break;
                 }
                 else
                 {
-                    // true면 로직 이어서 수행
-                    editor.putString("user_category", str_list.toString());
-                    editor.apply();
-                    registerUserInterest();
+                    // 1개라도 선택했다면
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    isConnected = isNetworkConnected(this);
+                    if (!isConnected)
+                    {
+                        // false면 다이얼로그 띄움
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+                                .setCancelable(false)
+                                .setPositiveButton("예", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        dialog.dismiss();
+                                        Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                                        startActivity(intent);
+                                    }
+                                }).show();
+                    }
+                    else
+                    {
+                        // true면 로직 이어서 수행
+                        editor.putString("user_category", str_list.toString());
+                        editor.apply();
+                        registerUserInterest();
+                    }
+                    return true;
                 }
-                return true;
+//                SharedPreferences.Editor editor = sharedPreferences.edit();
+//                isConnected = isNetworkConnected(this);
+//                if (!isConnected)
+//                {
+//                    // false면 다이얼로그 띄움
+//                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//                    builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+//                            .setCancelable(false)
+//                            .setPositiveButton("예", new DialogInterface.OnClickListener()
+//                            {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which)
+//                                {
+//                                    dialog.dismiss();
+//                                    Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+//                                    startActivity(intent);
+//                                }
+//                            }).show();
+//                }
+//                else
+//                {
+//                    // true면 로직 이어서 수행
+//                    editor.putString("user_category", str_list.toString());
+//                    editor.apply();
+//                    registerUserInterest();
+//                }
+//                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /* 21.03.05) 관심사 리스트 조회 */
+    private void getAllKeyword()
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        if (!sharedPreferences.getString("token", "").equals(""))
+        {
+            String token = sharedPreferences.getString("token", "");
+            Call<String> call = apiInterface.getAllKeyword(token, "interestList");
+            call.enqueue(new Callback<String>()
+            {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response)
+                {
+                    if (response.isSuccessful() && response.body() != null)
+                    {
+                        String result = response.body();
+                        Log.e(TAG, "관심사 리스트 조회 성공 : " + result);
+                    }
+                    else
+                    {
+                        Log.e(TAG, "관심사 리스트 조회 실패 : " + response.body());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t)
+                {
+                    Log.e(TAG, "관심사 리스트 조회 에러 : " + t.getMessage());
+                }
+            });
+        }
     }
 
     /* 유저가 선택한 키워드들을 서버에 등록하는 기능 */
@@ -270,10 +437,7 @@ public class ChoiceKeywordActivity extends AppCompatActivity
             e.printStackTrace();
         }
         Log.e(TAG, message);
-        Intent intent = new Intent(ChoiceKeywordActivity.this, MainTabLayoutActivity.class);
-        // 아래 플래그를 쓰지 않으면 이전 액티비티가 나와서 흐름이 꼬인다
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
+        Toast.makeText(this, "키워드 정보 수정이 완료됐어요", Toast.LENGTH_SHORT).show();
         finish();
     }
 

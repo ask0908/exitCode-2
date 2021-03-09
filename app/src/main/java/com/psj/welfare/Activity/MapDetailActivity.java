@@ -24,6 +24,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.orhanobut.logger.Logger;
 import com.psj.welfare.API.ApiClient;
 import com.psj.welfare.API.ApiInterface;
 import com.psj.welfare.Adapter.MapResultAdapter;
@@ -32,8 +34,6 @@ import com.psj.welfare.Data.MapResultItem;
 import com.psj.welfare.Data.ResultKeywordItem;
 import com.psj.welfare.R;
 import com.psj.welfare.Util.LogUtil;
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.orhanobut.logger.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,7 +42,10 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -85,6 +88,9 @@ public class MapDetailActivity extends AppCompatActivity
 
     // 서버에서 받는 JSON 값을 파싱할 때 쓸 변수
     String parent_category, welf_name, welf_category, tag;
+    /* 아래는 잠시 보류 */
+//    String parent_category, welf_name, tag;
+//    String[] welf_category;
 
     // 상단 리사이클러뷰에 나오는 카테고리를 눌렀을 때 서버에서 가져오는 데이터를 파싱하기 위해 사용하는 변수
     String second_welf_name, second_parent_category, second_welf_category, second_tag, second_welf_local, second_count;
@@ -468,7 +474,7 @@ public class MapDetailActivity extends AppCompatActivity
         }
         if (area.equals("울산"))
         {
-            map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 "+ welf_count + "개입니다");
+            map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 " + welf_count + "개입니다");
             // welf_count가 String이라서 부등호가 안 먹히기 때문에 int로 캐스팅한다
             int changed_count = Integer.parseInt(welf_count);
 
@@ -625,68 +631,168 @@ public class MapDetailActivity extends AppCompatActivity
         {
             JSONObject jsonObject = new JSONObject(number_of_benefit);
             JSONArray jsonArray = jsonObject.getJSONArray("Message");
+            // "Message" 배열을 가진 JSONArray의 크기만큼 반복하며 JSONArray 안의 값들을 파싱한다
             for (int i = 0; i < jsonArray.length(); i++)
             {
                 JSONObject inner_json = jsonArray.getJSONObject(i);
                 parent_category = inner_json.getString("parent_category");
                 welf_name = inner_json.getString("welf_name");
-                welf_category = inner_json.getString("welf_category");
+                welf_category = inner_json.getString("welf_category");  // <- 이 값들이 중복 없이 상단 리사이클러뷰에 나오도록 해야 한다
                 tag = inner_json.getString("tag");
 
-                // 하단 리사이클러뷰에 넣을 혜택명들을 저장할 객체에 값 대입
+                // 하단 리사이클러뷰에 넣을 혜택 관련 값들을 객체에 대입해서 getter로 가져와 보여줄 수 있게 한다
                 MapResultItem item = new MapResultItem();
                 item.setParent_category(parent_category);
                 item.setWelf_name(welf_name);
                 item.setWelf_category(welf_category);
                 item.setKeyword_tag(tag);
 
-                // 상단 리사이클러뷰에 넣을 키워드를 저장할 객체 생성
+                // 상단 리사이클러뷰에 넣을 키워드(welf_category)를 저장할 객체 생성
                 ResultKeywordItem keywordItem = new ResultKeywordItem();
-                keywordItem.setParent_category(parent_category);
+                keywordItem.setWelf_category(welf_category);
 
-                /* 키워드들을 보여주는 상단 리사이클러뷰의 어댑터에 쓰일 리스트에 객체들을 넣는다
-                * 넣기 전 중복되는 값들을 빼고 넣는다(SearchResultActivity 163번 줄부터 같은 로직 있음) */
-                // 중복 여부를 if문으로 확인할 때 사용할 변수
-                boolean isDuplicate = false;
-                for (int j = 0; j < keyword_list.size(); j++)
+                Log.e(TAG, "keywordItem.getWelf_category()로 가져온 값 : " + keywordItem.getWelf_category());
+
+                // 상단 리사이클러뷰에 넣을 welf_category 값들에 붙어 있는 특수문자들을 파싱, 중복되지 않게 처리한다
+                // 객체가 가진 값에 ';; '이 포함되어 있을 경우 ';; '을 기준으로 split()한 후, 상단 리사이클러뷰 어댑터에 넣을 리스트(keyword_list)에 값들을 넣는다
+                if (keywordItem.getWelf_category().contains(";; "))
                 {
-                    if (keyword_list.get(j).getParent_category().equals(keywordItem.getParent_category()))
+                    // "현금 지원;; 현물 지원" 형태로 왔을 경우 어떻게 파싱해야 둘 다 살릴 수 있는가?
+                    // 1. welf_category를 받아 변수에 저장한다
+                    // 2. ';; '을 기준으로 split()해서 배열에 저장한다
+                    // 3. for문으로 2번의 배열 크기만큼 반복하여 상단 리사이클러뷰 어댑터에 넣을 리스트에 값을 넣는다
+                    String beforeWelfCategory = keywordItem.getWelf_category();
+                    String[] category_array = beforeWelfCategory.split(";; ");
+                    ResultKeywordItem items = new ResultKeywordItem();
+                    for (int j = 0; j < category_array.length; j++)
                     {
-                        isDuplicate = true;
-                        break;
+                        // split()한 결과가 들어있는 배열의 크기만큼 반복하며 상단 리사이클러뷰 어댑터에 넣을 리스트에 값들을 넣는다
+                        /* 현물 지원, 교육 지원만 나온다 */
+//                        items.setWelf_category(category_array[j]);
+//                        keyword_list.add(items);
+                        items.setWelf_category(category_array[j]);
+                        keyword_list.add(items);
+//                        if (!items.getWelf_category().equals(keywordItem))
+//                        {
+//                            keyword_list.add(items);
+//                        }
                     }
-                }
-                // 여기선 같은 게 있어서 for문을 나온건지, 하나도 없어서 나온건지 알 수 없다
-                // 그래서 boolean 변수를 통해 같은 게 있었으면 true, 없었으면 false로 설정하고 false일 때 리스트에 아이템을 추가한다
-                if (!isDuplicate)
-                {
-                    keyword_list.add(keywordItem);
-                    /* 아래 조건은 무조건 필요한 게 아니다. for문이 끝난 후 boolean 변수가 true일 경우에만 리스트에 추가하도록 해서도
-                    * 중복되지 않는 값을 넣을 수 있다 */
-//                    if (!keywordItem.getParent_category().equals(keywordItem.getParent_category()))
+                    /* 0309 11:31) 취업 지원이 나오지 않아서 원래 쓰던 if문 주석 처리함 */
+//                    if (!items.getWelf_category().contains(keywordItem.getWelf_category()))
 //                    {
-//                        keyword_list.add(keywordItem);
+//                        keyword_list.add(items);
 //                    }
+//                    Log.e(TAG, "items에 split()한 후 : " + items.getWelf_category());
+                    /**/
+//                    for (int j = 0; j < category_array.length; j++)
+//                    {
+//                        keyword_list.add(category_array[i]);
+//                    }
+                    /**/
+                    // ;; 을 포함하고 있으면 ';; '을 기준으로 앞의 문자열을 객체에 저장한다
+                    // ';; '으로 split()한다
+//                    String aaa = keywordItem.getWelf_category().split(";; ")[0];
+//                    Log.e(TAG, "aaa : " + aaa);
+                }
+                else
+                {
+                    ResultKeywordItem item1 = new ResultKeywordItem();
+                    item1.setWelf_category(keywordItem.getWelf_category());
+                    if (!keyword_list.contains(item1))
+                    {
+                        keyword_list.add(item1);
+                    }
+                    Log.e(TAG, "keyword_list 출력 : " + keyword_list.get(i).getWelf_category());
+
+                    boolean hasDuplicate = false;
+                    for (int j = 0; j < keyword_list.size(); j++)
+                    {
+                        if (keyword_list.get(j).getWelf_category().equals(item1.getWelf_category()))
+                        {
+                            hasDuplicate = true;
+                            break;
+                        }
+                    }
+                    if (hasDuplicate)
+                    {
+//                        if (!item1.getWelf_category().contains(keyword_list.get(i).getWelf_category()))
+                        if (!keyword_list.get(i).getWelf_category().equals(item1.getWelf_category()))
+                        {
+                            keyword_list.add(item1);
+                        }
+                    }
+                    Log.e(TAG, "keyword_list 확인 : " + keyword_list.get(i).getWelf_category());
                 }
 
-                // 혜택 이름들을 보여주는 하단 리사이클러뷰의 어댑터에 쓰일 List에 for문이 반복된 만큼 생성된 DTO 객체들을 넣는다
+                /* 아래 로그로 keyword_list에 중복된 값들이 모두 들어있는 것 확인함 */
+                Log.e(TAG, "if, else 문 거친 후 keyword_list : " + keyword_list.get(i).getWelf_category());
+
+                /* 중복처리를 어떻게 해야 할까?
+                 * 1. keyword_list에 값이 모두 들어있는 상태인 여기서 리스트의 값들을 꺼내고, 중복되는 데이터들은 하나씩만 들어가도록 처리한다
+                 * 2. if, else문 안에서 keyword_list에 값을 넣을 때 같은 값들이 들어있는지 체크한 후 중복되는 데이터들이 없게 add()한다 */
+
+                // keyword_list를 반복해서 안에 있는 값들을 모두 조회하고 겹치는 값들은 제외한다
+//                for (int j = 0; j < keyword_list.size(); j++)
+//                {
+//                    // for문으로 keyword_list의 크기만큼 반복하면서 안에 들어있는 데이터들을 확인한다
+//                    // 이 때 겹치는 게 있다면 지운다?
+//                }
+
+                List<ResultKeywordItem> list = keyword_list.stream().distinct().collect(Collectors.toList());
+                Log.e(TAG, "list = " + list.get(i).getWelf_category());
+
+                // 혜택 이름들을 보여주는 하단 리사이클러뷰의 어댑터에 넣을 List에
+                // for문이 반복된 만큼 생성된 DTO 객체들을 넣는다
                 item_list.add(item);
             }
-        }
+        }   // try end
         catch (JSONException e)
         {
             e.printStackTrace();
         }
-        /* 여기서 keyword_list 안의 값들을 쉐어드에 저장한 다음, 전체를 누르면 쉐어드의 값을 가져와서 그걸 토대로 검색할 수 있도록 해보자 */
+        /* 중복처리 시도했는데 안됨 */
+//        ArrayList<ResultKeywordItem> arrayList = new ArrayList<>();
+//        for (ResultKeywordItem item : keyword_list)
+//        {
+//            if (!arrayList.contains(item))
+//            {
+//                arrayList.add(item);
+//            }
+//        }
+
         // ArrayList 안의 데이터를 String으로 바꾼다
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < keyword_list.size(); i++)
         {
-            stringBuilder.append(keyword_list.get(i).getParent_category()).append("|");
+            stringBuilder.append(keyword_list.get(i).getWelf_category()).append(";;");
+        }
+        Log.e(TAG, "stringBuilder : " + stringBuilder.toString());
+        // |가 섞여서 오는데 이걸 구분자로 split()하고, 중복되는 것 없이 keyword_list에 들어가도록 해본다
+        String[] arr = stringBuilder.toString().split(";;");
+        for (int i = 0; i < arr.length; i++)
+        {
+            Log.e(TAG, ";;을 기준으로 split()한 결과 : " + arr[i]);
+        }
+        // split() 후 중복되는 것들을 없애는 처리를 한다
+        arr = new HashSet<>(Arrays.asList(arr)).toArray(new String[0]);
+        // String[] arr 안에 들어있는 데이터 양만큼 반복문을 돌리며 setter로 welf_category를 넣기 위해 객체를 만들고, 아래 for문에서 setter로 값들을 박는다
+        keyword_list.clear();
+        for (int i = 0; i < arr.length; i++)
+        {
+            Log.e(TAG, "arr을 중복처리한 결과 : " + arr[i]);
+            ResultKeywordItem item = new ResultKeywordItem();
+            item.setWelf_category(arr[i]);
+            Log.e(TAG, "item.getWelf_category() : " + item.getWelf_category());
+            keyword_list.add(item);
+        }
+        for (int i = 0; i < keyword_list.size(); i++)
+        {
+            Log.e(TAG, "setWelf_category() 이후 keyword_list : " + keyword_list.get(i).getWelf_category());
         }
 
         // 아래 처리를 하지 않으면 이 액티비티로 들어올 때마다 전체 카테고리 개수가 1개씩 증가한다
-        if (!keyword_list.get(0).getParent_category().equals("전체"))
+        // keyword_list 크기가 0일 경우 아래에서 에러가 발생한다
+        if (!keyword_list.get(0).getWelf_category().equals("전체"))
         {
             keyword_list.add(0, new ResultKeywordItem("전체"));
         }
@@ -695,80 +801,127 @@ public class MapDetailActivity extends AppCompatActivity
         adapter = new ResultKeywordAdapter(this, keyword_list, keyword_click);
         adapter.setOnResultKeywordClickListener((view, position) ->
         {
-            if (keyword_list.get(position).getParent_category().equals("전체"))
+            if (keyword_list.get(position).getWelf_category().equals("전체"))
             {
                 // 다른 카테고리를 선택해 결과를 조회한 후 다시 전체를 눌렀을 때 처음 이 화면에 들어왔을 때 봤던 검색결과를 다시 보여줘야 함
                 reGetNumberOfBenefit();
                 Log.e(TAG, "선택한 지역 : " + area);
-//                for (int i = 0; i < item_list.size(); i++)
-//                {
-//                    Log.e(TAG, "지역에서 파싱 후 item_list getWelf_name() : " + item_list.get(i).getWelf_name());
-//                    Log.e(TAG, "지역에서 파싱 후 item_list getParent_category() : " + item_list.get(i).getParent_category());
-//                    Log.e(TAG, "지역에서 파싱 후 item_list getWelf_category() : " + item_list.get(i).getWelf_category());
-//                    // 여기서 어떻게 해야?
-//                    // 1. 모든 데이터를 배열에 담는다. 그리고 필터링에 사용할 배열을 초기화한다
-//                    // 2. 청년을 누르면 parent_category가 청년인 데이터들만을 해서 필터링 배열에 담는다
-//                    // 3. 데이터가 담긴 필터링 배열을 ArrayList로 바꿔서 리사이클러뷰 어댑터에 넣어 유저에게 보여준다
-//                    // 4. 다른 필터를 누르면 필터링 배열 안의 데이터들을 전부 지우고 새 데이터로 채워넣어 3번을 반복한다
-//                    final MapResultItem[] test = new MapResultItem[item_list.size()];
-//                    Log.e(TAG, "필터링 배열 크기 : " + test.length);
-//                }
             }
             else
             {
-                String name = keyword_list.get(position).getParent_category();
+                /* 전체가 아닌 다른 필터를 선택한 경우 */
+                other_list.clear();
+                String name = keyword_list.get(position).getWelf_category();
                 Log.e(TAG, "4. 상단 리사이클러뷰에서 선택한 카테고리명 = " + name);
-
-                for (int i = 0; i < item_list.size(); i++)
-                {
-                    Log.e(TAG, "지역에서 파싱 후 item_list getWelf_name() : " + item_list.get(i).getWelf_name());
-                    Log.e(TAG, "지역에서 파싱 후 item_list getParent_category() : " + item_list.get(i).getParent_category());
-                    Log.e(TAG, "지역에서 파싱 후 item_list getWelf_category() : " + item_list.get(i).getWelf_category());
-                    // 여기서 어떻게 해야?
-                    // 1. 모든 데이터를 배열에 담는다. 그리고 필터링에 사용할 배열을 초기화한다
-                    // 2. 청년을 누르면 parent_category가 청년인 데이터들만을 해서 필터링 배열에 담는다
-                    // 3. 데이터가 담긴 필터링 배열을 ArrayList로 바꿔서 리사이클러뷰 어댑터에 넣어 유저에게 보여준다
-                    // 4. 다른 필터를 누르면 필터링 배열 안의 데이터들을 전부 지우고 새 데이터로 채워넣어 3번을 반복한다
-                }
-
-                // 청년, 저소득층, 육아·임신 등 parent_category가 들어 있는 필터를 누르면 그 필터에 해당하는 데이터들만 리사이클러뷰에 보여야 한다
-                boolean isDuplicated = false;
-                for (int i = 0; i < item_list.size(); i++)
-                {
-                    if (item_list.get(i).getParent_category().equals(name))
-                    {
-                        // item_list를 반복하며 유저가 선택한 필터명과 같은 parent_category인 정책은 따로 리스트에 넣는다
-                        isDuplicated = true;
-                        break;
-                    }
-                }
-                if (isDuplicated)
-                {
-                    other_list.addAll(item_list);
-                    map_adapter = new MapResultAdapter(MapDetailActivity.this, other_list, itemClickListener);
-                    map_adapter.setOnItemClickListener(((view1, position1) -> {
-                        String name2 = item_list.get(position).getWelf_name();
-                        Log.e(TAG, "혜택 이름 = " + name2);
-                        Bundle bundle = new Bundle();
-                        bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "지역 검색 화면에서 상세보기 화면으로 이동 (선택한 혜택 : " + name2 + ")");
-                        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-                        Intent see_detail_intent = new Intent(MapDetailActivity.this, DetailBenefitActivity.class);
-                        see_detail_intent.putExtra("name", name2);
-                        see_detail_intent.putExtra("welf_local", area);
-                        startActivity(see_detail_intent);
-                    }));
-                    map_result_recyclerview.setAdapter(map_adapter);
-                }
 
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "지역 검색 화면에서 선택한 하위 카테고리 : " + name);
                 analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-                searchUpLevelCategory(name);
+                // 선택한 parent_category를 보여줄 리스트를 따로 만든다(other_list)
+                // other_list에 item_list 안의 데이터들을 이전한다
+
+
+//                Collection<String> filtered = Collections2.filter(item_list, Predicates.containsPattern("How"));
+
+
+                other_list.addAll(item_list);   // other_list에 모든 데이터 담겨진 것 확인
+                Log.e(TAG, "other_list 크기 : " + other_list.size());
+                // 상단 리사이클러뷰에서 선택한 parent_category가 other_list 안에서의 parent_category와 일치하는 경우에만 other_list를 채운다
+                // addAll()만 했기 때문에 모든 데이터가 다 들어가 있는데 이 중에서 선택한 parent_category로 필터링 과정을 거쳐야 한다
+                boolean isEqual = false;
+                for (int i = 0; i < other_list.size(); i++)
+                {
+                    if (!other_list.get(i).getWelf_category().equals(name))
+                    {
+//                        other_list.remove(other_list.get(i).getParent_category());
+                        isEqual = true;
+                        break;
+                    }
+                }
+                if (isEqual)
+                {
+                    //
+                }
+
+                /* 필터링 테스트2 */
+//                if (isEqual)
+//                {
+//                    for (int i = 0; i < keyword_list.size(); i++)
+//                    {
+//                        if (keyword_list.get(i).getParent_category().equals(name))
+//                        {
+//                            ResultKeywordItem inner_item = new ResultKeywordItem();
+//                            inner_item.setParent_category(parent_category);
+//                            inner_item.setWelf_name(welf_name);
+//                            inner_item.setWelf_category(welf_category);
+//                            inner_item.setKeyword_tag(tag);
+//                            other_list.add(inner_item);
+//                        }
+//                    }
+//                }
+//                for (int i = 0; i < other_list.size(); i++)
+//                {
+//                    Log.e(TAG, "2other_list getParent_category() = " + other_list.get(i).getParent_category());
+//                    Log.e(TAG, "2other_list getWelf_name() = " + other_list.get(i).getWelf_name());
+//                    Log.e(TAG, "2other_list getWelf_category() = " + other_list.get(i).getWelf_category());
+//                }
+//                adapter = new ResultKeywordAdapter(this, other_list, keyword_click);
+
+                /* 필터링 테스트 */
+                // other_list = 선택한 카테고리(parent_category)와 같은 카테고리에 속하는 혜택들만을 필터링해 담을 리스트
+//                for (int i = 0; i < other_list.size(); i++)
+//                {
+//                    // 710번 줄의 name과 같은 parent_category인 데이터만을 리스트에 담는다
+//                    if (other_list.get(i).getParent_category().equals(name))
+//                    {
+//                        // name과 일치하는 parent_category 발견 시 true로 돌리고 for문 탈출
+//                        isEqual = true;
+//                        break;
+//                    }
+//                }
+                // isEqual이 true라서 for문을 탈출한 경우, break가 걸린 데이터를 리스트에 넣는다
+
+                /* 필요없는 코드라 주석처리 */
+                // 청년, 저소득층, 육아·임신 등 parent_category가 들어 있는 필터를 누르면 그 필터에 해당하는 데이터들만 리사이클러뷰에 보여야 한다
+//                boolean isDuplicated = false;
+//                for (int i = 0; i < item_list.size(); i++)
+//                {
+//                    if (item_list.get(i).getParent_category().equals(name))
+//                    {
+//                        // item_list를 반복하며 유저가 선택한 필터명과 같은 parent_category인 정책은 따로 리스트에 넣는다
+//                        isDuplicated = true;
+//                        break;
+//                    }
+//                }
+//                if (isDuplicated)
+//                {
+//                    other_list.addAll(item_list);
+//                    map_adapter = new MapResultAdapter(MapDetailActivity.this, other_list, itemClickListener);
+//                    map_adapter.setOnItemClickListener(((view1, position1) -> {
+//                        String name2 = item_list.get(position).getWelf_name();
+//                        Log.e(TAG, "혜택 이름 = " + name2);
+//                        Bundle bundle = new Bundle();
+//                        bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "지역 검색 화면에서 상세보기 화면으로 이동 (선택한 혜택 : " + name2 + ")");
+//                        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+//                        Intent see_detail_intent = new Intent(MapDetailActivity.this, DetailBenefitActivity.class);
+//                        see_detail_intent.putExtra("name", name2);
+//                        see_detail_intent.putExtra("welf_local", area);
+//                        startActivity(see_detail_intent);
+//                    }));
+//                    map_result_recyclerview.setAdapter(map_adapter);
+//                }
+//                searchUpLevelCategory(name);  // 이 메서드를 주석 해제하면 필터별로 다른 데이터들이 보이게 되긴 하지만 내가 원하는 건 아니다
             }
         });
+
+        // 상단 리사이클러뷰에 전체, 청년, 노인 등 문자열들을 넣는다
         result_keyword_recyclerview.setAdapter(adapter);
 
-        // 어댑터 초기화, 이 때 for문 안에서 값이 들어간 List를 인자로 넣는다
+        /* 여기에서 로그를 찍으면 화면에 처음 들어왔을 때부터 로그가 찍힌다. 그래서 여기가 아니라 윗부분에서 처리해야 할 듯하다 */
+        // item_list에 담긴 데이터들 중 유저가 선택한 parent_category에 속하는 혜택들만을 other_list에 넣어야 한다
+        // item_list는 원본 데이터기 때문에 "전체"를 눌렀을 경우 보여줘야 한다. 그래서 건드리면 ㄴㄴ
+
+        // 하단 리사이클러뷰에 붙일 어댑터 초기화, 이 때 for문 안에서 값이 들어간 List를 인자로 넣는다
         map_adapter = new MapResultAdapter(MapDetailActivity.this, item_list, itemClickListener);
 
         // 더보기 버튼 클릭 시 해당 혜택의 상세보기 화면으로 이동한다
@@ -787,38 +940,38 @@ public class MapDetailActivity extends AppCompatActivity
         map_result_recyclerview.setAdapter(map_adapter);
     }
 
-    // 상단 리사이클러뷰에서 선택한 카테고리명에 따라 리사이클러뷰에 뿌리는 혜택명들을 바꾼다
-    void searchUpLevelCategory(String select_category)
-    {
-        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        SharedPreferences sharedPreferences = getSharedPreferences("app_pref", 0);
-        String token = sharedPreferences.getString("token", "");
-        String session = sharedPreferences.getString("sessionId", "");
-        Call<String> call = apiInterface.searchWelfareCategory(token, session, "category_search", select_category, LogUtil.getUserLog());
-        call.enqueue(new Callback<String>()
-        {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response)
-            {
-                if (response.isSuccessful() && response.body() != null)
-                {
-                    String result = response.body();
-                    Log.e(TAG, "성공 : " + result);
-                    second_parsing(result);
-                }
-                else
-                {
-                    Log.e(TAG, "실패 : " + response.body());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t)
-            {
-                Log.e(TAG, "에러 : " + t.getMessage());
-            }
-        });
-    }
+//    // 상단 리사이클러뷰에서 선택한 카테고리명에 따라 리사이클러뷰에 뿌리는 혜택명들을 바꾼다
+//    void searchUpLevelCategory(String select_category)
+//    {
+//        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+//        SharedPreferences sharedPreferences = getSharedPreferences("app_pref", 0);
+//        String token = sharedPreferences.getString("token", "");
+//        String session = sharedPreferences.getString("sessionId", "");
+//        Call<String> call = apiInterface.searchWelfareCategory(token, session, "category_search", select_category, LogUtil.getUserLog());
+//        call.enqueue(new Callback<String>()
+//        {
+//            @Override
+//            public void onResponse(Call<String> call, Response<String> response)
+//            {
+//                if (response.isSuccessful() && response.body() != null)
+//                {
+//                    String result = response.body();
+//                    Log.e(TAG, "searchUpLevelCategory() 성공 : " + result);
+//                    second_parsing(result);
+//                }
+//                else
+//                {
+//                    Log.e(TAG, "searchUpLevelCategory() 실패 : " + response.body());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<String> call, Throwable t)
+//            {
+//                Log.e(TAG, "에러 : " + t.getMessage());
+//            }
+//        });
+//    }
 
     /* 카테고리를 눌러 가져온 데이터들을 파싱하는 2차 파싱 메서드 */
     private void second_parsing(String result)
@@ -855,7 +1008,7 @@ public class MapDetailActivity extends AppCompatActivity
         adapter = new ResultKeywordAdapter(this, keyword_list, keyword_click);
         adapter.setOnResultKeywordClickListener((view, position) ->
         {
-            if (keyword_list.get(position).getParent_category().equals("전체"))
+            if (keyword_list.get(position).getWelf_category().equals("전체"))
             {
                 // 다른 상위 카테고리를 누른 후 다시 전체를 눌렀을 때 처음과 같은 검색 결과를 보여줘야 한다
                 // 그럼 이 액티비티에 처음 들어왔을 때 검색어를 저장했다가 전체를 누르면 그 검색어를 통해 다시 서버에 요청하면 되지 않을까?
@@ -866,12 +1019,13 @@ public class MapDetailActivity extends AppCompatActivity
             else
             {
                 // 전체 말고 다른 필터를 선택했을 때
-                String name = keyword_list.get(position).getParent_category();
+//                String name = keyword_list.get(position).getParent_category();
+                String name = keyword_list.get(position).getWelf_category();
                 Log.e(TAG, "2. 상단 리사이클러뷰에서 선택한 카테고리명 = " + name);
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "지역 검색 화면에서 선택한 하위 카테고리 : " + name);
                 analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-                searchUpLevelCategory(name);
+//                searchUpLevelCategory(name);
             }
         });
         /* 여기서 한번 더 setAdapter()를 호출할 경우 선택된 필터의 색깔 유지가 되지 않고 첫 위치로 돌아간다. 호출하지 말자 */

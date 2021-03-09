@@ -353,6 +353,24 @@ public interface ApiInterface
 			@Field("pushId") String pushId,
 			@Field("type") String type
 	);
+
+	/**
+	 * 알림 삭제, 사용자가 알림을 삭제할 경우 is_remove 컬럼값을 true로 바꾸는 메서드
+	 * PushGatherFragment에서 사용
+	 * @param session - 세션 아이디(헤더로 보내야 함)
+	 * @param token - 로그인 시 서버에서 받는 토큰(헤더로 보내야 함)
+	 * @param pushId - 알림 아이디
+	 * @param type - "delete" 고정
+	 * @return - {"Status":"200","Message":"알림 삭제가 완료되었습니다."}
+	 */
+	@FormUrlEncoded
+	@POST("https://www.urbene-fit.com/push")
+	Call<String> removePush(
+			@Header("SessionId") String session,
+			@Header("LoginToken") String token,
+			@Field("pushId") String pushId,
+			@Field("type") String type
+	);
 	// ===================================================================================================
 
 	/* ↓ 사용자 정보(나이, 성별, 지역, 닉네임) 관련 메서드 */
@@ -439,6 +457,44 @@ public interface ApiInterface
 			@Field("login_token") String login_token,
 			@Field("type") String type,
 			@Field("interest") String interest
+	);
+
+	/**
+	 * 사용자 관심사 조회, 유저의 관심사를 가져오는 메서드
+	 * @param token - 로그인 시 서버에서 받는 토큰
+	 * @param type - "interest" 고정
+	 * @return - {"Status":"200","Message":"장학생|직업훈련|학자금|취업|대출|장려금"}
+	 */
+	@GET("https://www.urbene-fit.com/user")
+	Call<String> checkKeyword(
+			@Query("login_token") String token,
+			@Query("type") String type
+	);
+
+	/**
+	 * 사용자 정보 조회, 유저 닉네임 / 생년월일 / 성별 / 지역을 가져오는 메서드
+	 * @param token - 로그인 시 서버에서 받는 토큰
+	 * @param type - "user" 고정
+	 * @return - {"Status":"200","Message":[{"nickName":"oo","age":"19950312","gender":"여자","city":"서울특별시"}]}
+	 */
+	@GET("https://www.urbene-fit.com/user")
+	Call<String> checkUserInformation(
+			@Query("login_token") String token,
+			@Query("type") String type
+	);
+
+	/**
+	 * 관심사 리스트 조회, 유저가 관심사 선택 화면에 들어갈 때 보여줄 관심사 리스트를 가져온다
+	 * @param token - 로그인 시 서버에서 받는 토큰
+	 * @param type - "interestList" 고정
+	 * @return -
+	 * 정보가 없거나 나이가 '~대'가 아닐 경우 : {"Status":"200","Message":[{"interest":"10대,가출,검정고시,통신비,...,무공훈장"}]}
+	 * 정보가 있을 경우 : {"Status":"200","Message":[{"gender":"여자","age":"20대","city":"서울특별시","interest":"장학생,학자금,...가정폭력,지체"}]}
+	 */
+	@GET("https://www.urbene-fit.com/user")
+	Call<String> getAllKeyword(
+			@Query("login_token") String token,
+			@Query("type") String type
 	);
 	// ===================================================================================================
 

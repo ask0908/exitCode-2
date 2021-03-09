@@ -124,9 +124,9 @@ public class GetUserInformationActivity extends AppCompatActivity
             int editable = intent.getIntExtra("edit", -1);
             if (editable == 1)
             {
+                checkUserInformation();
                 String nickname = app_pref.getString("user_nickname", "");
                 // TODO : 나이 받아와서 DatePicker에 붙여넣어야 한다
-                String age = app_pref.getString("user_age", "");
                 gender = app_pref.getString("user_gender", "");
                 String area = app_pref.getString("user_area", "");
                 // editText에 set
@@ -476,13 +476,13 @@ public class GetUserInformationActivity extends AppCompatActivity
 
         if (duplicateResult.equals("false"))
         {
-            // 중복되지 않았으니 쓸 수 있는 닉네임이라고 알려준다
-            Toast.makeText(GetUserInformationActivity.this, "사용할 수 있는 닉네임입니다", Toast.LENGTH_SHORT).show();
+            // 중복이면 토스트로 중복이라고 알린다
+            Toast.makeText(GetUserInformationActivity.this, "중복된 닉네임입니다. 다른 닉네임을 입력해 주세요", Toast.LENGTH_SHORT).show();
         }
         else
         {
-            // 중복이면 토스트로 중복이라고 알린다
-            Toast.makeText(GetUserInformationActivity.this, "중복된 닉네임입니다. 다른 닉네임을 입력해 주세요", Toast.LENGTH_SHORT).show();
+            // 중복되지 않았으니 쓸 수 있는 닉네임이라고 알려준다
+            Toast.makeText(GetUserInformationActivity.this, "사용할 수 있는 닉네임입니다", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -558,12 +558,42 @@ public class GetUserInformationActivity extends AppCompatActivity
         Log.e(TAG, "age_group = " + age_group);
         Log.e(TAG, "gender = " + user_gender);
         Log.e(TAG, "interest = " + interest);
-        // 로그로 확인한 후 액티비티 이동
-        Intent intent = new Intent(GetUserInformationActivity.this, ChoiceKeywordActivity.class);
-        intent.putExtra("age_group", age_group);
-        intent.putExtra("user_gender", user_gender);
-        intent.putExtra("interest", interest);
-        startActivity(intent);
+        if (!age_group.equals("") && !user_gender.equals("") && !interest.equals(""))
+        {
+            // 서버에서 받은 연령대, 성별, 관심사 정보들을 쉐어드에 저장해서 키워드 수정할 때 가져와 사용한다
+            SharedPreferences.Editor editor = app_pref.edit();
+            editor.putString("age_group", age_group);
+            editor.putString("gender", user_gender);
+            editor.putString("interest", interest);
+            editor.apply();
+            Toast.makeText(this, "개인정보 수정이 완료됐어요", Toast.LENGTH_SHORT).show();
+            // 개인정보 수정 화면에선 개인정보 수정만 하고 이전 화면으로 돌아간다
+            finish();
+        }
+        else
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("인터넷 연결 상태가 일정하지 않습니다\n잠시 후 다시 시도해 주세요")
+                    .setCancelable(false)
+                    .setPositiveButton("예", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            dialog.dismiss();
+                            finish();
+                        }
+                    }).show();
+        }
+//        editor.putString("age_group", age_group);
+//        editor.putString("gender", user_gender);
+//        editor.putString("interest", interest);
+//        // 로그로 확인한 후 액티비티 이동
+//        Intent intent = new Intent(GetUserInformationActivity.this, ChoiceKeywordActivity.class);
+//        intent.putExtra("age_group", age_group);
+//        intent.putExtra("user_gender", user_gender);
+//        intent.putExtra("interest", interest);
+//        startActivity(intent);
     }
 
     /* editText 바깥을 터치했을 때 키보드를 내리는 메서드 */
@@ -1039,6 +1069,40 @@ public class GetUserInformationActivity extends AppCompatActivity
         editor.apply();
     }
 
+    /* 서버에서 사용자 정보 가져오는 메서드(작성 중) */
+    private void checkUserInformation()
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        String token = app_pref.getString("token", "");
+        if (token != null)
+        {
+            Call<String> call = apiInterface.checkUserInformation(token, "user");
+            call.enqueue(new Callback<String>()
+            {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response)
+                {
+                    if (response.isSuccessful() && response.body() != null)
+                    {
+                        String result = response.body();
+                        Log.e(TAG, "사용자 정보 조회 api 성공 : " + result);
+                    }
+                    else
+                    {
+                        Log.e(TAG, "실패 : " + response.body());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t)
+                {
+                    Log.e(TAG, "에러 : " + t.getMessage());
+                }
+            });
+        }
+    }
+
+    /* 인터넷 연결 체크하는 메서드 */
     public boolean isNetworkConnected(Context context)
     {
         ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

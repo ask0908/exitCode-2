@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorMainWhite"
+    android:fillViewport="true"
     tools:context=".Fragment.SearchFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -90,9 +91,10 @@
         <!-- 메인에 있던 카테고리 선택란, 가로 1줄에 5개씩 카테고리 버튼이 들어가게 한다
         수직 리니어 레이아웃 안에 이미지가 위에 있고 텍스트가 밑에 있는 형식으로 만든다(와이어 프레임 참고) -->
         <LinearLayout
+            android:id="@+id/category_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -490,6 +492,75 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/map_img_and_btn_layout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="1"
+            app:layout_constraintHeight_percent=".38"
+            app:layout_constraintVertical_bias="1"
+            android:background="@color/colorPrimaryDark"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/category_layout"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintWidth_percent="1"
+                app:layout_constraintHeight_percent=".20"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:fontFamily="@font/jalnan"
+                android:paddingStart="12dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="12dp"
+                android:text="내 주변 혜택 찾기"
+                android:textColor="@color/colorMainWhite"
+                android:textSize="24sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintWidth_percent="1"
+                app:layout_constraintHeight_percent=".80"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <Button
+                    android:id="@+id/map_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    android:layout_gravity="center"
+                    android:layout_weight=".55"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginBottom="40dp"
+                    android:background="@drawable/shadow_button_layer_list"
+                    android:fontFamily="@font/jalnan"
+                    android:lineSpacingExtra="20sp"
+                    android:text="지도에서 혜택 확인"
+                    android:textSize="15sp"
+                    android:textColor="@color/colorPrimaryDark" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="280dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight=".45"
+                    android:src="@drawable/map_function_img" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

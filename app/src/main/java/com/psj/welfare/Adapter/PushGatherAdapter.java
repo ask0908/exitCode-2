@@ -144,4 +144,9 @@ public class PushGatherAdapter extends RecyclerView.Adapter<PushGatherAdapter.Pu
         void onItemClick(View view, int position);
     }
 
+    public List<PushGatherItem> getList()
+    {
+        return lists;
+    }
+
 }

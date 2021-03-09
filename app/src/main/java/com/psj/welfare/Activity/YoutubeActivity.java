@@ -156,7 +156,6 @@ public class YoutubeActivity extends AppCompatActivity
     {
         encode("유튜브 재생 화면 진입");
         sharedPreferences = getSharedPreferences("app_pref", 0);
-        String session = sharedPreferences.getString("sessionId", "");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Call<String> call = apiInterface.getYoutubeInformation();
         call.enqueue(new Callback<String>()

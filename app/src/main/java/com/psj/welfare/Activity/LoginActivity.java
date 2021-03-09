@@ -404,7 +404,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String platform = getString(R.string.main_platform);
 
         encode("카카오 로그인 시도");
-        String session = app_pref.getString("sessionId", "");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Call<String> call = apiInterface.sendUserTypeAndPlatform(email, token, os_type, platform);
         call.enqueue(new Callback<String>()

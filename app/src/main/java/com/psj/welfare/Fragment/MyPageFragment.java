@@ -24,8 +24,14 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.kakao.auth.Session;
+import com.kakao.usermgmt.UserManagement;
+import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.psj.welfare.API.ApiClient;
 import com.psj.welfare.API.ApiInterface;
+import com.psj.welfare.Activity.ChoiceKeywordActivity;
 import com.psj.welfare.Activity.GetUserInformationActivity;
 import com.psj.welfare.Activity.LoginActivity;
 import com.psj.welfare.Activity.MyInfoUpdateActivity;
@@ -35,11 +41,6 @@ import com.psj.welfare.Activity.TermsAndConditionsActivity;
 import com.psj.welfare.Custom.OnSingleClickListener;
 import com.psj.welfare.R;
 import com.psj.welfare.Util.LogUtil;
-import com.bumptech.glide.Glide;
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.kakao.auth.Session;
-import com.kakao.usermgmt.UserManagement;
-import com.kakao.usermgmt.callback.LogoutResponseCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,12 +58,12 @@ public class MyPageFragment extends Fragment
 {
     private final String TAG = "MyPageFragment";
 
-    LinearLayout account_layout, benefit_type_layout, terms_location_layout, push_noti_layout, privacy_policy_layout, user_layout;
+    LinearLayout account_layout, benefit_type_layout, terms_location_layout, push_noti_layout, privacy_policy_layout, user_layout, keyword_layout;
 
-    ImageView kakao_profile_image, move_update_personal_imageview, privacy_policy_imageview, account_imageview;
+    ImageView kakao_profile_image, move_update_personal_imageview, privacy_policy_imageview, account_imageview, keyword_imageview;
     TextView kakao_name, account_platform_text, push_setting_text;
     Switch push_noti_switch;
-    Button account_btn, benefit_type_btn, terms_location_based_btn, privacy_policy_btn, mypage_login_btn;
+    Button account_btn, benefit_type_btn, terms_location_based_btn, privacy_policy_btn, mypage_login_btn, keyword_btn;
     Toolbar mypage_toolbar;
 
     SharedPreferences sharedPreferences;
@@ -135,6 +136,28 @@ public class MyPageFragment extends Fragment
             mypage_login_btn.setText("로그아웃");
         }
 
+        // 유저 정보는 있는데 키워드 정보만 없을 경우 키워드 정보 수정 버튼을 가린다
+        String user_keyword = sharedPreferences.getString("user_category", "");
+        if (user_keyword != null)
+        {
+            // 키워드 정보가 없을 경우
+            if (user_keyword.equals(""))
+            {
+                if (!sharedPreferences.getString("nickname", "").equals("") ||
+                        !sharedPreferences.getString("user_area", "").equals("") ||
+                        !sharedPreferences.getString("user_age", "").equals("") ||
+                        !sharedPreferences.getString("user_gender", "").equals(""))
+                {
+                    //
+                }
+                keyword_layout.setVisibility(View.GONE);
+            }
+            else
+            {
+                keyword_layout.setVisibility(View.VISIBLE);
+            }
+        }
+
         mypage_toolbar.setTitle("마이페이지");
         // 프래그먼트에서 툴바를 사용하기 위한 처리
         if ((AppCompatActivity)getActivity() != null)
@@ -150,10 +173,28 @@ public class MyPageFragment extends Fragment
                     .load(profile_image)
                     .into(kakao_profile_image);
         }
+        else
+        {
+            // 카톡 프사가 없는 유저면 성별에 따라 기본 이미지를 보여준다
+            if (!sharedPreferences.getString("gender", "").equals(""))
+            {
+                String gender = sharedPreferences.getString("gender", "");
+                if (gender.equals("남자"))
+                {
+                    kakao_profile_image.setImageResource(R.drawable.default_man);
+                }
+                else if (gender.equals("여자"))
+                {
+                    kakao_profile_image.setImageResource(R.drawable.default_woman);
+                }
+            }
+        }
 
         // 닉네임을 입력한 경우 마이페이지에서 유저 닉네임을 보여준다
-        if (!sharedPreferences.getString("nickname", "").equals("") || !sharedPreferences.getString("user_area", "").equals("") ||
-        !sharedPreferences.getString("user_age", "").equals("") || !sharedPreferences.getString("user_gender", "").equals(""))
+        if (!sharedPreferences.getString("nickname", "").equals("") ||
+                !sharedPreferences.getString("user_area", "").equals("") ||
+                !sharedPreferences.getString("user_age", "").equals("") ||
+                !sharedPreferences.getString("user_gender", "").equals(""))
         {
             kakao_nick = sharedPreferences.getString(getString(R.string.get_kakao_name), "");
             account_platform_text.setText(getString(R.string.set_kakao_account));
@@ -167,7 +208,7 @@ public class MyPageFragment extends Fragment
         // 서버에 저장된 유저 정보를 가져와 뷰에 뿌린다
         getUserInfo();
 
-        // 개인정보 수정
+        // 개인정보 수정 (레이아웃에 클릭 리스너가 먹질 않아서 이렇게 처리함)
         account_btn.setOnClickListener(new OnSingleClickListener()
         {
             @Override
@@ -192,6 +233,34 @@ public class MyPageFragment extends Fragment
                 bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "개인정보 수정 화면으로 이동");
                 analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
                 Intent intent = new Intent(getActivity(), GetUserInformationActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
+
+        // 키워드 정보 수정 (레이아웃에 클릭 리스너가 먹질 않아서 이렇게 처리함)
+        keyword_btn.setOnClickListener(new OnSingleClickListener()
+        {
+            @Override
+            public void onSingleClick(View v)
+            {
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "키워드 정보 수정 화면으로 이동");
+                analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+                Intent intent = new Intent(getActivity(), ChoiceKeywordActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
+        keyword_imageview.setOnClickListener(new OnSingleClickListener()
+        {
+            @Override
+            public void onSingleClick(View v)
+            {
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "키워드 정보 수정 화면으로 이동");
+                analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+                Intent intent = new Intent(getActivity(), ChoiceKeywordActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }
@@ -362,6 +431,7 @@ public class MyPageFragment extends Fragment
             account_layout.setVisibility(View.GONE);
             terms_location_layout.setVisibility(View.GONE);
             privacy_policy_layout.setVisibility(View.GONE);
+            keyword_layout.setVisibility(View.GONE);
         }
         else
         {
@@ -374,7 +444,9 @@ public class MyPageFragment extends Fragment
             account_layout.setVisibility(View.VISIBLE);
             terms_location_layout.setVisibility(View.VISIBLE);
             privacy_policy_layout.setVisibility(View.VISIBLE);
+            keyword_layout.setVisibility(View.VISIBLE);
         }
+
     }
 
     /* 유저가 푸시알림설정 스위치를 on으로 두면 true, off로 두면 false를 서버로 보내 기존 값을 수정해 저장하는 메서드 */
@@ -583,6 +655,7 @@ public class MyPageFragment extends Fragment
         push_noti_layout = view.findViewById(R.id.push_noti_layout);
         privacy_policy_layout = view.findViewById(R.id.privacy_policy_layout);
         user_layout = view.findViewById(R.id.user_layout);
+        keyword_layout = view.findViewById(R.id.keyword_layout);
 
         mypage_toolbar = view.findViewById(R.id.mypage_toolbar);
         kakao_profile_image = view.findViewById(R.id.kakao_profile_image);
@@ -592,12 +665,14 @@ public class MyPageFragment extends Fragment
         terms_location_based_btn = view.findViewById(R.id.terms_location_based_btn);
         privacy_policy_btn = view.findViewById(R.id.privacy_policy_btn);
         mypage_login_btn = view.findViewById(R.id.mypage_login_btn);
+        keyword_btn = view.findViewById(R.id.keyword_btn);
 
         kakao_name = view.findViewById(R.id.kakao_name);
         account_platform_text = view.findViewById(R.id.account_platform_text);
         move_update_personal_imageview = view.findViewById(R.id.move_update_personal_imageview);
         privacy_policy_imageview = view.findViewById(R.id.privacy_policy_imageview);
         account_imageview = view.findViewById(R.id.account_imageview);
+        keyword_imageview = view.findViewById(R.id.keyword_imageview);
 
         push_setting_text = view.findViewById(R.id.push_setting_text);
     }

@@ -206,7 +206,7 @@ public class SearchResultActivity extends AppCompatActivity
 
                 SearchItem top_item = new SearchItem();
 
-                // 상단의 가로 리사이클러뷰(하위 카테고리 보이는곳)에 넣을 리스트에 박을 객체
+                // 상단의 가로 리사이클러뷰(하위 카테고리 보이는곳)에 넣을 리스트에 넣을 객체
                 top_item.setWelf_category(welf_category);
                 Log.e("fff", "top_item = " + top_item.getWelf_category());
                 boolean hasDuplicate = false;

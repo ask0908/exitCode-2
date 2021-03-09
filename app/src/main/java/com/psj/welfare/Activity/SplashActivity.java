@@ -91,7 +91,7 @@ public class SplashActivity extends AppCompatActivity
                 AlertDialog.Builder builder = new AlertDialog.Builder(SplashActivity.this);
                 builder.setMessage("인터넷 연결이 원활하지 않습니다")
                         .setCancelable(false)
-                        .setPositiveButton("종료하기", new DialogInterface.OnClickListener()
+                        .setPositiveButton("종료", new DialogInterface.OnClickListener()
                         {
                             @Override
                             public void onClick(DialogInterface dialog, int which)

@@ -1,10 +1,12 @@
 package com.psj.welfare.Activity;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -17,12 +19,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.psj.welfare.API.ApiClient;
 import com.psj.welfare.API.ApiInterface;
 import com.psj.welfare.R;
 import com.psj.welfare.Util.LogUtil;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,6 +45,7 @@ import retrofit2.Response;
 public class MapActivity extends AppCompatActivity
 {
     public final String TAG = "MapActivity";
+    private static final int LOCATION = 1000;
 
     Button jeonnam_benefit_btn, seoul_benefit_btn, incheon_benefit_btn, gyongi_benefit_btn, gangwon_benefit_btn, choongnam_benefit_btn, jeonbuk_benefit_btn,
             choongbuk_benefit_btn, jeju_benefit_btn, gyongbuk_benefit_btn, gyongnam_benefit_btn, ulsan_benefit_btn, busan_benefit_btn, daejeon_benefit_btn,
@@ -72,6 +77,30 @@ public class MapActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         isConnected = isNetworkConnected(this);
+
+        /* 이 액티비티에 들어올 때마다 위치정보 권한을 허용했는지 확인한다
+        * 권한 허용이 안 돼 있다면 AlertDialog로 권한 허용 안 돼 있다고 알린 다음 메인 화면으로 보내버린다
+        * 레트로핏 메서드 호출할 때도 먼저 권한 체크한 다음 허용됐을 경우에만 호출하도록 한다 */
+        // 위치권한 허용 확인
+        if (ContextCompat.checkSelfPermission(MapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            // 권한 요청
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION))
+            {
+                Toast.makeText(this, "위치정보 권한 거부됨", Toast.LENGTH_SHORT).show();
+                finish();
+
+            }
+            else
+            {
+                ActivityCompat.requestPermissions(MapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION);
+            }
+        }
+        else
+        {
+            // 권한 있을 경우 수행할 처리
+        }
+
         if (!isConnected)
         {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -156,6 +185,12 @@ public class MapActivity extends AppCompatActivity
                     number_of_benefit = response.body();
                     Log.e(TAG, "number_of_benefit = " + number_of_benefit);
                     jsonParsing(number_of_benefit);
+                }
+                else
+                {
+                    dialog.dismiss();
+                    Toast.makeText(MapActivity.this, "에러가 발생했습니다. 잠시 후 다시 시도해 주세요", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "실패 = " + response.body());
                 }
             }
 
@@ -609,4 +644,38 @@ public class MapActivity extends AppCompatActivity
         return false;
     }
 
+    /* 위치정보 권한 요청 */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        switch (requestCode)
+        {
+            case 1004 :
+                // 거부할 경우
+                AlertDialog.Builder builder = new AlertDialog.Builder(MapActivity.this);
+                builder.setTitle("앱 권한 요청")
+                        .setMessage("지도 기능을 이용하시려면 애플리케이션 정보 > 권한에서 위치 권한을 허용해 주세요")
+                        .setPositiveButton("예", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                startActivity(intent);
+                                dialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton("다음에 할래요", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                Toast.makeText(MapActivity.this, "위치 권한 허용하지 않음", Toast.LENGTH_SHORT).show();
+                                dialog.cancel();
+                                finish();
+                            }
+                        }).show();
+                break;
+        }
+    }
 }
