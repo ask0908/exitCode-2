@@ -2,7 +2,6 @@ package com.psj.welfare.Adapter;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,43 +56,19 @@ public class ResultKeywordAdapter extends RecyclerView.Adapter<ResultKeywordAdap
         holder.keyword_category.setText(item.getWelf_category());
         holder.keyword_layout.setTag(position);
 
-        /* 첫 번째 요소만 빼고 구분자 뒤의 요소를 전부 없애는 로직 */
+        /* 구분자를 기준으로 앞의 요소를 제외한 뒤의 요소를 전부 없애는 로직 */
+        // 서버에서 받아온 모든 데이터가 아래 리스트에 담겨진다. 아래에서 뷰에 변화를 줄 때 위치를 참고하기 위해 이 리스트에 모든 데이터를 담아두고
+        // position 값을 통해 수정한다
         List<String> item_list = Collections.singletonList(lists.get(position).getWelf_category());
-        for (int i = 0; i < item_list.size(); i++)
-        {
-            Log.e(TAG, "item_list : " + item_list.get(i));
-        }
 
-        // 중복 제거
-//        boolean hasDuplicate = false;
-//        for (int i = 0; i < lists.size(); i++)
-//        {
-//            if (lists.get(i).getWelf_category().equals(item.getWelf_category()))
-//            {
-//                hasDuplicate = true;
-//                Log.e(TAG, "카테고리 가져오는 것 확인 : " + lists.get(i).getWelf_category());
-//                Log.e(TAG, "item.getWelf_category() : " + item.getWelf_category());
-//                break;
-//            }
-//        }
-//        if (!hasDuplicate)
-//        {
-//            if (item.getWelf_category().contains(";; "))
-//            {
-//                other_list.add(item);
-//                Log.e(TAG, "other_list : " + other_list);
-//            }
-//        }
-
-        // 리스트의 요소 뒤에 붙어있는 ;; 구분자들을 전부 공백으로 바꾼다
+        // 서버에서 받아온 요소들을 하나씩 아이템에 출력시킬 때 사용할 StringBuilder
+        // StringBuilder로 문자열들을 '문자열+구분자+문자열' 형태로 묶은 다음, 구분자를 기준으로 파싱해서 아이템에 하나씩 나오도록 한다
         StringBuilder listToString = new StringBuilder();
         for (String str : item_list)
         {
             listToString.append(str);
         }
-//        Log.e("ResultKeywordAdapter", "listToString : " + listToString.toString());
         String after_str = listToString.toString().split(";; ")[0];
-//        Log.e("ResultKeywordAdapter", "';; ' 구분자 처리 후 : " + after_str);
 
         for (int i = 0; i < lists.size(); i++)
         {
