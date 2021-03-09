@@ -45,8 +45,8 @@
         android:ellipsize="end"
         android:fontFamily="@font/nanum_barun_gothic_bold"
         android:lineSpacingExtra="10sp"
-        android:maxLines="2"
-        android:text="인플루엔자 국가예방접종 지원사업"
+        android:gravity="center"
+        android:maxLines="3"
         android:textColor="@color/colorBlack"
         android:textSize="12sp" />
 

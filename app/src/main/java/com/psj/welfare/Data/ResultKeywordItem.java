@@ -11,9 +11,9 @@ public class ResultKeywordItem
     {
     }
 
-    public ResultKeywordItem(String parent_category)
+    public ResultKeywordItem(String welf_category)
     {
-        this.parent_category = parent_category;
+        this.welf_category = welf_category;
     }
 
     public String getParent_category()

@@ -321,6 +321,10 @@ public class ResultBenefitActivity extends AppCompatActivity
             spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 11, 14, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             result_benefit_title.setText(spannableString);
         }
+        for (int i = 0; i < list.size(); i++)
+        {
+            Log.e(TAG, "list 출력 : " + list.get(i).getWelf_category());
+        }
         bottom_adapter = new CategorySearchResultAdapter(this, list, bottom_itemClickListener);
         bottom_adapter.setOnItemClickListener(new CategorySearchResultAdapter.ItemClickListener()
         {

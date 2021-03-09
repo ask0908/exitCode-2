@@ -22,5 +22,7 @@
     <color name="divider_color">#CDCED0</color>
     <color name="bottom_divider_color">#ECF0F3</color>
     <color name="red_background_forward">#f7f93a</color>
+    <color name="main_text_color">#E47D92</color>
+    <color name="main_background_color">#FEF2F4</color>
 
 </resources>

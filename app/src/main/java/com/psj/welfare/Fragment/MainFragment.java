@@ -5,6 +5,7 @@ import android.app.ActivityOptions;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationManager;
@@ -23,7 +24,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,7 +41,6 @@ import com.psj.welfare.API.ApiClient;
 import com.psj.welfare.API.ApiInterface;
 import com.psj.welfare.Activity.DetailBenefitActivity;
 import com.psj.welfare.Activity.LoginActivity;
-import com.psj.welfare.Activity.MapActivity;
 import com.psj.welfare.Activity.YoutubeActivity;
 import com.psj.welfare.Adapter.HorizontalYoutubeAdapter;
 import com.psj.welfare.Adapter.RecommendAdapter;
@@ -59,7 +59,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -76,14 +75,11 @@ public class MainFragment extends Fragment
 {
     public static final String TAG = "MainFragment"; // 로그 찍을 때 사용하는 TAG
 
-    CardView main_fragment_cardview;
+    ConstraintLayout main_middle_layout;
 
     // 구글 로그인 테스트 위한 카톡 탈퇴 버튼
     Button kakao_unlink_btn;
     Button kakao_logout_btn;
-
-    // 지도 버튼
-    Button map_btn;
 
     // 유저의 위치정보를 바꿀 때(서울특별시 -> 서울) 쓰는 변수
     String user_area;
@@ -142,13 +138,10 @@ public class MainFragment extends Fragment
 
     String encode_str;
 
+    private final int LOCATION = 1001;
+
     // 구글 애널리틱스
     private FirebaseAnalytics analytics;
-
-    String check_nickname = null;
-    String check_age = null;
-    String check_area = null;
-    String check_gender = null;
 
     public MainFragment()
     {
@@ -165,11 +158,10 @@ public class MainFragment extends Fragment
                              Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
+        main_middle_layout = view.findViewById(R.id.main_middle_layout);
         recom_recycler = view.findViewById(R.id.recom_recycler);
         recommend_welfare_textview = view.findViewById(R.id.recommend_welfare_textview);
         recommend_welfare_count = view.findViewById(R.id.recommend_welfare_count);
-        main_fragment_cardview = view.findViewById(R.id.main_fragment_cardview);
-        map_btn = view.findViewById(R.id.map_btn);
         find_welfare_btn = view.findViewById(R.id.find_welfare_btn);
         youtube_video_recyclerview = view.findViewById(R.id.youtube_video_recyclerview);
         kakao_logout_btn = view.findViewById(R.id.kakao_logout_btn);
@@ -204,10 +196,11 @@ public class MainFragment extends Fragment
 
         if (!checkLocationServicesStatus())
         {
-            //
+            // 위치정보 권한 허용된 경우
         }
         else
         {
+            // 위치정보 권한이 없는 경우
             TedPermission.with(getActivity())
                     .setRationaleMessage("지역별 혜택 지도 기능을 이용하시려면 위치 정보 권한 설정이 필요합니다")
                     .setPermissionListener(permissionListener)
@@ -219,7 +212,7 @@ public class MainFragment extends Fragment
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
 
         // 로그아웃하지 않았는데도 사용자 정보가 없을 경우 정보 입력 화면으로 이동시킨다
-        if (sharedPreferences.getBoolean("logout", false))
+        if (!sharedPreferences.getBoolean("logout", false))
         {
             if (sharedPreferences.getString("user_nickname", "").equals("") ||
                     sharedPreferences.getString("user_age", "").equals("") ||
@@ -266,12 +259,12 @@ public class MainFragment extends Fragment
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
         if (!sharedPreferences.getString("user_category", "").equals(""))
         {
-            main_fragment_cardview.setVisibility(View.GONE);
+            main_middle_layout.setVisibility(View.GONE);
         }
         // 로그아웃한 상태고 닉네임이 없으면 혜택찾기 버튼 있는 카드뷰를 보이게 한다
         if (sharedPreferences.getBoolean("logout", false) || sharedPreferences.getString("user_nickname", "").equals(""))
         {
-            main_fragment_cardview.setVisibility(View.VISIBLE);
+            main_middle_layout.setVisibility(View.VISIBLE);
             recommend_welfare_textview.setVisibility(View.GONE);
             recommend_welfare_count.setVisibility(View.GONE);
             recom_recycler.setVisibility(View.GONE);
@@ -279,7 +272,7 @@ public class MainFragment extends Fragment
         // logout이 false면 로그인한 상태기 때문에 맞춤혜택들을 보여주고 혜택찾기 버튼을 없앤다
         else
         {
-            main_fragment_cardview.setVisibility(View.GONE);
+            main_middle_layout.setVisibility(View.GONE);
             recommend_welfare_textview.setVisibility(View.VISIBLE);
             recommend_welfare_count.setVisibility(View.VISIBLE);
             recom_recycler.setVisibility(View.VISIBLE);
@@ -430,112 +423,6 @@ public class MainFragment extends Fragment
             }).show();
         });
 
-        // 내 주변 혜택 찾기 버튼
-        map_btn.setOnClickListener(new OnSingleClickListener()
-        {
-            @Override
-            public void onSingleClick(View v)
-            {
-                // 유저의 위치정보를 찾는 클래스의 객체 생성(Fragment기 때문에 인자로 getActivity()를 넣어야 함!!)
-                gpsTracker = new GpsTracker(getActivity());
-
-                // 유저의 위치에서 위도, 경도값을 가져와 변수에 저장
-                double latitude = gpsTracker.getLatitude();
-                double longitude = gpsTracker.getLongitude();
-
-                // 위도, 경도값으로 주소를 만들어 String 변수에 저장
-                String address = getCurrentAddress(latitude, longitude);
-
-                // String 변수 안의 값을 " "을 기준으로 split해서 'OO구' 글자를 빼낸다
-                split_list = new ArrayList<>();
-                String[] result = address.split(" ");
-                split_list.addAll(Arrays.asList(result));
-
-                // OO시, OO구에 대한 정보를 각각 변수에 집어넣는다
-                city = split_list.get(1);
-                district = split_list.get(2);
-
-                // 들어있는 값에 따라 지역명을 바꿔서 변수에 저장한다
-                if (address.contains("서울특별시"))
-                {
-                    user_area = "서울";
-                }
-                if (address.contains("인천광역시"))
-                {
-                    user_area = "인천";
-                }
-                if (address.contains("강원도"))
-                {
-                    user_area = "강원";
-                }
-                if (address.contains("경기"))
-                {
-                    user_area = "경기";
-                }
-                if (address.contains("충청북도"))
-                {
-                    user_area = "충북";
-                }
-                if (address.contains("충청남도"))
-                {
-                    user_area = "충남";
-                }
-                if (address.contains("세종시"))
-                {
-                    user_area = "세종";
-                }
-                if (address.contains("대전시"))
-                {
-                    user_area = "대전";
-                }
-                if (address.contains("경상북도"))
-                {
-                    user_area = "경북";
-                }
-                if (address.contains("울산"))
-                {
-                    user_area = "울산";
-                }
-                if (address.contains("대구"))
-                {
-                    user_area = "대구";
-                }
-                if (address.contains("부산광역시"))
-                {
-                    user_area = "부산";
-                }
-                if (address.contains("경상남도"))
-                {
-                    user_area = "경남";
-                }
-                if (address.contains("전라북도"))
-                {
-                    user_area = "전북";
-                }
-                if (address.contains("광주광역시"))
-                {
-                    user_area = "광주";
-                }
-                if (address.contains("전라남도"))
-                {
-                    user_area = "전남";
-                }
-                if (address.contains("제주도"))
-                {
-                    user_area = "제주";
-                }
-
-                // 변환이 끝난 지역명은 인텐트에 담아서 지도 화면으로 보낸다
-                Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "지도 화면으로 이동");
-                analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-                Intent intent = new Intent(getActivity(), MapActivity.class);
-                intent.putExtra("user_area", user_area);
-                intent.putExtra("city", city);
-                intent.putExtra("district", district);
-                startActivity(intent);
-            }
-        });
 
     }
 
@@ -785,6 +672,27 @@ public class MainFragment extends Fragment
 
         /* isProviderEnabled() : 지정된 provider의 현재 활성화 / 비활성화 상태를 리턴하는 메서드 */
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+
+    // TODO : 권한 결과
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        switch (requestCode)
+        {
+            case LOCATION :
+            {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    Toast.makeText(getActivity(), "위치정보 권한 허용돼 있음", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(getActivity(), "위치정보 권한 거부돼 있음", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+        }
     }
 
     /* API 사용 후 결과를 확인할 때 사용하는 메서드 */

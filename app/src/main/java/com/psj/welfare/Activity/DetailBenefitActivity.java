@@ -1,6 +1,7 @@
 package com.psj.welfare.Activity;
 
 import android.animation.ObjectAnimator;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -31,16 +32,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import com.psj.welfare.API.ApiClient;
-import com.psj.welfare.API.ApiInterface;
-import com.psj.welfare.Adapter.FacilitiesAdapter;
-import com.psj.welfare.Adapter.ReviewAdapter;
-import com.psj.welfare.Custom.OnSingleClickListener;
-import com.psj.welfare.Custom.RecyclerViewEmptySupport;
-import com.psj.welfare.Data.ReviewItem;
-import com.psj.welfare.Data.ReviewStatsItem;
-import com.psj.welfare.R;
-import com.psj.welfare.Util.LogUtil;
 import com.borjabravo.readmoretextview.ReadMoreTextView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -57,6 +48,16 @@ import com.kakao.network.callback.ResponseCallback;
 import com.like.LikeButton;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
+import com.psj.welfare.API.ApiClient;
+import com.psj.welfare.API.ApiInterface;
+import com.psj.welfare.Adapter.FacilitiesAdapter;
+import com.psj.welfare.Adapter.ReviewAdapter;
+import com.psj.welfare.Custom.OnSingleClickListener;
+import com.psj.welfare.Custom.RecyclerViewEmptySupport;
+import com.psj.welfare.Data.ReviewItem;
+import com.psj.welfare.Data.ReviewStatsItem;
+import com.psj.welfare.R;
+import com.psj.welfare.Util.LogUtil;
 
 import org.eazegraph.lib.charts.BarChart;
 import org.eazegraph.lib.models.BarModel;
@@ -99,7 +100,7 @@ public class DetailBenefitActivity extends AppCompatActivity
 
     // 서버에서 온 값을 파싱할 때 사용할 변수
     String welf_id, welf_target, welf_contents, welf_apply, welf_contact, welf_period, welf_end, welf_local, welf_bookmark, push_welf_local, welfare_target,
-    welfare_target_tag, welf_image, welf_wording = "";
+            welfare_target_tag, welf_image, welf_wording = "";
 
     // 리뷰 데이터를 조회해서 서버에서 온 값을 파싱할 때 사용할 변수 (email은 85번 줄에 이미 있어서 안 씀)
     String id, content, writer, create_date, like_count, star_count, image_url, review_count = "";
@@ -237,31 +238,31 @@ public class DetailBenefitActivity extends AppCompatActivity
         {
             switch (user_area)
             {
-                case "서울특별시" :
+                case "서울특별시":
                     user_area = "서울";
                     break;
 
-                case "인천광역시" :
+                case "인천광역시":
                     user_area = "인천";
                     break;
 
-                case "대전광역시" :
+                case "대전광역시":
                     user_area = "대전";
                     break;
 
-                case "울산광역시" :
+                case "울산광역시":
                     user_area = "울산";
                     break;
 
-                case "부산광역시" :
+                case "부산광역시":
                     user_area = "부산";
                     break;
 
-                case "광주광역시" :
+                case "광주광역시":
                     user_area = "광주";
                     break;
 
-                case "대구광역시" :
+                case "대구광역시":
                     user_area = "대구";
                     break;
 
@@ -418,7 +419,8 @@ public class DetailBenefitActivity extends AppCompatActivity
         }
 
         // 공유 모양 이미지뷰 클릭 리스너
-        review_share_imageview.setOnClickListener(v -> {
+        review_share_imageview.setOnClickListener(v ->
+        {
             /* 카카오 링크 적용 */
             FeedTemplate params = FeedTemplate
                     // 제목, 이미지 url, 이미지 클릭 시 이동하는 위치?를 입력한다
@@ -594,10 +596,15 @@ public class DetailBenefitActivity extends AppCompatActivity
     }
 
     /* 리뉴얼된 혜택 상세정보들을 가져오는 메서드 (UI 변경으로 jsonParsing() 안의 값들 세팅되는 뷰 바꿔야 함)
-    * ContentFragment로 이동시킨다 */
+     * ContentFragment로 이동시킨다 */
     void getWelfareInformation()
     {
-        String token = sharedPreferences.getString("token" ,"");
+        final ProgressDialog dialog = new ProgressDialog(DetailBenefitActivity.this);
+        dialog.setMax(100);
+        dialog.setMessage("로딩중입니다...");
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.show();
+        String token = sharedPreferences.getString("token", "");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         sharedPreferences = getSharedPreferences("app_pref", 0);
         String session = sharedPreferences.getString("sessionId", "");
@@ -609,12 +616,15 @@ public class DetailBenefitActivity extends AppCompatActivity
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
+                    dialog.dismiss();
                     String result = response.body();
                     jsonParsing(result);
                     Log.e(TAG, "성공 = " + response.body());
                 }
                 else
                 {
+                    dialog.dismiss();
+                    Toast.makeText(DetailBenefitActivity.this, "에러가 발생했습니다. 잠시 후 다시 시도해 주세요", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "실패 = " + response.body());
                 }
             }
@@ -622,6 +632,8 @@ public class DetailBenefitActivity extends AppCompatActivity
             @Override
             public void onFailure(Call<String> call, Throwable t)
             {
+                dialog.dismiss();
+                Toast.makeText(DetailBenefitActivity.this, "에러가 발생했습니다. 잠시 후 다시 시도해 주세요", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "에러 = " + t.getMessage());
             }
         });
@@ -774,7 +786,6 @@ public class DetailBenefitActivity extends AppCompatActivity
     }
 
     // 서버에서 가져온 String 형태의 혜택 정보 JSON 값들을 파싱한 뒤, 특수문자를 콤마로 바꿔서 뷰에 set하는 메서드
-    /* GSON 써서도 해보자 */
     private void jsonParsing(String result)
     {
         try
@@ -840,51 +851,99 @@ public class DetailBenefitActivity extends AppCompatActivity
             /* target_tag는 상세조건을 누르면 나오는 다이얼로그에서 보여준다. 아래는 구분자 제거하는 처리 */
             if (!welfare_target_tag.equals(""))
             {
-                String[] before_str = welfare_target_tag.split("#");
-                List<String> tag_list = new ArrayList<>();
-                for (String str : before_str)
+                if (welfare_target_tag.contains("#"))
                 {
-                    tag_list.add(str);
+                    String[] before_str = welfare_target_tag.split("#");
+                    List<String> tag_list = new ArrayList<>();
+                    for (String str : before_str)
+                    {
+                        tag_list.add(str);
+                    }
+                    Log.e("ff", "태그의 # 제거 후 결과 : " + tag_list);
+                    tag_list.remove(0);
+                    Log.e("ff", "0번 지운 후 결과 : " + tag_list);
+                    for (int i = 0; i < tag_list.size(); i++)
+                    {
+                        String letter = tag_list.get(i);
+                        String replace_letter = letter.replaceAll("/", "");
+                        tag_list.set(i, replace_letter);
+                    }
+                    Log.e("ff", "'/' 문자열 지운 결과 : " + tag_list);
+                    for (int i = 0; i < tag_list.size(); i++)
+                    {
+                        String letter = tag_list.get(i);
+                        String replace_letter = letter.replaceAll(";;", ",");
+                        tag_list.set(i, replace_letter);
+                    }
+                    Log.e(TAG, ";;를 ,로 바꾼 결과 : " + tag_list);
+                    /* StringBuilder로 ArrayList 안의 문자열들 사이에 ,를 섞어서 이어붙인다 */
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < tag_list.size(); i++)
+                    {
+                        sb.append("#" + tag_list.get(i) + ", ");
+                    }
+                    String sb_result = sb.toString();
+                    Log.e("ff", "콤마 붙임 : " + sb_result);
+                    // 마지막의 ',' 문자를 지운다
+                    if (!sb_result.equals(""))
+                    {
+                        erase_str = sb_result.substring(0, sb_result.lastIndexOf(","));
+                        Log.e("ff", "마지막의 콤마 삭제 : " + erase_str);
+                    }
+                    // 콤마를 개행문자로 바꿔서 다이얼로그를 누르면 최종적으로 보일 문자열을 만든다
+                    erase_str = erase_str.replaceAll(", ", "\n");
+                    Log.e(TAG, "콤마->개행문자 변경 결과 : " + erase_str);
+                    if (!erase_str.equals("") && erase_str.lastIndexOf("\n") != -1)
+                    {
+                        first_welf_target = erase_str.substring(0, erase_str.lastIndexOf("\n"));
+                    }
+                    Log.e(TAG, "최종적으로 다이얼로그에 보여야 하는 문구 : " + erase_str);
                 }
-                Log.e("ff", "태그의 # 제거 후 결과 : " + tag_list);
-                tag_list.remove(0);
-                Log.e("ff", "0번 지운 후 결과 : " + tag_list);
-                for (int i = 0; i < tag_list.size(); i++)
-                {
-                    String letter = tag_list.get(i);
-                    String replace_letter = letter.replaceAll("/", "");
-                    tag_list.set(i, replace_letter);
-                }
-                Log.e("ff", "'/' 문자열 지운 결과 : " + tag_list);
-                for (int i = 0; i < tag_list.size(); i++)
-                {
-                    String letter = tag_list.get(i);
-                    String replace_letter = letter.replaceAll(";;", ",");
-                    tag_list.set(i, replace_letter);
-                }
-                Log.e(TAG, ";;를 ,로 바꾼 결과 : " + tag_list);
-                /* StringBuilder로 ArrayList 안의 문자열들 사이에 ,를 섞어서 이어붙인다 */
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < tag_list.size(); i++)
-                {
-                    sb.append("#" + tag_list.get(i) + ", ");
-                }
-                String sb_result = sb.toString();
-                Log.e("ff", "콤마 붙임 : " + sb_result);
-                // 마지막의 ',' 문자를 지운다
-                if (!sb_result.equals(""))
-                {
-                    erase_str = sb_result.substring(0, sb_result.lastIndexOf(","));
-                    Log.e("ff", "마지막의 콤마 삭제 : " + erase_str);
-                }
-                // 콤마를 개행문자로 바꿔서 다이얼로그를 누르면 최종적으로 보일 문자열을 만든다
-                erase_str = erase_str.replaceAll(", ", "\n");
-                Log.e(TAG, "콤마->개행문자 변경 결과 : " + erase_str);
-                if (!erase_str.equals("") && erase_str.lastIndexOf("\n") != -1)
-                {
-                    first_welf_target = erase_str.substring(0, erase_str.lastIndexOf("\n"));
-                }
-                Log.e(TAG, "최종적으로 다이얼로그에 보여야 하는 문구 : " + erase_str);
+//                String[] before_str = welfare_target_tag.split("#");
+//                List<String> tag_list = new ArrayList<>();
+//                for (String str : before_str)
+//                {
+//                    tag_list.add(str);
+//                }
+//                Log.e("ff", "태그의 # 제거 후 결과 : " + tag_list);
+//                tag_list.remove(0);
+//                Log.e("ff", "0번 지운 후 결과 : " + tag_list);
+//                for (int i = 0; i < tag_list.size(); i++)
+//                {
+//                    String letter = tag_list.get(i);
+//                    String replace_letter = letter.replaceAll("/", "");
+//                    tag_list.set(i, replace_letter);
+//                }
+//                Log.e("ff", "'/' 문자열 지운 결과 : " + tag_list);
+//                for (int i = 0; i < tag_list.size(); i++)
+//                {
+//                    String letter = tag_list.get(i);
+//                    String replace_letter = letter.replaceAll(";;", ",");
+//                    tag_list.set(i, replace_letter);
+//                }
+//                Log.e(TAG, ";;를 ,로 바꾼 결과 : " + tag_list);
+//                /* StringBuilder로 ArrayList 안의 문자열들 사이에 ,를 섞어서 이어붙인다 */
+//                StringBuilder sb = new StringBuilder();
+//                for (int i = 0; i < tag_list.size(); i++)
+//                {
+//                    sb.append("#" + tag_list.get(i) + ", ");
+//                }
+//                String sb_result = sb.toString();
+//                Log.e("ff", "콤마 붙임 : " + sb_result);
+//                // 마지막의 ',' 문자를 지운다
+//                if (!sb_result.equals(""))
+//                {
+//                    erase_str = sb_result.substring(0, sb_result.lastIndexOf(","));
+//                    Log.e("ff", "마지막의 콤마 삭제 : " + erase_str);
+//                }
+//                // 콤마를 개행문자로 바꿔서 다이얼로그를 누르면 최종적으로 보일 문자열을 만든다
+//                erase_str = erase_str.replaceAll(", ", "\n");
+//                Log.e(TAG, "콤마->개행문자 변경 결과 : " + erase_str);
+//                if (!erase_str.equals("") && erase_str.lastIndexOf("\n") != -1)
+//                {
+//                    first_welf_target = erase_str.substring(0, erase_str.lastIndexOf("\n"));
+//                }
+//                Log.e(TAG, "최종적으로 다이얼로그에 보여야 하는 문구 : " + erase_str);
             }
 
             symbolChange(welf_target, welf_contents, welf_contact);
@@ -901,7 +960,7 @@ public class DetailBenefitActivity extends AppCompatActivity
 
         for (int i = 0; i < conditions_array.length; i++)
         {
-            conditions_array[i]  = conditions_array[i].replace("#", "\n#");
+            conditions_array[i] = conditions_array[i].replace("#", "\n#");
         }
         Log.e(TAG, "수정 후 conditions_array : " + Arrays.toString(conditions_array));
 
@@ -972,7 +1031,8 @@ public class DetailBenefitActivity extends AppCompatActivity
             rightTextView[i].setTextColor(getResources().getColor(R.color.colorBlack));
             // 좌측 대상과 맞는 조건만을 우측 상세조건을 누르면 보여줘야 한다
             int tag_num = i; // 곧바로 for문에 사용한 i를 get(i) 꼴로 가져오면 에러가 나서 이렇게 해야 한다
-            rightTextView[i].setOnClickListener(v -> {
+            rightTextView[i].setOnClickListener(v ->
+            {
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "상세보기 화면에서 대상의 상세조건 확인");
                 analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);

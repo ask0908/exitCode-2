@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -54,6 +56,12 @@ public class PushGatherFragment extends Fragment
     // 푸시 알림 변수 바껴서 다시 생성, welf_name, welf_local은 일치
     String welf_category, push_tag, welf_period, welf_end;
 
+    /* 어댑터에서 데이터를 담은 리스트를 액티비티에서 사용하기 위한 변수 */
+    List<PushGatherItem> activity_list;
+
+    // 알림 삭제 결과 확인용 변수
+    String status, message;
+
     public PushGatherFragment()
     {
     }
@@ -90,6 +98,8 @@ public class PushGatherFragment extends Fragment
         }
         push_toolbar.setTitle("알림");
 
+        activity_list = new ArrayList<>();
+
         /* 서버에 저장된 푸시 데이터들을 가져오는 메서드 */
         getPushData();
 
@@ -97,6 +107,33 @@ public class PushGatherFragment extends Fragment
         push_layout_recycler.setHasFixedSize(true);
         push_layout_recycler.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         push_layout_recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT)
+        {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target)
+            {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
+            {
+                final int position = viewHolder.getAdapterPosition();
+                switch (direction)
+                {
+                    case ItemTouchHelper.LEFT :
+                        activity_list.remove(position);
+                        adapter.notifyItemRemoved(position);
+                        // 왼쪽으로 밀어서 푸시 알림 삭제
+                        removePush(pushId);
+                        break;
+                }
+            }
+        };
+
+        ItemTouchHelper helper = new ItemTouchHelper(callback);
+        helper.attachToRecyclerView(push_layout_recycler);
     }
 
     /* 푸시 알림 받으면 수신 상태값을 변경하는 메서드 */
@@ -145,8 +182,6 @@ public class PushGatherFragment extends Fragment
         String session = app_pref.getString("sessionId", "");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Call<String> call = apiInterface.getPushData(token, session, "pushList");
-        Log.e("푸시 확인", "세션 아이디 : " + session);
-        Log.e("푸시 확인", "토큰 : " + token);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -231,6 +266,11 @@ public class PushGatherFragment extends Fragment
                 startActivity(intent);
             }
         });
+        activity_list = adapter.getList();
+        for (int i = 0; i < activity_list.size(); i++)
+        {
+            Log.e(TAG, "activity_list = " + activity_list.get(i));
+        }
         push_layout_recycler.setAdapter(adapter);
     }
 
@@ -271,6 +311,57 @@ public class PushGatherFragment extends Fragment
                 Log.e(TAG, "에러 : " + t.getMessage());
             }
         });
+    }
+
+    /* 알림 삭제 메서드 */
+    private void removePush(String pushId)
+    {
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        app_pref = getActivity().getSharedPreferences("app_pref", 0);
+        String token = app_pref.getString("token", "");
+        String session = app_pref.getString("sessionId", "");
+        Call<String> call = apiInterface.removePush(session, token, pushId, "delete");
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "알림 삭제 성공 : " + result);
+                    toastParse(result);
+                }
+                else
+                {
+                    Log.e(TAG, "알림 삭제 실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "알림 삭제 에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    private void toastParse(String result)
+    {
+        try
+        {
+            JSONObject jsonObject = new JSONObject(result);
+            status = jsonObject.getString("Status");
+            message = jsonObject.getString("Message");
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        if (status.equals("200"))
+        {
+            Toast.makeText(getActivity(), "알림 삭제가 완료되었습니다", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /* API 사용 후 결과를 확인할 때 사용하는 메서드, 여기서 쓰진 않고 retrofit 객체화 시 client 객체를 설정해 사용한다 */

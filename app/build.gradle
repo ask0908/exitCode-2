@@ -130,4 +130,10 @@ dependencies {
     // Use for HttpLoggingInterceptor
     implementation group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: '4.5.0'
 
+    // Swipe Recyclerview
+    implementation 'com.github.AItsuki:SwipeMenuRecyclerView:1.1.4'
+
+    // 로띠
+    implementation 'com.airbnb.android:lottie:3.0.7'
+
 }

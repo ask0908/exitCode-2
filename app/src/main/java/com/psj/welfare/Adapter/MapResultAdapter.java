@@ -1,7 +1,6 @@
 package com.psj.welfare.Adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.psj.welfare.Data.MapResultItem;
 import com.psj.welfare.R;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,9 +23,6 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
     private Context context;
     private List<MapResultItem> lists;
     private ItemClickListener itemClickListener;
-
-    // 중복 처리에 썼던 리스트
-    List<String> str_list = new ArrayList<>();
 
     public void setOnItemClickListener(ItemClickListener itemClickListener)
     {
@@ -70,9 +65,9 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
         {
             listToString.append(str);
         }
-        String after_str = listToString.toString().split(";;")[0];
+        String after_str = listToString.toString().split(";; ")[0];
         holder.map_result_local.setText(after_str);
-        Log.e(TAG, "1번째 OO 지원 : " + after_str);
+//        Log.e(TAG, "1번째 OO 지원 : " + after_str);
         switch (after_str)
         {
             case "일자리 지원" :

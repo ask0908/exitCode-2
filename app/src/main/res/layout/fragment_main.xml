@@ -16,12 +16,13 @@
             android:id="@+id/main_fragment_textview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/bauhaus_bold"
+            android:fontFamily="@font/jalnan"
             android:gravity="center"
             android:padding="10dp"
-            android:text="UrBene fit"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="40sp"
+            android:text="혜택모아"
+            android:textColor="@color/main_text_color"
+            android:textSize="20sp"
+            android:background="@color/main_background_color"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -45,95 +46,86 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/main_fragment_cardview"
-            android:layout_width="match_parent"
-            android:layout_height="320dp"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="12dp"
-            android:elevation="30dp"
-            app:cardBackgroundColor="@color/app_top_color"
-            app:cardCornerRadius="15dp"
-            app:cardUseCompatPadding="true"
+        <!-- 실제로 빌드하면 그라데이션 배경이 오른쪽에 보이는 높이만큼 크지 않음 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/main_middle_layout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="1"
+            app:layout_constraintHeight_percent=".46"
+            android:background="@drawable/main_body_selector"
+            android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/main_fragment_textview">
 
-            <LinearLayout
-                android:id="@+id/main_middle_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimaryDark"
-                android:orientation="vertical"
-                android:weightSum="1"
-                app:layout_constraintEnd_toEndOf="parent"
+            <TextView
+                android:id="@+id/btn_left_textview"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:fontFamily="@font/jalnan"
+                android:gravity="center"
+                android:text="당신만 놓치고 있는"
+                android:textColor="@color/colorMainWhite"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/find_welfare_btn"
+                app:layout_constraintHeight_percent=".20"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/main_fragment_textview">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias=".05"
+                app:layout_constraintWidth_percent=".454" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+            <Button
+                android:id="@+id/find_welfare_btn"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/shadow_button_layer_list"
+                android:fontFamily="@font/jalnan"
+                android:lineSpacingExtra="6sp"
+                android:text="혜택 추천 받으러 가기"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_percent=".20"
+                app:layout_constraintHorizontal_bias=".95"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias=".005"
+                app:layout_constraintWidth_percent=".46" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintWidth_percent="1"
+                app:layout_constraintHeight_percent=".50"
+                app:layout_constraintVertical_bias=".70"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:orientation="vertical">
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/main_lottie"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight=".20"
-                    android:elevation="25dp"
-                    android:orientation="horizontal"
-                    android:weightSum="1">
-
-                    <TextView
-                        android:id="@+id/btn_left_textview"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        app:layout_constraintHeight_percent=".50"
-                        app:layout_constraintWidth_percent=".454"
-                        android:gravity="center"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/find_welfare_btn"
-                        android:fontFamily="@font/jalnan"
-                        android:text="당신만 놓치고 있는"
-                        android:textColor="@color/colorMainWhite"
-                        android:textSize="18sp" />
-
-                    <Button
-                        android:id="@+id/find_welfare_btn"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        app:layout_constraintHeight_percent=".69"
-                        app:layout_constraintWidth_percent=".46"
-                        app:layout_constraintHorizontal_bias=".95"
-                        app:layout_constraintVertical_bias=".005"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/shadow_button_layer_list"
-                        android:fontFamily="@font/jalnan"
-                        android:lineSpacingExtra="6sp"
-                        android:text="혜택 추천 받으러 가기"
-                        android:textColor="@color/colorPrimaryDark"
-                        android:textSize="14sp" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight=".90"
-                    android:scaleType="fitEnd"
-                    android:src="@drawable/main_fragment_image" />
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    app:lottie_autoPlay="true"
+                    app:lottie_fileName="main_lottie.json"
+                    app:lottie_loop="true" />
 
             </LinearLayout>
 
-        </androidx.cardview.widget.CardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
             android:id="@+id/recommend_welfare_textview"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintHeight_percent=".035"
+            app:layout_constraintHeight_percent=".055"
             app:layout_constraintWidth_percent=".956"
             android:background="@color/colorMainWhite"
             android:fontFamily="@font/jalnan"
@@ -146,13 +138,13 @@
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/main_fragment_cardview" />
+            app:layout_constraintTop_toBottomOf="@id/main_middle_layout" />
 
         <TextView
             android:id="@+id/recommend_welfare_count"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintHeight_percent=".025"
+            app:layout_constraintHeight_percent=".055"
             app:layout_constraintWidth_percent=".956"
             android:layout_marginTop="3dp"
             android:background="@color/colorMainWhite"
@@ -181,6 +173,7 @@
             android:id="@+id/youtube_video_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
             android:weightSum="1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -193,11 +186,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight=".80"
                 android:background="@color/colorMainWhite"
-                android:fontFamily="@font/jalnan"
+                android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp"
                 android:layout_marginTop="10dp"
-                android:text="유튜버들의 생생한 혜택 리뷰!"
+                android:text="유튜버들의 생생한 혜택 리뷰"
                 android:textColor="@color/colorBlack"
                 android:textSize="20sp" />
 
@@ -212,60 +205,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/youtube_video_layout"/>
-
-        <LinearLayout
-            android:id="@+id/map_img_and_btn_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimaryDark"
-            android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/youtube_video_recyclerview"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/jalnan"
-                android:paddingStart="12dp"
-                android:paddingTop="12dp"
-                android:paddingEnd="12dp"
-                android:text="내 주변 혜택 찾기"
-                android:textColor="@color/colorMainWhite"
-                android:textSize="24sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="1">
-
-                <Button
-                    android:id="@+id/map_btn"
-                    android:layout_width="0dp"
-                    android:layout_height="80dp"
-                    android:layout_gravity="center"
-                    android:layout_weight=".55"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginBottom="40dp"
-                    android:background="@drawable/shadow_button_layer_list"
-                    android:fontFamily="@font/jalnan"
-                    android:lineSpacingExtra="20sp"
-                    android:text="지도에서 혜택 확인"
-                    android:textSize="15sp"
-                    android:textColor="@color/colorPrimaryDark" />
-
-                <ImageView
-                    android:layout_width="0dp"
-                    android:layout_height="280dp"
-                    android:layout_marginStart="12dp"
-                    android:layout_weight=".45"
-                    android:src="@drawable/map_function_img" />
-
-            </LinearLayout>
-
-        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
