@@ -50,9 +50,12 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
         MapResultItem item = lists.get(position);
         // 제주도의 장애인 교통비;; 영상전화 사용료 지원 혜택의 중간에 ;;이 껴있어서 이걸 빼야 한다
         String welf_name = item.getWelf_name();
-        if (welf_name.contains(";; "))
+        if (welf_name != null)
         {
-            welf_name = welf_name.replace(";; ", ", ");
+            if (welf_name.contains(";; "))
+            {
+                welf_name = welf_name.replace(";; ", ", ");
+            }
         }
         holder.map_result_benefit_name.setText(welf_name);
         holder.map_result_layout.setTag(position);
