@@ -70,7 +70,6 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
         }
         String after_str = listToString.toString().split(";; ")[0];
         holder.map_result_local.setText(after_str);
-//        Log.e(TAG, "1번째 OO 지원 : " + after_str);
         switch (after_str)
         {
             case "일자리 지원" :
