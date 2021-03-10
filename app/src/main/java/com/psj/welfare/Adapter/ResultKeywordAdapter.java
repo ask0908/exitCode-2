@@ -68,10 +68,14 @@ public class ResultKeywordAdapter extends RecyclerView.Adapter<ResultKeywordAdap
         {
             listToString.append(str);
         }
+
+        /* 아래 코드를 실행하면 split()한 후 첫 번째 요소만을 담는다. 그래서 welf_category가 2개인 경우는 보여지지 않는 것 같다 */
         String after_str = listToString.toString().split(";; ")[0];
 
         for (int i = 0; i < lists.size(); i++)
         {
+            /* 아래에서 equals()를 쓸 경우 welf_category가 1개인 혜택만 보이고 2개 이상인 혜택은 필터링되서 보이지 않는다
+            * 그래서 equals()가 아닌 contains()를 써야 welf_category가 2개 이상인 혜택도 잘 필터링된다 */
             if (!lists.get(i).getWelf_category().contains(after_str))
             {
                 holder.keyword_category.setText(after_str);

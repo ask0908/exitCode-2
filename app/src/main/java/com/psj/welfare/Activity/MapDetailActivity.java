@@ -44,6 +44,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import retrofit2.Call;
@@ -626,7 +627,7 @@ public class MapDetailActivity extends AppCompatActivity
     }
 
     /* 서버에서 넘어온 JSONArray 안의 값들을 파싱해서 하단 리사이클러뷰에 보여주는 메서드
-    * 상단 리사이클러뷰(필터)를 눌렀을 때 하단 리사이클러뷰에 값이 바뀌도록 하는 처리도 여기서 수행한다 */
+     * 상단 리사이클러뷰(필터)를 눌렀을 때 하단 리사이클러뷰에 값이 바뀌도록 하는 처리도 여기서 수행한다 */
     private void jsonParse(String number_of_benefit)
     {
         item_list = new ArrayList<>();
@@ -667,7 +668,6 @@ public class MapDetailActivity extends AppCompatActivity
                         ResultKeywordItem keyword = new ResultKeywordItem();
                         Log.e(TAG, "category_array : " + category_array[j]);
                         keyword.setWelf_category(category_array[j]);
-//                        keyword.setWelf_name(keywordItem.getWelf_name());   // 취업 지원 카테고리는 나오는데 취업 지원 관련 혜택은 나오지 않아서 추가해 본 코드
                         keyword_list.add(keyword);
                     }
                     // 상단 리사이클러뷰에 붙이기 위해 상단 리사이클러뷰 어댑터 초기화 시 사용하는 모델 클래스의 객체를 생성해서
@@ -739,7 +739,7 @@ public class MapDetailActivity extends AppCompatActivity
         StringBuilder welfareNameBuilder = new StringBuilder();     // 하단 리사이클러뷰에 보일 혜택명들을 담을 StringBuilder
 
         /* 중복처리를 하기 위해 ';;' 구분자를 한번 더 붙인 다음 이를 파싱해서 HashSet에 넣어 중복되는 값들을 없애는 처리를 수행했다
-        * 일을 2번 하는 느낌이라 이 부분은 나중에 확인한다 */
+         * 일을 2번 하는 느낌이라 이 부분은 나중에 확인한다 */
         // 상단 리사이클러뷰에 쓰는 리스트의 크기만큼 반복해서 'OO 지원' 사이사이에 ';;'을 붙인다
         for (int i = 0; i < keyword_list.size(); i++)
         {
@@ -760,8 +760,10 @@ public class MapDetailActivity extends AppCompatActivity
 
         // split() 처리 후 중복되는 것들을 없애기 위해 HashSet을 썼다
         // 저장 순서가 중요할 것 같아서 LinkedHashSet을 써 봤는데 HashSet을 썼을 때와 딱히 큰 차이를 느끼지 못해서 좀 더 손에 익은 HashSet을 썼다
-        arr = new HashSet<>(Arrays.asList(arr)).toArray(new String[0]);
+        arr = new LinkedHashSet<>(Arrays.asList(arr)).toArray(new String[0]);
         nameArr = new HashSet<>(Arrays.asList(nameArr)).toArray(new String[0]);
+
+        Log.e(TAG, "LinkedHashSet 변환 결과 : " + Arrays.toString(arr));
 
         // String[] arr 안에 들어있는 데이터 양만큼 반복문을 돌리며 setter로 welf_category를 넣기 위해 객체를 만들고, 아래 for문에서 setter로 값들을 박는다
         keyword_list.clear();
@@ -771,7 +773,6 @@ public class MapDetailActivity extends AppCompatActivity
             // setter 사용을 위한 객체 생성
             ResultKeywordItem item = new ResultKeywordItem();
             item.setWelf_category(arr[i]);
-            // keyword_list에 setWelf_name()을 해서 'OO 지원'에 해당하는 혜택들을 넣어야 하는데 setter()의 인자로 뭘 넣어야 할까?
             item.setWelf_name(nameArr[i]);
             keyword_list.add(item);
         }
@@ -817,8 +818,8 @@ public class MapDetailActivity extends AppCompatActivity
                 // 다른 카테고리를 선택해 결과를 조회한 후 다시 전체를 눌렀을 때 처음 이 화면에 들어왔을 때 봤던 검색결과를 다시 보여줘야 한다
                 /* 서버에서 지역별 혜택 개수 받아오는 메서드 */
                 getNumberOfBenefit();
-                Log.e(TAG, "선택한 지역 : " + area);
                 Log.e(TAG, "전체 클릭");
+                Log.e(TAG, "선택한 지역 : " + area);
             }
             else
             {
@@ -852,7 +853,7 @@ public class MapDetailActivity extends AppCompatActivity
                     MapResultItem item = new MapResultItem();
                     // 상단 리사이클러뷰에서 선택한 'OO 지원'이 하단 리사이클러뷰에서 쓰이는 리스트에서 획득한 'OO 지원'과 같으면
                     // other_list(하단 리사이클러뷰에 새로 집어넣을 값들을 가질 리스트)에 넣는다
-                    if (item_list.get(i).getWelf_category().equals(keyword_list.get(position).getWelf_category()))
+                    if (item_list.get(i).getWelf_category().contains(keyword_list.get(position).getWelf_category()))
                     {
                         item.setWelf_category(keyword_list.get(position).getWelf_category());
                         item.setWelf_name(item_list.get(i).getWelf_name());
@@ -862,6 +863,7 @@ public class MapDetailActivity extends AppCompatActivity
 
                 // other_list의 크기는 필터를 누른 결과 보여지는 혜택들의 개수이므로 이 개수만큼 텍스트뷰 숫자를 바꾼다
                 map_result_textview.setText("당신이 놓치고 있는 " + area + " 지역의 혜택은\n총 " + other_list.size() + "개입니다");
+
                 // 결과수가 10 미만이라면 24~25 영역만 색을 바꾸도록 한다
                 if (other_list.size() < 10)
                 {
@@ -880,7 +882,6 @@ public class MapDetailActivity extends AppCompatActivity
                 map_adapter = new MapResultAdapter(MapDetailActivity.this, other_list, itemClickListener);
 
                 // 클릭 리스너도 새로 정의해서 혜택 선택 시 상세보기 페이지로 이동하도록 한다
-                /* 클릭 리스너가 안 먹힌다 */
                 map_adapter.setOnItemClickListener(((v, pos) -> {
                     String name = other_list.get(pos).getWelf_name();
                     Log.e(TAG, "혜택 이름 = " + name);
