@@ -472,6 +472,25 @@ public interface ApiInterface
 	);
 
 	/**
+	 * 모든 관심사 리스트 조회, 서버에 저장된 모든 관심사 리스트를 조회하는 메서드다
+	 * @param type - "all" 고정
+	 * @return
+	 * -
+	 * "Status":"200",
+	 * "Message":[
+	 * 				{
+	 *					 "10대,남자":"10대,가출,검정고시,통신비,자퇴,퇴학,중학생,고등학생,소년소녀가정,조손가정,한부모가족,가정위탁"
+	 *				 },
+	 * 				{
+	 * 					"10대,여자":"10대,가출,검정고시,통신비,자퇴,퇴학,중학생,고등학생,소년소녀가정,조손가정,한부모가족,가정위탁,성범죄"
+	 * 				}
+	 */
+	@GET("https://www.urbene-fit.com/user")
+	Call<String> getAllInterest(
+			@Query("type") String type
+	);
+
+	/**
 	 * 사용자 정보 조회, 유저 닉네임 / 생년월일 / 성별 / 지역을 가져오는 메서드
 	 * @param token - 로그인 시 서버에서 받는 토큰
 	 * @param type - "user" 고정

@@ -23,8 +23,8 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter
     {
         super(fm);
         list.add(new MainFragment());
-        list.add(new PushGatherFragment());
         list.add(new SearchFragment());
+        list.add(new PushGatherFragment());
         list.add(new MyPageFragment());
     }
 

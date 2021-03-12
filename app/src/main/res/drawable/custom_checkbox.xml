@@ -3,9 +3,9 @@
     <!-- 체크박스 해제 상태 -->
     <item
         android:state_checked="false"
-        android:drawable="@drawable/check_false"/>
+        android:drawable="@drawable/custom_checkbox_before"/>
     <!-- 체크박스 선택 상태 -->
     <item
         android:state_checked="true"
-        android:drawable="@drawable/check_true"/>
+        android:drawable="@drawable/custom_checkbox_after"/>
 </selector>

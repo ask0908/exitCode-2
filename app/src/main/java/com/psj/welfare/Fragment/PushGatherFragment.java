@@ -66,6 +66,14 @@ public class PushGatherFragment extends Fragment
     {
     }
 
+    public static PushGatherFragment newInstance()
+    {
+        PushGatherFragment fragment = new PushGatherFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {

@@ -28,8 +28,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
     private SharedPreferences sharedPreferences;
 
     public static final String TAG = "[FCM Service]";
-    String channelID = "ch_push";
-    String session, token;
+    String channelID = "맞춤 혜택 푸시 알림";
+    String token;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage)
@@ -73,9 +73,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         Intent intent = new Intent(this, MainTabLayoutActivity.class);
         // 호출하는 Activity가 스택에 있을 경우, 해당 Activity를 최상위로 올리면서 그 위에 있던 Activity들을 모두 삭제하는 Flag
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("push_clicked", "noti_intent");
+        /* putExtra()로 해서 안되면 아래 코드로 시도해보기 */
+//        Intent broadcast = new Intent("broadcaster");
+//        LocalBroadcastManager.getInstance(context).sendBroadcast(broadcast);
 
-        // PendingIntent.FLAG_ONE_SHOT : pendingIntent 일회용
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        // PendingIntent.FLAG_ONE_SHOT : pendingIntent 일회용, 원래 이걸 사용했으나 특정 프래그먼트를 띄우기 위해 FLAG_UPDATE_CURRENT를 사용함
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         // 푸시 아이템을 눌러 화면을 이동할 때 수신 알림값을 변경한다

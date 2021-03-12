@@ -270,22 +270,23 @@ public class MyPageFragment extends Fragment
         SharedPreferences.Editor editor = sharedPreferences.edit();
         // 핸드폰의 설정 화면에서 이 앱의 푸시 알림 허용값을 가져와 boolean 변수에 저장하고 이에 따라 스위치 모양을 다르게 보여준다0
         boolean isAllowed = NotificationManagerCompat.from(getActivity()).areNotificationsEnabled();
-        if (isAllowed)
-        {
-            push_noti_switch.setChecked(true);
-            putPushSetting(true);
-            fcm_canceled = true;
-            editor.putBoolean("fcm_canceled", fcm_canceled);
-            editor.apply();
-        }
-        else
-        {
-            putPushSetting(false);
-            push_noti_switch.setChecked(false);
-            fcm_canceled = false;
-            editor.putBoolean("fcm_canceled", fcm_canceled);
-            editor.apply();
-        }
+        push_noti_switch.setChecked(false); // <- 잠깐 false로 바꿈. 나중에 꼭 바꿔야 한다!!!
+//        if (isAllowed)
+//        {
+//            push_noti_switch.setChecked(true);
+//            putPushSetting(true);
+//            fcm_canceled = true;
+//            editor.putBoolean("fcm_canceled", false);   // <- true에서 false로 변경
+//            editor.apply();
+//        }
+//        else
+//        {
+//            push_noti_switch.setChecked(false);
+//            putPushSetting(false);
+//            fcm_canceled = false;
+//            editor.putBoolean("fcm_canceled", fcm_canceled);
+//            editor.apply();
+//        }
 
         // 혜택 유형
         benefit_type_layout.setOnClickListener(v -> Toast.makeText(getActivity(), getString(R.string.not_yet), Toast.LENGTH_SHORT).show());
