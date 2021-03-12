@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 체크박스가 체크되면 글자 색을 흰색으로 변경 -->
+    <item android:state_checked="true" android:color="@color/colorMainWhite"/>
+
+    <!-- 체크된 게 아니라면 검은색으로 놔둠 -->
+    <item android:color="@color/colorBlack"/>
+</selector>

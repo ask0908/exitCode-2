@@ -219,26 +219,26 @@ public class MainFragment extends Fragment
                     sharedPreferences.getString("user_gender", "").equals("") ||
                     sharedPreferences.getString("user_area", "").equals(""))
             {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("아직 입력하지 않은 사용자 정보가 있습니다\n입력하시겠어요?")
-                        .setPositiveButton("예", new DialogInterface.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which)
-                            {
-                                // 바로 GetUserInformationActivity로 이동하면 토큰값이 불일치하는 경우가 있다
-                                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                                intent.putExtra("not_yet", 100);
-                                startActivity(intent);
-                            }
-                        }).setNegativeButton("아니오", new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        dialog.dismiss();
-                    }
-                }).show();
+//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                builder.setMessage("아직 입력하지 않은 사용자 정보가 있습니다\n입력하시겠어요?")
+//                        .setPositiveButton("예", new DialogInterface.OnClickListener()
+//                        {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which)
+//                            {
+//                                // 바로 GetUserInformationActivity로 이동하면 토큰값이 불일치하는 경우가 있다
+//                                Intent intent = new Intent(getActivity(), LoginActivity.class);
+//                                intent.putExtra("not_yet", 100);
+//                                startActivity(intent);
+//                            }
+//                        }).setNegativeButton("아니오", new DialogInterface.OnClickListener()
+//                {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which)
+//                    {
+//                        dialog.dismiss();
+//                    }
+//                }).show();
             }
         }
 

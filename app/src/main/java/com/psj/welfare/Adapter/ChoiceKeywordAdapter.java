@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,7 +22,6 @@ public class ChoiceKeywordAdapter extends RecyclerView.Adapter<ChoiceKeywordAdap
     private List<ChoiceKeywordItem> list;
     private ItemClickListener itemClickListener;
 
-    /* 회의 끝나고 한번 실행해서 결과 어떤지 확인하기 */
     public void setOnItemClickListener(ItemClickListener itemClickListener)
     {
         this.itemClickListener = itemClickListener;
@@ -45,11 +43,11 @@ public class ChoiceKeywordAdapter extends RecyclerView.Adapter<ChoiceKeywordAdap
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ChoiceKeywordAdapter.ChoiceKeywordViewHolder holder, int position)
+    public void onBindViewHolder(@NonNull final ChoiceKeywordAdapter.ChoiceKeywordViewHolder holder, int position)
     {
         // final로 선언해야 체크박스의 체크 상태값(T/F)이 바뀌지 않는다
         final ChoiceKeywordItem item = list.get(position);
-        holder.search_category_textview.setText(item.getInterest());
+        holder.search_category_checkbox.setText(item.getInterest());
 
         // 먼저 체크박스의 리스너를 null로 초기화한다
         holder.search_category_checkbox.setOnCheckedChangeListener(null);
@@ -75,18 +73,17 @@ public class ChoiceKeywordAdapter extends RecyclerView.Adapter<ChoiceKeywordAdap
         return list.size();
     }
 
-    public static class ChoiceKeywordViewHolder extends RecyclerView.ViewHolder
+    static class ChoiceKeywordViewHolder extends RecyclerView.ViewHolder
     {
         CheckBox search_category_checkbox;
-        TextView search_category_textview;
         ItemClickListener itemClickListener;
 
         public ChoiceKeywordViewHolder(@NonNull View view, ItemClickListener itemClickListener)
         {
             super(view);
+            this.setIsRecyclable(false);
 
             search_category_checkbox = view.findViewById(R.id.search_category_checkbox);
-            search_category_textview = view.findViewById(R.id.search_category_textview);
 
             this.itemClickListener = itemClickListener;
             search_category_checkbox.setOnClickListener(v -> {
@@ -97,6 +94,7 @@ public class ChoiceKeywordAdapter extends RecyclerView.Adapter<ChoiceKeywordAdap
                 }
             });
         }
+
     }
 
     public interface ItemClickListener

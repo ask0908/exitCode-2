@@ -344,8 +344,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     String gender = app_pref.getString("user_gender", "");
                     String user_nickname = app_pref.getString("user_nickname", "");
                     Log.e(TAG, "쉐어드의 age = " + age + ", 지역 = " + area + ", 성별 = " + gender + ", 닉네임 = " + user_nickname);
-                    /* 사용자 정보(나이, 성별, 지역, 닉네임)를 입력받기 위해 이동한다. 기존에 입력된 정보가 있으면 MainTabLayoutActivity로 이동한다
-                    * 21.03.02) 논리 연산자를 ||에서 &&로 변경해 봄 */
+                    /* 사용자 정보(나이, 성별, 지역, 닉네임)를 입력받기 위해 이동한다. 기존에 입력된 정보가 있으면 MainTabLayoutActivity로 이동한다 */
                     if (!app_pref.getString("user_nickname", "").equals("") || !app_pref.getString("user_age", "").equals("") ||
                             !app_pref.getString("user_gender", "").equals("") || !app_pref.getString("user_area", "").equals(""))
                     {

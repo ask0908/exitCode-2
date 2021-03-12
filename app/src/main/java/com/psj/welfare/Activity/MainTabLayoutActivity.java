@@ -1,5 +1,6 @@
 package com.psj.welfare.Activity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,9 +10,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -19,6 +17,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.psj.welfare.API.ApiClient;
 import com.psj.welfare.API.ApiInterface;
 import com.psj.welfare.Adapter.MainViewPagerAdapter;
@@ -28,8 +28,6 @@ import com.psj.welfare.Fragment.PushGatherFragment;
 import com.psj.welfare.Fragment.SearchFragment;
 import com.psj.welfare.R;
 import com.psj.welfare.Util.LogUtil;
-import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -59,6 +57,8 @@ public class MainTabLayoutActivity extends AppCompatActivity
     // 인터넷 상태 확인 후 AlertDialog를 띄울 때 사용할 변수
     boolean isConnected = false;
 
+    private BroadcastReceiver mReciever;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -71,8 +71,8 @@ public class MainTabLayoutActivity extends AppCompatActivity
         sharedPreferences = getSharedPreferences("app_pref", 0);
 
         mainFragment = new MainFragment();
-        mypageFragment = new MyPageFragment();
         searchFragment = new SearchFragment();
+        mypageFragment = new MyPageFragment();
         pushGatherFragment = new PushGatherFragment();
 
         viewPager = findViewById(R.id.main_viewpager);
@@ -90,6 +90,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
                 final int position = tab.getPosition();
                 if (position == 0)
                 {
+                    /* 인터넷 연결 체크 */
                     isConnected = isNetworkConnected(MainTabLayoutActivity.this);
                     if (!isConnected)
                     {
@@ -115,6 +116,34 @@ public class MainTabLayoutActivity extends AppCompatActivity
                 }
                 else if (position == 1)
                 {
+                    /* 인터넷 연결 체크 */
+                    isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+                    if (!isConnected)
+                    {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+                        builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+                                .setCancelable(false)
+                                .setPositiveButton("예", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        dialog.dismiss();
+                                        Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                                        startActivity(intent);
+                                    }
+                                }).show();
+                    }
+                    Log.e("SearchFragment", "MainTabLayoutActivity - 검색 아이콘 클릭");
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 검색 프래그먼트로 진입");
+                    analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+                    tab.setIcon(R.drawable.search_red);
+                    searchEnterLog("검색 화면 진입");
+                }
+                else if (position == 2)
+                {
+                    /* 인터넷 연결 체크 */
                     isConnected = isNetworkConnected(MainTabLayoutActivity.this);
                     if (!isConnected)
                     {
@@ -141,37 +170,13 @@ public class MainTabLayoutActivity extends AppCompatActivity
                     if (sharedPreferences.getString("push_status", "").equals("400") ||
                             sharedPreferences.getString("push_status", "").equals("500"))
                     {
-                        Toast.makeText(MainTabLayoutActivity.this, "현재 받은 알림이 없습니다", Toast.LENGTH_SHORT).show();
+                        // TODO : 받은 알림이 없으면 알림이 없다는 화면을 띄워야 한다
+//                        Toast.makeText(MainTabLayoutActivity.this, "현재 받은 알림이 없습니다", Toast.LENGTH_SHORT).show();
                     }
-                }
-                else if (position == 2)
-                {
-                    isConnected = isNetworkConnected(MainTabLayoutActivity.this);
-                    if (!isConnected)
-                    {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
-                        builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
-                                .setCancelable(false)
-                                .setPositiveButton("예", new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        dialog.dismiss();
-                                        Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
-                                        startActivity(intent);
-                                    }
-                                }).show();
-                    }
-                    Log.e("SearchFragment", "MainTabLayoutActivity - 검색 아이콘 클릭");
-                    Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 검색 프래그먼트로 진입");
-                    analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-                    tab.setIcon(R.drawable.search_red);
-                    searchEnterLog("검색 화면 진입");
                 }
                 else if (position == 3)
                 {
+                    /* 인터넷 연결 체크 */
                     isConnected = isNetworkConnected(MainTabLayoutActivity.this);
                     if (!isConnected)
                     {
@@ -228,34 +233,11 @@ public class MainTabLayoutActivity extends AppCompatActivity
             }
         });
 
-        /* 탭 레이아웃 안의 하단 탭 중 마이페이지를 눌렀을 때 로그인하지 않았다면 로그인 화면으로 유도하려고 했던 코드
-         * 현재 사용되지 않음 */
-        LinearLayout tab_layout = (LinearLayout) tabLayout.getChildAt(0);
-        tab_layout.getChildAt(3).setOnTouchListener(new View.OnTouchListener()
-        {
-            @Override
-            public boolean onTouch(View v, MotionEvent event)
-            {
-                switch (event.getAction())
-                {
-                    case MotionEvent.ACTION_UP:
-                        if (sharedPreferences.getString("user_category", "").equals(""))
-                        {
-                            // 키워드 쉐어드가 비어있으면 로그인 화면으로 이동시킨다
-//                            Intent intent = new Intent(MainTabLayoutActivity.this, LoginActivity.class);
-//                            startActivity(intent);
-                        }
-                        break;
-                }
-                return false;
-            }
-        });
-
         // 처음 들어왔을 때 하단 탭에서 보여줄 이미지를 ArrayList에 추가한다
         ArrayList<Integer> image = new ArrayList<>();
         image.add(R.drawable.home_red);
-        image.add(R.drawable.alarm_icon_gray);
         image.add(R.drawable.search_icon_gray);
+        image.add(R.drawable.alarm_icon_gray);
         image.add(R.drawable.my_profile_icon_gray);
 
         // for문으로 이미지가 든 ArrayList를 돌며 탭에 set
@@ -263,6 +245,31 @@ public class MainTabLayoutActivity extends AppCompatActivity
         {
             tabLayout.getTabAt(i).setIcon(image.get(i));
         }
+
+        /* MyFirebaseMessagingService - 80번 줄을 주석 해제하면 아래 258번 주석까지 해제한다 */
+//        LocalBroadcastManager.getInstance(this).registerReceiver(mReciever, new IntentFilter("broadcaster"));
+//        mReciever = new BroadcastReceiver()
+//        {
+//            @Override
+//            public void onReceive(Context context, Intent intent)
+//            {
+//                //
+//            }
+//        };
+
+        /* 푸시 알림 온 것을 클릭 시 PushGatherFragment로 이동해야 한다 */
+        if (getIntent().hasExtra("push_clicked"))
+        {
+            String extra = getIntent().getStringExtra("push_clicked");
+            if (extra != null && extra.equals("noti_intent"))
+            {
+                // 아래 코드가 작동하지 않으면 아래 주석 처리된 코드로 바꿔서 해보기
+//                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//                fragmentTransaction.replace(R.id.fragments_main, PushGatherFragment.newInstance()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragments_main, new PushGatherFragment()).commit();
+            }
+        }
+
     }
 
     /* 마이페이지에 들어갔을 때 이벤트 내용을 서버로 전송하는 메서드 */
@@ -347,7 +354,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
         });
     }
 
-    /* 알림 모아보는 화면으로 이동했을 때 서버로 사용자 행동을 전송하는 메서드 */
+    /* 알림 모아보는 화면에 들어갔을 때 해당 이벤트 내용을 서버로 전송하는 메서드 */
     void alarmLog(String alarm_action)
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
@@ -388,7 +395,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
         });
     }
 
-    /* 다시 홈 화면으로 이동했을 경우 사용자 행동을 서버로 보내는 메서드 */
+    /* 다시 홈 화면으로 이동했을 경우 해당 이벤트 내용을 서버로 전송하는 메서드 */
     void reHomeLog(String home_action)
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
@@ -444,6 +451,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
         return user_action;
     }
 
+    /* 백버튼 눌렀을 때 일정 시간이 지난 후 백버튼을 눌러야 앱이 종료되도록 한다 */
     @Override
     public void onBackPressed()
     {
@@ -464,6 +472,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
         }
     }
 
+    /* 인터넷 연결 체크하는 메서드 */
     public boolean isNetworkConnected(Context context)
     {
         ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
