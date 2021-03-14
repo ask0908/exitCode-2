@@ -1,4 +1,4 @@
-package com.psj.welfare.Data;
+package com.psj.welfare.data;
 
 import com.google.gson.annotations.SerializedName;
 

@@ -1,4 +1,4 @@
-package com.psj.welfare.API;
+package com.psj.welfare.api;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;

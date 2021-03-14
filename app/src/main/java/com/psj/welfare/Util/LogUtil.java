@@ -1,4 +1,4 @@
-package com.psj.welfare.Util;
+package com.psj.welfare.util;
 
 import android.os.Build;
 import android.util.Log;

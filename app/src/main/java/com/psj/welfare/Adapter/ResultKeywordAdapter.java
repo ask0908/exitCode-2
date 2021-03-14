@@ -1,4 +1,4 @@
-package com.psj.welfare.Adapter;
+package com.psj.welfare.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -11,7 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.psj.welfare.Data.ResultKeywordItem;
+import com.psj.welfare.data.ResultKeywordItem;
 import com.psj.welfare.R;
 
 import java.util.Collections;

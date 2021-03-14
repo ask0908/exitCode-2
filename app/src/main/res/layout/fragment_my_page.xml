@@ -7,7 +7,7 @@
     android:background="#fff"
     android:orientation="vertical"
     android:theme="@style/ToolbarTheme"
-    tools:context=".Fragment.MyPageFragment">
+    tools:context=".fragment.MyPageFragment">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/mypage_toolbar"
