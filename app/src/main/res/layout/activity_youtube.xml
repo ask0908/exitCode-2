@@ -8,7 +8,7 @@
     android:background="#fff"
     android:theme="@style/ToolbarTheme"
     android:descendantFocusability="blocksDescendants"
-    tools:context=".Activity.YoutubeActivity">
+    tools:context=".activity.YoutubeActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/youtube_toolbar"

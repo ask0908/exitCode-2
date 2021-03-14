@@ -1,4 +1,4 @@
-package com.psj.welfare.Data;
+package com.psj.welfare.data;
 
 /* SearchFragment에서 사용된 SearchAdapter에서 리사이클러뷰 표현 시 쓰이는 모델 클래스 */
 public class SearchItem

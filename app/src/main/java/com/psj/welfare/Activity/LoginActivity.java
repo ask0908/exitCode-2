@@ -1,4 +1,4 @@
-package com.psj.welfare.Activity;
+package com.psj.welfare.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -36,10 +36,10 @@ import com.kakao.util.exception.KakaoException;
 import com.nhn.android.naverlogin.OAuthLogin;
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton;
 import com.orhanobut.logger.Logger;
-import com.psj.welfare.API.ApiClient;
-import com.psj.welfare.API.ApiInterface;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.R;
-import com.psj.welfare.Util.LogUtil;
+import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;

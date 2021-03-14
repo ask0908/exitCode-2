@@ -1,4 +1,4 @@
-package com.psj.welfare.Activity;
+package com.psj.welfare.activity;
 
 import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
@@ -48,16 +48,16 @@ import com.kakao.network.callback.ResponseCallback;
 import com.like.LikeButton;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
-import com.psj.welfare.API.ApiClient;
-import com.psj.welfare.API.ApiInterface;
-import com.psj.welfare.Adapter.FacilitiesAdapter;
-import com.psj.welfare.Adapter.ReviewAdapter;
-import com.psj.welfare.Custom.OnSingleClickListener;
-import com.psj.welfare.Custom.RecyclerViewEmptySupport;
-import com.psj.welfare.Data.ReviewItem;
-import com.psj.welfare.Data.ReviewStatsItem;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.adapter.FacilitiesAdapter;
+import com.psj.welfare.adapter.ReviewAdapter;
+import com.psj.welfare.custom.OnSingleClickListener;
+import com.psj.welfare.custom.RecyclerViewEmptySupport;
+import com.psj.welfare.data.ReviewItem;
+import com.psj.welfare.data.ReviewStatsItem;
 import com.psj.welfare.R;
-import com.psj.welfare.Util.LogUtil;
+import com.psj.welfare.util.LogUtil;
 
 import org.eazegraph.lib.charts.BarChart;
 import org.eazegraph.lib.models.BarModel;

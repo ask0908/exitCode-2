@@ -1,4 +1,4 @@
-package com.psj.welfare.API;
+package com.psj.welfare.api;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -16,7 +16,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.psj.welfare.Activity.MainTabLayoutActivity;
+import com.psj.welfare.activity.MainTabLayoutActivity;
 import com.psj.welfare.R;
 
 import retrofit2.Call;

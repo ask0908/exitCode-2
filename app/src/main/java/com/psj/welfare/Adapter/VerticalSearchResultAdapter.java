@@ -1,4 +1,4 @@
-package com.psj.welfare.Adapter;
+package com.psj.welfare.adapter;
 
 import android.content.Context;
 import android.util.Log;
@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.psj.welfare.Data.SearchItem;
+import com.psj.welfare.data.SearchItem;
 import com.psj.welfare.R;
 
 import java.util.Collections;

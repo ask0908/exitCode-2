@@ -1,4 +1,4 @@
-package com.psj.welfare.Fragment;
+package com.psj.welfare.fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

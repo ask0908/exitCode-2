@@ -1,4 +1,4 @@
-package com.psj.welfare.Data;
+package com.psj.welfare.data;
 
 /* SelectedCategoryAdapter에서 사용됨, ResultBenefitActivity에서 선택한 버튼들의 정보를 가져온다 */
 public class SelectedButtonItem

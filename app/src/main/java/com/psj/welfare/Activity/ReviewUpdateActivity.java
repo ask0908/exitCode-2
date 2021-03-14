@@ -1,4 +1,4 @@
-package com.psj.welfare.Activity;
+package com.psj.welfare.activity;
 
 import android.annotation.SuppressLint;
 import android.content.ContentUris;
@@ -30,8 +30,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.psj.welfare.R;
-import com.psj.welfare.API.ApiClient;
-import com.psj.welfare.API.ApiInterface;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

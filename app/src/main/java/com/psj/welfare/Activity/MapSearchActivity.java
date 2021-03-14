@@ -1,4 +1,4 @@
-package com.psj.welfare.Activity;
+package com.psj.welfare.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,9 +18,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.psj.welfare.Data.MapSearchItem;
+import com.psj.welfare.data.MapSearchItem;
 import com.psj.welfare.R;
-import com.psj.welfare.Adapter.MapSearchAdapter;
+import com.psj.welfare.adapter.MapSearchAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;

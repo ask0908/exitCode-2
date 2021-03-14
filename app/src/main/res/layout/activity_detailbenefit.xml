@@ -697,7 +697,7 @@
                             android:visibility="gone" />
 
                         <!-- 리뷰들을 보여줄 리사이클러뷰 -->
-                        <com.psj.welfare.Custom.RecyclerViewEmptySupport
+                        <com.psj.welfare.custom.RecyclerViewEmptySupport
                             android:id="@+id/review_recycler"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"

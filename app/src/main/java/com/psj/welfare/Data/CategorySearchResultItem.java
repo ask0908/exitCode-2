@@ -1,4 +1,4 @@
-package com.psj.welfare.Data;
+package com.psj.welfare.data;
 
 /* 새로 만든 모델 클래스, ResultBenefitActivity에서 사용 */
 public class CategorySearchResultItem

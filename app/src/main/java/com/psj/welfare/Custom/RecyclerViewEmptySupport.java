@@ -1,4 +1,4 @@
-package com.psj.welfare.Custom;
+package com.psj.welfare.custom;
 
 import android.content.Context;
 import android.util.AttributeSet;

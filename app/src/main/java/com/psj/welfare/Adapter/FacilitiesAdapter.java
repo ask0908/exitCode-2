@@ -1,4 +1,4 @@
-package com.psj.welfare.Adapter;
+package com.psj.welfare.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;

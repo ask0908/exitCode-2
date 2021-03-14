@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:background="#fff"
     android:padding="20dp"
-    tools:context=".Activity.CalculatorResultActivity">
+    tools:context=".activity.CalculatorResultActivity">
 
     <TextView
         android:layout_width="match_parent"

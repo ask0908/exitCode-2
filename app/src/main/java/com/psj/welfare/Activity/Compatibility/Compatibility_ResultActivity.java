@@ -1,4 +1,4 @@
-package com.psj.welfare.Activity.Compatibility;
+package com.psj.welfare.activity.Compatibility;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -25,9 +25,9 @@ import com.kakao.network.callback.ResponseCallback;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.psj.welfare.R;
-import com.psj.welfare.Activity.MainTabLayoutActivity;
-import com.psj.welfare.API.ApiClient;
-import com.psj.welfare.API.ApiInterface;
+import com.psj.welfare.activity.MainTabLayoutActivity;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
 
 import org.json.JSONException;
 import org.json.JSONObject;

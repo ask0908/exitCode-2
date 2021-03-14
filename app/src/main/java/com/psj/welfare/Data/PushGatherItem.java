@@ -1,4 +1,4 @@
-package com.psj.welfare.Data;
+package com.psj.welfare.data;
 
 public class PushGatherItem
 {

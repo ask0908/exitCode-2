@@ -1,4 +1,4 @@
-package com.psj.welfare.Adapter;
+package com.psj.welfare.adapter;
 
 import android.content.Context;
 import android.util.Log;
@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
-import com.psj.welfare.Data.YoutubeItem;
+import com.psj.welfare.data.YoutubeItem;
 import com.psj.welfare.R;
 
 import java.util.List;

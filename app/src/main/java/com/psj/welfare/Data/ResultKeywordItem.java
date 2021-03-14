@@ -1,4 +1,4 @@
-package com.psj.welfare.Data;
+package com.psj.welfare.data;
 
 // 상단 리사이클러뷰에 쓰는 모델 클래스
 public class ResultKeywordItem

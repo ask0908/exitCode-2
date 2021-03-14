@@ -1,4 +1,4 @@
-package com.psj.welfare.Fragment;
+package com.psj.welfare.fragment;
 
 import android.Manifest;
 import android.content.Context;
@@ -34,13 +34,13 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.psj.welfare.Activity.MapActivity;
-import com.psj.welfare.Activity.ResultBenefitActivity;
-import com.psj.welfare.Activity.SearchResultActivity;
-import com.psj.welfare.Custom.CustomResultBenefitDialog;
-import com.psj.welfare.Custom.OnSingleClickListener;
+import com.psj.welfare.activity.MapActivity;
+import com.psj.welfare.activity.ResultBenefitActivity;
+import com.psj.welfare.activity.SearchResultActivity;
+import com.psj.welfare.custom.CustomResultBenefitDialog;
+import com.psj.welfare.custom.OnSingleClickListener;
 import com.psj.welfare.R;
-import com.psj.welfare.Util.GpsTracker;
+import com.psj.welfare.util.GpsTracker;
 
 import java.io.IOException;
 import java.util.ArrayList;

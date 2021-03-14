@@ -1,4 +1,4 @@
-package com.psj.welfare.Activity;
+package com.psj.welfare.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,13 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
-import com.psj.welfare.Data.OtherYoutubeItem;
-import com.psj.welfare.Data.YoutubeItem;
+import com.psj.welfare.data.OtherYoutubeItem;
+import com.psj.welfare.data.YoutubeItem;
 import com.psj.welfare.R;
-import com.psj.welfare.Adapter.OtherYoutubeAdapter;
-import com.psj.welfare.API.ApiClient;
-import com.psj.welfare.API.ApiInterface;
-import com.psj.welfare.Util.LogUtil;
+import com.psj.welfare.adapter.OtherYoutubeAdapter;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;

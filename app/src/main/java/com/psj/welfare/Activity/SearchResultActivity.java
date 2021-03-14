@@ -1,4 +1,4 @@
-package com.psj.welfare.Activity;
+package com.psj.welfare.activity;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -21,13 +21,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.psj.welfare.API.ApiClient;
-import com.psj.welfare.API.ApiInterface;
-import com.psj.welfare.Adapter.HorizontalSearchResultAdapter;
-import com.psj.welfare.Adapter.VerticalSearchResultAdapter;
-import com.psj.welfare.Data.SearchItem;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.adapter.HorizontalSearchResultAdapter;
+import com.psj.welfare.adapter.VerticalSearchResultAdapter;
+import com.psj.welfare.data.SearchItem;
 import com.psj.welfare.R;
-import com.psj.welfare.Util.LogUtil;
+import com.psj.welfare.util.LogUtil;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;

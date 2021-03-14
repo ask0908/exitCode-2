@@ -1,14 +1,14 @@
-package com.psj.welfare.Adapter;
+package com.psj.welfare.adapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.psj.welfare.Fragment.MainFragment;
-import com.psj.welfare.Fragment.MyPageFragment;
-import com.psj.welfare.Fragment.PushGatherFragment;
-import com.psj.welfare.Fragment.SearchFragment;
+import com.psj.welfare.fragment.MainFragment;
+import com.psj.welfare.fragment.MyPageFragment;
+import com.psj.welfare.fragment.PushGatherFragment;
+import com.psj.welfare.fragment.SearchFragment;
 
 import java.util.ArrayList;
 

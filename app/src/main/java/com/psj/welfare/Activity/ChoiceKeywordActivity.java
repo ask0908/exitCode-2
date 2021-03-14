@@ -1,4 +1,4 @@
-package com.psj.welfare.Activity;
+package com.psj.welfare.activity;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -24,11 +24,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.psj.welfare.API.ApiClient;
-import com.psj.welfare.API.ApiInterface;
-import com.psj.welfare.Adapter.ChoiceKeywordAdapter;
-import com.psj.welfare.Custom.CustomWheelDialog;
-import com.psj.welfare.Data.ChoiceKeywordItem;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.adapter.ChoiceKeywordAdapter;
+import com.psj.welfare.custom.CustomWheelDialog;
+import com.psj.welfare.data.ChoiceKeywordItem;
 import com.psj.welfare.R;
 
 import org.json.JSONArray;

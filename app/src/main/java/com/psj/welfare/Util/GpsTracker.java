@@ -1,4 +1,4 @@
-package com.psj.welfare.Util;
+package com.psj.welfare.util;
 
 import android.Manifest;
 import android.app.Service;

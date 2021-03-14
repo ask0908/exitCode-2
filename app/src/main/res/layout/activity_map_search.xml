@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/search_linear"
-    tools:context=".Activity.MapSearchActivity">
+    tools:context=".activity.MapSearchActivity">
 
     <ImageView
         android:id="@+id/loginClose"

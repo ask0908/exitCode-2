@@ -1,4 +1,4 @@
-package com.psj.welfare.Adapter;
+package com.psj.welfare.adapter;
 
 import android.content.Context;
 import android.util.Log;
@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.psj.welfare.Data.PushGatherItem;
+import com.psj.welfare.data.PushGatherItem;
 import com.psj.welfare.R;
 
 import java.time.Duration;
@@ -21,6 +21,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/* PushGatherFragment에서 받은 알림들을 리사이클러뷰에 보여줄 때 쓰는 어댑터 */
 public class PushGatherAdapter extends RecyclerView.Adapter<PushGatherAdapter.PushGatherViewHolder>
 {
     private Context context;
