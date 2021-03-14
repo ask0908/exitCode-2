@@ -28,7 +28,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
     private SharedPreferences sharedPreferences;
 
     public static final String TAG = "[FCM Service]";
-    String channelID = "맞춤 혜택 푸시 알림";
+    String channelID = "ch_push";
     String token;
 
     @Override
