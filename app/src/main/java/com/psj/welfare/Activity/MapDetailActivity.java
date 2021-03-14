@@ -1,4 +1,4 @@
-package com.psj.welfare.Activity;
+package com.psj.welfare.activity;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -26,14 +26,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.orhanobut.logger.Logger;
-import com.psj.welfare.API.ApiClient;
-import com.psj.welfare.API.ApiInterface;
-import com.psj.welfare.Adapter.MapResultAdapter;
-import com.psj.welfare.Adapter.ResultKeywordAdapter;
-import com.psj.welfare.Data.MapResultItem;
-import com.psj.welfare.Data.ResultKeywordItem;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.adapter.MapResultAdapter;
+import com.psj.welfare.adapter.ResultKeywordAdapter;
+import com.psj.welfare.data.MapResultItem;
+import com.psj.welfare.data.ResultKeywordItem;
 import com.psj.welfare.R;
-import com.psj.welfare.Util.LogUtil;
+import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;

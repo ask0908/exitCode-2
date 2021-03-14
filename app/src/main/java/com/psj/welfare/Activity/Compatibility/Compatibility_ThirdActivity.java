@@ -1,4 +1,4 @@
-package com.psj.welfare.Activity.Compatibility;
+package com.psj.welfare.activity.Compatibility;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -14,8 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.psj.welfare.R;
-import com.psj.welfare.API.ApiClient;
-import com.psj.welfare.API.ApiInterface;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
 
 import org.json.JSONException;
 import org.json.JSONObject;

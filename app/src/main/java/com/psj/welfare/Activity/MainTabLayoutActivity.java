@@ -1,4 +1,4 @@
-package com.psj.welfare.Activity;
+package com.psj.welfare.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -20,15 +20,15 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.psj.welfare.API.ApiClient;
-import com.psj.welfare.API.ApiInterface;
-import com.psj.welfare.Adapter.MainViewPagerAdapter;
-import com.psj.welfare.Fragment.MainFragment;
-import com.psj.welfare.Fragment.MyPageFragment;
-import com.psj.welfare.Fragment.PushGatherFragment;
-import com.psj.welfare.Fragment.SearchFragment;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.adapter.MainViewPagerAdapter;
+import com.psj.welfare.fragment.MainFragment;
+import com.psj.welfare.fragment.MyPageFragment;
+import com.psj.welfare.fragment.PushGatherFragment;
+import com.psj.welfare.fragment.SearchFragment;
 import com.psj.welfare.R;
-import com.psj.welfare.Util.LogUtil;
+import com.psj.welfare.util.LogUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

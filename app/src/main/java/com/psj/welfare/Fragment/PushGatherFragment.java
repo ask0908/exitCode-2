@@ -1,4 +1,4 @@
-package com.psj.welfare.Fragment;
+package com.psj.welfare.fragment;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,11 +19,11 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.psj.welfare.API.ApiClient;
-import com.psj.welfare.API.ApiInterface;
-import com.psj.welfare.Activity.DetailBenefitActivity;
-import com.psj.welfare.Adapter.PushGatherAdapter;
-import com.psj.welfare.Data.PushGatherItem;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.activity.DetailBenefitActivity;
+import com.psj.welfare.adapter.PushGatherAdapter;
+import com.psj.welfare.data.PushGatherItem;
 import com.psj.welfare.R;
 
 import org.json.JSONArray;

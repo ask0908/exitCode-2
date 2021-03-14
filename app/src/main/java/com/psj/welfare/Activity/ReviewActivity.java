@@ -1,4 +1,4 @@
-package com.psj.welfare.Activity;
+package com.psj.welfare.activity;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
@@ -35,8 +35,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.psj.welfare.R;
-import com.psj.welfare.API.ApiClient;
-import com.psj.welfare.API.ApiInterface;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

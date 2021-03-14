@@ -1,4 +1,4 @@
-package com.psj.welfare.Adapter;
+package com.psj.welfare.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.psj.welfare.Data.HorizontalYoutubeItem;
+import com.psj.welfare.data.HorizontalYoutubeItem;
 import com.psj.welfare.R;
 
 import java.util.List;

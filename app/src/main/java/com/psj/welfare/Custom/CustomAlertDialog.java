@@ -1,4 +1,4 @@
-package com.psj.welfare.Custom;
+package com.psj.welfare.custom;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -8,7 +8,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.psj.welfare.R;
-import com.psj.welfare.Activity.MainTabLayoutActivity;
+import com.psj.welfare.activity.MainTabLayoutActivity;
 
 public class CustomAlertDialog
 {

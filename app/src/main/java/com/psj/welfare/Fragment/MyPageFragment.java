@@ -1,4 +1,4 @@
-package com.psj.welfare.Fragment;
+package com.psj.welfare.fragment;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -29,18 +29,18 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.kakao.auth.Session;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
-import com.psj.welfare.API.ApiClient;
-import com.psj.welfare.API.ApiInterface;
-import com.psj.welfare.Activity.ChoiceKeywordActivity;
-import com.psj.welfare.Activity.GetUserInformationActivity;
-import com.psj.welfare.Activity.LoginActivity;
-import com.psj.welfare.Activity.MyInfoUpdateActivity;
-import com.psj.welfare.Activity.PersonalInformationActivity;
-import com.psj.welfare.Activity.SplashActivity;
-import com.psj.welfare.Activity.TermsAndConditionsActivity;
-import com.psj.welfare.Custom.OnSingleClickListener;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.activity.ChoiceKeywordActivity;
+import com.psj.welfare.activity.GetUserInformationActivity;
+import com.psj.welfare.activity.LoginActivity;
+import com.psj.welfare.activity.MyInfoUpdateActivity;
+import com.psj.welfare.activity.PersonalInformationActivity;
+import com.psj.welfare.activity.SplashActivity;
+import com.psj.welfare.activity.TermsAndConditionsActivity;
+import com.psj.welfare.custom.OnSingleClickListener;
 import com.psj.welfare.R;
-import com.psj.welfare.Util.LogUtil;
+import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;

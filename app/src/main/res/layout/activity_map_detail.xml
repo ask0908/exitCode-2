@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:background="#fff"
     android:padding="10dp"
-    tools:context=".Activity.MapDetailActivity">
+    tools:context=".activity.MapDetailActivity">
 
     <!-- 숫자 부분에는 spannable을 적용해 빨간색으로 강조한다 -->
     <TextView

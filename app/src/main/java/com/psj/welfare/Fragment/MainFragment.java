@@ -1,4 +1,4 @@
-package com.psj.welfare.Fragment;
+package com.psj.welfare.fragment;
 
 import android.Manifest;
 import android.app.ActivityOptions;
@@ -37,19 +37,19 @@ import com.kakao.network.ErrorResult;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.kakao.usermgmt.callback.UnLinkResponseCallback;
-import com.psj.welfare.API.ApiClient;
-import com.psj.welfare.API.ApiInterface;
-import com.psj.welfare.Activity.DetailBenefitActivity;
-import com.psj.welfare.Activity.LoginActivity;
-import com.psj.welfare.Activity.YoutubeActivity;
-import com.psj.welfare.Adapter.HorizontalYoutubeAdapter;
-import com.psj.welfare.Adapter.RecommendAdapter;
-import com.psj.welfare.Custom.OnSingleClickListener;
-import com.psj.welfare.Data.HorizontalYoutubeItem;
-import com.psj.welfare.Data.RecommendItem;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.activity.DetailBenefitActivity;
+import com.psj.welfare.activity.LoginActivity;
+import com.psj.welfare.activity.YoutubeActivity;
+import com.psj.welfare.adapter.HorizontalYoutubeAdapter;
+import com.psj.welfare.adapter.RecommendAdapter;
+import com.psj.welfare.custom.OnSingleClickListener;
+import com.psj.welfare.data.HorizontalYoutubeItem;
+import com.psj.welfare.data.RecommendItem;
 import com.psj.welfare.R;
-import com.psj.welfare.Util.GpsTracker;
-import com.psj.welfare.Util.LogUtil;
+import com.psj.welfare.util.GpsTracker;
+import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
