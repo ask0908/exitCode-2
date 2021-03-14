@@ -167,7 +167,7 @@ public class MyPageFragment extends Fragment
 
         // 프로필 이미지는 카톡 로그인에서 받아온 걸 사용한다
         profile_image = sharedPreferences.getString(getString(R.string.get_kakao_image), "");
-        if (profile_image != null)
+        if (!profile_image.equals(""))
         {
             Glide.with(this)
                     .load(profile_image)
@@ -176,18 +176,7 @@ public class MyPageFragment extends Fragment
         else
         {
             // 카톡 프사가 없는 유저면 성별에 따라 기본 이미지를 보여준다
-            if (!sharedPreferences.getString("gender", "").equals(""))
-            {
-                String gender = sharedPreferences.getString("gender", "");
-                if (gender.equals("남자"))
-                {
-                    kakao_profile_image.setImageResource(R.drawable.default_man);
-                }
-                else if (gender.equals("여자"))
-                {
-                    kakao_profile_image.setImageResource(R.drawable.default_woman);
-                }
-            }
+            kakao_profile_image.setImageResource(R.drawable.base_img);
         }
 
         // 닉네임을 입력한 경우 마이페이지에서 유저 닉네임을 보여준다
@@ -276,7 +265,7 @@ public class MyPageFragment extends Fragment
 //            push_noti_switch.setChecked(true);
 //            putPushSetting(true);
 //            fcm_canceled = true;
-//            editor.putBoolean("fcm_canceled", false);   // <- true에서 false로 변경
+//            editor.putBoolean("fcm_canceled", true);   // <- true에서 false로 변경
 //            editor.apply();
 //        }
 //        else
@@ -284,7 +273,7 @@ public class MyPageFragment extends Fragment
 //            push_noti_switch.setChecked(false);
 //            putPushSetting(false);
 //            fcm_canceled = false;
-//            editor.putBoolean("fcm_canceled", fcm_canceled);
+//            editor.putBoolean("fcm_canceled", false);
 //            editor.apply();
 //        }
 
@@ -534,15 +523,16 @@ public class MyPageFragment extends Fragment
     public void onResume()
     {
         super.onResume();
-        boolean isAllowed = NotificationManagerCompat.from(getActivity()).areNotificationsEnabled();
-        if (isAllowed)
-        {
-            push_noti_switch.setChecked(true);
-        }
-        else
-        {
-            push_noti_switch.setChecked(false);
-        }
+        // TODO : 0312 주석 처리
+//        boolean isAllowed = NotificationManagerCompat.from(getActivity()).areNotificationsEnabled();
+//        if (isAllowed)
+//        {
+//            push_noti_switch.setChecked(true);
+//        }
+//        else
+//        {
+//            push_noti_switch.setChecked(false);
+//        }
     }
 
     /* 마이페이지에서 사용자들이 일으키는 이벤트 내용을 서버로 전송하는 메서드 */
@@ -611,6 +601,7 @@ public class MyPageFragment extends Fragment
         {
             e.printStackTrace();
         }
+        // TODO : 체크 해제해도 자꾸 체크되는데 아래 코드 문제일 수도 있다
         // 비로그인 상태에서 이 화면으로 들어가면 값이 없어서 죽기 때문에 이 예외처리 해야 함
         // 스위치 체크 상태를 바꾸기 전에 기본 정보, 키워드를 입력받았는지 확인하고 모든 정보를 입력받았다면 그 때 스위치 값을 바꾼다
         // 카톡 닉네임도 정보를 다 입력한 상태여야만 보이게 한다
@@ -624,14 +615,15 @@ public class MyPageFragment extends Fragment
         {
             if (checked != null)
             {
-                if (checked.equals(getString(R.string.is_true)))
-                {
-                    push_noti_switch.setChecked(true);
-                }
-                else
-                {
-                    push_noti_switch.setChecked(false);
-                }
+                // TODO : 0312 주석처리
+//                if (checked.equals(getString(R.string.is_true)))
+//                {
+//                    push_noti_switch.setChecked(true);
+//                }
+//                else
+//                {
+//                    push_noti_switch.setChecked(false);
+//                }
             }
 //            if (checked.equals(getString(R.string.is_true)))
 //            {

@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
@@ -81,6 +82,25 @@ public class MainTabLayoutActivity extends AppCompatActivity
 
         TabLayout tabLayout = findViewById(R.id.main_tab_layout);
         tabLayout.setupWithViewPager(viewPager);
+
+        // TODO : 푸시 알림 온 것을 클릭 시 PushGatherFragment로 이동해야 한다
+        if (getIntent().hasExtra("push_clicked"))
+        {
+            String extra = getIntent().getStringExtra("push_clicked");
+            if (extra != null && extra.equals("noti_intent"))
+            {
+                // 아래 코드가 작동하지 않으면 아래 주석 처리된 코드로 바꿔서 해보기
+//                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//                fragmentTransaction.replace(R.id.fragments_main, PushGatherFragment.newInstance()).commit();
+                /**/
+//                getSupportFragmentManager().beginTransaction().replace(R.id.main_viewpager, new PushGatherFragment()).commit();
+                /**/
+                Fragment fragment = new PushGatherFragment();
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.container, fragment).commit();
+            }
+        }
+
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
         {
             /* 탭 선택했을 때 / 선택하지 않았을 때 탭 아이템에서 어떤 이미지를 보여줄지 처리하는 부분 */
@@ -170,7 +190,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
                     if (sharedPreferences.getString("push_status", "").equals("400") ||
                             sharedPreferences.getString("push_status", "").equals("500"))
                     {
-                        // TODO : 받은 알림이 없으면 알림이 없다는 화면을 띄워야 한다
+                        // TODO : 받은 알림이 없으면 알림이 없다는 화면을 띄워야 한다 (ios와 맞추기)
 //                        Toast.makeText(MainTabLayoutActivity.this, "현재 받은 알림이 없습니다", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -215,11 +235,11 @@ public class MainTabLayoutActivity extends AppCompatActivity
                 }
                 else if (position == 1)
                 {
-                    tab.setIcon(R.drawable.alarm_icon_gray);
+                    tab.setIcon(R.drawable.search_icon_gray);
                 }
                 else if (position == 2)
                 {
-                    tab.setIcon(R.drawable.search_icon_gray);
+                    tab.setIcon(R.drawable.alarm_icon_gray);
                 }
                 else if (position == 3)
                 {
@@ -256,19 +276,6 @@ public class MainTabLayoutActivity extends AppCompatActivity
 //                //
 //            }
 //        };
-
-        /* 푸시 알림 온 것을 클릭 시 PushGatherFragment로 이동해야 한다 */
-        if (getIntent().hasExtra("push_clicked"))
-        {
-            String extra = getIntent().getStringExtra("push_clicked");
-            if (extra != null && extra.equals("noti_intent"))
-            {
-                // 아래 코드가 작동하지 않으면 아래 주석 처리된 코드로 바꿔서 해보기
-//                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-//                fragmentTransaction.replace(R.id.fragments_main, PushGatherFragment.newInstance()).commit();
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragments_main, new PushGatherFragment()).commit();
-            }
-        }
 
     }
 
@@ -502,4 +509,41 @@ public class MainTabLayoutActivity extends AppCompatActivity
         }
         return false;
     }
+
+    /* https://stackoverflow.com/questions/26608627/how-to-open-fragment-page-when-pressed-a-notification-in-android
+    * 위 링크 참고해 만든 메서드 */
+    public void openFragmentWithoutAnimation(Context context, int replaceLayout, Bundle bundle, Class<?> fragment, String fragmentTag)
+    {
+        Fragment dynamicFragment = null;
+        try
+        {
+            Class<?> clazz = Class.forName(fragment.getName());
+            dynamicFragment = (Fragment) clazz.newInstance();
+            System.out.println(clazz.getSuperclass());
+            System.out.println(clazz.getName());
+        }
+        catch (ClassNotFoundException | InstantiationException | IllegalAccessException e)
+        {
+            e.printStackTrace();
+        }
+
+        AppCompatActivity activity = null;
+        if (context instanceof AppCompatActivity)
+        {
+            activity = ((AppCompatActivity) context);
+        }
+        if (activity.getSupportFragmentManager().findFragmentByTag(fragmentTag) == null)
+        {
+            FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+            if (bundle != null)
+            {
+                dynamicFragment.setArguments(bundle);
+            }
+            transaction.add(replaceLayout, dynamicFragment, fragmentTag);
+            transaction.addToBackStack(fragmentTag);
+            transaction.commit();
+        }
+
+    }
+
 }

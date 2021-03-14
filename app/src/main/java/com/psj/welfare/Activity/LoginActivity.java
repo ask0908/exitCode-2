@@ -349,7 +349,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             !app_pref.getString("user_gender", "").equals("") || !app_pref.getString("user_area", "").equals(""))
                     {
                         Intent login_intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
-                        editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
+                        if (result.getThumbnailImagePath().equals(""))
+                        {
+                            editor.putString(getString(R.string.get_kakao_image), "");
+                        }
+                        else
+                        {
+                            editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
+                        }
                         editor.putString(getString(R.string.get_kakao_name), result.getNickname());
                         editor.putString("kakao_email", result.getKakaoAccount().getEmail());
                         editor.apply();
