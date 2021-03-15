@@ -37,18 +37,17 @@ import com.kakao.network.ErrorResult;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.kakao.usermgmt.callback.UnLinkResponseCallback;
-import com.psj.welfare.api.ApiClient;
-import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.R;
 import com.psj.welfare.activity.DetailBenefitActivity;
 import com.psj.welfare.activity.LoginActivity;
 import com.psj.welfare.activity.YoutubeActivity;
 import com.psj.welfare.adapter.HorizontalYoutubeAdapter;
 import com.psj.welfare.adapter.RecommendAdapter;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.OnSingleClickListener;
 import com.psj.welfare.data.HorizontalYoutubeItem;
 import com.psj.welfare.data.RecommendItem;
-import com.psj.welfare.R;
-import com.psj.welfare.util.GpsTracker;
 import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONArray;
@@ -77,21 +76,9 @@ public class MainFragment extends Fragment
 
     ConstraintLayout main_middle_layout;
 
-    // 구글 로그인 테스트 위한 카톡 탈퇴 버튼
+    // 구글 로그인 테스트 위한 카톡 탈퇴, 로그아웃 버튼
     Button kakao_unlink_btn;
     Button kakao_logout_btn;
-
-    // 유저의 위치정보를 바꿀 때(서울특별시 -> 서울) 쓰는 변수
-    String user_area;
-
-    // 유저의 현 위치를 가져와 주소로 변환하는 처리를 하는 클래스
-    private GpsTracker gpsTracker;
-
-    // split() 후 문자열들을 담을 리스트
-    List<String> split_list;
-
-    // split() 후 결과를 담을 변수. OO시, OO구 정보를 담는다
-    String city, district;
 
     String[] REQUIRED_PERMISSIONS = {
             Manifest.permission.ACCESS_FINE_LOCATION,   // 앱이 정확한 위치에 액세스하도록 허용하는 권한
@@ -103,6 +90,7 @@ public class MainFragment extends Fragment
     HorizontalYoutubeAdapter adapter;
     HorizontalYoutubeAdapter.ItemClickListener itemClickListener;
     List<HorizontalYoutubeItem> lists;
+
     // 유튜브 영상 데이터를 파싱할 때 사용할 변수
     String thumbnail, title, videoId;
 
@@ -120,9 +108,6 @@ public class MainFragment extends Fragment
 
     // 화면 우상단의 혜택찾기 버튼
     Button find_welfare_btn;
-
-    // 카카오 이메일 담을 변수
-    String kakao_email;
 
     // 리사이클러뷰에 어댑터가 없으면(비로그인 시) 맞춤 혜택을 보여주지 않기 때문에, 맞춤 혜택란을 설명하는 텍스트뷰를 가려야 한다
     public String status = "";

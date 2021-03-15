@@ -51,10 +51,10 @@
             android:id="@+id/main_middle_layout"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintWidth_percent="1"
-            app:layout_constraintHeight_percent=".46"
             android:background="@drawable/main_body_selector"
             android:orientation="vertical"
+            app:layout_constraintWidth_percent="1"
+            app:layout_constraintHeight_percent=".46"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/main_fragment_textview">

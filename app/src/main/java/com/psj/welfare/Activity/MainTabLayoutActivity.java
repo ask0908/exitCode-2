@@ -20,14 +20,14 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.psj.welfare.R;
+import com.psj.welfare.adapter.MainViewPagerAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
-import com.psj.welfare.adapter.MainViewPagerAdapter;
 import com.psj.welfare.fragment.MainFragment;
 import com.psj.welfare.fragment.MyPageFragment;
 import com.psj.welfare.fragment.PushGatherFragment;
 import com.psj.welfare.fragment.SearchFragment;
-import com.psj.welfare.R;
 import com.psj.welfare.util.LogUtil;
 
 import java.io.UnsupportedEncodingException;
@@ -77,205 +77,1021 @@ public class MainTabLayoutActivity extends AppCompatActivity
         pushGatherFragment = new PushGatherFragment();
 
         viewPager = findViewById(R.id.main_viewpager);
+        TabLayout tabLayout = findViewById(R.id.main_tab_layout);
+
         MainViewPagerAdapter adapter = new MainViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
-
-        TabLayout tabLayout = findViewById(R.id.main_tab_layout);
         tabLayout.setupWithViewPager(viewPager);
 
-        // TODO : 푸시 알림 온 것을 클릭 시 PushGatherFragment로 이동해야 한다
-        if (getIntent().hasExtra("push_clicked"))
+        Intent intent = getIntent();
+        int ddd = intent.getIntExtra("push", -1);
+        if (ddd == 100)
         {
-            String extra = getIntent().getStringExtra("push_clicked");
-            if (extra != null && extra.equals("noti_intent"))
-            {
-                // 아래 코드가 작동하지 않으면 아래 주석 처리된 코드로 바꿔서 해보기
-//                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-//                fragmentTransaction.replace(R.id.fragments_main, PushGatherFragment.newInstance()).commit();
-                /**/
-//                getSupportFragmentManager().beginTransaction().replace(R.id.main_viewpager, new PushGatherFragment()).commit();
-                /**/
-                Fragment fragment = new PushGatherFragment();
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.container, fragment).commit();
-            }
-        }
+            adapter = new MainViewPagerAdapter(getSupportFragmentManager());
+            adapter.addFragment(new MainFragment(), "main");
+            adapter.addFragment(new SearchFragment(), "search");
+            adapter.addFragment(new PushGatherFragment(), "push");
+            adapter.addFragment(new MyPageFragment(), "mypage");
 
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
+            tabLayout.getTabAt(0).setIcon(R.drawable.home_icon_gray);
+            tabLayout.getTabAt(1).setIcon(R.drawable.search_icon_gray);
+            tabLayout.getTabAt(2).setIcon(R.drawable.alarm_red);
+            tabLayout.getTabAt(3).setIcon(R.drawable.my_profile_icon_gray);
+            viewPager.setCurrentItem(2);
+
+            /* 알림 화면을 처음 보여주고 난 다음, 다른 탭을 누르면 이동할 수 있도록 한다 */
+            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
+            {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab)
+                {
+                    final int position = tab.getPosition();
+                    if (position == 0)
+                    {
+                        /* 인터넷 연결 체크 */
+                        isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+                        if (!isConnected)
+                        {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+                            builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+                                    .setCancelable(false)
+                                    .setPositiveButton("예", new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            dialog.dismiss();
+                                            Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                                            startActivity(intent);
+                                        }
+                                    }).show();
+                        }
+                        tab.setIcon(R.drawable.home_red);
+                        reHomeLog("다른 화면에서 홈 화면으로 진입");
+                        Bundle bundle = new Bundle();
+                        bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 홈 프래그먼트로 진입");
+                        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+                    }
+                    else if (position == 1)
+                    {
+                        /* 인터넷 연결 체크 */
+                        isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+                        if (!isConnected)
+                        {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+                            builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+                                    .setCancelable(false)
+                                    .setPositiveButton("예", new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            dialog.dismiss();
+                                            Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                                            startActivity(intent);
+                                        }
+                                    }).show();
+                        }
+                        Log.e("SearchFragment", "MainTabLayoutActivity - 검색 아이콘 클릭");
+                        Bundle bundle = new Bundle();
+                        bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 검색 프래그먼트로 진입");
+                        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+                        tab.setIcon(R.drawable.search_red);
+                        searchEnterLog("검색 화면 진입");
+                    }
+                    else if (position == 2)
+                    {
+                        /* 인터넷 연결 체크 */
+                        isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+                        if (!isConnected)
+                        {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+                            builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+                                    .setCancelable(false)
+                                    .setPositiveButton("예", new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            dialog.dismiss();
+                                            Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                                            startActivity(intent);
+                                        }
+                                    }).show();
+                        }
+                        tab.setIcon(R.drawable.alarm_red);
+                        alarmLog("알람 화면 진입");
+                        Bundle bundle = new Bundle();
+                        bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 알람 모아보는 프래그먼트로 진입");
+                        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+                        // 서버에서 전송받은 상태 메시지가 400, 500인 경우 받은 알림이 없다는 메시지를 띄운다
+                        if (sharedPreferences.getString("push_status", "").equals("400") ||
+                                sharedPreferences.getString("push_status", "").equals("500"))
+                        {
+                            // TODO : 받은 알림이 없으면 알림이 없다는 화면을 띄워야 한다 (ios와 맞추기)
+//                        Toast.makeText(MainTabLayoutActivity.this, "현재 받은 알림이 없습니다", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    else if (position == 3)
+                    {
+                        /* 인터넷 연결 체크 */
+                        isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+                        if (!isConnected)
+                        {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+                            builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+                                    .setCancelable(false)
+                                    .setPositiveButton("예", new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            dialog.dismiss();
+                                            Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                                            startActivity(intent);
+                                        }
+                                    }).show();
+                        }
+                        tab.setIcon(R.drawable.mypage_red);
+                        Bundle bundle = new Bundle();
+                        bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 마이페이지 프래그먼트로 진입");
+                        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+                        mypageEnterLog("마이페이지 진입");
+                    }
+                }
+
+                // 하단 탭 선택 후 다른 탭을 선택하면 호출되는 메서드
+                // 검색 누른 후 알림 누르면 124번 줄의 else if문이 작동한다
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab)
+                {
+                    int position = tab.getPosition();
+
+                    if (position == 0)
+                    {
+                        tab.setIcon(R.drawable.home_icon_gray);
+                    }
+                    else if (position == 1)
+                    {
+                        tab.setIcon(R.drawable.search_icon_gray);
+                    }
+                    else if (position == 2)
+                    {
+                        tab.setIcon(R.drawable.alarm_icon_gray);
+                    }
+                    else if (position == 3)
+                    {
+                        tab.setIcon(R.drawable.my_profile_icon_gray);
+                    }
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab)
+                {
+                }
+            });
+        }
+        else
         {
             /* 탭 선택했을 때 / 선택하지 않았을 때 탭 아이템에서 어떤 이미지를 보여줄지 처리하는 부분 */
-            @Override
-            public void onTabSelected(TabLayout.Tab tab)
+            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
             {
-                final int position = tab.getPosition();
-                if (position == 0)
+                @Override
+                public void onTabSelected(TabLayout.Tab tab)
                 {
-                    /* 인터넷 연결 체크 */
-                    isConnected = isNetworkConnected(MainTabLayoutActivity.this);
-                    if (!isConnected)
+                    final int position = tab.getPosition();
+                    if (position == 0)
                     {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
-                        builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
-                                .setCancelable(false)
-                                .setPositiveButton("예", new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
+                        /* 인터넷 연결 체크 */
+                        isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+                        if (!isConnected)
+                        {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+                            builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+                                    .setCancelable(false)
+                                    .setPositiveButton("예", new DialogInterface.OnClickListener()
                                     {
-                                        dialog.dismiss();
-                                        Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
-                                        startActivity(intent);
-                                    }
-                                }).show();
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            dialog.dismiss();
+                                            Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                                            startActivity(intent);
+                                        }
+                                    }).show();
+                        }
+                        tab.setIcon(R.drawable.home_red);
+                        reHomeLog("다른 화면에서 홈 화면으로 진입");
+                        Bundle bundle = new Bundle();
+                        bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 홈 프래그먼트로 진입");
+                        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
                     }
-                    tab.setIcon(R.drawable.home_red);
-                    reHomeLog("다른 화면에서 홈 화면으로 진입");
-                    Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 홈 프래그먼트로 진입");
-                    analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-                }
-                else if (position == 1)
-                {
-                    /* 인터넷 연결 체크 */
-                    isConnected = isNetworkConnected(MainTabLayoutActivity.this);
-                    if (!isConnected)
+                    else if (position == 1)
                     {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
-                        builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
-                                .setCancelable(false)
-                                .setPositiveButton("예", new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
+                        /* 인터넷 연결 체크 */
+                        isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+                        if (!isConnected)
+                        {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+                            builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+                                    .setCancelable(false)
+                                    .setPositiveButton("예", new DialogInterface.OnClickListener()
                                     {
-                                        dialog.dismiss();
-                                        Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
-                                        startActivity(intent);
-                                    }
-                                }).show();
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            dialog.dismiss();
+                                            Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                                            startActivity(intent);
+                                        }
+                                    }).show();
+                        }
+                        Log.e("SearchFragment", "MainTabLayoutActivity - 검색 아이콘 클릭");
+                        Bundle bundle = new Bundle();
+                        bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 검색 프래그먼트로 진입");
+                        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+                        tab.setIcon(R.drawable.search_red);
+                        searchEnterLog("검색 화면 진입");
                     }
-                    Log.e("SearchFragment", "MainTabLayoutActivity - 검색 아이콘 클릭");
-                    Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 검색 프래그먼트로 진입");
-                    analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-                    tab.setIcon(R.drawable.search_red);
-                    searchEnterLog("검색 화면 진입");
-                }
-                else if (position == 2)
-                {
-                    /* 인터넷 연결 체크 */
-                    isConnected = isNetworkConnected(MainTabLayoutActivity.this);
-                    if (!isConnected)
+                    else if (position == 2)
                     {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
-                        builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
-                                .setCancelable(false)
-                                .setPositiveButton("예", new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
+                        /* 인터넷 연결 체크 */
+                        isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+                        if (!isConnected)
+                        {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+                            builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+                                    .setCancelable(false)
+                                    .setPositiveButton("예", new DialogInterface.OnClickListener()
                                     {
-                                        dialog.dismiss();
-                                        Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
-                                        startActivity(intent);
-                                    }
-                                }).show();
-                    }
-                    tab.setIcon(R.drawable.alarm_red);
-                    alarmLog("알람 화면 진입");
-                    Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 알람 모아보는 프래그먼트로 진입");
-                    analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-                    // 서버에서 전송받은 상태 메시지가 400, 500인 경우 받은 알림이 없다는 메시지를 띄운다
-                    if (sharedPreferences.getString("push_status", "").equals("400") ||
-                            sharedPreferences.getString("push_status", "").equals("500"))
-                    {
-                        // TODO : 받은 알림이 없으면 알림이 없다는 화면을 띄워야 한다 (ios와 맞추기)
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            dialog.dismiss();
+                                            Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                                            startActivity(intent);
+                                        }
+                                    }).show();
+                        }
+                        tab.setIcon(R.drawable.alarm_red);
+                        alarmLog("알람 화면 진입");
+                        Bundle bundle = new Bundle();
+                        bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 알람 모아보는 프래그먼트로 진입");
+                        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+                        // 서버에서 전송받은 상태 메시지가 400, 500인 경우 받은 알림이 없다는 메시지를 띄운다
+                        if (sharedPreferences.getString("push_status", "").equals("400") ||
+                                sharedPreferences.getString("push_status", "").equals("500"))
+                        {
+                            // TODO : 받은 알림이 없으면 알림이 없다는 화면을 띄워야 한다 (ios와 맞추기)
 //                        Toast.makeText(MainTabLayoutActivity.this, "현재 받은 알림이 없습니다", Toast.LENGTH_SHORT).show();
+                        }
                     }
-                }
-                else if (position == 3)
-                {
-                    /* 인터넷 연결 체크 */
-                    isConnected = isNetworkConnected(MainTabLayoutActivity.this);
-                    if (!isConnected)
+                    else if (position == 3)
                     {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
-                        builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
-                                .setCancelable(false)
-                                .setPositiveButton("예", new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
+                        /* 인터넷 연결 체크 */
+                        isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+                        if (!isConnected)
+                        {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+                            builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+                                    .setCancelable(false)
+                                    .setPositiveButton("예", new DialogInterface.OnClickListener()
                                     {
-                                        dialog.dismiss();
-                                        Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
-                                        startActivity(intent);
-                                    }
-                                }).show();
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            dialog.dismiss();
+                                            Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                                            startActivity(intent);
+                                        }
+                                    }).show();
+                        }
+                        tab.setIcon(R.drawable.mypage_red);
+                        Bundle bundle = new Bundle();
+                        bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 마이페이지 프래그먼트로 진입");
+                        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+                        mypageEnterLog("마이페이지 진입");
                     }
-                    tab.setIcon(R.drawable.mypage_red);
-                    Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 마이페이지 프래그먼트로 진입");
-                    analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-                    mypageEnterLog("마이페이지 진입");
                 }
-            }
 
-            // 하단 탭 선택 후 다른 탭을 선택하면 호출되는 메서드
-            // 검색 누른 후 알림 누르면 124번 줄의 else if문이 작동한다
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab)
+                // 하단 탭 선택 후 다른 탭을 선택하면 호출되는 메서드
+                // 검색 누른 후 알림 누르면 124번 줄의 else if문이 작동한다
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab)
+                {
+                    int position = tab.getPosition();
+
+                    if (position == 0)
+                    {
+                        tab.setIcon(R.drawable.home_icon_gray);
+                    }
+                    else if (position == 1)
+                    {
+                        tab.setIcon(R.drawable.search_icon_gray);
+                    }
+                    else if (position == 2)
+                    {
+                        tab.setIcon(R.drawable.alarm_icon_gray);
+                    }
+                    else if (position == 3)
+                    {
+                        tab.setIcon(R.drawable.my_profile_icon_gray);
+                    }
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab)
+                {
+                }
+            });
+
+            // 처음 들어왔을 때 하단 탭에서 보여줄 이미지를 ArrayList에 추가한다
+            ArrayList<Integer> image = new ArrayList<>();
+            image.add(R.drawable.home_red);
+            image.add(R.drawable.search_icon_gray);
+            image.add(R.drawable.alarm_icon_gray);
+            image.add(R.drawable.my_profile_icon_gray);
+
+            // for문으로 이미지가 든 ArrayList를 돌며 탭에 set
+            for (int i = 0; i < image.size(); i++)
             {
-                int position = tab.getPosition();
-
-                if (position == 0)
-                {
-                    tab.setIcon(R.drawable.home_icon_gray);
-                }
-                else if (position == 1)
-                {
-                    tab.setIcon(R.drawable.search_icon_gray);
-                }
-                else if (position == 2)
-                {
-                    tab.setIcon(R.drawable.alarm_icon_gray);
-                }
-                else if (position == 3)
-                {
-                    tab.setIcon(R.drawable.my_profile_icon_gray);
-                }
+                tabLayout.getTabAt(i).setIcon(image.get(i));
             }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab)
-            {
-            }
-        });
-
-        // 처음 들어왔을 때 하단 탭에서 보여줄 이미지를 ArrayList에 추가한다
-        ArrayList<Integer> image = new ArrayList<>();
-        image.add(R.drawable.home_red);
-        image.add(R.drawable.search_icon_gray);
-        image.add(R.drawable.alarm_icon_gray);
-        image.add(R.drawable.my_profile_icon_gray);
-
-        // for문으로 이미지가 든 ArrayList를 돌며 탭에 set
-        for (int i = 0; i < image.size(); i++)
-        {
-            tabLayout.getTabAt(i).setIcon(image.get(i));
         }
 
-        /* MyFirebaseMessagingService - 80번 줄을 주석 해제하면 아래 258번 주석까지 해제한다 */
-//        LocalBroadcastManager.getInstance(this).registerReceiver(mReciever, new IntentFilter("broadcaster"));
-//        mReciever = new BroadcastReceiver()
+//        if (getIntent().getAction() != null)
+//        {
+//            Log.e(TAG, "받은 액션 : " + getIntent().getAction());
+//            if (getIntent().getAction().equals("com.psj.welfare.push"))
+//            {
+//                Intent intents = getIntent();
+//                String intentAction = intents.getAction();
+//                Log.e(TAG, "intentAction : " + intentAction);
+//                Log.e(TAG, "android.intent.action.MAIN 액션값 들어옴!!");
+//                adapter = new MainViewPagerAdapter(getSupportFragmentManager());
+//                adapter.addFragment(new MainFragment(), "main");
+//                adapter.addFragment(new SearchFragment(), "search");
+//                adapter.addFragment(new PushGatherFragment(), "push");
+//                adapter.addFragment(new MyPageFragment(), "mypage");
+//
+//                tabLayout.getTabAt(0).setIcon(R.drawable.home_icon_gray);
+//                tabLayout.getTabAt(1).setIcon(R.drawable.search_icon_gray);
+//                tabLayout.getTabAt(2).setIcon(R.drawable.alarm_red);
+//                tabLayout.getTabAt(3).setIcon(R.drawable.my_profile_icon_gray);
+//                viewPager.setCurrentItem(2);
+//
+//                /* 알림 화면을 처음 보여주고 난 다음, 다른 탭을 누르면 이동할 수 있도록 한다 */
+//                tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
+//                {
+//                    @Override
+//                    public void onTabSelected(TabLayout.Tab tab)
+//                    {
+//                        final int position = tab.getPosition();
+//                        if (position == 0)
+//                        {
+//                            /* 인터넷 연결 체크 */
+//                            isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+//                            if (!isConnected)
+//                            {
+//                                AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+//                                builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+//                                        .setCancelable(false)
+//                                        .setPositiveButton("예", new DialogInterface.OnClickListener()
+//                                        {
+//                                            @Override
+//                                            public void onClick(DialogInterface dialog, int which)
+//                                            {
+//                                                dialog.dismiss();
+//                                                Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+//                                                startActivity(intent);
+//                                            }
+//                                        }).show();
+//                            }
+//                            tab.setIcon(R.drawable.home_red);
+//                            reHomeLog("다른 화면에서 홈 화면으로 진입");
+//                            Bundle bundle = new Bundle();
+//                            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 홈 프래그먼트로 진입");
+//                            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+//                        }
+//                        else if (position == 1)
+//                        {
+//                            /* 인터넷 연결 체크 */
+//                            isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+//                            if (!isConnected)
+//                            {
+//                                AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+//                                builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+//                                        .setCancelable(false)
+//                                        .setPositiveButton("예", new DialogInterface.OnClickListener()
+//                                        {
+//                                            @Override
+//                                            public void onClick(DialogInterface dialog, int which)
+//                                            {
+//                                                dialog.dismiss();
+//                                                Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+//                                                startActivity(intent);
+//                                            }
+//                                        }).show();
+//                            }
+//                            Log.e("SearchFragment", "MainTabLayoutActivity - 검색 아이콘 클릭");
+//                            Bundle bundle = new Bundle();
+//                            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 검색 프래그먼트로 진입");
+//                            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+//                            tab.setIcon(R.drawable.search_red);
+//                            searchEnterLog("검색 화면 진입");
+//                        }
+//                        else if (position == 2)
+//                        {
+//                            /* 인터넷 연결 체크 */
+//                            isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+//                            if (!isConnected)
+//                            {
+//                                AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+//                                builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+//                                        .setCancelable(false)
+//                                        .setPositiveButton("예", new DialogInterface.OnClickListener()
+//                                        {
+//                                            @Override
+//                                            public void onClick(DialogInterface dialog, int which)
+//                                            {
+//                                                dialog.dismiss();
+//                                                Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+//                                                startActivity(intent);
+//                                            }
+//                                        }).show();
+//                            }
+//                            tab.setIcon(R.drawable.alarm_red);
+//                            alarmLog("알람 화면 진입");
+//                            Bundle bundle = new Bundle();
+//                            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 알람 모아보는 프래그먼트로 진입");
+//                            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+//                            // 서버에서 전송받은 상태 메시지가 400, 500인 경우 받은 알림이 없다는 메시지를 띄운다
+//                            if (sharedPreferences.getString("push_status", "").equals("400") ||
+//                                    sharedPreferences.getString("push_status", "").equals("500"))
+//                            {
+//                                // TODO : 받은 알림이 없으면 알림이 없다는 화면을 띄워야 한다 (ios와 맞추기)
+////                        Toast.makeText(MainTabLayoutActivity.this, "현재 받은 알림이 없습니다", Toast.LENGTH_SHORT).show();
+//                            }
+//                        }
+//                        else if (position == 3)
+//                        {
+//                            /* 인터넷 연결 체크 */
+//                            isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+//                            if (!isConnected)
+//                            {
+//                                AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+//                                builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+//                                        .setCancelable(false)
+//                                        .setPositiveButton("예", new DialogInterface.OnClickListener()
+//                                        {
+//                                            @Override
+//                                            public void onClick(DialogInterface dialog, int which)
+//                                            {
+//                                                dialog.dismiss();
+//                                                Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+//                                                startActivity(intent);
+//                                            }
+//                                        }).show();
+//                            }
+//                            tab.setIcon(R.drawable.mypage_red);
+//                            Bundle bundle = new Bundle();
+//                            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 마이페이지 프래그먼트로 진입");
+//                            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+//                            mypageEnterLog("마이페이지 진입");
+//                        }
+//                    }
+//
+//                    // 하단 탭 선택 후 다른 탭을 선택하면 호출되는 메서드
+//                    // 검색 누른 후 알림 누르면 124번 줄의 else if문이 작동한다
+//                    @Override
+//                    public void onTabUnselected(TabLayout.Tab tab)
+//                    {
+//                        int position = tab.getPosition();
+//
+//                        if (position == 0)
+//                        {
+//                            tab.setIcon(R.drawable.home_icon_gray);
+//                        }
+//                        else if (position == 1)
+//                        {
+//                            tab.setIcon(R.drawable.search_icon_gray);
+//                        }
+//                        else if (position == 2)
+//                        {
+//                            tab.setIcon(R.drawable.alarm_icon_gray);
+//                        }
+//                        else if (position == 3)
+//                        {
+//                            tab.setIcon(R.drawable.my_profile_icon_gray);
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onTabReselected(TabLayout.Tab tab)
+//                    {
+//                    }
+//                });
+//            }
+//            else
+//            {
+//                /* 탭 선택했을 때 / 선택하지 않았을 때 탭 아이템에서 어떤 이미지를 보여줄지 처리하는 부분 */
+//                tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
+//                {
+//                    @Override
+//                    public void onTabSelected(TabLayout.Tab tab)
+//                    {
+//                        final int position = tab.getPosition();
+//                        if (position == 0)
+//                        {
+//                            /* 인터넷 연결 체크 */
+//                            isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+//                            if (!isConnected)
+//                            {
+//                                AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+//                                builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+//                                        .setCancelable(false)
+//                                        .setPositiveButton("예", new DialogInterface.OnClickListener()
+//                                        {
+//                                            @Override
+//                                            public void onClick(DialogInterface dialog, int which)
+//                                            {
+//                                                dialog.dismiss();
+//                                                Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+//                                                startActivity(intent);
+//                                            }
+//                                        }).show();
+//                            }
+//                            tab.setIcon(R.drawable.home_red);
+//                            reHomeLog("다른 화면에서 홈 화면으로 진입");
+//                            Bundle bundle = new Bundle();
+//                            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 홈 프래그먼트로 진입");
+//                            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+//                        }
+//                        else if (position == 1)
+//                        {
+//                            /* 인터넷 연결 체크 */
+//                            isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+//                            if (!isConnected)
+//                            {
+//                                AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+//                                builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+//                                        .setCancelable(false)
+//                                        .setPositiveButton("예", new DialogInterface.OnClickListener()
+//                                        {
+//                                            @Override
+//                                            public void onClick(DialogInterface dialog, int which)
+//                                            {
+//                                                dialog.dismiss();
+//                                                Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+//                                                startActivity(intent);
+//                                            }
+//                                        }).show();
+//                            }
+//                            Log.e("SearchFragment", "MainTabLayoutActivity - 검색 아이콘 클릭");
+//                            Bundle bundle = new Bundle();
+//                            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 검색 프래그먼트로 진입");
+//                            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+//                            tab.setIcon(R.drawable.search_red);
+//                            searchEnterLog("검색 화면 진입");
+//                        }
+//                        else if (position == 2)
+//                        {
+//                            /* 인터넷 연결 체크 */
+//                            isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+//                            if (!isConnected)
+//                            {
+//                                AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+//                                builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+//                                        .setCancelable(false)
+//                                        .setPositiveButton("예", new DialogInterface.OnClickListener()
+//                                        {
+//                                            @Override
+//                                            public void onClick(DialogInterface dialog, int which)
+//                                            {
+//                                                dialog.dismiss();
+//                                                Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+//                                                startActivity(intent);
+//                                            }
+//                                        }).show();
+//                            }
+//                            tab.setIcon(R.drawable.alarm_red);
+//                            alarmLog("알람 화면 진입");
+//                            Bundle bundle = new Bundle();
+//                            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 알람 모아보는 프래그먼트로 진입");
+//                            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+//                            // 서버에서 전송받은 상태 메시지가 400, 500인 경우 받은 알림이 없다는 메시지를 띄운다
+//                            if (sharedPreferences.getString("push_status", "").equals("400") ||
+//                                    sharedPreferences.getString("push_status", "").equals("500"))
+//                            {
+//                                // TODO : 받은 알림이 없으면 알림이 없다는 화면을 띄워야 한다 (ios와 맞추기)
+////                        Toast.makeText(MainTabLayoutActivity.this, "현재 받은 알림이 없습니다", Toast.LENGTH_SHORT).show();
+//                            }
+//                        }
+//                        else if (position == 3)
+//                        {
+//                            /* 인터넷 연결 체크 */
+//                            isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+//                            if (!isConnected)
+//                            {
+//                                AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+//                                builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+//                                        .setCancelable(false)
+//                                        .setPositiveButton("예", new DialogInterface.OnClickListener()
+//                                        {
+//                                            @Override
+//                                            public void onClick(DialogInterface dialog, int which)
+//                                            {
+//                                                dialog.dismiss();
+//                                                Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+//                                                startActivity(intent);
+//                                            }
+//                                        }).show();
+//                            }
+//                            tab.setIcon(R.drawable.mypage_red);
+//                            Bundle bundle = new Bundle();
+//                            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 마이페이지 프래그먼트로 진입");
+//                            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+//                            mypageEnterLog("마이페이지 진입");
+//                        }
+//                    }
+//
+//                    // 하단 탭 선택 후 다른 탭을 선택하면 호출되는 메서드
+//                    // 검색 누른 후 알림 누르면 124번 줄의 else if문이 작동한다
+//                    @Override
+//                    public void onTabUnselected(TabLayout.Tab tab)
+//                    {
+//                        int position = tab.getPosition();
+//
+//                        if (position == 0)
+//                        {
+//                            tab.setIcon(R.drawable.home_icon_gray);
+//                        }
+//                        else if (position == 1)
+//                        {
+//                            tab.setIcon(R.drawable.search_icon_gray);
+//                        }
+//                        else if (position == 2)
+//                        {
+//                            tab.setIcon(R.drawable.alarm_icon_gray);
+//                        }
+//                        else if (position == 3)
+//                        {
+//                            tab.setIcon(R.drawable.my_profile_icon_gray);
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onTabReselected(TabLayout.Tab tab)
+//                    {
+//                    }
+//                });
+//
+//                // 처음 들어왔을 때 하단 탭에서 보여줄 이미지를 ArrayList에 추가한다
+//                ArrayList<Integer> image = new ArrayList<>();
+//                image.add(R.drawable.home_red);
+//                image.add(R.drawable.search_icon_gray);
+//                image.add(R.drawable.alarm_icon_gray);
+//                image.add(R.drawable.my_profile_icon_gray);
+//
+//                // for문으로 이미지가 든 ArrayList를 돌며 탭에 set
+//                for (int i = 0; i < image.size(); i++)
+//                {
+//                    tabLayout.getTabAt(i).setIcon(image.get(i));
+//                }
+//            }
+//        }
+//        else
+//        {
+//            /* 탭 선택했을 때 / 선택하지 않았을 때 탭 아이템에서 어떤 이미지를 보여줄지 처리하는 부분 */
+//            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
+//            {
+//                @Override
+//                public void onTabSelected(TabLayout.Tab tab)
+//                {
+//                    final int position = tab.getPosition();
+//                    if (position == 0)
+//                    {
+//                        /* 인터넷 연결 체크 */
+//                        isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+//                        if (!isConnected)
+//                        {
+//                            AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+//                            builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+//                                    .setCancelable(false)
+//                                    .setPositiveButton("예", new DialogInterface.OnClickListener()
+//                                    {
+//                                        @Override
+//                                        public void onClick(DialogInterface dialog, int which)
+//                                        {
+//                                            dialog.dismiss();
+//                                            Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+//                                            startActivity(intent);
+//                                        }
+//                                    }).show();
+//                        }
+//                        tab.setIcon(R.drawable.home_red);
+//                        reHomeLog("다른 화면에서 홈 화면으로 진입");
+//                        Bundle bundle = new Bundle();
+//                        bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 홈 프래그먼트로 진입");
+//                        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+//                    }
+//                    else if (position == 1)
+//                    {
+//                        /* 인터넷 연결 체크 */
+//                        isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+//                        if (!isConnected)
+//                        {
+//                            AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+//                            builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+//                                    .setCancelable(false)
+//                                    .setPositiveButton("예", new DialogInterface.OnClickListener()
+//                                    {
+//                                        @Override
+//                                        public void onClick(DialogInterface dialog, int which)
+//                                        {
+//                                            dialog.dismiss();
+//                                            Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+//                                            startActivity(intent);
+//                                        }
+//                                    }).show();
+//                        }
+//                        Log.e("SearchFragment", "MainTabLayoutActivity - 검색 아이콘 클릭");
+//                        Bundle bundle = new Bundle();
+//                        bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 검색 프래그먼트로 진입");
+//                        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+//                        tab.setIcon(R.drawable.search_red);
+//                        searchEnterLog("검색 화면 진입");
+//                    }
+//                    else if (position == 2)
+//                    {
+//                        /* 인터넷 연결 체크 */
+//                        isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+//                        if (!isConnected)
+//                        {
+//                            AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+//                            builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+//                                    .setCancelable(false)
+//                                    .setPositiveButton("예", new DialogInterface.OnClickListener()
+//                                    {
+//                                        @Override
+//                                        public void onClick(DialogInterface dialog, int which)
+//                                        {
+//                                            dialog.dismiss();
+//                                            Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+//                                            startActivity(intent);
+//                                        }
+//                                    }).show();
+//                        }
+//                        tab.setIcon(R.drawable.alarm_red);
+//                        alarmLog("알람 화면 진입");
+//                        Bundle bundle = new Bundle();
+//                        bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 알람 모아보는 프래그먼트로 진입");
+//                        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+//                        // 서버에서 전송받은 상태 메시지가 400, 500인 경우 받은 알림이 없다는 메시지를 띄운다
+//                        if (sharedPreferences.getString("push_status", "").equals("400") ||
+//                                sharedPreferences.getString("push_status", "").equals("500"))
+//                        {
+//                            // TODO : 받은 알림이 없으면 알림이 없다는 화면을 띄워야 한다 (ios와 맞추기)
+////                        Toast.makeText(MainTabLayoutActivity.this, "현재 받은 알림이 없습니다", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                    else if (position == 3)
+//                    {
+//                        /* 인터넷 연결 체크 */
+//                        isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+//                        if (!isConnected)
+//                        {
+//                            AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+//                            builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+//                                    .setCancelable(false)
+//                                    .setPositiveButton("예", new DialogInterface.OnClickListener()
+//                                    {
+//                                        @Override
+//                                        public void onClick(DialogInterface dialog, int which)
+//                                        {
+//                                            dialog.dismiss();
+//                                            Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+//                                            startActivity(intent);
+//                                        }
+//                                    }).show();
+//                        }
+//                        tab.setIcon(R.drawable.mypage_red);
+//                        Bundle bundle = new Bundle();
+//                        bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 마이페이지 프래그먼트로 진입");
+//                        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+//                        mypageEnterLog("마이페이지 진입");
+//                    }
+//                }
+//
+//                // 하단 탭 선택 후 다른 탭을 선택하면 호출되는 메서드
+//                // 검색 누른 후 알림 누르면 124번 줄의 else if문이 작동한다
+//                @Override
+//                public void onTabUnselected(TabLayout.Tab tab)
+//                {
+//                    int position = tab.getPosition();
+//
+//                    if (position == 0)
+//                    {
+//                        tab.setIcon(R.drawable.home_icon_gray);
+//                    }
+//                    else if (position == 1)
+//                    {
+//                        tab.setIcon(R.drawable.search_icon_gray);
+//                    }
+//                    else if (position == 2)
+//                    {
+//                        tab.setIcon(R.drawable.alarm_icon_gray);
+//                    }
+//                    else if (position == 3)
+//                    {
+//                        tab.setIcon(R.drawable.my_profile_icon_gray);
+//                    }
+//                }
+//
+//                @Override
+//                public void onTabReselected(TabLayout.Tab tab)
+//                {
+//                }
+//            });
+//
+//            // 처음 들어왔을 때 하단 탭에서 보여줄 이미지를 ArrayList에 추가한다
+//            ArrayList<Integer> image = new ArrayList<>();
+//            image.add(R.drawable.home_red);
+//            image.add(R.drawable.search_icon_gray);
+//            image.add(R.drawable.alarm_icon_gray);
+//            image.add(R.drawable.my_profile_icon_gray);
+//
+//            // for문으로 이미지가 든 ArrayList를 돌며 탭에 set
+//            for (int i = 0; i < image.size(); i++)
+//            {
+//                tabLayout.getTabAt(i).setIcon(image.get(i));
+//            }
+//        }
+
+//        /* 탭 선택했을 때 / 선택하지 않았을 때 탭 아이템에서 어떤 이미지를 보여줄지 처리하는 부분 */
+//        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
 //        {
 //            @Override
-//            public void onReceive(Context context, Intent intent)
+//            public void onTabSelected(TabLayout.Tab tab)
 //            {
-//                //
+//                final int position = tab.getPosition();
+//                if (position == 0)
+//                {
+//                    /* 인터넷 연결 체크 */
+//                    isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+//                    if (!isConnected)
+//                    {
+//                        AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+//                        builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+//                                .setCancelable(false)
+//                                .setPositiveButton("예", new DialogInterface.OnClickListener()
+//                                {
+//                                    @Override
+//                                    public void onClick(DialogInterface dialog, int which)
+//                                    {
+//                                        dialog.dismiss();
+//                                        Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+//                                        startActivity(intent);
+//                                    }
+//                                }).show();
+//                    }
+//                    tab.setIcon(R.drawable.home_red);
+//                    reHomeLog("다른 화면에서 홈 화면으로 진입");
+//                    Bundle bundle = new Bundle();
+//                    bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 홈 프래그먼트로 진입");
+//                    analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+//                }
+//                else if (position == 1)
+//                {
+//                    /* 인터넷 연결 체크 */
+//                    isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+//                    if (!isConnected)
+//                    {
+//                        AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+//                        builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+//                                .setCancelable(false)
+//                                .setPositiveButton("예", new DialogInterface.OnClickListener()
+//                                {
+//                                    @Override
+//                                    public void onClick(DialogInterface dialog, int which)
+//                                    {
+//                                        dialog.dismiss();
+//                                        Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+//                                        startActivity(intent);
+//                                    }
+//                                }).show();
+//                    }
+//                    Log.e("SearchFragment", "MainTabLayoutActivity - 검색 아이콘 클릭");
+//                    Bundle bundle = new Bundle();
+//                    bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 검색 프래그먼트로 진입");
+//                    analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+//                    tab.setIcon(R.drawable.search_red);
+//                    searchEnterLog("검색 화면 진입");
+//                }
+//                else if (position == 2)
+//                {
+//                    /* 인터넷 연결 체크 */
+//                    isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+//                    if (!isConnected)
+//                    {
+//                        AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+//                        builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+//                                .setCancelable(false)
+//                                .setPositiveButton("예", new DialogInterface.OnClickListener()
+//                                {
+//                                    @Override
+//                                    public void onClick(DialogInterface dialog, int which)
+//                                    {
+//                                        dialog.dismiss();
+//                                        Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+//                                        startActivity(intent);
+//                                    }
+//                                }).show();
+//                    }
+//                    tab.setIcon(R.drawable.alarm_red);
+//                    alarmLog("알람 화면 진입");
+//                    Bundle bundle = new Bundle();
+//                    bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 알람 모아보는 프래그먼트로 진입");
+//                    analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+//                    // 서버에서 전송받은 상태 메시지가 400, 500인 경우 받은 알림이 없다는 메시지를 띄운다
+//                    if (sharedPreferences.getString("push_status", "").equals("400") ||
+//                            sharedPreferences.getString("push_status", "").equals("500"))
+//                    {
+//                        // TODO : 받은 알림이 없으면 알림이 없다는 화면을 띄워야 한다 (ios와 맞추기)
+////                        Toast.makeText(MainTabLayoutActivity.this, "현재 받은 알림이 없습니다", Toast.LENGTH_SHORT).show();
+//                    }
+//                }
+//                else if (position == 3)
+//                {
+//                    /* 인터넷 연결 체크 */
+//                    isConnected = isNetworkConnected(MainTabLayoutActivity.this);
+//                    if (!isConnected)
+//                    {
+//                        AlertDialog.Builder builder = new AlertDialog.Builder(MainTabLayoutActivity.this);
+//                        builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+//                                .setCancelable(false)
+//                                .setPositiveButton("예", new DialogInterface.OnClickListener()
+//                                {
+//                                    @Override
+//                                    public void onClick(DialogInterface dialog, int which)
+//                                    {
+//                                        dialog.dismiss();
+//                                        Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+//                                        startActivity(intent);
+//                                    }
+//                                }).show();
+//                    }
+//                    tab.setIcon(R.drawable.mypage_red);
+//                    Bundle bundle = new Bundle();
+//                    bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 마이페이지 프래그먼트로 진입");
+//                    analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+//                    mypageEnterLog("마이페이지 진입");
+//                }
 //            }
-//        };
+//
+//            // 하단 탭 선택 후 다른 탭을 선택하면 호출되는 메서드
+//            // 검색 누른 후 알림 누르면 124번 줄의 else if문이 작동한다
+//            @Override
+//            public void onTabUnselected(TabLayout.Tab tab)
+//            {
+//                int position = tab.getPosition();
+//
+//                if (position == 0)
+//                {
+//                    tab.setIcon(R.drawable.home_icon_gray);
+//                }
+//                else if (position == 1)
+//                {
+//                    tab.setIcon(R.drawable.search_icon_gray);
+//                }
+//                else if (position == 2)
+//                {
+//                    tab.setIcon(R.drawable.alarm_icon_gray);
+//                }
+//                else if (position == 3)
+//                {
+//                    tab.setIcon(R.drawable.my_profile_icon_gray);
+//                }
+//            }
+//
+//            @Override
+//            public void onTabReselected(TabLayout.Tab tab)
+//            {
+//            }
+//        });
+//
+//        // 처음 들어왔을 때 하단 탭에서 보여줄 이미지를 ArrayList에 추가한다
+//        ArrayList<Integer> image = new ArrayList<>();
+//        image.add(R.drawable.home_red);
+//        image.add(R.drawable.search_icon_gray);
+//        image.add(R.drawable.alarm_icon_gray);
+//        image.add(R.drawable.my_profile_icon_gray);
+//
+//        // for문으로 이미지가 든 ArrayList를 돌며 탭에 set
+//        for (int i = 0; i < image.size(); i++)
+//        {
+//            tabLayout.getTabAt(i).setIcon(image.get(i));
+//        }
 
     }
 

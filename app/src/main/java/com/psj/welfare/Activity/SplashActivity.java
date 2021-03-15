@@ -15,14 +15,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.psj.welfare.api.ApiClient;
-import com.psj.welfare.api.ApiInterface;
-import com.psj.welfare.R;
-import com.psj.welfare.util.LogUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.psj.welfare.R;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,12 +44,20 @@ public class SplashActivity extends AppCompatActivity
     SharedPreferences sharedPreferences;
 
     String token, sessionId, encode_str;
+    String intentAction = null;
+
+    public Intent intent;
+
+    boolean isPushClicked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        intent = getIntent();
+        Bundle extras = intent.getExtras();
 
         sharedPreferences = getSharedPreferences("app_pref", 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -75,8 +83,49 @@ public class SplashActivity extends AppCompatActivity
 
         userLog();
 
-        Handler handler = new Handler();
-        handler.postDelayed(new SplashHandler(), 3000);
+        onNewIntent(intent);
+
+//        Handler handler = new Handler();
+//        handler.postDelayed(new SplashHandler(), 3000);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent)
+    {
+        super.onNewIntent(intent);
+        if (intent != null && intent.getExtras() != null)
+        {
+            String aaa = intent.getExtras().getString("push_clicked");
+            if (aaa == null)
+            {
+                Log.e(TAG, "aaa가 null임");
+                isPushClicked = true;
+                /* 푸시 알림을 누르면 이 곳으로 빠진다. 여기서 인텐트를 만들어 MainTabLayoutActivity로 이동시키고, 값을 같이 넘겨서
+                 * 받은 값이 이곳에서 보낸 값과 일치할 경우 PushGatherFragment를 띄우도록 하면 될 듯 */
+//                Intent intent1 = new Intent(SplashActivity.this, MainTabLayoutActivity.class);
+//                intent1.putExtra("push", 100);
+//                startActivity(intent1);
+                Handler handler = new Handler();
+                handler.postDelayed(new SplashHandler(), 3000);
+            }
+        }
+        else
+        {
+            Log.e(TAG, "getString() 값이 없음");
+            // 이곳으로 빠지면 그냥 일반적인 스플래시 화면으로 작동해서 메인 화면으로 이동하기만 한다
+            Handler handler = new Handler();
+            handler.postDelayed(new NormalHandler(), 3000);
+        }
+    }
+
+    private class NormalHandler implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            startActivity(new Intent(SplashActivity.this, MainTabLayoutActivity.class));
+            SplashActivity.this.finish();
+        }
     }
 
     private class SplashHandler implements Runnable
@@ -102,8 +151,22 @@ public class SplashActivity extends AppCompatActivity
             }
             else
             {
-                startActivity(new Intent(SplashActivity.this, MainTabLayoutActivity.class));
+                // 비행기 모드가 아닐 경우 액티비티 실행
+                Intent intent = new Intent(SplashActivity.this, MainTabLayoutActivity.class);
+                intent.putExtra("push", 100);
+                startActivity(intent);
                 SplashActivity.this.finish();
+//                if (intentAction != null)
+//                {
+//                    intent.setAction(intentAction);
+//                    startActivity(intent);
+//                    finish();
+//                }
+//                else
+//                {
+//                    startActivity(new Intent(SplashActivity.this, MainTabLayoutActivity.class));
+//                    SplashActivity.this.finish();
+//                }
             }
         }
     }
