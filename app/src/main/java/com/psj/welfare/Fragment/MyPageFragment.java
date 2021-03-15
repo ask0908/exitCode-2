@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,8 +28,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.kakao.auth.Session;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
-import com.psj.welfare.api.ApiClient;
-import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.R;
 import com.psj.welfare.activity.ChoiceKeywordActivity;
 import com.psj.welfare.activity.GetUserInformationActivity;
 import com.psj.welfare.activity.LoginActivity;
@@ -38,8 +36,9 @@ import com.psj.welfare.activity.MyInfoUpdateActivity;
 import com.psj.welfare.activity.PersonalInformationActivity;
 import com.psj.welfare.activity.SplashActivity;
 import com.psj.welfare.activity.TermsAndConditionsActivity;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.OnSingleClickListener;
-import com.psj.welfare.R;
 import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONException;
@@ -58,12 +57,12 @@ public class MyPageFragment extends Fragment
 {
     private final String TAG = "MyPageFragment";
 
-    LinearLayout account_layout, benefit_type_layout, terms_location_layout, push_noti_layout, privacy_policy_layout, user_layout, keyword_layout;
+    LinearLayout account_layout, terms_location_layout, push_noti_layout, privacy_policy_layout, user_layout, keyword_layout;
 
     ImageView kakao_profile_image, move_update_personal_imageview, privacy_policy_imageview, account_imageview, keyword_imageview;
-    TextView kakao_name, account_platform_text, push_setting_text;
+    TextView kakao_name, account_platform_text;
     Switch push_noti_switch;
-    Button account_btn, benefit_type_btn, terms_location_based_btn, privacy_policy_btn, mypage_login_btn, keyword_btn;
+    Button account_btn, terms_location_based_btn, privacy_policy_btn, mypage_login_btn, keyword_btn;
     Toolbar mypage_toolbar;
 
     SharedPreferences sharedPreferences;
@@ -259,7 +258,8 @@ public class MyPageFragment extends Fragment
         SharedPreferences.Editor editor = sharedPreferences.edit();
         // 핸드폰의 설정 화면에서 이 앱의 푸시 알림 허용값을 가져와 boolean 변수에 저장하고 이에 따라 스위치 모양을 다르게 보여준다0
         boolean isAllowed = NotificationManagerCompat.from(getActivity()).areNotificationsEnabled();
-        push_noti_switch.setChecked(false); // <- 잠깐 false로 바꿈. 나중에 꼭 바꿔야 한다!!!
+        /* apk 파일에서 푸시 테스트 위해 푸시 스위치를 항상 true로 설정함 */
+        push_noti_switch.setChecked(false);
 //        if (isAllowed)
 //        {
 //            push_noti_switch.setChecked(true);
@@ -278,8 +278,6 @@ public class MyPageFragment extends Fragment
 //        }
 
         // 혜택 유형
-        benefit_type_layout.setOnClickListener(v -> Toast.makeText(getActivity(), getString(R.string.not_yet), Toast.LENGTH_SHORT).show());
-
         // 이용약관
         terms_location_layout.setOnClickListener(new OnSingleClickListener()
         {
@@ -416,6 +414,9 @@ public class MyPageFragment extends Fragment
             account_platform_text.setVisibility(View.GONE);
             kakao_profile_image.setVisibility(View.GONE);
             push_noti_switch.setChecked(false);
+            // TODO : 푸시 알림 테스트 위해 로그아웃 상태에서도 true로 설정해서 푸시 알림 받을 수 있게 함
+//            push_noti_switch.setChecked(true);
+            putPushSetting(true);
             mypage_login_btn.setText("로그인하러 가기");
             user_layout.setVisibility(View.GONE);
             account_layout.setVisibility(View.GONE);
@@ -429,6 +430,8 @@ public class MyPageFragment extends Fragment
             account_platform_text.setVisibility(View.VISIBLE);
             kakao_profile_image.setVisibility(View.VISIBLE);
             push_noti_switch.setChecked(false);
+//            push_noti_switch.setChecked(true);   // <- 로그인했을 때는 기존 푸시 알림 수신 설정에 맞춰 값을 변경해야 하니까 false로 변경하는 코드를 true로 변경해 봄
+            putPushSetting(true);
             mypage_login_btn.setText("로그아웃");
             user_layout.setVisibility(View.VISIBLE);
             account_layout.setVisibility(View.VISIBLE);
@@ -456,18 +459,18 @@ public class MyPageFragment extends Fragment
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-                    Log.e("putPushSetting()", "성공 : " + result);
+                    Log.e("putPushSetting()", "푸시 알림 설정 상태값 변경 성공 : " + result);
                 }
                 else
                 {
-                    Log.e(TAG, "실패 : " + response.body());
+                    Log.e(TAG, "푸시 알림 설정 상태값 변경 실패 : " + response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
             {
-                Log.e("putPushSetting()", "에러 = " + t.getMessage());
+                Log.e("putPushSetting()", "푸시 알림 설정 상태값 변경 에러 : " + t.getMessage());
             }
         });
     }
@@ -486,7 +489,7 @@ public class MyPageFragment extends Fragment
         return str;
     }
 
-    /* 내 정보를 클릭했을 때 서버에서 사용자 정보를 조회해서 가져오는 메서드 */
+    /* 로그인 후 마이페이지로 들어왔을 때 서버에서 사용자 정보를 조회해서 가져오는 메서드 */
     void getUserInfo()
     {
         String action = encode("서버의 사용자 정보 가져오기");
@@ -535,7 +538,7 @@ public class MyPageFragment extends Fragment
 //        }
     }
 
-    /* 마이페이지에서 사용자들이 일으키는 이벤트 내용을 서버로 전송하는 메서드 */
+    /* 마이페이지에서 사용자 행동 로그를 서버로 전송하는 메서드 */
     void userLog(String user_action)
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
@@ -643,7 +646,6 @@ public class MyPageFragment extends Fragment
     private void init(View view)
     {
         account_layout = view.findViewById(R.id.account_layout);
-        benefit_type_layout = view.findViewById(R.id.benefit_type_layout);
         terms_location_layout = view.findViewById(R.id.terms_location_layout);
         push_noti_layout = view.findViewById(R.id.push_noti_layout);
         privacy_policy_layout = view.findViewById(R.id.privacy_policy_layout);
@@ -654,7 +656,6 @@ public class MyPageFragment extends Fragment
         kakao_profile_image = view.findViewById(R.id.kakao_profile_image);
         account_btn = view.findViewById(R.id.account_btn);
         push_noti_switch = view.findViewById(R.id.push_noti_switch);
-        benefit_type_btn = view.findViewById(R.id.benefit_type_btn);
         terms_location_based_btn = view.findViewById(R.id.terms_location_based_btn);
         privacy_policy_btn = view.findViewById(R.id.privacy_policy_btn);
         mypage_login_btn = view.findViewById(R.id.mypage_login_btn);
@@ -666,8 +667,6 @@ public class MyPageFragment extends Fragment
         privacy_policy_imageview = view.findViewById(R.id.privacy_policy_imageview);
         account_imageview = view.findViewById(R.id.account_imageview);
         keyword_imageview = view.findViewById(R.id.keyword_imageview);
-
-        push_setting_text = view.findViewById(R.id.push_setting_text);
     }
 
 }

@@ -13,7 +13,7 @@
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
 
     <application
-        android:name="com.psj.welfare.kakao.App"
+        android:name=".kakao.App"
         android:allowBackup="true"
         android:icon="@drawable/launcher_image"
         android:label="@string/app_name"
@@ -23,71 +23,75 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
-        <activity android:name="com.psj.welfare.activity.TermsAndConditionsActivity"/>
-        <activity android:name="com.psj.welfare.activity.PersonalInformationActivity" />
-        <activity android:name="com.psj.welfare.activity.SplashActivity">
+        <activity android:name=".activity.TestChoiceKeywordActivity"></activity>
+        <activity android:name=".activity.TermsAndConditionsActivity" />
+        <activity android:name=".activity.PersonalInformationActivity" />
+        <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="com.psj.welfare.push" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.psj.welfare.activity.ChoiceKeywordActivity" />
-        <activity android:name="com.psj.welfare.activity.SearchResultActivity" />
-        <activity android:name="com.psj.welfare.activity.YoutubeActivity" />
+        <activity android:name=".activity.ChoiceKeywordActivity" />
+        <activity android:name=".activity.SearchResultActivity" />
+        <activity android:name=".activity.YoutubeActivity" />
         <activity
-            android:name="com.psj.welfare.activity.ReviewUpdateActivity"
+            android:name=".activity.ReviewUpdateActivity"
             android:theme="@style/ReviewTheme" />
-        <activity android:name="com.psj.welfare.activity.GetUserInformationActivity"/>
-        <activity android:name="com.psj.welfare.activity.CalculatorResultActivity" />
+        <activity android:name=".activity.GetUserInformationActivity" />
+        <activity android:name=".activity.CalculatorResultActivity" />
         <activity
-            android:name="com.psj.welfare.activity.MyInfoUpdateActivity"
+            android:name=".activity.MyInfoUpdateActivity"
             android:theme="@style/ToolbarTheme" />
-        <activity android:name="com.psj.welfare.activity.MapSearchActivity" />
-        <activity android:name="com.psj.welfare.activity.MapDetailActivity" />
+        <activity android:name=".activity.MapSearchActivity" />
+        <activity android:name=".activity.MapDetailActivity" />
         <activity
-            android:name="com.psj.welfare.activity.MapActivity"
+            android:name=".activity.MapActivity"
             android:theme="@style/ReviewTheme" />
         <activity
-            android:name="com.psj.welfare.activity.ReviewActivity"
-            android:parentActivityName="com.psj.welfare.activity.DetailBenefitActivity"
+            android:name=".activity.ReviewActivity"
+            android:parentActivityName=".activity.DetailBenefitActivity"
             android:theme="@style/ReviewTheme" />
-        <activity android:name="com.psj.welfare.activity.TestActivity" />
-        <activity android:name="com.psj.welfare.activity.Compatibility.Compatibility_FourthActivity" />
-        <activity android:name="com.psj.welfare.activity.Compatibility.Compatibility_ResultActivity">
-            <intent-filter>
-                <action android:name="android:intent.action.VIEW" />
+        <activity android:name=".activity.TestActivity" />
+<!--        <activity android:name=".activity.Compatibility.Compatibility_ResultActivity">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android:intent.action.VIEW" />-->
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
 
-                <data
-                    android:host="@string/kakaolink_host"
-                    android:scheme="@string/kakao_scheme" />
-            </intent-filter>
-        </activity>
-        <activity android:name="com.psj.welfare.activity.Compatibility.Compatibility_ThirdActivity" />
-        <activity android:name="com.psj.welfare.activity.Compatibility.Compatibility_SecondActivity" />
-        <activity android:name="com.psj.welfare.activity.Compatibility.Compatibility_FirstActivity" />
+<!--                <data-->
+<!--                    android:host="@string/kakaolink_host"-->
+<!--                    android:scheme="@string/kakao_scheme" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
 
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_app_key" />
 
-        <activity android:name="com.psj.welfare.activity.MainTabLayoutActivity" />
-        <activity android:name="com.psj.welfare.activity.ResultBenefitActivity" />
-        <activity android:name="com.psj.welfare.activity.LoginActivity" />
-        <activity android:name="com.psj.welfare.activity.DetailBenefitActivity" />
+        <activity android:name=".activity.MainTabLayoutActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activity.ResultBenefitActivity" />
+        <activity android:name=".activity.LoginActivity" />
+        <activity android:name=".activity.DetailBenefitActivity" />
 
         <service
-            android:name="com.psj.welfare.api.MyFirebaseMessagingService"
+            android:name=".api.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <service
-            android:name="com.psj.welfare.api.MyFirebaseInstanceIDService"
+            android:name=".api.MyFirebaseInstanceIDService"
             android:enabled="false"
             android:exported="false"
             tools:ignore="InnerclassSeparator" />

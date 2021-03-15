@@ -176,13 +176,13 @@ public interface ApiInterface
 	 * "email":null,
 	 * "like_count":"0",
 	 * "star_count":"0",
-	 * "image_url":"https:\/\/www.urbene-fit.com\/images\/reviews\/캡처.PNG",
+	 * "image_url":"https:\/\/www.hyemo.com\/images\/reviews\/캡처.PNG",
 	 * "create_date":"2020-12-13 17:36:03"
 	 * }
 	 * ],
 	 * "TotalCount":3
 	 */
-	@GET("https://www.urbene-fit.com/review")
+	@GET("https://www.hyemo.com/review")
 	Call<String> getReview(
 			@Header("LoginToken") String token,
 			@Header("SessionId") String sessionId,
@@ -229,7 +229,7 @@ public interface ApiInterface
 	 * @return
 	 */
 	@Multipart
-	@POST("https://www.urbene-fit.com/review")
+	@POST("https://www.hyemo.com/review")
 	Call<String> updateReview(
 			@Part("login_token") String login_token,
 			@Part("review_id") int review_id,
@@ -255,7 +255,7 @@ public interface ApiInterface
 //	@DELETE("review/{login_token}/{review_id}")
 //	@DELETE("review/login_token={login_token}?review_id={review_id}")
 	@FormUrlEncoded
-	@POST("https://www.urbene-fit.com/review")
+	@POST("https://www.hyemo.com/review")
 	Call<String> deleteReview(
 			@Field("login_token") String login_token,
 			@Field("review_id") int review_id,
@@ -275,7 +275,7 @@ public interface ApiInterface
 	 * @param page_number - 1번째 지도 화면, 2번째 지도 화면 구분을 위한 숫자
 	 * @return
 	 */
-	@GET("https://www.urbene-fit.com/map")
+	@GET("https://www.hyemo.com/map")
 	Call<String> getNumberOfBenefit(
 			@Header("LoginToken") String token,
 			@Header("SessionId") String sessionId,
@@ -296,7 +296,7 @@ public interface ApiInterface
 	 * @return
 	 */
 	@FormUrlEncoded
-	@POST("https://www.urbene-fit.com/login")
+	@POST("https://www.hyemo.com/login")
 	Call<String> sendUserTypeAndPlatform(
 //			@Header("SessionId") String sessionId,
 //			@Header("Action") String action,
@@ -316,7 +316,7 @@ public interface ApiInterface
 	 * @param type - "pushList" 고정
 	 * @return - JSON 형태의 혜택 제목, 푸시 제목, 푸시 body, 푸시를 받은 날짜가 문자열 꼴로 나온다
 	 */
-	@GET("https://www.urbene-fit.com/push")
+	@GET("https://www.hyemo.com/push")
 	Call<String> getPushData(
 			@Header("LoginToken") String token,
 			@Header("SessionId") String session,
@@ -331,7 +331,7 @@ public interface ApiInterface
 	 * @return
 	 */
 	@FormUrlEncoded
-	@POST("https://www.urbene-fit.com/push")
+	@POST("https://www.hyemo.com/push")
 	Call<String> changePushStatus(
 			@Field("login_token") String login_token,
 			@Field("type") String type
@@ -346,7 +346,7 @@ public interface ApiInterface
 	 * @return - {"Status":"200","Message":"알림 상태 정보 수정이 완료되었습니다."}
 	 */
 	@FormUrlEncoded
-	@POST("https://www.urbene-fit.com/push")
+	@POST("https://www.hyemo.com/push")
 	Call<String> checkUserWatchedPush(
 			@Header("SessionId") String session,
 			@Header("LoginToken") String token,
@@ -364,7 +364,7 @@ public interface ApiInterface
 	 * @return - {"Status":"200","Message":"알림 삭제가 완료되었습니다."}
 	 */
 	@FormUrlEncoded
-	@POST("https://www.urbene-fit.com/push")
+	@POST("https://www.hyemo.com/push")
 	Call<String> removePush(
 			@Header("SessionId") String session,
 			@Header("LoginToken") String token,
@@ -381,7 +381,7 @@ public interface ApiInterface
 	 * @param login_token - 로그인 시 서버에서 생성되는 토큰
 	 * @return - {"Status":"200","Message":"","is_push":"false"}
 	 */
-	@GET("https://www.urbene-fit.com/user")
+	@GET("https://www.hyemo.com/user")
 	Call<String> getUserInfo(
 			@Header("SessionId") String sessionId,
 			@Header("Action") String action,
@@ -398,7 +398,7 @@ public interface ApiInterface
 	 * 			 알림 설정 값이 다르면 : {"Status":"200","Message":"유저 정보 수정이 완료되었습니다.","is_push":"false"}
 	 */
 	@FormUrlEncoded
-	@PUT("https://www.urbene-fit.com/user")
+	@PUT("https://www.hyemo.com/user")
 	Call<String> putPushSetting(
 			@Header("SessionId") String sessionId,
 			@Header("Action") String action,
@@ -427,7 +427,7 @@ public interface ApiInterface
 	 * 				}
 	 */
 	@FormUrlEncoded
-	@POST("https://www.urbene-fit.com/user")
+	@POST("https://www.hyemo.com/user")
 	Call<String> registerUserInfo(
 //			@Header("SessionId") String sessionId,
 //			@Header("Action") String action,
@@ -450,7 +450,7 @@ public interface ApiInterface
 	 * 			}
 	 */
 	@FormUrlEncoded
-	@PUT("https://www.urbene-fit.com/user")
+	@PUT("https://www.hyemo.com/user")
 	Call<String> registerUserInterest(
 			@Header("SessionId") String sessionId,
 			@Header("Action") String action,
@@ -465,7 +465,7 @@ public interface ApiInterface
 	 * @param type - "interest" 고정
 	 * @return - {"Status":"200","Message":"장학생|직업훈련|학자금|취업|대출|장려금"}
 	 */
-	@GET("https://www.urbene-fit.com/user")
+	@GET("https://www.hyemo.com/user")
 	Call<String> checkKeyword(
 			@Query("login_token") String token,
 			@Query("type") String type
@@ -485,7 +485,7 @@ public interface ApiInterface
 	 * 					"10대,여자":"10대,가출,검정고시,통신비,자퇴,퇴학,중학생,고등학생,소년소녀가정,조손가정,한부모가족,가정위탁,성범죄"
 	 * 				}
 	 */
-	@GET("https://www.urbene-fit.com/user")
+	@GET("https://www.hyemo.com/user")
 	Call<String> getAllInterest(
 			@Query("type") String type
 	);
@@ -496,7 +496,7 @@ public interface ApiInterface
 	 * @param type - "user" 고정
 	 * @return - {"Status":"200","Message":[{"nickName":"oo","age":"19950312","gender":"여자","city":"서울특별시"}]}
 	 */
-	@GET("https://www.urbene-fit.com/user")
+	@GET("https://www.hyemo.com/user")
 	Call<String> checkUserInformation(
 			@Query("login_token") String token,
 			@Query("type") String type
@@ -510,7 +510,7 @@ public interface ApiInterface
 	 * 정보가 없거나 나이가 '~대'가 아닐 경우 : {"Status":"200","Message":[{"interest":"10대,가출,검정고시,통신비,...,무공훈장"}]}
 	 * 정보가 있을 경우 : {"Status":"200","Message":[{"gender":"여자","age":"20대","city":"서울특별시","interest":"장학생,학자금,...가정폭력,지체"}]}
 	 */
-	@GET("https://www.urbene-fit.com/user")
+	@GET("https://www.hyemo.com/user")
 	Call<String> getAllKeyword(
 			@Query("login_token") String token,
 			@Query("type") String type
@@ -544,7 +544,7 @@ public interface ApiInterface
 	 * 					"isBookmark":"false"
 	 * 					}
 	 */
-	@GET("https://www.urbene-fit.com/welf")
+	@GET("https://www.hyemo.com/welf")
 	Call<String> getWelfareInformation(
 			@Header("LoginToken") String token,
 			@Header("SessionId") String session,
@@ -573,7 +573,7 @@ public interface ApiInterface
 	 *         "TotalCount":13
 	 *         }
 	 */
-	@GET("https://www.urbene-fit.com/welf")
+	@GET("https://www.hyemo.com/welf")
 	Call<String> searchWelfare(
 			@Header("LoginToken") String token,
 			@Header("SessionId") String session,
@@ -598,7 +598,7 @@ public interface ApiInterface
 	 *         },...(중략)...],
 	 *     "TotalCount": 12
 	 */
-	@GET("https://www.urbene-fit.com/welf")
+	@GET("https://www.hyemo.com/welf")
 	Call<String> searchWelfareCategory(
 			@Header("LoginToken") String token,
 			@Header("SessionId") String SessionId,
@@ -626,7 +626,7 @@ public interface ApiInterface
 	 * 			],
 	 * "TotalCount":10
 	 */
-	@GET("https://www.urbene-fit.com/welf")
+	@GET("https://www.hyemo.com/welf")
 	Call<String> searchSubCategoryWelfare(
 			@Query("type") String type,
 			@Query("welf_category") String welf_category,
@@ -643,7 +643,7 @@ public interface ApiInterface
 	 * @param userAgent - android|SM-543N|30 꼴의 사용자 정보
 	 * @return -
 	 */
-	@GET("https://www.urbene-fit.com/welf")
+	@GET("https://www.hyemo.com/welf")
 	Call<String> searchUpLevelCategory(
 			@Query("type") String type,
 			@Query("select_category") String select_category,
@@ -669,7 +669,7 @@ public interface ApiInterface
 	 * 			],
 	 * 				"TotalCount":10
 	 */
-	@GET("https://www.urbene-fit.com/welf")
+	@GET("https://www.hyemo.com/welf")
 	Call<String> userOrderedWelfare(
 			@Query("login_token") String login_token,
 			@Query("type") String type,
@@ -691,7 +691,7 @@ public interface ApiInterface
 	 * 			},...(중략)...
 	 * 			"TotalCount":6
 	 */
-	@GET("https://www.urbene-fit.com/youtube")
+	@GET("https://www.hyemo.com/youtube")
 	Call<String> getYoutubeInformation(
 //			@Header("SessionId") String sessionId,
 //			@Header("Action") String action
@@ -713,7 +713,7 @@ public interface ApiInterface
 	 * @return
 	 */
 	@FormUrlEncoded
-	@POST("https://www.urbene-fit.com/log")
+	@POST("https://www.hyemo.com/log")
 	Call<String> userLog(
 			@Header("LoginToken") String token,
 			@Header("SessionId") String sessionId,
@@ -736,7 +736,7 @@ public interface ApiInterface
 	 * 닉네임이 중복되지 않는 경우 : {"Status":"200","Message":"닉네임이 중복되지 않았습니다.","Result":"false"}
 	 */
 	@FormUrlEncoded
-	@POST("https://www.urbene-fit.com/user")
+	@POST("https://www.hyemo.com/user")
 	Call<String> duplicateNickname(
 			@Field("nickName") String nickname,
 			@Field("type") String type

@@ -1,7 +1,6 @@
 package com.psj.welfare.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.psj.welfare.data.PushGatherItem;
 import com.psj.welfare.R;
+import com.psj.welfare.data.PushGatherItem;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -72,8 +71,8 @@ public class PushGatherAdapter extends RecyclerView.Adapter<PushGatherAdapter.Pu
             // String -> LocalDateTime 로 타입 변경
             LocalDateTime localDateTime = LocalDateTime.parse(item.getPush_gather_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-            Log.e("PushGatherAdapter", " LocalDateTime 로 변경한 현재 시간 값: " + currentDateTime);
-            Log.e("PushGatherAdapter", " LocalDateTime 로 변경한 글 등록 시간 값: " + localDateTime);
+//            Log.e("PushGatherAdapter", " LocalDateTime 로 변경한 현재 시간 값: " + currentDateTime);
+//            Log.e("PushGatherAdapter", " LocalDateTime 로 변경한 글 등록 시간 값: " + localDateTime);
 
             // 글 등록시간, 현재 시간 비교
             Duration duration = null;

@@ -374,7 +374,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             app_pref.getString("user_age", "").equals("") ||
                             app_pref.getString("user_gender", "").equals(""))
                     {
-                        Intent intent = new Intent(LoginActivity.this, GetUserInformationActivity.class);
+//                        Intent intent = new Intent(LoginActivity.this, GetUserInformationActivity.class);
+                        /* 첫 로그인할 경우 사용자 정보가 없으면 개인정보 입력받는 화면으로 이동했었는데, 이제는 키워드 화면으로 이동시키는 것으로 바뀌어서
+                        * 목적지 액티비티를 키워드 선택 화면으로 변경함 */
+                        Intent intent = new Intent(LoginActivity.this, ChoiceKeywordActivity.class);
                         editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
                         editor.putString(getString(R.string.get_kakao_name), result.getNickname());
                         editor.putString("kakao_email", result.getKakaoAccount().getEmail());

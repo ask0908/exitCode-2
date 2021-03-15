@@ -275,10 +275,10 @@ public class PushGatherFragment extends Fragment
             }
         });
         activity_list = adapter.getList();
-        for (int i = 0; i < activity_list.size(); i++)
-        {
-            Log.e(TAG, "activity_list = " + activity_list.get(i));
-        }
+//        for (int i = 0; i < activity_list.size(); i++)
+//        {
+//            Log.e(TAG, "activity_list = " + activity_list.get(i));
+//        }
         push_layout_recycler.setAdapter(adapter);
     }
 

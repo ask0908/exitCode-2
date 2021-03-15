@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -16,8 +17,8 @@ import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.psj.welfare.activity.MainTabLayoutActivity;
 import com.psj.welfare.R;
+import com.psj.welfare.activity.SplashActivity;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,6 +31,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
     public static final String TAG = "[FCM Service]";
     String channelID = "ch_push";
     String token;
+
+    private Context context;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage)
@@ -70,16 +73,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
     public void showNotification(String title, String message, String icon)
     {
         // 푸시 알림을 누르면 메인 화면으로 이동한다. MainTabLayoutActivity에서 처음 프래그먼트가 메인 화면이기 때문에 이 액티비티로 이동하면 바로 메인화면이 보인다
-        Intent intent = new Intent(this, MainTabLayoutActivity.class);
+        Intent intent = new Intent(this, SplashActivity.class);
         // 호출하는 Activity가 스택에 있을 경우, 해당 Activity를 최상위로 올리면서 그 위에 있던 Activity들을 모두 삭제하는 Flag
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Bundle bundle = new Bundle();
+        bundle.putString("push_clicked", "noti_intent");
+        intent.putExtras(bundle);
         intent.putExtra("push_clicked", "noti_intent");
-        /* putExtra()로 해서 안되면 아래 코드로 시도해보기 */
-//        Intent broadcast = new Intent("broadcaster");
-//        LocalBroadcastManager.getInstance(context).sendBroadcast(broadcast);
+        intent.setAction("com.psj.welfare.push");
 
         // PendingIntent.FLAG_ONE_SHOT : pendingIntent 일회용, 원래 이걸 사용했으나 특정 프래그먼트를 띄우기 위해 FLAG_UPDATE_CURRENT를 사용함
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         // 푸시 아이템을 눌러 화면을 이동할 때 수신 알림값을 변경한다
