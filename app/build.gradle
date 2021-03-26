@@ -10,8 +10,8 @@ android {
         applicationId "com.psj.welfare"
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 19
-        versionName "19"
+        versionCode 31
+        versionName "31"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
@@ -136,5 +136,12 @@ dependencies {
 
     // 로띠
     implementation 'com.airbnb.android:lottie:3.0.7'
+
+    implementation 'com.github.ganfra:material-spinner:2.0.0'
+
+    implementation "androidx.room:room-runtime:2.2.6"
+    annotationProcessor "androidx.room:room-compiler:2.2.6"
+
+    implementation 'org.greenrobot:eventbus:3.2.0'
 
 }

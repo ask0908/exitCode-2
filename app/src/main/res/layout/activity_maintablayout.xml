@@ -23,46 +23,54 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/main_tab_layout"/>
 
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="#A5A5A5"
+            app:layout_constraintWidth_percent="1"
+            app:layout_constraintHeight_percent=".0005"
+            app:layout_constraintVertical_bias=".913"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/main_tab_layout"/>
+
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/main_tab_layout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:background="@color/colorMainWhite"
             app:layout_constraintHeight_percent=".087"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/main_viewpager"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:tabIndicatorColor="@color/colorPrimaryDark">
+            app:tabIndicatorColor="@color/layout_background_start_gradation">
 
             <com.google.android.material.tabs.TabItem
                 android:id="@+id/home_icon"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="1번\n프래그먼트"/>
+                android:layout_height="wrap_content"/>
 
             <com.google.android.material.tabs.TabItem
                 android:id="@+id/second_icon"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="2번\n프래그먼트" />
+                android:layout_height="wrap_content"/>
 
             <com.google.android.material.tabs.TabItem
                 android:id="@+id/alarm_icon"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="3번\n프래그먼트" />
+                android:layout_height="wrap_content"/>
 
             <com.google.android.material.tabs.TabItem
                 android:id="@+id/search_icon"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="4번\n프래그먼트" />
+                android:layout_height="wrap_content"/>
 
             <com.google.android.material.tabs.TabItem
                 android:id="@+id/my_profile_icon"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="5번\n프래그먼트" />
+                android:layout_height="wrap_content"/>
 
 
         </com.google.android.material.tabs.TabLayout>

@@ -1,418 +1,465 @@
 package com.psj.welfare.activity;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ImageView;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.psj.welfare.R;
+import com.psj.welfare.adapter.KeywordAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
-import com.psj.welfare.adapter.ChoiceKeywordAdapter;
-import com.psj.welfare.custom.CustomWheelDialog;
-import com.psj.welfare.data.ChoiceKeywordItem;
-import com.psj.welfare.R;
+import com.psj.welfare.data.KeywordItem;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/* GetUserInformationActivity에서 사용자가 기본 정보(나이, 성별, 지역, 닉네임)를 입력하고 확인을 누르면 이 곳으로 이동해서 관심있는 키워드를 선택하게 한다
- * 확인 버튼을 맨 밑에서 우상단으로 올린다
- * 관심사 리스트 조회 로직 관련해선 단톡방 0305 14:57부터 확인한다 */
 public class ChoiceKeywordActivity extends AppCompatActivity
 {
     private final String TAG = this.getClass().getSimpleName();
 
-    // 체크된 체크박스를 담아서 확인 버튼을 눌렀을 때 사용자가 하나라도 골랐는지 확인할 때 사용할 리스트
-    String age_group, user_gender, interest;
-    String[] split_list;
+    Button buttons[] = new Button[113];
+    Button button1, button2, button3, button4, button5, button6, button7, button8, button9, button10, button11, button12, button13, button14,
+            button15, button16, button17, button18, button19, button20, button21, button22, button23, button24, button25, button26, button27, button28,
+            button29, button30, button31, button32, button33, button34, button35, button36, button37, button38, button39, button40, button41, button42,
+            button43, button44, button45, button46, button47, button48, button49, button50, button51, button52, button53, button54, button55, button56,
+            button57, button58, button59, button60, button61, button62, button63, button64, button65, button66, button67, button68, button69, button70,
+            button71, button72, button73, button74, button75, button76, button77, button78, button79, button80, button81, button82, button83, button84,
+            button85, button86, button87, button88, button89, button90, button91, button92, button93, button94, button95, button96, button97, button98,
+            button99, button100, button101, button102, button103, button104, button105, button106, button107, button108, button109, button110, button111,
+            button112, button113;
 
-    private RecyclerView choice_keyword_recyclerview;
-    private ChoiceKeywordAdapter adapter;
-    private ChoiceKeywordAdapter.ItemClickListener itemClickListener;
+    private ScrollView buttons_scrollview;
+    private LinearLayout zero_head_up_layout, first_head_up_layout, second_head_up_layout, third_head_up_layout, fourth_head_up_layout;
 
-    // 리사이클러뷰에 체크박스 보여줄 때 사용할 리스트
-    List<ChoiceKeywordItem> list;
-    // 체크박스 클릭 시 어떤 체크박스를 골랐는지 정보를 담을 리스트
-    List<String> str_list, noDuplicatedList;
-    // 유저가 선택한 키워드를 서버로 보낼 때 사용하는 변수
-    String str_server, message;
+    private TextView next_keyword_textview;
+    private TextView before_keyword_textview;
+    private TextView current_page;
+    int scrollY;
+    private SharedPreferences sharedPreferences;
 
-    SharedPreferences sharedPreferences;
+    String userInformation;
+
+    List<String> keyword_list;
+
+    int[] array_count = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+    String[] keywords = {"10대", "1주택자", "가정위탁", "가정폭력", "가출", "검정고시", "고등학생", "고시원", "고용지원", "교통비", "국내 여행", "권고사직",
+            "근로", "근로자", "금융 교육", "기초생활수급자", "기초연금", "노인", "뇌병변", "다문화", "다자녀", "대출", "대학생", "독거노인", "돌봄", "맞벌이",
+            "무공훈장", "무상교육", "무주택자", "문화 생활", "미혼모", "방과후", "범죄피해", "법률상담", "보육료", "보험", "보호처분", "보훈", "부부", "분유",
+            "사회 초년생", "산업재해", "생계", "서민금융", "성범죄", "성인", "성폭력", "소년소녀가정", "소상공인", "신용 등급", "신혼부부", "암", "어린이집",
+            "언어", "여성", "연금", "영유아", "요금", "우울증", "월세", "유공자", "육아", "육아휴직", "의료비", "이주민", "임신", "자녀", "자살", "자영업자",
+            "자퇴", "자폐", "장려금", "장애인", "장학금", "장학생", "저소득층", "저축통장", "적금", "전문대", "전세대출", "제대군인", "조손가정", "중소기업",
+            "중장년", "중학생", "지적", "지체", "직업훈련", "직장인", "진로", "쪽방", "창업", "채무", "청년", "체육활동", "출산", "취업", "치료", "치매",
+            "컨설팅", "탈북", "통신비", "퇴학", "특수교육", "폐업", "학비", "학자금", "한부모", "한부모가족", "해외", "현금", "형사처분", "휴업"};
+
+    String str_server;
+    String message;
+    List<String> str_list;
+
+    private Button send_user_interest_btn;
 
     private Menu mOptionMenu;
 
     String encode_str;
 
-    // 인터넷 상태 확인 후 AlertDialog를 띄울 때 사용할 변수
-    boolean isConnected = false;
-
-    // 10대~70대 남자, 여자 관심사들을 담는 변수
-    // 해시맵에 담기 전 값을 보관한다
-    JSONObject user_10_man;
-    JSONObject user_10_woman;
-    JSONObject user_20_man;
-    JSONObject user_20_woman;
-    JSONObject user_30_man;
-    JSONObject user_30_woman;
-    JSONObject user_40_man;
-    JSONObject user_40_woman;
-    JSONObject user_50_man;
-    JSONObject user_50_woman;
-    JSONObject user_60_man;
-    JSONObject user_60_woman;
-    JSONObject user_70_man;
-    JSONObject user_70_woman;
-    JSONObject nothing;
-
-    // 위의 JSONObject에 담긴 JSON 값에서 key, value를 분류해 각각 담아 리사이클러뷰에 활용할 때 사용하는 변수
-    Map<String, String> hashMap;
-
-    // 나이, 성별 받는 휠이 2개 있는 다이얼로그로 이동하도록 하는 이미지뷰
-    ImageView filter_imageview;
-
-    // 다이얼로그에서 나이, 성별 선택하면 "20대,남자" 형식의 값을 가질 변수
-    // 해시맵에서 값을 가져올 때 키로 사용한다
-    String userInformation;
+    private RecyclerView selected_keyword_recycler;
+    private KeywordAdapter adapter;
+    private KeywordAdapter.onItemClickListener itemClickListener;
+    private List<KeywordItem> items;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setStatusBarGradiant(ChoiceKeywordActivity.this);
         setContentView(R.layout.activity_choice_keyword);
-
-        filter_imageview = findViewById(R.id.filter_imageview);
-
-        list = new ArrayList<>();
-        str_list = new ArrayList<>();
-        noDuplicatedList = new ArrayList<>();
-        hashMap = new HashMap<>();
-
-        sharedPreferences = getSharedPreferences("app_pref", 0);
-
-        filter_imageview.setOnClickListener(v -> {
-            // 휠이 2개 있는 커스텀 다이얼로그를 띄운다
-            CustomWheelDialog dialog = new CustomWheelDialog(ChoiceKeywordActivity.this, new CustomWheelDialog.onDialogListener()
-            {
-                @Override
-                public void receiveData(String age, String gender)
-                {
-                    Log.e(TAG, "다이얼로그에서 액티비티로 온 나이값 : " + age + ", 성별값 : " + gender);
-                    userInformation = age + "," + gender;
-                    Log.e(TAG, "나이, 성별을 합쳐서 해시맵 키로 사용할 변수 완성 형태 : " + userInformation);
-                    setInterestIntoRecyclerview(userInformation);
-                }
-            });
-            dialog.showDialog();
-        });
-
-        choice_keyword_recyclerview = findViewById(R.id.choice_keyword_recyclerview);
-        choice_keyword_recyclerview.setHasFixedSize(true);
-        choice_keyword_recyclerview.setLayoutManager(new GridLayoutManager(this, 4));
-
-        // 쉐어드에 저장된 데이터 널 체크
-        // 연령대
-        if (sharedPreferences.getString("age_group", "") != null)
-        {
-            age_group = sharedPreferences.getString("age_group", "");
-        }
-        else
-        {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("저장된 연령대 정보가 없습니다.\n먼저 [개인정보 수정] 버튼을 눌러 개인정보를 입력해 주세요")
-                    .setCancelable(false)
-                    .setPositiveButton("예", new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            dialog.dismiss();
-                            finish();
-                        }
-                    }).show();
-        }
-
-        getAllKeyword();
-        getAllInterest();
-
-        // 성별
-        if (sharedPreferences.getString("user_gender", "") != null)
-        {
-            user_gender = sharedPreferences.getString("user_gender", "");
-        }
-        else
-        {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("저장된 성별 정보가 없습니다.\n먼저 [개인정보 수정] 버튼을 눌러 개인정보를 입력해 주세요")
-                    .setCancelable(false)
-                    .setPositiveButton("예", new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            dialog.dismiss();
-                            finish();
-                        }
-                    }).show();
-        }
-
-        // 관심사
-        if (sharedPreferences.getString("interest", "") != null)
-        {
-            interest = sharedPreferences.getString("interest", "");
-        }
-        else
-        {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("저장된 관심사 정보가 없습니다.\n먼저 [개인정보 수정] 버튼을 눌러 개인정보를 입력해 주세요")
-                    .setCancelable(false)
-                    .setPositiveButton("예", new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            dialog.dismiss();
-                            finish();
-                        }
-                    }).show();
-        }
-
-        // 관심사 널 체크 후 값이 있다면 구분자를 기준으로 split하고 리스트에 추가한다
-        if (interest != null)
-        {
-            /* 210311 - 1635) 파싱 테스트 위해 주석 처리 */
-//            split_list = interest.split(",");
-//            for (String str : split_list)
-//            {
-//                ChoiceKeywordItem item = new ChoiceKeywordItem();
-//                item.setInterest(str);
-//                list.add(item);
-//            }
-//            // split된 문자열들이 저장된 리스트를 리사이클러뷰 어댑터에 넣어서 유저에게 보여준다
-//            adapter = new ChoiceKeywordAdapter(this, list, itemClickListener);
-//            adapter.setOnItemClickListener((view, pos) ->
-//            {
-//                String name = list.get(pos).getInterest();
-//                str_list.add(name);
-//            });
-//            choice_keyword_recyclerview.setAdapter(adapter);
-        }
-        else
-        {
-            // 이곳으로 오는 경우는 쉐어드의 토큰이 DB에 저장된 토큰과 일치하지 않거나, 서버로 값을 보낼 때 이상하게 보내져서 결과값이 오지 않는 경우다
-            // 토큰문제인 경우가 더 많아서 로그인을 다시 시도하면 어떻게 되는지 확인해보자
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("오류가 발생했습니다\n다시 로그인을 시도해 주세요")
-                    .setPositiveButton("확인", new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            dialog.dismiss();
-                            Intent intent = new Intent(ChoiceKeywordActivity.this, LoginActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(intent);
-                            finishAffinity();
-                        }
-                    }).show();
-        }
 
         Toolbar choice_toolbar = findViewById(R.id.choice_toolbar);
         setSupportActionBar(choice_toolbar);
-        getSupportActionBar().setTitle("");
+        getSupportActionBar().setTitle("관심사 선택");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-    }
+        next_keyword_textview = findViewById(R.id.next_keyword_textview);
+        before_keyword_textview = findViewById(R.id.before_keyword_textview);
 
-    /* 다이얼로그에서 선택한 나이, 성별에 맞는 관심사를 리사이클러뷰에 넣는 메서드 */
-    private void setInterestIntoRecyclerview(String userInformation)
-    {
-        // 새로 받은 값들로 리스트를 채워야 하기 때문에 리스트를 꼭 비워준다. 이 처리가 없으면 기존의 데이터들이 사라지지 않고 밑에 새 데이터들이 쌓인다
-        list.clear();
+        keyword_list = new ArrayList<>();
+        items = new ArrayList<>();
+        str_list = new ArrayList<>();
 
-        // "20대,남자" 형태의 문자열이 인자로 들어오면 해시맵에서 이 문자열을 key로 삼아서 해당하는 관심사(value) 데이터들을 가져온다
-        // ','가 섞여있기 때문에 split은 필수다
-        split_list = hashMap.get(userInformation).split(",");
-        for (String str : split_list)
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+
+        init();
+        init2();
+
+        selected_keyword_recycler = findViewById(R.id.selected_keyword_recycler);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        selected_keyword_recycler.setLayoutManager(linearLayoutManager);
+
+        next_keyword_textview.setOnClickListener(v ->
         {
-            ChoiceKeywordItem item = new ChoiceKeywordItem();
-            item.setInterest(str);
-            list.add(item);
-        }
-
-        // 하단 리사이클러뷰 어댑터 초기화
-        // 위에서 새 값을 넣은 리스트로 어댑터를 초기화한다
-        adapter = new ChoiceKeywordAdapter(this, list, itemClickListener);
-        adapter.setOnItemClickListener((view, pos) ->
-        {
-            String name = list.get(pos).getInterest();
-            str_list.add(name);
-        });
-        choice_keyword_recyclerview.setAdapter(adapter);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        mOptionMenu = menu;
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.keyword_menu, menu);
-
-        /* 메뉴 버튼 색 바꾸기 */
-        MenuItem liveitem = mOptionMenu.findItem(R.id.keyword_ok);
-        SpannableString spannableString = new SpannableString(liveitem.getTitle().toString());
-        spannableString.setSpan(new ForegroundColorSpan(getColor(R.color.colorPrimaryDark)), 0, spannableString.length(), 0);
-        liveitem.setTitle(spannableString);
-        return true;
-    }
-
-    // 좌상단 뒤로가기 버튼을 누르면 사용자 개인정보(나이, 성별, 지역, 닉네임)을 입력받는 화면으로 돌아간다
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item)
-    {
-        switch (item.getItemId())
-        {
-            case android.R.id.home:
-                finish();
-                return true;
-
-            case R.id.keyword_ok:
-                Log.e(TAG, "str_list = " + str_list);
-                if (str_list.size() == 0)
-                {
-                    // 아무것도 선택하지 않으면 여기로 오는지 확인해야 함
-                    Toast.makeText(this, "최소 1개를 선택하셔야 합니다", Toast.LENGTH_SHORT).show();
-                    break;
-                }
-                else
-                {
-                    // 1개라도 선택했다면
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    isConnected = isNetworkConnected(this);
-                    if (!isConnected)
-                    {
-                        // false면 다이얼로그 띄움
-                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
-                                .setCancelable(false)
-                                .setPositiveButton("예", new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        dialog.dismiss();
-                                        Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
-                                        startActivity(intent);
-                                    }
-                                }).show();
-                    }
-                    else
-                    {
-                        // true면 로직 이어서 수행
-                        editor.putString("user_category", str_list.toString());
-                        editor.apply();
-                        registerUserInterest();
-                    }
-                    return true;
-                }
-//                SharedPreferences.Editor editor = sharedPreferences.edit();
-//                isConnected = isNetworkConnected(this);
-//                if (!isConnected)
-//                {
-//                    // false면 다이얼로그 띄움
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//                    builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
-//                            .setCancelable(false)
-//                            .setPositiveButton("예", new DialogInterface.OnClickListener()
-//                            {
-//                                @Override
-//                                public void onClick(DialogInterface dialog, int which)
-//                                {
-//                                    dialog.dismiss();
-//                                    Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
-//                                    startActivity(intent);
-//                                }
-//                            }).show();
-//                }
-//                else
-//                {
-//                    // true면 로직 이어서 수행
-//                    editor.putString("user_category", str_list.toString());
-//                    editor.apply();
-//                    registerUserInterest();
-//                }
-//                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    /* 21.03.05) 관심사 리스트 조회 */
-    private void getAllKeyword()
-    {
-        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        if (!sharedPreferences.getString("token", "").equals(""))
-        {
-            String token = sharedPreferences.getString("token", "");
-            Call<String> call = apiInterface.getAllKeyword(token, "interestList");
-            call.enqueue(new Callback<String>()
+            if (buttons_scrollview.getScrollY() == 0)
             {
-                @Override
-                public void onResponse(Call<String> call, Response<String> response)
-                {
-                    if (response.isSuccessful() && response.body() != null)
-                    {
-                        String result = response.body();
-                        Log.e(TAG, "관심사 리스트 조회 성공 : " + result);
-                    }
-                    else
-                    {
-                        Log.e(TAG, "관심사 리스트 조회 실패 : " + response.body());
-                    }
-                }
+                before_keyword_textview.setText("< 이전");
+                before_keyword_textview.setVisibility(View.VISIBLE);
+                buttons_scrollview.smoothScrollTo(0, 1201);
+                current_page.setText("2");
+            }
+            else if (buttons_scrollview.getScrollY() == 1201)
+            {
+                buttons_scrollview.smoothScrollTo(0, 2624);
+                current_page.setText("3");
+            }
+            else if (buttons_scrollview.getScrollY() == 2624)
+            {
+                buttons_scrollview.smoothScrollTo(0, 3493);
+                current_page.setText("4");
+                next_keyword_textview.setVisibility(View.INVISIBLE);
+            }
+        });
 
-                @Override
-                public void onFailure(Call<String> call, Throwable t)
+        before_keyword_textview.setOnClickListener(view -> {
+            if (buttons_scrollview.getScrollY() == 3493)
+            {
+                next_keyword_textview.setVisibility(View.VISIBLE);
+                buttons_scrollview.smoothScrollTo(0, 2624);
+                current_page.setText("3");
+            }
+            else if (buttons_scrollview.getScrollY() == 2624)
+            {
+                buttons_scrollview.smoothScrollTo(0, 1201);
+                current_page.setText("2");
+            }
+            else if (buttons_scrollview.getScrollY() == 1201)
+            {
+                buttons_scrollview.smoothScrollTo(0, 0);
+                current_page.setText("1");
+                before_keyword_textview.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        adapter = new KeywordAdapter(ChoiceKeywordActivity.this, items, itemClickListener);
+        adapter.setOnItemClickListener((view, position) ->
+        {
+            for (int i = 0; i < keywords.length; i++)
+            {
+                if (items.get(position).getName().equals(keywords[i]))
                 {
-                    Log.e(TAG, "관심사 리스트 조회 에러 : " + t.getMessage());
+                    array_count[i] = array_count[i] + 1;
+
+                    String bottom_name = items.get(position).getName();
+                    buttons[i].setBackground(ContextCompat.getDrawable(this, R.drawable.btn_keyword_unselected));
+                    buttons[i].setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                    keyword_list.remove(bottom_name);
                 }
-            });
-        }
+            }
+        });
+        selected_keyword_recycler.setAdapter(adapter);
+
+        send_user_interest_btn.setOnClickListener(v -> {
+            if (items.size() == 0)
+            {
+                Toast.makeText(this, "관심사는 최소 1개 이상 선택해주세요!", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                for (int i = 0; i < items.size(); i++)
+                {
+                    str_list.add(items.get(i).getName());
+                }
+                if (str_list.size() > 0)
+                {
+                    registerUserInterest();
+                }
+            }
+        });
     }
 
-    /* 유저가 선택한 키워드들을 서버에 등록하는 기능 */
+    void init()
+    {
+        button1 = findViewById(R.id.button1);
+        button2 = findViewById(R.id.button2);
+        button3 = findViewById(R.id.button3);
+        button4 = findViewById(R.id.button4);
+        button5 = findViewById(R.id.button5);
+        button6 = findViewById(R.id.button6);
+        button7 = findViewById(R.id.button7);
+        button8 = findViewById(R.id.button8);
+        button9 = findViewById(R.id.button9);
+        button10 = findViewById(R.id.button10);
+        button11 = findViewById(R.id.button11);
+        button12 = findViewById(R.id.button12);
+        button13 = findViewById(R.id.button13);
+        button14 = findViewById(R.id.button14);
+        button15 = findViewById(R.id.button15);
+        button16 = findViewById(R.id.button16);
+        button17 = findViewById(R.id.button17);
+        button18 = findViewById(R.id.button18);
+        button19 = findViewById(R.id.button19);
+        button20 = findViewById(R.id.button20);
+        button21 = findViewById(R.id.button21);
+        button22 = findViewById(R.id.button22);
+        button23 = findViewById(R.id.button23);
+        button24 = findViewById(R.id.button24);
+        button25 = findViewById(R.id.button25);
+        button26 = findViewById(R.id.button26);
+        button27 = findViewById(R.id.button27);
+        button28 = findViewById(R.id.button28);
+        button29 = findViewById(R.id.button29);
+        button30 = findViewById(R.id.button30);
+        button31 = findViewById(R.id.button31);
+        button32 = findViewById(R.id.button32);
+        button33 = findViewById(R.id.button33);
+        button34 = findViewById(R.id.button34);
+        button35 = findViewById(R.id.button35);
+        button36 = findViewById(R.id.button36);
+        button37 = findViewById(R.id.button37);
+        button38 = findViewById(R.id.button38);
+        button39 = findViewById(R.id.button39);
+        button40 = findViewById(R.id.button40);
+        button41 = findViewById(R.id.button41);
+        button42 = findViewById(R.id.button42);
+        button43 = findViewById(R.id.button43);
+        button44 = findViewById(R.id.button44);
+        button45 = findViewById(R.id.button45);
+        button46 = findViewById(R.id.button46);
+        button47 = findViewById(R.id.button47);
+        button48 = findViewById(R.id.button48);
+        button49 = findViewById(R.id.button49);
+        button50 = findViewById(R.id.button50);
+        button51 = findViewById(R.id.button51);
+        button52 = findViewById(R.id.button52);
+        button53 = findViewById(R.id.button53);
+        button54 = findViewById(R.id.button54);
+        button55 = findViewById(R.id.button55);
+        button56 = findViewById(R.id.button56);
+        button57 = findViewById(R.id.button57);
+        button58 = findViewById(R.id.button58);
+        button59 = findViewById(R.id.button59);
+        button60 = findViewById(R.id.button60);
+        button61 = findViewById(R.id.button61);
+        button62 = findViewById(R.id.button62);
+        button63 = findViewById(R.id.button63);
+        button64 = findViewById(R.id.button64);
+        button65 = findViewById(R.id.button65);
+        button66 = findViewById(R.id.button66);
+        button67 = findViewById(R.id.button67);
+        button68 = findViewById(R.id.button68);
+        button69 = findViewById(R.id.button69);
+        button70 = findViewById(R.id.button70);
+        button71 = findViewById(R.id.button71);
+        button72 = findViewById(R.id.button72);
+        button73 = findViewById(R.id.button73);
+        button74 = findViewById(R.id.button74);
+        button75 = findViewById(R.id.button75);
+        button76 = findViewById(R.id.button76);
+        button77 = findViewById(R.id.button77);
+        button78 = findViewById(R.id.button78);
+        button79 = findViewById(R.id.button79);
+        button80 = findViewById(R.id.button80);
+        button81 = findViewById(R.id.button81);
+        button82 = findViewById(R.id.button82);
+        button83 = findViewById(R.id.button83);
+        button84 = findViewById(R.id.button84);
+        button85 = findViewById(R.id.button85);
+        button86 = findViewById(R.id.button86);
+        button87 = findViewById(R.id.button87);
+        button88 = findViewById(R.id.button88);
+        button89 = findViewById(R.id.button89);
+        button90 = findViewById(R.id.button90);
+        button91 = findViewById(R.id.button91);
+        button92 = findViewById(R.id.button92);
+        button93 = findViewById(R.id.button93);
+        button94 = findViewById(R.id.button94);
+        button95 = findViewById(R.id.button95);
+        button96 = findViewById(R.id.button96);
+        button97 = findViewById(R.id.button97);
+        button98 = findViewById(R.id.button98);
+        button99 = findViewById(R.id.button99);
+        button100 = findViewById(R.id.button100);
+        button101 = findViewById(R.id.button101);
+        button102 = findViewById(R.id.button102);
+        button103 = findViewById(R.id.button103);
+        button104 = findViewById(R.id.button104);
+        button105 = findViewById(R.id.button105);
+        button106 = findViewById(R.id.button106);
+        button107 = findViewById(R.id.button107);
+        button108 = findViewById(R.id.button108);
+        button109 = findViewById(R.id.button109);
+        button110 = findViewById(R.id.button110);
+        button111 = findViewById(R.id.button111);
+        button112 = findViewById(R.id.button112);
+        button113 = findViewById(R.id.button113);
+
+        buttons[0] = button1;
+        buttons[1] = button2;
+        buttons[2] = button3;
+        buttons[3] = button4;
+        buttons[4] = button5;
+        buttons[5] = button6;
+        buttons[6] = button7;
+        buttons[7] = button8;
+        buttons[8] = button9;
+        buttons[9] = button10;
+        buttons[10] = button11;
+        buttons[11] = button12;
+        buttons[12] = button13;
+        buttons[13] = button14;
+        buttons[14] = button15;
+        buttons[15] = button16;
+        buttons[16] = button17;
+        buttons[17] = button18;
+        buttons[18] = button19;
+        buttons[19] = button20;
+        buttons[20] = button21;
+        buttons[21] = button22;
+        buttons[22] = button23;
+        buttons[23] = button24;
+        buttons[24] = button25;
+        buttons[25] = button26;
+        buttons[26] = button27;
+        buttons[27] = button28;
+        buttons[28] = button29;
+        buttons[29] = button30;
+        buttons[30] = button31;
+        buttons[31] = button32;
+        buttons[32] = button33;
+        buttons[33] = button34;
+        buttons[34] = button35;
+        buttons[35] = button36;
+        buttons[36] = button37;
+        buttons[37] = button38;
+        buttons[38] = button39;
+        buttons[39] = button40;
+        buttons[40] = button41;
+        buttons[41] = button42;
+        buttons[42] = button43;
+        buttons[43] = button44;
+        buttons[44] = button45;
+        buttons[45] = button46;
+        buttons[46] = button47;
+        buttons[47] = button48;
+        buttons[48] = button49;
+        buttons[49] = button50;
+        buttons[50] = button51;
+        buttons[51] = button52;
+        buttons[52] = button53;
+        buttons[53] = button54;
+        buttons[54] = button55;
+        buttons[55] = button56;
+        buttons[56] = button57;
+        buttons[57] = button58;
+        buttons[58] = button59;
+        buttons[59] = button60;
+        buttons[60] = button61;
+        buttons[61] = button62;
+        buttons[62] = button63;
+        buttons[63] = button64;
+        buttons[64] = button65;
+        buttons[65] = button66;
+        buttons[66] = button67;
+        buttons[67] = button68;
+        buttons[68] = button69;
+        buttons[69] = button70;
+        buttons[70] = button71;
+        buttons[71] = button72;
+        buttons[72] = button73;
+        buttons[73] = button74;
+        buttons[74] = button75;
+        buttons[75] = button76;
+        buttons[76] = button77;
+        buttons[77] = button78;
+        buttons[78] = button79;
+        buttons[79] = button80;
+        buttons[80] = button81;
+        buttons[81] = button82;
+        buttons[82] = button83;
+        buttons[83] = button84;
+        buttons[84] = button85;
+        buttons[85] = button86;
+        buttons[86] = button87;
+        buttons[87] = button88;
+        buttons[88] = button89;
+        buttons[89] = button90;
+        buttons[90] = button91;
+        buttons[91] = button92;
+        buttons[92] = button93;
+        buttons[93] = button94;
+        buttons[94] = button95;
+        buttons[95] = button96;
+        buttons[96] = button97;
+        buttons[97] = button98;
+        buttons[98] = button99;
+        buttons[99] = button100;
+        buttons[100] = button101;
+        buttons[101] = button102;
+        buttons[102] = button103;
+        buttons[103] = button104;
+        buttons[104] = button105;
+        buttons[105] = button106;
+        buttons[106] = button107;
+        buttons[107] = button108;
+        buttons[108] = button109;
+        buttons[109] = button110;
+        buttons[110] = button111;
+        buttons[111] = button112;
+        buttons[112] = button113;
+    }
+
+    void init2()
+    {
+        zero_head_up_layout = findViewById(R.id.zero_head_up_layout);
+        first_head_up_layout = findViewById(R.id.first_head_up_layout);
+        second_head_up_layout = findViewById(R.id.second_head_up_layout);
+        third_head_up_layout = findViewById(R.id.third_head_up_layout);
+        fourth_head_up_layout = findViewById(R.id.fourth_head_up_layout);
+
+        buttons_scrollview = findViewById(R.id.buttons_scrollview);
+        current_page = findViewById(R.id.current_page);
+
+        send_user_interest_btn = findViewById(R.id.send_user_interest_btn);
+    }
+
     void registerUserInterest()
     {
         String token = sharedPreferences.getString("token", "");
+        String session = sharedPreferences.getString("sessionId", "");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Log.e(TAG, "str_list = " + str_list);
 
@@ -422,16 +469,15 @@ public class ChoiceKeywordActivity extends AppCompatActivity
             sb.append(s);
             sb.append("|");
         }
-        Log.e(TAG, "문자열에 담은 결과 확인 = " + sb.toString());
 
-        // 맨 마지막의 |만 잘라서 str_server에 저장한다
         if (sb.toString().length() > 0 && sb.toString().charAt(sb.toString().length() - 1) == '|')
         {
             str_server = sb.toString().substring(0, sb.toString().length() - 1);
         }
-        Log.e(TAG, "str_server = " + str_server);
-        encode("키워드 선택 화면 진입");
-        String session = sharedPreferences.getString("sessionId", "");
+        encode("관심사 선택 확인에서 관심사 선택 : " + str_server);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("interest", str_server);
+        editor.apply();
         Call<String> call = apiInterface.registerUserInterest(session, encode_str, token, "interest", str_server);
         call.enqueue(new Callback<String>()
         {
@@ -458,7 +504,6 @@ public class ChoiceKeywordActivity extends AppCompatActivity
         });
     }
 
-    /* 서버에서 받은 세션 id를 인코딩하는 메서드 */
     private void encode(String str)
     {
         try
@@ -471,7 +516,6 @@ public class ChoiceKeywordActivity extends AppCompatActivity
         }
     }
 
-    /* 서버에 유저가 선택한 키워드들 등록한 후 서버에서 받은 JSON 값 파싱하는 메서드 */
     private void jsonParsing(String result)
     {
         try
@@ -484,135 +528,126 @@ public class ChoiceKeywordActivity extends AppCompatActivity
             e.printStackTrace();
         }
         Log.e(TAG, message);
-        Toast.makeText(this, "키워드 정보 수정이 완료됐어요", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "관심사 설정이 완료됐어요", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(ChoiceKeywordActivity.this, MainTabLayoutActivity.class);
+        startActivity(intent);
         finish();
     }
 
-    /* 나이, 성별 상관없이 모든 관심사들을 가져오는 메서드 */
-    private void getAllInterest()
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
     {
-        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.getAllInterest("all");
-        call.enqueue(new Callback<String>()
-        {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response)
-            {
-                if (response.isSuccessful() && response.body() != null)
-                {
-                    String result = response.body();
-                    interestParsing(result);
-//                    test(result);
-                    Log.e(TAG, "모든 관심사들 가져오기 성공 : " + result);
-                }
-                else
-                {
-                    Log.e(TAG, "모든 관심사들 가져오기 실패 : " + response.body());
-                }
-            }
+        mOptionMenu = menu;
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.test_keyword_menu, menu);
 
-            @Override
-            public void onFailure(Call<String> call, Throwable t)
-            {
-                Log.e(TAG, "모든 관심사 가져오기 에러 : " + t.getMessage());
-            }
-        });
+        MenuItem liveitem = mOptionMenu.findItem(R.id.keyword_ok);
+        SpannableString spannableString = new SpannableString(liveitem.getTitle().toString());
+        spannableString.setSpan(new ForegroundColorSpan(getColor(R.color.colorPrimaryDark)), 0, spannableString.length(), 0);
+        liveitem.setTitle(spannableString);
+        return true;
     }
 
-    /* 서버에서 모든 관심사를 받은 후 파싱해서 HashMap에 저장하는 메서드 */
-    private void interestParsing(String result)
+    // 좌상단 뒤로가기 버튼을 누르면 사용자 개인정보(나이, 성별, 지역, 닉네임)을 입력받는 화면으로 돌아간다
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
-        try
+        switch (item.getItemId())
         {
-            JSONObject jsonObject = new JSONObject(result);
-            JSONArray jsonArray = jsonObject.getJSONArray("Message");
-            // 여기서 쓰이는 JSON은 for문으로 돌리지 말고 index로 값을 뽑아와야 한다
-            user_10_man = jsonArray.getJSONObject(0);
-            user_10_woman = jsonArray.getJSONObject(1);
-            user_20_man = jsonArray.getJSONObject(2);
-            user_20_woman = jsonArray.getJSONObject(3);
-            user_30_man = jsonArray.getJSONObject(4);
-            user_30_woman = jsonArray.getJSONObject(5);
-            user_40_man = jsonArray.getJSONObject(6);
-            user_40_woman = jsonArray.getJSONObject(7);
-            user_50_man = jsonArray.getJSONObject(8);
-            user_50_woman = jsonArray.getJSONObject(9);
-            user_60_man = jsonArray.getJSONObject(10);
-            user_60_woman = jsonArray.getJSONObject(11);
-            user_70_man = jsonArray.getJSONObject(12);
-            user_70_woman = jsonArray.getJSONObject(13);
-            nothing = jsonArray.getJSONObject(14);
-            /* 값 다 가져오는 건 확인했고 이제 Hashmap에 넣는다
-             * 왜냐면 다이얼로그 wheel을 통해 나이, 성별을 받아서 합친 다음 String 변수(20대,남자) 형태로 만드는데 이것을 key로 활용해서
-             * hashmap에서 key에 해당하는 value를 뽑아온 다음, 뽑은 값을 list에 담아 리사이클러뷰에 보여주기 위함이다 */
-            hashMap.put("10대,남자", user_10_man.getString("10대,남자"));
-            hashMap.put("10대,여자", user_10_woman.getString("10대,여자"));
-            hashMap.put("20대,남자", user_20_man.getString("20대,남자"));
-            hashMap.put("20대,여자", user_20_woman.getString("20대,여자"));
-            hashMap.put("30대,남자", user_30_man.getString("30대,남자"));
-            hashMap.put("30대,여자", user_30_woman.getString("30대,여자"));
-            hashMap.put("40대,남자", user_40_man.getString("40대,남자"));
-            hashMap.put("40대,여자", user_40_woman.getString("40대,여자"));
-            hashMap.put("50대,남자", user_50_man.getString("50대,남자"));
-            hashMap.put("50대,여자", user_50_woman.getString("50대,여자"));
-            hashMap.put("60대,남자", user_60_man.getString("60대,남자"));
-            hashMap.put("60대,여자", user_60_woman.getString("60대,여자"));
-            hashMap.put("70대,남자", user_70_man.getString("70대,남자"));
-            hashMap.put("70대,여자", user_70_woman.getString("70대,여자"));
-            hashMap.put("기본정보없음", nothing.getString(","));
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
+            case android.R.id.home:
+                AlertDialog.Builder builder = new AlertDialog.Builder(ChoiceKeywordActivity.this);
+                builder.setMessage("지금 나가시면 선택하셨던 관심사들은 저장되지 않아요. 그래도 나가시겠어요?")
+                        .setPositiveButton("아니오", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                dialog.dismiss();
+                            }
+                        }).setNegativeButton("예", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        dialog.dismiss();
+                        finish();
+                    }
+                }).show();
+                return true;
 
-        /* 유저가 성별, 나이를 입력하기 전에 보여줄 관심사들을 리사이클러뷰에 set */
-        split_list = hashMap.get("기본정보없음").split(",");
-        for (String str : split_list)
-        {
-            ChoiceKeywordItem item = new ChoiceKeywordItem();
-            item.setInterest(str);
-            list.add(item);
+            case R.id.keyword_ok:
+                AlertDialog.Builder builder2 = new AlertDialog.Builder(ChoiceKeywordActivity.this);
+                builder2.setMessage("지금 나가시면 선택하셨던 관심사들은 저장되지 않아요. 그래도 나가시겠어요?")
+                        .setPositiveButton("아니오", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                dialog.dismiss();
+                            }
+                        }).setNegativeButton("예", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        dialog.dismiss();
+                        finish();
+                    }
+                }).show();
         }
-
-        adapter = new ChoiceKeywordAdapter(this, list, itemClickListener);
-        adapter.setOnItemClickListener((view, pos) ->
-        {
-            String name = list.get(pos).getInterest();
-            str_list.add(name);
-        });
-        choice_keyword_recyclerview.setAdapter(adapter);
+        return super.onOptionsItemSelected(item);
     }
 
-    /* 비행기 모드 확인하는 메서드 */
-    public boolean isNetworkConnected(Context context)
+    @Override
+    protected void onResume()
     {
-        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo mobile = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);   // 핸드폰
-        NetworkInfo wifi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);       // 와이파이
-        NetworkInfo wimax = manager.getNetworkInfo(ConnectivityManager.TYPE_WIMAX);     // 태블릿
-        boolean bwimax = false;
-        if (wimax != null)
+        super.onResume();
+        for (int i = 0; i < 113; i++)
         {
-            bwimax = wimax.isConnected(); // wimax 상태 체크
-        }
-        if (mobile != null)
-        {
-            if (mobile.isConnected() || wifi.isConnected() || bwimax)
-            // 모바일 네트워크 체크
+            final int finalI = i;
+            buttons[finalI].setOnClickListener(new View.OnClickListener()
             {
-                return true;
-            }
+                @Override
+                public void onClick(View view)
+                {
+                    String name = buttons[finalI].getText().toString();
+                    array_count[finalI] = array_count[finalI] + 1;
+                    if (array_count[finalI] % 2 == 0)
+                    {
+                        buttons[finalI].setBackground(ContextCompat.getDrawable(ChoiceKeywordActivity.this, R.drawable.btn_keyword_unselected));
+                        buttons[finalI].setTextColor(ContextCompat.getColor(ChoiceKeywordActivity.this, R.color.layout_background_start_gradation));
+                        for (int i = 0; i < items.size(); i++)
+                        {
+                            if (items.get(i).getName().equals(keywords[finalI]))
+                            {
+                                items.remove(i);
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        buttons[finalI].setBackground(ContextCompat.getDrawable(ChoiceKeywordActivity.this, R.drawable.btn_keyword_selected));
+                        buttons[finalI].setTextColor(ContextCompat.getColor(ChoiceKeywordActivity.this, R.color.colorMainWhite));
+
+                        KeywordItem item = new KeywordItem();
+                        item.setName(name);
+                        items.add(item);
+
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+            });
         }
-        else
-        {
-            if (wifi.isConnected() || bwimax)
-            // wifi 네트워크 체크
-            {
-                return true;
-            }
-        }
-        return false;
+    }
+
+    public void setStatusBarGradiant(Activity activity)
+    {
+        Window window = activity.getWindow();
+        Drawable background = activity.getResources().getDrawable(R.drawable.gradation_background);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(activity.getResources().getColor(android.R.color.transparent));
+        window.setBackgroundDrawable(background);
     }
 
 }

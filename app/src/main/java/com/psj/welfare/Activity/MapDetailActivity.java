@@ -694,7 +694,7 @@ public class MapDetailActivity extends AppCompatActivity
                         keyword_list.add(keyword);
                     }
                     ResultKeywordItem items = new ResultKeywordItem();
-                    for (int j = 0; j < name_array.length; j++) // category_array는 ';; '을 기준으로 split()한 결과물들이 담겨 있는 String[]이다
+                    for (int j = 0; j < name_array.length; j++) // name_array는 ';; '을 기준으로 split()한 결과물들이 담겨 있는 String[]이다
                     {
                         // split()한 결과가 들어있는 String[]의 크기만큼 반복해서 상단 리사이클러뷰 어댑터에 넣을 리스트에 값들을 setter()로 넣는다
                         items.setWelf_name(keywordItem.getWelf_name());
@@ -759,7 +759,6 @@ public class MapDetailActivity extends AppCompatActivity
         String[] nameArr = welfareNameBuilder.toString().split(";;");
 
         // split() 처리 후 중복되는 것들을 없애기 위해 HashSet을 썼다
-        // 저장 순서가 중요할 것 같아서 LinkedHashSet을 써 봤는데 HashSet을 썼을 때와 딱히 큰 차이를 느끼지 못해서 좀 더 손에 익은 HashSet을 썼다
         arr = new LinkedHashSet<>(Arrays.asList(arr)).toArray(new String[0]);
         nameArr = new HashSet<>(Arrays.asList(nameArr)).toArray(new String[0]);
 
@@ -771,7 +770,7 @@ public class MapDetailActivity extends AppCompatActivity
         for (int i = 0; i < arr.length; i++)
         {
             // setter 사용을 위한 객체 생성
-            ResultKeywordItem item = new ResultKeywordItem();
+            ResultKeywordItem item = new ResultKeywordItem();   // 상단 필터 리사이클러뷰에 사용할 모델 클래스
             item.setWelf_category(arr[i]);
             item.setWelf_name(nameArr[i]);
             keyword_list.add(item);
@@ -779,7 +778,7 @@ public class MapDetailActivity extends AppCompatActivity
 
         for (int i = 0; i < nameArr.length; i++)
         {
-            MapResultItem item = new MapResultItem();
+            MapResultItem item = new MapResultItem();           // 하단 리사이클러뷰에 사용할 모델 클래스
             item.setWelf_name(nameArr[i]);
         }
 

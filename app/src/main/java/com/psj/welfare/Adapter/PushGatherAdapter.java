@@ -58,7 +58,7 @@ public class PushGatherAdapter extends RecyclerView.Adapter<PushGatherAdapter.Pu
     {
         PushGatherItem item = lists.get(position);
         holder.push_gather_title.setText(item.getPush_gather_title());
-        holder.push_gather_desc.setText(item.getPush_gather_desc());
+        holder.push_gather_desc.setText(item.getWelf_name());
         holder.push_gather_date.setText(item.getPush_gather_date());
 
         // 시간 표시

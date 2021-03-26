@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 레이아웃의 위쪽 양 옆 부분에 곡선을 주는 드로어블 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FFFFFF" />
+    <stroke
+        android:width="3dip"
+        android:color="#FFFFFF" />
+    <corners
+        android:topLeftRadius="40dp"
+        android:topRightRadius="40dp" />
+    <padding
+        android:bottom="0dip"
+        android:left="0dip"
+        android:right="0dip"
+        android:top="0dip" />
+</shape>

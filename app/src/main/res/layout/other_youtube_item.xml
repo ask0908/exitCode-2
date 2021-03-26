@@ -15,7 +15,7 @@
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight=".55">
+            android:layout_weight=".4">
 
             <ImageView
                 android:id="@+id/other_youtube_thumbnail"
@@ -47,12 +47,15 @@
             android:id="@+id/other_youtube_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight=".40"
-            android:fontFamily="@font/nanum_barun_gothic_bold"
+            android:layout_weight=".53"
+            android:fontFamily="@font/paybooc_bold"
+            android:textStyle="bold"
             android:layout_gravity="center"
-            android:maxLines="2"
+            android:maxLines="3"
+            android:textSize="15sp"
+            android:lineSpacingExtra="3sp"
             android:ellipsize="end"
-            android:textColor="@color/colorBlack"
+            android:textColor="@color/grey"
             android:text="텍스트"/>
 
     </LinearLayout>

@@ -1,5 +1,7 @@
 package com.psj.welfare.adapter;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -21,9 +23,14 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter
     private final List<Fragment> list = new ArrayList<>();
     private final List<String> mFragmentTitleList = new ArrayList<>();
 
-    public MainViewPagerAdapter(@NonNull FragmentManager fm)
+    private static Context mContext;
+
+    public MainFragment fragment1Container;
+
+    public MainViewPagerAdapter(Context context, @NonNull FragmentManager fm)
     {
         super(fm);
+        mContext = context;
         list.add(new MainFragment());
         list.add(new SearchFragment());
         list.add(new PushGatherFragment());
@@ -43,6 +50,7 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter
         return list.size();
     }
 
+    /* 푸시를 눌렀을 때 알림 리스트 프래그먼트로 이동시킬 때 필요한 메서드 */
     public void addFragment(Fragment fragment, String title)
     {
         list.add(fragment);

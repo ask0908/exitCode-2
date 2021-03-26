@@ -7,24 +7,23 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.psj.welfare.api.ApiClient;
-import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.R;
 import com.psj.welfare.activity.DetailBenefitActivity;
 import com.psj.welfare.adapter.PushGatherAdapter;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.data.PushGatherItem;
-import com.psj.welfare.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,7 +43,7 @@ public class PushGatherFragment extends Fragment
 {
     private final String TAG = "PushGatherFragment";
 
-    Toolbar push_toolbar;
+    /* 푸시 알림 리스트에 보여줄 알림 리사이클러뷰 */
     RecyclerView push_layout_recycler;
     PushGatherAdapter adapter;
     PushGatherAdapter.ItemClickListener itemClickListener;
@@ -62,16 +61,11 @@ public class PushGatherFragment extends Fragment
     // 알림 삭제 결과 확인용 변수
     String status, message;
 
+    // 푸시 알림이 없을 때 띄울 텍스트뷰
+    TextView nothing_noti;
+
     public PushGatherFragment()
     {
-    }
-
-    public static PushGatherFragment newInstance()
-    {
-        PushGatherFragment fragment = new PushGatherFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -90,7 +84,9 @@ public class PushGatherFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        return inflater.inflate(R.layout.fragment_push_gather, container, false);
+        View view = inflater.inflate(R.layout.fragment_push_gather, container, false);
+        nothing_noti = view.findViewById(R.id.nothing_noti);
+        return view;
     }
 
     @Override
@@ -98,13 +94,6 @@ public class PushGatherFragment extends Fragment
     {
         super.onViewCreated(view, savedInstanceState);
         Log.e(TAG, "onViewCreated() 호출");
-
-        push_toolbar = view.findViewById(R.id.push_toolbar);
-        if ((AppCompatActivity)getActivity() != null)
-        {
-            ((AppCompatActivity)getActivity()).setSupportActionBar(push_toolbar);
-        }
-        push_toolbar.setTitle("알림");
 
         activity_list = new ArrayList<>();
 
@@ -116,6 +105,7 @@ public class PushGatherFragment extends Fragment
         push_layout_recycler.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         push_layout_recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        /* 왼쪽으로 아이템을 밀어서 푸시 알림을 삭제할 수 있게 하는 콜백, 빠르게 하면 안되고 어느 정도 뜸 들여서 해야 삭제가 정상적으로 이뤄진다 */
         ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT)
         {
             @Override
@@ -140,8 +130,10 @@ public class PushGatherFragment extends Fragment
             }
         };
 
+        // 위에서 만든 콜백을 ItemTouchHelper에 붙인 다음 리사이클러뷰에 붙여야 밀어서 삭제하기가 가능하다
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(push_layout_recycler);
+
     }
 
     /* 푸시 알림 받으면 수신 상태값을 변경하는 메서드 */
@@ -251,6 +243,7 @@ public class PushGatherFragment extends Fragment
         {
             e.printStackTrace();
         }
+        /* 푸시 알림 리스트를 만들 어댑터 초기화 */
         adapter = new PushGatherAdapter(getActivity(), list, itemClickListener);
         adapter.setOnItemClickListener(new PushGatherAdapter.ItemClickListener()
         {
@@ -275,10 +268,20 @@ public class PushGatherFragment extends Fragment
             }
         });
         activity_list = adapter.getList();
-//        for (int i = 0; i < activity_list.size(); i++)
-//        {
-//            Log.e(TAG, "activity_list = " + activity_list.get(i));
-//        }
+        /* getItemCount()의 결과값이 0이라면 아이템이 없는 것이니 리사이클러뷰를 감추고 텍스트뷰를 보여준다
+         * 0이 아니라면 알림이 있는 것이니 텍스트뷰를 감추고 리사이클러뷰를 보여준다
+         * invisible은 뷰를 안 보이게 하는 대신 위치를 차지하지만 gone은 뷰를 안 보이게 하고 위치도 지워줘서 invisible보다 gone을 쓰는 게 더 좋다 */
+        if (adapter.getItemCount() == 0)
+        {
+            nothing_noti.setText("도착한 혜택 알림이 없어요");
+            nothing_noti.setVisibility(View.VISIBLE);
+            push_layout_recycler.setVisibility(View.GONE);
+        }
+        else
+        {
+            nothing_noti.setVisibility(View.GONE);
+            push_layout_recycler.setVisibility(View.VISIBLE);
+        }
         push_layout_recycler.setAdapter(adapter);
     }
 

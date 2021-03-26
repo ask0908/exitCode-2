@@ -15,7 +15,7 @@
     <application
         android:name=".kakao.App"
         android:allowBackup="true"
-        android:icon="@drawable/launcher_image"
+        android:icon="@drawable/launcher_image2"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@drawable/launcher_image"
@@ -23,13 +23,15 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
-        <activity android:name=".activity.TestChoiceKeywordActivity"></activity>
+        <activity android:name=".activity.RegionResultActivity" />
+        <activity android:name=".test.TestActivity" />
+        <activity android:name=".activity.RegionChooseActivity" />
+        <activity android:name=".activity.ThemeChooseActivity" />
         <activity android:name=".activity.TermsAndConditionsActivity" />
         <activity android:name=".activity.PersonalInformationActivity" />
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <action android:name="com.psj.welfare.push" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -41,7 +43,6 @@
             android:name=".activity.ReviewUpdateActivity"
             android:theme="@style/ReviewTheme" />
         <activity android:name=".activity.GetUserInformationActivity" />
-        <activity android:name=".activity.CalculatorResultActivity" />
         <activity
             android:name=".activity.MyInfoUpdateActivity"
             android:theme="@style/ToolbarTheme" />
@@ -54,19 +55,6 @@
             android:name=".activity.ReviewActivity"
             android:parentActivityName=".activity.DetailBenefitActivity"
             android:theme="@style/ReviewTheme" />
-        <activity android:name=".activity.TestActivity" />
-<!--        <activity android:name=".activity.Compatibility.Compatibility_ResultActivity">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android:intent.action.VIEW" />-->
-
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
-<!--                <category android:name="android.intent.category.BROWSABLE" />-->
-
-<!--                <data-->
-<!--                    android:host="@string/kakaolink_host"-->
-<!--                    android:scheme="@string/kakao_scheme" />-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
 
         <meta-data
             android:name="com.kakao.sdk.AppKey"

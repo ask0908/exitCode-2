@@ -28,7 +28,7 @@
         android:layout_marginTop="20dp"
         android:hint="혜택 이름으로 검색해 보세요"
         android:padding="12dp"
-        android:background="@drawable/edittext_rectangle"
+        android:background="@drawable/edittext_gray_rectangle"
         android:drawableLeft="@drawable/search_black"
         android:imeOptions="actionSearch"
         android:inputType="text"/>

@@ -1,14 +1,18 @@
 package com.psj.welfare.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -56,8 +60,8 @@ public class SplashActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        intent = getIntent();
-        Bundle extras = intent.getExtras();
+        /* 액션바에 그라데이션을 주는 메서드 */
+        setStatusBarGradiant(SplashActivity.this);
 
         sharedPreferences = getSharedPreferences("app_pref", 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -86,7 +90,7 @@ public class SplashActivity extends AppCompatActivity
         onNewIntent(intent);
 
 //        Handler handler = new Handler();
-//        handler.postDelayed(new SplashHandler(), 3000);
+//        handler.postDelayed(new SplashHandler(), 1000);
     }
 
     @Override
@@ -98,15 +102,12 @@ public class SplashActivity extends AppCompatActivity
             String aaa = intent.getExtras().getString("push_clicked");
             if (aaa == null)
             {
-                Log.e(TAG, "aaa가 null임");
+                Log.e(TAG, "push_clicked가 null임");
                 isPushClicked = true;
                 /* 푸시 알림을 누르면 이 곳으로 빠진다. 여기서 인텐트를 만들어 MainTabLayoutActivity로 이동시키고, 값을 같이 넘겨서
                  * 받은 값이 이곳에서 보낸 값과 일치할 경우 PushGatherFragment를 띄우도록 하면 될 듯 */
-//                Intent intent1 = new Intent(SplashActivity.this, MainTabLayoutActivity.class);
-//                intent1.putExtra("push", 100);
-//                startActivity(intent1);
                 Handler handler = new Handler();
-                handler.postDelayed(new SplashHandler(), 3000);
+                handler.postDelayed(new SplashHandler(), 1000);
             }
         }
         else
@@ -114,7 +115,7 @@ public class SplashActivity extends AppCompatActivity
             Log.e(TAG, "getString() 값이 없음");
             // 이곳으로 빠지면 그냥 일반적인 스플래시 화면으로 작동해서 메인 화면으로 이동하기만 한다
             Handler handler = new Handler();
-            handler.postDelayed(new NormalHandler(), 3000);
+            handler.postDelayed(new NormalHandler(), 1000);
         }
     }
 
@@ -156,17 +157,6 @@ public class SplashActivity extends AppCompatActivity
                 intent.putExtra("push", 100);
                 startActivity(intent);
                 SplashActivity.this.finish();
-//                if (intentAction != null)
-//                {
-//                    intent.setAction(intentAction);
-//                    startActivity(intent);
-//                    finish();
-//                }
-//                else
-//                {
-//                    startActivity(new Intent(SplashActivity.this, MainTabLayoutActivity.class));
-//                    SplashActivity.this.finish();
-//                }
             }
         }
     }
@@ -270,4 +260,16 @@ public class SplashActivity extends AppCompatActivity
         }
         return false;
     }
+
+    /* 액션바에 그라데이션을 주는 메서드 */
+    public void setStatusBarGradiant(Activity activity)
+    {
+        Window window = activity.getWindow();
+        Drawable background = activity.getResources().getDrawable(R.drawable.gradation_background);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(activity.getResources().getColor(android.R.color.transparent));
+        window.setNavigationBarColor(activity.getResources().getColor(android.R.color.transparent));
+        window.setBackgroundDrawable(background);
+    }
+
 }

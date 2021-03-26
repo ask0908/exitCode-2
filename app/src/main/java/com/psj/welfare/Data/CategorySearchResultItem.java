@@ -1,6 +1,6 @@
 package com.psj.welfare.data;
 
-/* 새로 만든 모델 클래스, ResultBenefitActivity에서 사용 */
+/* 상단 리사이클러뷰(필터)에 쓸 모델 클래스 */
 public class CategorySearchResultItem
 {
     private String welf_name;
@@ -13,6 +13,7 @@ public class CategorySearchResultItem
     {
     }
 
+    /* 상단 리사이클러뷰에 'OO 지원'을 만들어 필터로 쓸 때 사용할 생성자 */
     public CategorySearchResultItem(String welf_category)
     {
         this.welf_category = welf_category;
