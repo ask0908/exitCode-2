@@ -1,63 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main_scrollview"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorMainWhite"
-    android:fillViewport="true">
+    android:id="@+id/main_top_layout"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/layout_background_start_gradation"
+    tools:context=".fragment.MainFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main_Top"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/main_fragment_textview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/jalnan"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="혜택모아"
-            android:textColor="@color/main_text_color"
-            android:textSize="20sp"
-            android:background="@color/main_background_color"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/main_top"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/gradation_background"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
             android:id="@+id/kakao_unlink_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="카톡 회원탈퇴"
-            android:visibility="gone"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent=".3"
+            app:layout_constraintHeight_percent=".3"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.161"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintHorizontal_bias="1"
+            android:text="카톡 회원탈퇴"
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/kakao_logout_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             android:text="카톡 로그아웃"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/main_fragment_textview"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="1"
+            app:layout_constraintHeight_percent=".10"
+            android:fontFamily="@font/jalnan"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="6dp"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:background="@drawable/gradation_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintVertical_bias="0"/>
+
+        <TextView
+            android:id="@+id/benefit_count_textview"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/gradation_background"
+            app:layout_constraintWidth_percent="1"
+            app:layout_constraintHeight_percent=".111"
+            app:layout_constraintVertical_bias="0"
+            android:layout_marginTop="30dp"
+            android:fontFamily="@font/jalnan"
+            android:text="혜택 1200개"
+            android:textColor="@color/colorMainWhite"
+            android:textSize="34sp"
+            android:gravity="center|bottom"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
-        <!-- 실제로 빌드하면 그라데이션 배경이 오른쪽에 보이는 높이만큼 크지 않음 -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/main_middle_layout"
+            android:id="@+id/go_benefit_layout"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/main_body_selector"
-            android:orientation="vertical"
+            android:background="@drawable/radius_25"
             app:layout_constraintWidth_percent="1"
-            app:layout_constraintHeight_percent=".46"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent=".207"
+            app:layout_constraintVertical_bias="0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/main_fragment_textview">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/benefit_count_textview"
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <TextView
                 android:id="@+id/btn_left_textview"
@@ -65,147 +100,205 @@
                 android:layout_height="0dp"
                 android:fontFamily="@font/jalnan"
                 android:gravity="center"
-                android:text="당신만 놓치고 있는"
-                android:textColor="@color/colorMainWhite"
+                android:text="당신만 놓치고 있는 혜택"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/find_welfare_btn"
-                app:layout_constraintHeight_percent=".20"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_percent=".28"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias=".05"
-                app:layout_constraintWidth_percent=".454" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias=".3"
+                app:layout_constraintWidth_percent="1" />
 
             <Button
                 android:id="@+id/find_welfare_btn"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/shadow_button_layer_list"
+                android:background="@drawable/radius_pink_button"
                 android:fontFamily="@font/jalnan"
                 android:lineSpacingExtra="6sp"
-                android:text="혜택 추천 받으러 가기"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="14sp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:text="추천 받으러 가기"
+                android:textColor="@color/colorMainWhite"
+                android:textSize="17sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHeight_percent=".20"
-                app:layout_constraintHorizontal_bias=".95"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias=".005"
-                app:layout_constraintWidth_percent=".46" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintWidth_percent="1"
-                app:layout_constraintHeight_percent=".50"
-                app:layout_constraintVertical_bias=".70"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:orientation="vertical">
-
-                <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/main_lottie"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    app:lottie_autoPlay="true"
-                    app:lottie_fileName="main_lottie.json"
-                    app:lottie_loop="true" />
-
-            </LinearLayout>
+                app:layout_constraintTop_toBottomOf="@+id/btn_left_textview"
+                app:layout_constraintWidth_percent=".45"
+                app:layout_constraintHeight_percent=".3"
+                app:layout_constraintVertical_bias=".1"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <TextView
-            android:id="@+id/recommend_welfare_textview"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintHeight_percent=".055"
-            app:layout_constraintWidth_percent=".956"
-            android:background="@color/colorMainWhite"
-            android:fontFamily="@font/jalnan"
-            android:layout_marginStart="20dp"
-            android:paddingStart="12dp"
-            android:paddingTop="10dp"
-            android:lineSpacingExtra="6sp"
-            android:text=" 님에게"
-            android:textColor="@color/colorBlack"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/main_middle_layout" />
-
-        <TextView
-            android:id="@+id/recommend_welfare_count"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintHeight_percent=".055"
-            app:layout_constraintWidth_percent=".956"
-            android:layout_marginTop="3dp"
-            android:background="@color/colorMainWhite"
-            android:layout_marginStart="20dp"
-            android:fontFamily="@font/jalnan"
-            android:lineSpacingExtra="6sp"
-            android:paddingStart="12dp"
-            android:textColor="@color/colorBlack"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/recommend_welfare_textview" />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recom_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="1"
+            app:layout_constraintHeight_percent=".32"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/middle_layout"
+            app:layout_constraintTop_toBottomOf="@+id/benefit_count_textview"
+            app:layout_constraintVertical_bias=".6"
             android:orientation="horizontal"
-            android:padding="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/recommend_welfare_count" />
+            android:padding="10dp" />
 
-        <LinearLayout
-            android:id="@+id/youtube_video_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
-            android:weightSum="1"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/middle_layout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintVertical_bias="1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/recom_recycler"
-            android:orientation="horizontal">
+            app:layout_constraintTop_toBottomOf="@+id/go_benefit_layout"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintWidth_percent="1"
+            app:layout_constraintHeight_percent=".65"
+            android:background="@color/colorMainWhite">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/buttonTheme"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintWidth_percent=".435"
+                app:layout_constraintHeight_percent=".25"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias=".015"
+                app:layout_constraintHorizontal_bias=".08"
+                app:cardCornerRadius="25dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toTopOf="@+id/theme_textview"
+                        app:layout_constraintVertical_bias=".35"
+                        android:src="@drawable/theme_36_gray"
+                        android:layout_gravity="center_horizontal"/>
+
+                    <TextView
+                        android:id="@+id/theme_textview"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent="1"
+                        app:layout_constraintHeight_percent=".3"
+                        app:layout_constraintVertical_bias=".87"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:fontFamily="@font/paybooc_bold"
+                        android:text="테마별 혜택"
+                        android:textSize="15sp"
+                        android:gravity="center"
+                        android:layout_marginTop="10dp"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/buttonRegion"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintWidth_percent=".435"
+                app:layout_constraintHeight_percent=".25"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias=".015"
+                app:layout_constraintHorizontal_bias=".925"
+                app:cardCornerRadius="25dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toTopOf="@+id/region_textview"
+                        app:layout_constraintVertical_bias=".35"
+                        android:src="@drawable/region_36_gray"
+                        android:layout_gravity="center_horizontal"/>
+
+                    <TextView
+                        android:id="@+id/region_textview"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent="1"
+                        app:layout_constraintHeight_percent=".3"
+                        app:layout_constraintVertical_bias=".87"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:fontFamily="@font/paybooc_bold"
+                        android:text="지역별 혜택"
+                        android:textSize="15sp"
+                        android:gravity="center"
+                        android:layout_marginTop="10dp"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
 
             <TextView
                 android:id="@+id/youtube_text"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight=".80"
+                android:layout_height="0dp"
+                app:layout_constraintWidth_percent=".7"
+                app:layout_constraintHeight_percent=".07"
+                app:layout_constraintVertical_bias=".1"
+                app:layout_constraintHorizontal_bias=".19"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/buttonTheme"
+                app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@color/colorMainWhite"
-                android:fontFamily="@font/nanum_barun_gothic_bold"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:layout_marginTop="10dp"
+                android:fontFamily="@font/jalnan"
                 android:text="유튜버들의 생생한 혜택 리뷰"
-                android:textColor="@color/colorBlack"
-                android:textSize="20sp" />
+                android:textColor="@color/grey"
+                android:textSize="18sp" />
 
-        </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/youtube_video_recyclerview"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintWidth_percent="1"
+                app:layout_constraintHeight_percent=".6"
+                android:background="@color/colorMainWhite"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/youtube_video_recyclerview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/youtube_video_layout"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

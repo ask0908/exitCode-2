@@ -25,14 +25,29 @@
         <!--            android:layout_height="70dp"/>-->
 
         <!-- 유저 아이디, 1시간 전 문구를 놓을 수직 리니어 레이아웃 -->
+<!--        <ImageView-->
+<!--            android:layout_width="45dp"-->
+<!--            android:layout_height="45dp"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginStart="10dp"-->
+<!--            android:background="@color/colorGray_L"/>-->
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/profile_image"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@drawable/base_img"
+            app:civ_border_width="1dp"
+            app:civ_border_color="#A9A9A9"/>
         <LinearLayout
-            android:layout_width="170dp"
+            android:layout_width="160dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:layout_marginStart="15dp"
             android:orientation="vertical"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp">
+            android:paddingStart="10dp">
 
             <TextView
                 android:id="@+id/review_id"
@@ -40,34 +55,40 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:text="아이디는최대10자만"
-                android:textColor="@color/colorBlack"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/review_date"
-                android:layout_width="wrap_content"
+                android:textColor="@color/grey"
+                android:textSize="15sp" />
+            <!-- 커스텀 RatingBar -->
+            <com.hedgehog.ratingbar.RatingBar
+                android:id="@+id/review_rate"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/nanum_barun_gothic_bold"
-                android:text="1시간 전"
-                android:textColor="@color/colorGray_B"
-                android:textSize="13sp" />
+                android:gravity="start"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="5dp"
+                hedgehog:clickable="false"
+                hedgehog:halfstart="true"
+                hedgehog:starCount="5"
+                app:starImageHeight="13dp"
+                app:starImageWidth="20dp"
+                hedgehog:starEmpty="@drawable/ic_star_empty"
+                hedgehog:starFill="@drawable/ic_star_fill"
+                hedgehog:starHalf="@mipmap/star_half" />
+
 
         </LinearLayout>
-        <!-- 유저 아이디, 1시간 전 문구를 놓을 수직 리니어 레이아웃 끝 -->
 
-        <!-- 커스텀 RatingBar -->
-        <com.hedgehog.ratingbar.RatingBar
-            android:id="@+id/review_rate"
+        <!-- 유저 아이디, 1시간 전 문구를 놓을 수직 리니어 레이아웃 끝 -->
+        <TextView
+            android:id="@+id/review_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="end"
-            android:layout_marginEnd="15dp"
-            hedgehog:clickable="false"
-            hedgehog:halfstart="true"
-            hedgehog:starCount="5"
-            hedgehog:starEmpty="@drawable/ic_star_empty"
-            hedgehog:starFill="@drawable/ic_star_fill"
-            hedgehog:starHalf="@mipmap/star_half" />
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:gravity="right"
+            android:fontFamily="@font/nanum_barun_gothic_bold"
+            android:text="1시간 전"
+            android:textColor="@color/colorGray_B"
+            android:textSize="13sp" />
 
     </LinearLayout>
 
@@ -75,13 +96,12 @@
         android:id="@+id/review_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="25dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="15dp"
         android:lineSpacingExtra="6sp"
-        android:paddingStart="10dp"
         android:paddingEnd="10dp"
         android:text="리뷰 본문"
-        android:textColor="@color/colorBlack"
+        android:textColor="@color/grey"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -93,6 +113,7 @@
         android:layout_height="120dp"
         android:layout_marginTop="12dp"
         app:cardCornerRadius="20dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.141"
@@ -115,7 +136,7 @@
         android:orientation="horizontal"
         android:weightSum="1"
         android:layout_marginStart="25dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/review_image_card">
@@ -125,7 +146,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:visibility="invisible"
-            android:layout_weight=".23"
+            android:layout_weight=".2"
             android:weightSum="1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -138,6 +159,7 @@
                 android:layout_width="0dp"
                 android:layout_height="25dp"
                 android:layout_weight=".40"
+                android:visibility="invisible"
                 android:src="@drawable/good_img"/>
 
             <TextView
@@ -145,6 +167,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:layout_weight=".50"
+                android:visibility="invisible"
                 android:text="0"
                 android:textSize="15sp"
                 android:textColor="@color/colorBlack"
@@ -164,42 +187,50 @@
                 android:id="@+id/update_textview"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layout_constraintHeight_percent="1"
-                app:layout_constraintWidth_percent=".30"
-                android:fontFamily="@font/jalnan"
-                android:text="수정"
+                android:background="@drawable/keyword_round_textview"
+                android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:gravity="center"
-                android:textSize="20sp"
-                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginRight="15dp"
+                android:text="수정"
+                android:textColor="#A9A9A9"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_percent=".8"
+                app:layout_constraintHorizontal_bias="0.65"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent=".20" />
 
             <TextView
                 android:id="@+id/delete_textview"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layout_constraintHeight_percent="1"
-                app:layout_constraintWidth_percent=".30"
-                app:layout_constraintHorizontal_bias=".20"
-                android:fontFamily="@font/jalnan"
-                android:text="삭제"
+                android:background="@drawable/keyword_round_textview"
+                android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:gravity="center"
-                android:textSize="20sp"
+                android:text="삭제"
+                android:textColor="#A9A9A9"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_percent=".8"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@id/update_textview"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                android:layout_marginLeft="11dp"
+                app:layout_constraintWidth_percent=".20" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
 
     <View
+        android:id="@+id/recycler_divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginEnd="25dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/help_layout"

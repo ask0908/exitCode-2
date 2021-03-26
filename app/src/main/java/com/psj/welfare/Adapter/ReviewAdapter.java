@@ -18,8 +18,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.hedgehog.ratingbar.RatingBar;
-import com.psj.welfare.data.ReviewItem;
 import com.psj.welfare.R;
+import com.psj.welfare.data.ReviewItem;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -63,14 +63,14 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
     @NonNull
     @Override
-    public ReviewAdapter.ReviewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+    public ReviewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         View view = LayoutInflater.from(context).inflate(R.layout.review_item, parent, false);
         return new ReviewViewHolder(view, itemClickListener, deleteClickListener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ReviewAdapter.ReviewViewHolder holder, int position)
+    public void onBindViewHolder(@NonNull ReviewViewHolder holder, int position)
     {
         ReviewItem item = list.get(position);
         if (!item.getImage_url().equals("없음"))
@@ -101,12 +101,16 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             // 다르니까 보여주지 않는다
             holder.update_textview.setVisibility(View.GONE);
             holder.delete_textview.setVisibility(View.GONE);
+            holder.like_layout.setVisibility(View.GONE);
+
         }
         else
         {
             // 같은 경우에만 보여줘서 클릭할 수 있게 한다
             holder.update_textview.setVisibility(View.VISIBLE);
             holder.delete_textview.setVisibility(View.VISIBLE);
+            holder.like_layout.setVisibility(View.INVISIBLE);
+
         }
 
         // 리뷰 작성자와 내 닉네임이 같을 때만 수정, 삭제 버튼을 보여줘야 한다
@@ -115,12 +119,16 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         {
             holder.update_textview.setVisibility(View.VISIBLE);
             holder.delete_textview.setVisibility(View.VISIBLE);
+            holder.like_layout.setVisibility(View.INVISIBLE);
+
         }
         else
         {
             // 다른 경우엔 내가 작성한 리뷰가 아니니까 수정, 삭제 문구를 가린다
             holder.update_textview.setVisibility(View.GONE);
             holder.delete_textview.setVisibility(View.GONE);
+            holder.like_layout.setVisibility(View.GONE);
+
         }
 
         // 별점 표시
@@ -188,6 +196,12 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             }
         }
 
+        /* 맨 밑에 있는 아이템의 하단에는 구분선이 보이지 않게 한다 */
+        if (position == getItemCount() - 1)
+        {
+            holder.recycler_divider.setVisibility(View.INVISIBLE);
+        }
+
     }
 
     @Override
@@ -202,11 +216,13 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         private LinearLayout like_layout;
         private CardView cardView;
         private ImageView review_image;
-//        private RoundedImageView review_image;
+        //        private RoundedImageView review_image;
         private TextView review_writer, review_date, review_content, update_textview, delete_textview;
         private RatingBar review_rate;
         ItemClickListener itemClickListener;
         DeleteClickListener deleteClickListener;
+
+        private View recycler_divider; //마지막 아이템에서는 밑에 구분선 안보여야되니까...
 
         public ReviewViewHolder(@NonNull View view, ItemClickListener itemClickListener, DeleteClickListener deleteClickListener)
         {
@@ -221,12 +237,14 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             review_rate = view.findViewById(R.id.review_rate);
             update_textview = view.findViewById(R.id.update_textview);
             delete_textview = view.findViewById(R.id.delete_textview);
+            recycler_divider = view.findViewById(R.id.recycler_divider);
 
             // 좋아요 버튼
-           like_layout = view.findViewById(R.id.like_layout);
+            like_layout = view.findViewById(R.id.like_layout);
 
             this.itemClickListener = itemClickListener;
-            update_textview.setOnClickListener(v -> {
+            update_textview.setOnClickListener(v ->
+            {
                 int pos = getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION && itemClickListener != null)
                 {
@@ -235,7 +253,8 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             });
 
             this.deleteClickListener = deleteClickListener;
-            delete_textview.setOnClickListener(v -> {
+            delete_textview.setOnClickListener(v ->
+            {
                 int pos = getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION && deleteClickListener != null)
                 {

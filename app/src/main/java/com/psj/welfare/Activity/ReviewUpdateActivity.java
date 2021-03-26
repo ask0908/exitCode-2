@@ -1,31 +1,24 @@
 package com.psj.welfare.activity;
 
-import android.annotation.SuppressLint;
-import android.content.ContentUris;
-import android.content.Context;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -33,10 +26,7 @@ import com.psj.welfare.R;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
-import java.net.URISyntaxException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -89,6 +79,7 @@ public class ReviewUpdateActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setStatusBarGradiant(ReviewUpdateActivity.this);
         setContentView(R.layout.activity_review_update);
 
         // 화면 최상단의 툴바 쓰기 위한 처리
@@ -178,61 +169,6 @@ public class ReviewUpdateActivity extends AppCompatActivity
             }
         });
 
-    }
-
-    // 앨범에서 이미지 가져온 이후 필요한 처리는 여기서 수행한다
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_PHOTO && resultCode == RESULT_OK && data != null && data.getData() != null)
-        {
-            filePath = data.getData();
-            try
-            {
-                absolute = getPath(this, filePath);
-            }
-            catch (URISyntaxException e)
-            {
-                e.printStackTrace();
-            }
-            Log.e(TAG, "absolute = " + absolute);
-            file = new File(absolute);
-            Log.e(TAG, "file.length() = " + file.length());
-            if (!file.exists())
-            {
-                file.mkdirs();
-            }
-            Log.e(TAG, "file = " + file);
-            try
-            {
-                InputStream inputStream = getContentResolver().openInputStream(filePath);
-                bitmap = BitmapFactory.decodeStream(inputStream);
-                // 갤러리에서 가져온 이미지를 비트맵 객체에 넣고 Glide로 이미지뷰에 set한다
-//                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
-//                Glide.with(this)
-//                        .load(bitmap)
-//                        .into(update_review_photo);
-                encodeBitmapImage(bitmap);
-                /* 촬영한 이미지를 이미지뷰에 set할 때 90도 회전되서 set되므로 setRotation()으로 90도 회전시켜서 이미지뷰에 들어가게 한다 */
-//                review_photo.setRotation(90);
-                // 유저가 이미지뷰에 붙여넣은 이미지의 확장자를 가져온다
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    // 비트맵 이미지를 jpeg 확장자로 저장하는 메서드
-    private void encodeBitmapImage(Bitmap bitmap)
-    {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-
-        byte[] bytesOfImage = byteArrayOutputStream.toByteArray();
-        encodeImageString = Base64.encodeToString(bytesOfImage, Base64.DEFAULT);
     }
 
     private void init()
@@ -333,12 +269,6 @@ public class ReviewUpdateActivity extends AppCompatActivity
     void updateReview()
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-
-//        RequestBody imageReqBody = RequestBody.create(MediaType.parse("image/*"), file);
-//        MultipartBody.Part imagePart = MultipartBody.Part.createFormData("file", "update.png", imageReqBody); // 2번 인자 file.getName()에서 String으로 수정
-//
-//        RequestBody imageDescription = RequestBody.create(MediaType.parse("text/plain"), "image-type");
-
         int rate = (int) review_rate_update_edit.getRating();
         String star_count = String.valueOf(rate);
         Call<String> call = apiInterface.updateReview(token, id, review_content_update_edit.getText().toString(), null, null,
@@ -368,93 +298,13 @@ public class ReviewUpdateActivity extends AppCompatActivity
         });
     }
 
-    // 절대경로 얻는 메서드
-    @SuppressLint("NewApi")
-    public String getPath(Context context, Uri uri) throws URISyntaxException
+    public void setStatusBarGradiant(Activity activity)
     {
-        Log.e(TAG, "getPath() 실행");
-        final boolean needToCheckUri = Build.VERSION.SDK_INT >= 19;
-        String selection = null;
-        String[] selectionArgs = null;
-        // Uri is different in versions after KITKAT (Android 4.4), we need to
-        // deal with different Uris.
-        if (needToCheckUri && DocumentsContract.isDocumentUri(context.getApplicationContext(), uri))
-        {
-            if (isExternalStorageDocument(uri))
-            {
-                final String docId = DocumentsContract.getDocumentId(uri);
-                final String[] split = docId.split(":");
-                return Environment.getExternalStorageDirectory() + "/" + split[1];
-            }
-            else if (isDownloadsDocument(uri))
-            {
-                final String id = DocumentsContract.getDocumentId(uri);
-                uri = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-            }
-            else if (isMediaDocument(uri))
-            {
-                final String docId = DocumentsContract.getDocumentId(uri);
-                final String[] split = docId.split(":");
-                final String type = split[0];
-                if ("image".equals(type))
-                {
-                    uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                }
-                else if ("video".equals(type))
-                {
-                    uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                }
-                else if ("audio".equals(type))
-                {
-                    uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-                }
-                selection = "_id=?";
-                selectionArgs = new String[]{split[1]};
-            }
-        }
-        if ("content".equalsIgnoreCase(uri.getScheme()))
-        {
-            String[] projection = {MediaStore.Images.Media.DATA};
-            Cursor cursor = null;
-            try
-            {
-                cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
-                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                if (cursor.moveToFirst())
-                {
-                    return cursor.getString(column_index);
-                }
-            }
-            catch (Exception e)
-            {
-            }
-        }
-        else if ("file".equalsIgnoreCase(uri.getScheme()))
-        {
-            return uri.getPath();
-        }
-        return null;
-    }
-
-    public static boolean isExternalStorageDocument(Uri uri)
-    {
-        return "com.android.externalstorage.documents".equals(uri
-                .getAuthority());
-    }
-
-
-    public static boolean isDownloadsDocument(Uri uri)
-    {
-        return "com.android.providers.downloads.documents".equals(uri
-                .getAuthority());
-    }
-
-
-    public static boolean isMediaDocument(Uri uri)
-    {
-        return "com.android.providers.media.documents".equals(uri
-                .getAuthority());
+        Window window = activity.getWindow();
+        Drawable background = activity.getResources().getDrawable(R.drawable.gradation_background);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(activity.getResources().getColor(android.R.color.transparent));
+        window.setBackgroundDrawable(background);
     }
 
 }

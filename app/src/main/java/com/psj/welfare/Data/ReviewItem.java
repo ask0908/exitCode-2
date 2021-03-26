@@ -22,6 +22,12 @@ public class ReviewItem
     @SerializedName("star_count")
     private float star_count;
 
+    @SerializedName("difficulty")
+    private String difficulty;
+
+    @SerializedName("satisfaction")
+    private String satisfaction;
+
     public ReviewItem()
     {
     }
@@ -84,5 +90,18 @@ public class ReviewItem
     public void setWriter(String writer)
     {
         this.writer = writer;
+    }
+
+    public String getDifficulty(){
+        return difficulty;
+    }
+    public void setDifficulty(String difficulty){
+        this.difficulty = difficulty;
+    }
+    public String getSatisfaction(){
+        return satisfaction;
+    }
+    public void setSatisfaction(String satisfaction){
+        this.satisfaction = satisfaction;
     }
 }

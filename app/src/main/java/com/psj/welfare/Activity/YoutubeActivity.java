@@ -1,10 +1,14 @@
 package com.psj.welfare.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,12 +20,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
-import com.psj.welfare.data.OtherYoutubeItem;
-import com.psj.welfare.data.YoutubeItem;
 import com.psj.welfare.R;
 import com.psj.welfare.adapter.OtherYoutubeAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.data.OtherYoutubeItem;
+import com.psj.welfare.data.YoutubeItem;
 import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONArray;
@@ -75,6 +79,7 @@ public class YoutubeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setStatusBarGradiant(YoutubeActivity.this);
         setContentView(R.layout.activity_youtube);
 
         // MainFragment에서 가져온 해시맵을 담을 해시맵
@@ -84,6 +89,7 @@ public class YoutubeActivity extends AppCompatActivity
         setSupportActionBar(youtube_toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("유튜버 혜택 소개");
+
 
         init();
 
@@ -348,6 +354,15 @@ public class YoutubeActivity extends AppCompatActivity
             e.printStackTrace();
         }
         return str;
+    }
+
+    public void setStatusBarGradiant(Activity activity)
+    {
+        Window window = activity.getWindow();
+        Drawable background = activity.getResources().getDrawable(R.drawable.gradation_background);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(activity.getResources().getColor(android.R.color.transparent));
+        window.setBackgroundDrawable(background);
     }
 
 }

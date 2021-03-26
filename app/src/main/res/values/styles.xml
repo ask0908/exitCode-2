@@ -1,9 +1,11 @@
 <resources>
 
+    <!-- 액션바(시계, 와이파이 상태 표시란 있는 곳)에 그라데이션을 입히려면 colorPrimaryDark를 주석처리한 다음 MainTabLayoutActivity의 setStatusBarGradiant()를
+     사용하면 된다 -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/layout_background_start_gradation</item>
         <item name="colorAccent">@color/colorAccent</item>
 
         <!-- No Title Bar-->
@@ -14,7 +16,7 @@
     <style name="TestActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/layout_background_start_gradation</item>
         <item name="colorAccent">@color/colorAccent</item>
 
         <!-- No Title Bar-->
@@ -27,7 +29,7 @@
     <!-- MypageFragment의 툴바에 쓰는 스타일 -->
     <style name="ToolbarTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/layout_background_start_gradation</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textSize">20sp</item> <!-- Toolbar의 타이틀 텍스트 사이즈-->
     </style>
@@ -35,7 +37,7 @@
     <!-- ReviewActivity, ReviewUpdateActivity에서 액션바의 글자 색깔을 바꾸기 위한 스타일 -->
     <style name="ReviewTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/layout_background_start_gradation</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
@@ -93,6 +95,12 @@
         <item name="fontFamily">@font/jalnan</item>
     </style>
 
+    <!-- 액션바의 뒤로가기 색을 흰색으로 바꾸는 스타일 -->
+    <style name="toolbar_white_back" parent="@style/ThemeOverlay.AppCompat.ActionBar">
+        <!-- Customize color of navigation drawer icon and back arrow -->
+        <item name="colorControlNormal">@color/colorMainWhite</item>
+    </style>
+
     <!-- MainTabLayoutActivity의 하단 탭 배경화면 설정 -->
 <!--    <style name="Base.Widget.Design.TabLayout" parent="android:Widget">-->
 <!--        <item name="tabBackground">@drawable/tab_background</item>-->
@@ -101,14 +109,15 @@
     <!-- 툴바 폰트 바꿀 때 쓰는 스타일 -->
     <style name="toolbar_jalnan_fontfamily" parent="ThemeOverlay.AppCompat.Light">
         <item name="android:fontFamily">@font/jalnan</item>
+        <item name="colorControlNormal">@color/colorMainWhite</item>
     </style>
 
     <!-- 툴바의 영어 글자가 항상 대문자로 나와서 소문자도 보이게 하기 위한 처리 -->
-    <style name="toolbar_textAllCaps" parent="ThemeOverlay.AppCompat.Light">
+    <style name="toolbar_textAllCaps" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:fontFamily">@font/jalnan</item>
         <item name="android:textSize">15sp</item>
         <item name="android:textAllCaps">false</item>
-        <item name="colorControlNormal">@color/colorPrimaryDark</item>  <!-- 홈 / 뒤로가기 버튼의 색깔 -->
+        <item name="colorControlNormal">@color/layout_background_start_gradation</item>  <!-- 홈 / 뒤로가기 버튼의 색깔 -->
     </style>
 <!--    <style name="MyMenuTextAppearance" parent="android:TextAppearance.Holo.Widget.ActionBar.Menu">-->
 <!--        <item name="android:textAllCaps">false</item>-->

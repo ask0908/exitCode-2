@@ -12,6 +12,9 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/youtube_toolbar"
+        app:titleTextColor="@color/colorMainWhite"
+        android:background="@drawable/gradation_background"
+        android:theme="@style/toolbar_jalnan_fontfamily"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
@@ -35,7 +38,7 @@
         android:layout_height="0dp"
         app:layout_constraintHeight_percent=".27"
         app:layout_constraintWidth_percent="1"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="0dp"
         app:autoPlay="false"
         app:showFullScreenButton="true"
         app:showSeekBar="true"
@@ -48,15 +51,13 @@
 
     <TextView
         android:id="@+id/first_video_title"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        app:layout_constraintHeight_percent=".15"
-        app:layout_constraintWidth_percent="1"
         android:fontFamily="@font/jalnan"
         android:lineSpacingExtra="6sp"
         android:text="텍스트"
-        android:textColor="@color/colorBlack"
+        android:textColor="@color/grey"
         android:textSize="17sp"
         android:padding="16dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -67,19 +68,17 @@
         android:id="@+id/youtube_divider"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="10dp"
         app:layout_constraintHeight_percent=".001"
         app:layout_constraintWidth_percent="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/first_video_title"
-        android:background="@color/colorGray_L"/>
+        android:background="@color/colorGray_B"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/other_video_recyclerview"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent=".40"
         app:layout_constraintWidth_percent="1"
         android:orientation="vertical"
         android:padding="8dp"

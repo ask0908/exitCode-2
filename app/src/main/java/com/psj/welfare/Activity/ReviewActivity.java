@@ -1,47 +1,34 @@
 package com.psj.welfare.activity;
 
-import android.annotation.SuppressLint;
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.content.Context;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Build;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
 import android.text.InputFilter;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.webkit.MimeTypeMap;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
-import com.bumptech.glide.Glide;
 import com.psj.welfare.R;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.net.URISyntaxException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -55,52 +42,107 @@ public class ReviewActivity extends AppCompatActivity
 
     private RatingBar review_rate_edit;
     private EditText review_content_edit;
-    private ImageView review_photo;
-
-    private Bitmap bitmap;
-    Uri filePath;
-
-    // 이미지 절대 경로
-    String absolute;
-
-    // 갤러리에서 가져온 이미지를 서버로 보내 저장하기 전 담는 변수
-    String encodeImageString;
-
-    File file;
-
-    private static final int PICK_PHOTO = 1;
 
     // 신청이 쉬웠나요 라디오그룹
     RadioGroup difficulty_radiogroup;
+    RadioButton btn_easy, btn_difficult;
     // 혜택 만족도 라디오 그룹
     RadioGroup satisfaction_radiogroup;
+    RadioButton btn_satisfied, btn_unsatisfied;
 
     // 라디오 그룹에서 선택한 값 담을 변수
-    String difficulty, satisfaction;
+    String difficulty_level, satisfaction;
 
     // 선택해서 가져온 리뷰 아이디
-    String review_id;
+    String review_id = "";
+    /* 0322) ReviewUpdateActivity로 이동하던 로직을 수정해서 추가한 변수 */
+    // 아이템의 수정을 눌러서 들어왔을 경우, 리뷰 내용과 별점을 각각 담을 변수
+    String content, star_count = "";
+    int id;
+
+    //@@ 리뷰 등록 버튼
+    Button btnRegister;
+
+    //@@ 페이지 타이틀(리뷰 작성/리뷰 수정)
+    TextView tv_title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setStatusBarGradiant(ReviewActivity.this);
         setContentView(R.layout.activity_review);
+
+        satisfaction = "도움이 됐어요";
+        difficulty_level = "쉬워요";
+
+        Log.e(TAG, "인텐트로 받아온 welf_local : " + getIntent().getStringExtra("welf_local"));
+        Log.e(TAG, "인텐트로 받아온 welf_name : " + getIntent().getStringExtra("welf_name"));
+        init();
 
         if (getIntent().hasExtra("id"))
         {
             Intent intent = getIntent();
             review_id = intent.getStringExtra("id");
+            Log.e(TAG, "'id' 인텐트에서 가져온 리뷰 게시글의 인덱스 값 : " + review_id);
         }
-        Log.e(TAG, "받아온 id = " + review_id);
+        if (getIntent().hasExtra("content") && getIntent().hasExtra("star_count"))
+        {
+            // 아이템의 '수정'을 눌러서 들어온 경우, 해당 리뷰 내용과 별점을 가져온다
+            tv_title.setText("리뷰 수정");
+            btnRegister.setText("수정하기");
+            Intent intent = getIntent();
+            content = intent.getStringExtra("content");
+            star_count = intent.getStringExtra("star_count");
+            difficulty_level = intent.getStringExtra("difficulty_level");
+            satisfaction = intent.getStringExtra("satisfaction");
+            // 별 카운트에 값이 있다면 그걸 상단의 별점바에 세팅한다
+            if (star_count != null)
+            {
+                float count = Float.parseFloat(star_count);
+                review_rate_edit.setRating(count);
+            }
+            // id는 서버에서 String 형태로 날아오고, 수정 후 서버로 보낼 땐 int로 보내야 하기 때문에 int로 캐스팅한다
+            String before_id = intent.getStringExtra("id");
+            if (before_id != null)
+            {
+                id = Integer.parseInt(before_id);
+            }
+            review_content_edit.setText(content);
+            if (difficulty_level.equals("쉬워요"))
+            {
+                btn_easy.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_pink_border));
+                btn_easy.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.colorPink));
+                btn_difficult.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_grey_border));
+                btn_difficult.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.grey));
+            }
+            else
+            {
+                btn_easy.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_grey_border));
+                btn_easy.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.grey));
+                btn_difficult.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_pink_border));
+                btn_difficult.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.colorPink));
+            }
 
-        setSupportActionBar(findViewById(R.id.review_toolbar));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        init();
+            if (satisfaction.equals("도움이 됐어요"))
+            {
+                btn_satisfied.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_pink_border));
+                btn_satisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.colorPink));
+                btn_unsatisfied.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_grey_border));
+                btn_unsatisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.grey));
+            }
+            else
+            {
+                btn_satisfied.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_grey_border));
+                btn_satisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.grey));
+                btn_unsatisfied.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_pink_border));
+                btn_unsatisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.colorPink));
+            }
+        }
+        Log.e(TAG, "받아온 id = " + review_id); //@@ 이거 review id임.
 
         /* 리뷰 작성 시 165자 제한 */
-        review_content_edit.setFilters(new InputFilter[] {
+        review_content_edit.setFilters(new InputFilter[]{
                 new InputFilter.LengthFilter(165)
         });
 
@@ -112,14 +154,22 @@ public class ReviewActivity extends AppCompatActivity
             {
                 switch (checkedId)
                 {
-                    case R.id.easy_radiobutton :
-                        // 신청이 쉬워요 클릭
-                        difficulty = "쉬워요";
+                    case R.id.easy_radiobutton:
+                        Log.e(TAG, "쉬워요 클릭됨");
+                        difficulty_level = "쉬워요";
+                        btn_easy.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_pink_border));
+                        btn_easy.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.colorPink));
+                        btn_difficult.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_grey_border));
+                        btn_difficult.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.grey));
                         break;
 
-                    case R.id.hard_radiobutton :
-                        // 신청이 어려워요 클릭
-                        difficulty = "어려워요";
+                    case R.id.hard_radiobutton:
+                        Log.e(TAG, "어려워요 클림됨");
+                        difficulty_level = "어려워요";
+                        btn_easy.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_grey_border));
+                        btn_easy.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.grey));
+                        btn_difficult.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_pink_border));
+                        btn_difficult.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.colorPink));
                         break;
 
                     default:
@@ -135,14 +185,22 @@ public class ReviewActivity extends AppCompatActivity
             {
                 switch (checkedId)
                 {
-                    case R.id.good_radiobutton :
-                        // 도움이 됐어요 클릭
+                    case R.id.good_radiobutton:
                         satisfaction = "도움이 됐어요";
+                        Log.e(TAG, "도움됐어요 클릭됨");
+                        btn_satisfied.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_pink_border));
+                        btn_satisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.colorPink));
+                        btn_unsatisfied.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_grey_border));
+                        btn_unsatisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.grey));
                         break;
 
-                    case R.id.bad_radiobutton :
-                        // 도움이 안 됐어요 클릭
+                    case R.id.bad_radiobutton:
                         satisfaction = "도움이 안 됐어요";
+                        Log.e(TAG, "도움 안됐어요 클릭됨");
+                        btn_satisfied.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_grey_border));
+                        btn_satisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.grey));
+                        btn_unsatisfied.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_pink_border));
+                        btn_unsatisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.colorPink));
                         break;
 
                     default:
@@ -151,122 +209,55 @@ public class ReviewActivity extends AppCompatActivity
             }
         });
 
-        // 이미지를 추가하려면 앨범에 접근해야 하기 때문에 이를 위한 권한 처리기 생성
-//        PermissionListener permissionListener = new PermissionListener()
-//        {
-//            @Override
-//            public void onPermissionGranted()
-//            {
-//                //
-//            }
-//
-//            @Override
-//            public void onPermissionDenied(List<String> deniedPermissions)
-//            {
-//                //
-//            }
-//        };
-//
-//        // 권한 처리기 설정 후 실행
-//        TedPermission.with(this)
-//                .setRationaleMessage("앨범 접근 권한 설정")
-//                .setDeniedMessage("이미지를 추가하려면 앨범 접근 권한을 설정해야 합니다")
-//                .setPermissionListener(permissionListener)
-//                .setPermissions(WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE)
-//                .check();
-
-        // 카메라 이미지를 누르면 갤러리로 이동해서 파일을 가져온다
-//        review_photo.setOnClickListener(v ->
-//        {
-//            Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//            startActivityForResult(intent, PICK_PHOTO);
-//        });
-
-    }
-
-    // 앨범에서 이미지 가져온 이후 필요한 처리는 여기서 수행한다
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_PHOTO && resultCode == RESULT_OK && data != null && data.getData() != null)
+        btnRegister.setOnClickListener(new View.OnClickListener()
         {
-            filePath = data.getData();
-            try
+            @Override
+            public void onClick(View view)
             {
-                absolute = getPath(this, filePath);
-            }
-            catch (URISyntaxException e)
-            {
-                e.printStackTrace();
-            }
-            Log.e(TAG, "absolute = " + absolute);
-            file = new File(absolute);
-            Log.e(TAG, "file.length() = " + file.length());
-            if (!file.exists())
-            {
-                file.mkdirs();
-            }
-            Log.e(TAG, "file = " + file);
-            try
-            {
-                InputStream inputStream = getContentResolver().openInputStream(filePath);
-                bitmap = BitmapFactory.decodeStream(inputStream);
-                // 갤러리에서 가져온 이미지를 비트맵 객체에 넣고 Glide로 이미지뷰에 set한다
-                Glide.with(this)
-                        .load(bitmap)
-                        .into(review_photo);
-                encodeBitmapImage(bitmap);
-                /* 촬영한 이미지를 이미지뷰에 set할 때 90도 회전되서 set되므로 setRotation()으로 90도 회전시켜서 이미지뷰에 들어가게 한다 */
-//                review_photo.setRotation(90);
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-    }
+                if (getIntent().hasExtra("content") && getIntent().hasExtra("star_count"))
+                {
+                    Log.e(TAG, "수정하기 버튼 클릭");
+                    if(review_content_edit.getText().toString().equals("")){
+                        Toast.makeText(ReviewActivity.this, "아직 리뷰가 작성되지 않았습니다", Toast.LENGTH_SHORT).show();
+                    }else{
+                        updateReview();
+                        finish();
+                        setResult(RESULT_OK);
+                    }
 
-    // 파일 확장자 알아내는 메서드(나중에 고도화할 때 사용)
-    public static String getMimeType(Context context, Uri uri)
-    {
-        String extension;
+                }
+                else
+                {
+                    Log.e(TAG, "등록하기 버튼 클릭");
+                    if(review_content_edit.getText().toString().equals("")){
+                        Toast.makeText(ReviewActivity.this, "아직 리뷰가 작성되지 않았습니다", Toast.LENGTH_SHORT).show();
+                    }else{
+                        uploadReview();
+                        finish();
+                    }
 
-        // Check uri format to avoid null
-        if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT))
-        {
-            // If scheme is a content
-            final MimeTypeMap mime = MimeTypeMap.getSingleton();
-            extension = mime.getExtensionFromMimeType(context.getContentResolver().getType(uri));
-        }
-        else
-        {
-            // If scheme is a File
-            // This will replace white spaces with %20 and also other special characters. This will avoid returning null values on file name with spaces and special characters.
-            extension = MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(new File(uri.getPath())).toString());
-        }
-
-        return extension;
-    }
-
-    // 비트맵 이미지를 jpeg 확장자로 저장하는 메서드
-    private void encodeBitmapImage(Bitmap bitmap)
-    {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-
-        byte[] bytesOfImage = byteArrayOutputStream.toByteArray();
-        encodeImageString = Base64.encodeToString(bytesOfImage, Base64.DEFAULT);
+                }
+            }
+        });
     }
 
     private void init()
     {
         review_rate_edit = findViewById(R.id.review_rate_edit);
         review_content_edit = findViewById(R.id.review_content_edit);
-        review_photo = findViewById(R.id.review_photo);
 
         difficulty_radiogroup = findViewById(R.id.difficulty_radiogroup);
         satisfaction_radiogroup = findViewById(R.id.satisfaction_radiogroup);
+        btn_easy = findViewById(R.id.easy_radiobutton);
+        btn_difficult = findViewById(R.id.hard_radiobutton);
+        btn_satisfied = findViewById(R.id.good_radiobutton);
+        btn_unsatisfied = findViewById(R.id.bad_radiobutton);
+
+        btnRegister = findViewById(R.id.btnRegister);
+
+        tv_title = findViewById(R.id.tv_title);
+
+        review_rate_edit.setRating(3);
     }
 
     @Override
@@ -283,7 +274,7 @@ public class ReviewActivity extends AppCompatActivity
         {
             case R.id.review_done:
                 /* 이미지 전송 메서드 호출 */
-                if (difficulty == null || satisfaction == null)
+                if (difficulty_level == null || satisfaction == null)
                 {
                     Toast.makeText(this, "느낀점을 선택해 주세요", Toast.LENGTH_SHORT).show();
                     break;
@@ -294,6 +285,7 @@ public class ReviewActivity extends AppCompatActivity
                     if (review_content_edit.getText().toString().equals(""))
                     {
                         Toast.makeText(this, "아직 리뷰가 작성되지 않았습니다", Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "아무것도 안썼는데?");
                         break;
                     }
                     else
@@ -302,9 +294,6 @@ public class ReviewActivity extends AppCompatActivity
                         finish();
                         break;
                     }
-//                    uploadReview();
-//                    finish();
-//                    break;
                 }
 
             case android.R.id.home:
@@ -334,6 +323,7 @@ public class ReviewActivity extends AppCompatActivity
                 else
                 {
                     finish();
+                    return true;
                 }
                 break;
 
@@ -376,31 +366,19 @@ public class ReviewActivity extends AppCompatActivity
     }
 
     /* 리뷰 이미지, 텍스트를 같이 서버에 업로드하는 메서드
-    * 이미지가 없어도 텍스트만 올라갈 수 있어야 한다 */
+     * 이미지가 없어도 텍스트만 올라갈 수 있어야 한다 */
     void uploadReview()
     {
         SharedPreferences sharedPreferences = getSharedPreferences("app_pref", 0);
         String token = sharedPreferences.getString("token", "");
         Retrofit retrofit = ApiClient.getApiClient();
         ApiInterface apiInterface = retrofit.create(ApiInterface.class);
-//        Log.e("aaa", "file = " + file);
-//        Log.e("aaa", "file.length() = " + file.length());
-
-        // 이미지 파일을 만들고(thumbnailFile)
-        /* 리뷰 이미지 삭제로 코드 주석 처리 */
-//        RequestBody imageReqBody = RequestBody.create(MediaType.parse("image/*"), file);
-//        MultipartBody.Part imagePart = MultipartBody.Part.createFormData("file", "test.png", imageReqBody); // 2번 인자 file.getName()에서 String으로 수정
-//        RequestBody imageDescription = RequestBody.create(MediaType.parse("text/plain"), "image-type");
-
-        /* 리뷰 쓰는 조건 = 사용자가 정보를 등록해야 함(나이, 성별, 닉네임) */
-        // 이미지를 업로드하는 레트로핏 객체를 생성
-//        Call<String> call = apiInterface.uploadReview(token, 1019, review_content_edit.getText().toString(), imageDescription, imagePart);
 
         int rate = (int) review_rate_edit.getRating();
         int id = Integer.parseInt(review_id);
         String star_count = String.valueOf(rate);
         Call<String> call = apiInterface.uploadReview(token, id, review_content_edit.getText().toString(), null, null,
-                difficulty, satisfaction, star_count);
+                difficulty_level, satisfaction, star_count);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -408,113 +386,111 @@ public class ReviewActivity extends AppCompatActivity
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    Log.e(TAG, "리뷰 작성 성공 = " + response);
+                    Log.e(TAG, "리뷰 작성 성공 : " + response);
                     Toast.makeText(getApplicationContext(), "리뷰가 등록되었습니다", Toast.LENGTH_SHORT).show();
                     setResult(RESULT_OK);
                 }
                 else
                 {
-                    Log.e(TAG, "실패 : " + response.body());
+                    Log.e(TAG, "리뷰 작성 실패 : " + response.body());
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t)
             {
-                Log.e("tag", t.toString());
-                Log.e(TAG, "fail");
+                Log.e(TAG, "리뷰 작성 에러 : " + t.toString());
                 Toast.makeText(getApplicationContext(), "에러 : " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
     }
 
-    // 절대경로 얻는 메서드(static 제거)
-    @SuppressLint("NewApi")
-    public String getPath(Context context, Uri uri) throws URISyntaxException
+//    // 리뷰 수정 메서드
+//    void updateReview()
+//    {
+//        Log.e(TAG, "리뷰 수정 111");
+//        SharedPreferences sharedPreferences = getSharedPreferences("app_pref", 0);
+//        Log.e(TAG, "리뷰 수정 222");
+//        String token = sharedPreferences.getString("token", "");
+//        Log.e(TAG, "리뷰 수정 333");
+//        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+//        Log.e(TAG, "리뷰 수정 444");
+//        Call<String> call = apiInterface.updateReview(token, id, content, null, null,
+//                difficulty_level, satisfaction, star_count);
+//        call.enqueue(new Callback<String>()
+//        {
+//            @Override
+//            public void onResponse(Call<String> call, Response<String> response)
+//            {
+//                Log.e(TAG, "리뷰 수정 555");
+//                if (response.isSuccessful() && response.body() != null)
+//                {
+//                    Log.e(TAG, "리뷰 수정 666");
+//                    String result = response.body();
+//                    Log.e(TAG, "리뷰 수정 777");
+//                    setResult(RESULT_OK);  //@@ 이게 맞나?
+//                    Log.e(TAG, "수정 결과 = " + result);
+//                    Log.e(TAG, "리뷰 수정 888");
+//                    Toast.makeText(ReviewActivity.this, "리뷰가 수정되었습니다", Toast.LENGTH_SHORT).show();
+//                }
+//                else
+//                {
+//                    Log.e(TAG, "실패 : " + response.body());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<String> call, Throwable t)
+//            {
+//                Log.e(TAG, "에러 : " + t.getMessage());
+//            }
+//        });
+//    }
+
+    // 리뷰 수정 메서드
+    void updateReview()
     {
-        final boolean needToCheckUri = Build.VERSION.SDK_INT >= 19;
-        String selection = null;
-        String[] selectionArgs = null;
-        // Uri is different in versions after KITKAT (Android 4.4), we need to
-        // deal with different Uris.
-        if (needToCheckUri && DocumentsContract.isDocumentUri(context.getApplicationContext(), uri))
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        int rate = (int) review_rate_edit.getRating();
+        SharedPreferences sharedPreferences = getSharedPreferences("app_pref", 0);
+        String star_count = String.valueOf(rate);
+        String token = sharedPreferences.getString("token", "");
+        Call<String> call = apiInterface.updateReview(token, id, review_content_edit.getText().toString(), null, null,
+                difficulty_level, satisfaction, star_count);
+        call.enqueue(new Callback<String>()
         {
-            if (isExternalStorageDocument(uri))
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
             {
-                final String docId = DocumentsContract.getDocumentId(uri);
-                final String[] split = docId.split(":");
-                return Environment.getExternalStorageDirectory() + "/" + split[1];
-            }
-            else if (isDownloadsDocument(uri))
-            {
-                final String id = DocumentsContract.getDocumentId(uri);
-                uri = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-            }
-            else if (isMediaDocument(uri))
-            {
-                final String docId = DocumentsContract.getDocumentId(uri);
-                final String[] split = docId.split(":");
-                final String type = split[0];
-                if ("image".equals(type))
+                if (response.isSuccessful() && response.body() != null)
                 {
-                    uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                    String result = response.body();
+                    Log.e(TAG, "리뷰 수정 결과 = " + result);
+                    Toast.makeText(ReviewActivity.this, "리뷰가 수정되었습니다", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
                 }
-                else if ("video".equals(type))
+                else
                 {
-                    uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                }
-                else if ("audio".equals(type))
-                {
-                    uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-                }
-                selection = "_id=?";
-                selectionArgs = new String[]{split[1]};
-            }
-        }
-        if ("content".equalsIgnoreCase(uri.getScheme()))
-        {
-            String[] projection = {MediaStore.Images.Media.DATA};
-            Cursor cursor = null;
-            try
-            {
-                cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
-                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                if (cursor.moveToFirst())
-                {
-                    return cursor.getString(column_index);
+                    Log.e(TAG, "리뷰 수정 실패 : " + response.body());
                 }
             }
-            catch (Exception e)
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
             {
+                Log.e(TAG, "리뷰 수정 에러 : " + t.getMessage());
             }
-        }
-        else if ("file".equalsIgnoreCase(uri.getScheme()))
-        {
-            return uri.getPath();
-        }
-        return null;
+        });
     }
 
-    public static boolean isExternalStorageDocument(Uri uri)
+    public void setStatusBarGradiant(Activity activity)
     {
-        return "com.android.externalstorage.documents".equals(uri
-                .getAuthority());
-    }
-
-
-    public static boolean isDownloadsDocument(Uri uri)
-    {
-        return "com.android.providers.downloads.documents".equals(uri
-                .getAuthority());
-    }
-
-
-    public static boolean isMediaDocument(Uri uri)
-    {
-        return "com.android.providers.media.documents".equals(uri
-                .getAuthority());
+        Window window = activity.getWindow();
+        Drawable background = activity.getResources().getDrawable(R.drawable.gradation_background);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(activity.getResources().getColor(android.R.color.transparent));
+        window.setBackgroundDrawable(background);
     }
 
 }

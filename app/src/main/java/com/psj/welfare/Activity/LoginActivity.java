@@ -36,9 +36,10 @@ import com.kakao.util.exception.KakaoException;
 import com.nhn.android.naverlogin.OAuthLogin;
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton;
 import com.orhanobut.logger.Logger;
+import com.psj.welfare.R;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
-import com.psj.welfare.R;
+import com.psj.welfare.fragment.MainFragment;
 import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONException;
@@ -56,8 +57,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 {
     public final String TAG = this.getClass().getSimpleName();
     SharedPreferences app_pref;
-
-    public LoginActivity loginContext;
 
     // 카카오 로그인하는 커스텀 버튼
     private Button fake_kakao;
@@ -91,10 +90,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     // 로그아웃 상태 체크용 변수
     boolean loggedOut;
 
-    String encode_str, action_str;
+    String encode_str;
 
     // 구글 애널리틱스
     private FirebaseAnalytics analytics;
+
+    public static String result_str;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -116,13 +117,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Intent intent = getIntent();
             loggedOut = intent.getBooleanExtra("loggedOut", false);
             Log.e(TAG, "로그아웃 상태 : " + loggedOut);
-        }
-        if (getIntent().hasExtra("not_yet"))
-        {
-            Intent intent = new Intent(LoginActivity.this, GetUserInformationActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            finish();
         }
 
         google_login_btn = findViewById(R.id.google_login_btn);
@@ -148,9 +142,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginClose = findViewById(R.id.loginClose);
         // 카카오 로그인 버튼
         fake_kakao = findViewById(R.id.fake_kakao);
-
-        // LoginActivity context 저장
-        loginContext = LoginActivity.this;
 
         // 카카오 키 해시 생성
 //        String keyhash = com.kakao.util.helper.Utility.getKeyHash(this);
@@ -336,48 +327,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     }
                     app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
                     SharedPreferences.Editor editor = app_pref.edit();
-                    Log.e(TAG, "result = " + result);
-                    Log.e(TAG, "result 본명 = " + result.getNickname());
-                    Log.e(TAG, "result 이메일 = " + result.getKakaoAccount().getEmail());
-                    String age = app_pref.getString("user_age", "");
-                    String area = app_pref.getString("user_area", "");
-                    String gender = app_pref.getString("user_gender", "");
-                    String user_nickname = app_pref.getString("user_nickname", "");
-                    Log.e(TAG, "쉐어드의 age = " + age + ", 지역 = " + area + ", 성별 = " + gender + ", 닉네임 = " + user_nickname);
-                    /* 사용자 정보(나이, 성별, 지역, 닉네임)를 입력받기 위해 이동한다. 기존에 입력된 정보가 있으면 MainTabLayoutActivity로 이동한다 */
-                    if (!app_pref.getString("user_nickname", "").equals("") || !app_pref.getString("user_age", "").equals("") ||
-                            !app_pref.getString("user_gender", "").equals("") || !app_pref.getString("user_area", "").equals(""))
+                    /* 사용자 정보(관심사)를 입력받기 위해 이동한다. 기존에 입력된 정보가 있으면 MainTabLayoutActivity로 이동한다 */
+                    if (!app_pref.getString("interest", "").equals(""))
                     {
                         Intent login_intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
-                        if (result.getThumbnailImagePath().equals(""))
-                        {
-                            editor.putString(getString(R.string.get_kakao_image), "");
-                        }
-                        else
-                        {
-                            editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
-                        }
                         editor.putString(getString(R.string.get_kakao_name), result.getNickname());
                         editor.putString("kakao_email", result.getKakaoAccount().getEmail());
                         editor.apply();
                         login_intent.putExtra("name", result.getNickname());
-                        login_intent.putExtra("profile", result.getProfileImagePath());
                         login_intent.putExtra("email", result.getKakaoAccount().getEmail());
                         login_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         sendUserTypeAndPlatform();
+                        login_intent.putExtra("user_token", server_token);
                         startActivity(login_intent);
-//                        finishAffinity();
                         finish();
                     }
                     // 사용자 정보가 없으면 정보 받는 화면으로 이동한다
-                    else if (app_pref.getString("user_nickname", "").equals("") ||
-                            app_pref.getString("user_age", "").equals("") ||
-                            app_pref.getString("user_gender", "").equals(""))
+                    else if (app_pref.getString("interest", "").equals(""))
                     {
-//                        Intent intent = new Intent(LoginActivity.this, GetUserInformationActivity.class);
-                        /* 첫 로그인할 경우 사용자 정보가 없으면 개인정보 입력받는 화면으로 이동했었는데, 이제는 키워드 화면으로 이동시키는 것으로 바뀌어서
-                        * 목적지 액티비티를 키워드 선택 화면으로 변경함 */
-                        Intent intent = new Intent(LoginActivity.this, ChoiceKeywordActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
                         editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
                         editor.putString(getString(R.string.get_kakao_name), result.getNickname());
                         editor.putString("kakao_email", result.getKakaoAccount().getEmail());
@@ -385,12 +353,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         intent.putExtra("name", result.getNickname());
                         intent.putExtra("profile", result.getProfileImagePath());
                         intent.putExtra("email", result.getKakaoAccount().getEmail());
-                        /* 서버로 osType, platform, FCM 토큰값 정보를 보내는 메서드 */
                         sendUserTypeAndPlatform();
-                        Log.e(TAG, "여러 번 나오는 현상 체크 - 사용자 정보 입력 화면 이동");
+                        intent.putExtra("user_token", server_token);
                         startActivity(intent);
-//                        finish();
-                        finishAffinity();
+                        finish();
                     }
                 }
             });
@@ -408,7 +374,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     void sendUserTypeAndPlatform()
     {
         String email = kakao_email;
-        Log.e("sendUserTypeAndPlatform()", "쉐어드의 FCM 토큰값 = " + token);
+        Log.e(TAG, "쉐어드의 FCM 토큰값 = " + token);
         String os_type = getString(R.string.login_os);
         String platform = getString(R.string.main_platform);
 
@@ -423,9 +389,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-                    Log.e(TAG, "카카오 로그인 시 서버로 데이터 보낸 결과 : " + result);
-                    tokenParsing(response.body());
-                    Log.e(TAG, "카카오 로그인 성공 = " + result);
+                    tokenParsing(result);
                 }
                 else
                 {
@@ -554,8 +518,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onDestroy()
     {
         super.onDestroy();
-        // 카카오 로그인 후 액티비티 꺼질 때 필요한 처리
-        // 현재 액티비티 제거 시 콜백도 같이 제거
         Session.getCurrentSession().removeCallback(sessionCallback);
     }
 
@@ -571,20 +533,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             super.onActivityResult(requestCode, resultCode, data);
             return;
         }
-
-        /* 구글 로그인할 때 인텐트로 데이터 받아와 처리하는 부분. 필요없어서 주석 처리 */
-//        // 구글 로그인 액티비티에서 넘어온 경우일 때 실행
-//        if (requestCode == REQ_SIGN_GOOGLE)
-//        {
-//            GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-//            // 인증결과가 성공적일 때
-//            if (googleSignInResult.isSuccess())
-//            {
-//                // googleSignInAccount는 구글 로그인 정보를 담고 있다 (닉네임, 프로필사진Url, 이메일주소 등)
-//                GoogleSignInAccount googleSignInAccount = googleSignInResult.getSignInAccount();
-//            }
-//        }
-
     }
 
     /* 로그인 시 서버에서 넘어오는 토큰값이 있는데 이걸 저장해야 한다 */
@@ -603,10 +551,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         {
             e.printStackTrace();
         }
-        Log.e(TAG, "tokenParsing() - 쉐어드에 저장되는 토큰 : " + server_token);
+
         /* 다른 액티비티/프래그먼트에서도 활용해야 하기 때문에 서버에서 받은 토큰값을 쉐어드에 저장해 사용한다 */
         editor.putString("token", server_token);
-        Log.e(TAG, "nickName = " + nickName);
+        result_str = server_token;
+        Log.e(TAG, "tokenParsing()할 때 result_str에 넣은 토큰값 확인 : " + result_str);
+        Bundle bundle = new Bundle();
+        bundle.putString("order", server_token);
+        MainFragment fragment = new MainFragment();
+        fragment.setArguments(bundle);
         // logout이 true라면 로그아웃한 상태에서 로그인하는 거니까 서버에서 받은 닉네임 값을 쉐어드에 저장하고 메인 화면으로 이동시킨다
         // 이렇게 메인으로 이동한 경우 로그인했을 때처럼 맞춤 혜택을 보여줘야 한다
         if (app_pref.getBoolean("logout", false))

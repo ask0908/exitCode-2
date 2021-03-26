@@ -1,300 +1,412 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mypage_top"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#fff"
-    android:orientation="vertical"
-    android:theme="@style/ToolbarTheme"
-    tools:context=".fragment.MyPageFragment">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/mypage_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+    android:layout_height="wrap_content"
+    android:fillViewport="true"
+    android:background="@drawable/gradation_background">
 
     <LinearLayout
-        android:id="@+id/user_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:weightSum="1"
+        android:id="@+id/webview_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent="1"
+        android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mypage_toolbar">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/kakao_profile_image"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_weight=".20" />
+        <WebView
+            android:id="@+id/mypage_webview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/main_fragment_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/jalnan"
+            android:gravity="left"
+            android:padding="10dp"
+            android:text="혜택모아"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/result_benefit_title"/>
+
+        <TextView
+            android:id="@+id/result_benefit_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="20dp"
+            android:fontFamily="@font/jalnan"
+            android:gravity="center_horizontal"
+            android:text="마이페이지"
+            android:textColor="@color/colorMainWhite"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@id/white_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/main_fragment_textview" />
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:id="@+id/white_layout"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_weight=".65"
-            android:orientation="vertical">
+            android:background="@drawable/radius_25"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/main_fragment_textview">
 
-            <TextView
-                android:id="@+id/kakao_name"
+
+            <LinearLayout
+                android:id="@+id/user_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/jalnan"
-                android:textColor="@color/colorBlack"
-                android:textSize="30sp" />
+                android:orientation="vertical"
+                android:paddingTop="25dp"
+                android:paddingBottom="10dp"
+                android:weightSum="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-            <TextView
-                android:id="@+id/account_platform_text"
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/kakao_profile_image"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:padding="15dp"
+                    android:background="@drawable/back_avtar"
+                    android:layout_gravity="center"
+                    android:layout_weight=".20" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/kakao_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/jalnan"
+                        android:textColor="@color/layout_background_start_gradation"
+                        android:textSize="17sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:fontFamily="@font/jalnan"
+                        android:textColor="@color/grey"
+                        android:text=" 님"/>
+
+                    <TextView
+                        android:id="@+id/account_platform_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:fontFamily="@font/jalnan"
+                        android:textSize="17sp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/move_update_personal_imageview"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    android:layout_weight=".20"
+                    android:src="@drawable/right_black" />
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/mypage_divider"
+                android:layout_width="380dp"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/user_layout"
+                android:background="@color/colorGray_L" />
+
+            <LinearLayout
+                android:id="@+id/account_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:visibility="gone"
+                android:orientation="horizontal"
+                android:paddingStart="20dp"
+                android:weightSum="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/privacy_policy_layout">
+
+                <Button
+                    android:id="@+id/account_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".80"
+                    android:background="@color/fui_transparent"
+                    android:fontFamily="@font/jalnan"
+                    android:gravity="start|center"
+                    android:text="개인정보 수정"
+                    android:textColor="@color/grey"
+                    android:textSize="17sp" />
+
+                <ImageView
+                    android:id="@+id/account_imageview"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".20"
+                    android:src="@drawable/right_black" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/keyword_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:visibility="gone"
+                android:orientation="horizontal"
+                android:paddingStart="20dp"
+                android:weightSum="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/account_layout">
+
+                <Button
+                    android:id="@+id/keyword_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".80"
+                    android:background="@color/fui_transparent"
+                    android:fontFamily="@font/jalnan"
+                    android:gravity="start|center"
+                    android:text="키워드 정보 수정"
+                    android:textColor="@color/grey"
+                    android:textSize="17sp" />
+
+                <ImageView
+                    android:id="@+id/keyword_imageview"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".20"
+                    android:src="@drawable/right_black" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/push_noti_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/mypage_divider"
+                android:orientation="horizontal"
+                android:paddingStart="20dp"
+                android:weightSum="1">
+
+                <TextView
+                    android:id="@+id/push_setting_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".70"
+                    android:fontFamily="@font/nanum_barun_gothic_bold"
+                    android:text="푸쉬알림설정"
+                    android:textSize="17sp"
+                    android:textColor="@color/grey"/>
+
+                <Switch
+                    android:id="@+id/push_noti_switch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".30"
+                    android:clickable="false"
+                    android:theme="@style/switch_font"
+                    android:fontFamily="@font/jalnan"
+                    android:textColor="@color/grey"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/benefit_type_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:paddingStart="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/push_noti_layout"
+                android:weightSum="1">
+
+                <Button
+                    android:id="@+id/benefit_type_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".80"
+                    android:background="@color/fui_transparent"
+                    android:fontFamily="@font/jalnan"
+                    android:gravity="start|center"
+                    android:text="혜택유형"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="17sp" />
+
+                <ImageView
+                    android:id="@+id/benefit_type_imageview"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".20"
+                    android:src="@drawable/right_black" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/terms_location_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/benefit_type_layout"
+                android:paddingStart="20dp"
+                android:weightSum="1">
+
+                <Button
+                    android:id="@+id/terms_location_based_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".80"
+                    android:background="@color/fui_transparent"
+                    android:fontFamily="@font/nanum_barun_gothic_bold"
+                    android:gravity="start|center"
+                    android:text="이용약관"
+                    android:textColor="@color/grey"
+                    android:textSize="17sp" />
+
+                <ImageView
+                    android:id="@+id/terms_location_based_imageview"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".20"
+                    android:src="@drawable/right_black" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/privacy_policy_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/terms_location_layout"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:paddingStart="20dp"
+                android:weightSum="1">
+
+                <Button
+                    android:id="@+id/privacy_policy_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".80"
+                    android:background="@color/fui_transparent"
+                    android:fontFamily="@font/nanum_barun_gothic_bold"
+                    android:gravity="start|center"
+                    android:text="개인정보처리방침"
+                    android:textColor="@color/grey"
+                    android:textSize="17sp" />
+
+                <ImageView
+                    android:id="@+id/privacy_policy_imageview"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".20"
+                    android:src="@drawable/right_black" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/version_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/keyword_layout"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".30"
+                    android:fontFamily="@font/nanum_barun_gothic_bold"
+                    android:text="버전정보"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:textColor="@color/grey"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:layout_weight=".70"
+                    android:fontFamily="@font/nanum_barun_gothic_bold"
+                    android:text="1.0.0"
+                    android:textColor="@color/grey"
+                    android:gravity="end" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/mypage_login_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintHeight_percent=".095"
+                app:layout_constraintVertical_bias=".560"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/version_layout"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/radius_pink"
                 android:fontFamily="@font/jalnan"
-                android:textSize="17sp" />
+                android:textColor="@color/colorMainWhite"/>
 
         </LinearLayout>
-
-        <ImageView
-            android:id="@+id/move_update_personal_imageview"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            android:layout_weight=".20"
-            android:src="@drawable/right_black" />
-
     </LinearLayout>
-
-    <View
-        android:id="@+id/mypage_divider"
-        android:layout_width="380dp"
-        android:layout_height="1dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="10dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_layout"
-        android:background="@color/colorGray_L" />
-
-    <LinearLayout
-        android:id="@+id/account_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal"
-        android:paddingStart="20dp"
-        android:weightSum="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/privacy_policy_layout">
-
-        <Button
-            android:id="@+id/account_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".80"
-            android:background="@color/fui_transparent"
-            android:fontFamily="@font/jalnan"
-            android:gravity="start|center"
-            android:text="개인정보 수정"
-            android:textColor="@color/colorBlack"
-            android:textSize="17sp" />
-
-        <ImageView
-            android:id="@+id/account_imageview"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight=".20"
-            android:src="@drawable/right_black" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/keyword_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal"
-        android:paddingStart="20dp"
-        android:weightSum="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/account_layout">
-
-        <Button
-            android:id="@+id/keyword_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".80"
-            android:background="@color/fui_transparent"
-            android:fontFamily="@font/jalnan"
-            android:gravity="start|center"
-            android:text="키워드 정보 수정"
-            android:textColor="@color/colorBlack"
-            android:textSize="17sp" />
-
-        <ImageView
-            android:id="@+id/keyword_imageview"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight=".20"
-            android:src="@drawable/right_black" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/push_noti_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mypage_divider"
-        android:orientation="horizontal"
-        android:paddingStart="20dp"
-        android:weightSum="1">
-
-        <TextView
-            android:id="@+id/push_setting_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".70"
-            android:fontFamily="@font/jalnan"
-            android:text="푸쉬알림설정"
-            android:textSize="17sp"
-            android:textColor="@color/colorBlack"/>
-
-        <Switch
-            android:id="@+id/push_noti_switch"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".30"
-            android:clickable="false"
-            android:theme="@style/switch_font"
-            android:fontFamily="@font/jalnan"
-            android:gravity="start"
-            android:textColor="@color/colorBlack"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/terms_location_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/push_noti_layout"
-        android:paddingStart="20dp"
-        android:weightSum="1">
-
-        <Button
-            android:id="@+id/terms_location_based_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".80"
-            android:background="@color/fui_transparent"
-            android:fontFamily="@font/jalnan"
-            android:gravity="start|center"
-            android:text="이용약관"
-            android:textColor="@color/colorBlack"
-            android:textSize="17sp" />
-
-        <ImageView
-            android:id="@+id/terms_location_based_imageview"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight=".20"
-            android:src="@drawable/right_black" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/privacy_policy_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/terms_location_layout"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal"
-        android:paddingStart="20dp"
-        android:weightSum="1">
-
-        <Button
-            android:id="@+id/privacy_policy_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".80"
-            android:background="@color/fui_transparent"
-            android:fontFamily="@font/jalnan"
-            android:gravity="start|center"
-            android:text="개인정보처리방침"
-            android:textColor="@color/colorBlack"
-            android:textSize="17sp" />
-
-        <ImageView
-            android:id="@+id/privacy_policy_imageview"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight=".20"
-            android:src="@drawable/right_black" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/version_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/keyword_layout"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal"
-        android:weightSum="1">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".30"
-            android:fontFamily="@font/jalnan"
-            android:text="버전정보"
-            android:textColor="@color/colorBlack"
-            android:textSize="17sp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            android:layout_weight=".70"
-            android:fontFamily="@font/jalnan"
-            android:text="1.0.0"
-            android:textColor="@color/colorBlack"
-            android:gravity="end" />
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/mypage_login_btn"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintHeight_percent=".095"
-        app:layout_constraintVertical_bias=".560"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/version_layout"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/btn_primary_dark"
-        android:fontFamily="@font/jalnan"
-        android:textColor="@color/colorMainWhite"/>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

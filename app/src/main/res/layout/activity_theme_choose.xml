@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradation_background"
+    android:orientation="vertical"
+    tools:context=".activity.ThemeChooseActivity">
+
+    <TextView
+        android:id="@+id/main_fragment_textview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent=".07"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:fontFamily="@font/jalnan"
+        android:gravity="left"
+        android:padding="10dp"
+        android:text="혜택모아"
+        android:textColor="@android:color/white"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent=".07"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/main_fragment_textview"
+        android:gravity="center"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="20dp"
+        android:fontFamily="@font/jalnan"
+        android:text="테마별 혜택"
+        android:layout_gravity="center"
+        android:textColor="@color/colorMainWhite"
+        android:textSize="24sp" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/white_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent=".84"
+        app:layout_constraintVertical_bias="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView2"
+        android:background="@drawable/radius_25">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="1"
+            app:layout_constraintHeight_percent="1"
+            android:orientation="vertical"
+            android:padding="30dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnJob"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/radius_pink_border"
+                    android:fontFamily="@font/jalnan"
+                    android:text="# 취업·창업"
+                    android:textColor="#FF7088"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:id="@+id/btnYoung"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/radius_pink_border"
+                    android:fontFamily="@font/jalnan"
+                    android:text="# 청년"
+                    android:textColor="#FF7088"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnLiving"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/radius_pink_border"
+                    android:fontFamily="@font/jalnan"
+                    android:text="# 주거"
+                    android:textColor="#FF7088"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:id="@+id/btnChild"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/radius_pink_border"
+                    android:fontFamily="@font/jalnan"
+                    android:text="# 아기·어린이"
+                    android:textColor="#FF7088"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnPregnancy"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/radius_pink_border"
+                    android:fontFamily="@font/jalnan"
+                    android:text="# 육아·임신"
+                    android:textColor="#FF7088"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:id="@+id/btnCultural"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/radius_pink_border"
+                    android:fontFamily="@font/jalnan"
+                    android:text="# 문화·생활"
+                    android:textColor="#FF7088"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnCompany"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/radius_pink_border"
+                    android:fontFamily="@font/jalnan"
+                    android:text="# 기업·자영업자"
+                    android:textColor="#FF7088"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:id="@+id/btnHomeless"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/radius_pink_border"
+                    android:fontFamily="@font/jalnan"
+                    android:text="# 저소득층"
+                    android:textColor="#FF7088"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnOld"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/radius_pink_border"
+                    android:fontFamily="@font/jalnan"
+                    android:text="# 중장년·노인"
+                    android:textColor="#FF7088"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:id="@+id/btnDisorder"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/radius_pink_border"
+                    android:fontFamily="@font/jalnan"
+                    android:text="# 장애인"
+                    android:textColor="#FF7088"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnMulticultural"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/radius_pink_border"
+                    android:fontFamily="@font/jalnan"
+                    android:text="# 다문화"
+                    android:textColor="#FF7088"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:id="@+id/btnLaw"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/radius_pink_border"
+                    android:fontFamily="@font/jalnan"
+                    android:text="# 법률"
+                    android:textColor="#FF7088"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnMedical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/radius_pink_border"
+                    android:fontFamily="@font/jalnan"
+                    android:text="# 의료"
+                    android:textColor="#FF7088"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:id="@+id/btnEtc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/radius_pink_border"
+                    android:fontFamily="@font/jalnan"
+                    android:text="# 기타"
+                    android:textColor="#FF7088"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

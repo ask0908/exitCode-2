@@ -1,10 +1,12 @@
 package com.psj.welfare.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -13,6 +15,8 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,16 +25,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.psj.welfare.api.ApiClient;
-import com.psj.welfare.api.ApiInterface;
-import com.psj.welfare.adapter.HorizontalSearchResultAdapter;
-import com.psj.welfare.adapter.VerticalSearchResultAdapter;
-import com.psj.welfare.data.SearchItem;
-import com.psj.welfare.R;
-import com.psj.welfare.util.LogUtil;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
+import com.psj.welfare.R;
+import com.psj.welfare.adapter.HorizontalSearchResultAdapter;
+import com.psj.welfare.adapter.VerticalSearchResultAdapter;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.data.SearchItem;
+import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -96,11 +100,19 @@ public class SearchResultActivity extends AppCompatActivity
     // 인터넷 상태 확인 후 AlertDialog를 띄울 때 사용할 변수
     boolean isConnected = false;
 
+    // SearchFragment에서 스피너로 선택한 지역명을 인텐트로 받아올 때 이를 저장할 변수
+    String city;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setStatusBarGradiant(SearchResultActivity.this);
         setContentView(R.layout.activity_search_result);
+
+        Intent intent = getIntent();
+        city = intent.getStringExtra("city");
+
         isConnected = isNetworkConnected(this);
         if (!isConnected)
         {
@@ -125,8 +137,8 @@ public class SearchResultActivity extends AppCompatActivity
 
         if (getIntent().hasExtra("search"))
         {
-            Intent intent = getIntent();
-            keyword = intent.getStringExtra("search");
+            Intent intent1 = getIntent();
+            keyword = intent1.getStringExtra("search");
             searchWelfare(keyword);
         }
         parent_list = new ArrayList<>();
@@ -153,7 +165,8 @@ public class SearchResultActivity extends AppCompatActivity
         String token = sharedPreferences.getString("token", "");
         String session = sharedPreferences.getString("sessionId", "");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.searchWelfare(token, session, "search", keyword, LogUtil.getUserLog());
+        String action = userAction("");
+        Call<String> call = apiInterface.searchWelfare(token, session, "search", city, keyword, LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -524,6 +537,15 @@ public class SearchResultActivity extends AppCompatActivity
             }
         }
         return false;
+    }
+
+    public void setStatusBarGradiant(Activity activity)
+    {
+        Window window = activity.getWindow();
+        Drawable background = activity.getResources().getDrawable(R.drawable.gradation_background);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(activity.getResources().getColor(android.R.color.transparent));
+        window.setBackgroundDrawable(background);
     }
 
 }

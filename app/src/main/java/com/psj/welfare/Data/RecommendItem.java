@@ -1,5 +1,6 @@
 package com.psj.welfare.data;
 
+/* MainFragment에서 가로로 맞춤 혜택들을 리사이클러뷰로 보여줄 때 사용하는 모델 클래스 */
 public class RecommendItem
 {
     private String welf_name;

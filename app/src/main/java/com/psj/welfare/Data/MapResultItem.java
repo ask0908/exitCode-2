@@ -1,27 +1,16 @@
 package com.psj.welfare.data;
 
+/* 하단 리사이클러뷰에 쓰는 모델 클래스 */
 public class MapResultItem
 {
     private String parent_category; // 기타, 육아·임신 등 카테고리
     private String welf_name;       // 혜택명
-//    private String[] welf_category;   // 현금 지원, 일자리 지원 등 하위 카테고리
     private String welf_category;
     private String keyword_tag;     // ';; ' 구분자 섞여서 날아오는 태그들
     private String welf_local;      // 혜택이 실시되는 지역
-    private String server_welf_category;
 
     public MapResultItem()
     {
-    }
-
-    public String getServer_welf_category()
-    {
-        return server_welf_category;
-    }
-
-    public void setServer_welf_category(String server_welf_category)
-    {
-        this.server_welf_category = server_welf_category;
     }
 
     public String getParent_category()

@@ -44,36 +44,29 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/* 유저에게 기본 정보(나이, 성별, 지역)를 입력받는 화면 */
 public class GetUserInformationActivity extends AppCompatActivity
 {
     private final String TAG = this.getClass().getSimpleName();
 
     Toolbar age_toolbar;
-    // 닉네임, 나이 입력받는 editText
     EditText nickname_edittext;
     int age;
-    // 나이 입력은 "19990101" 형태로 받는다
     private DatePicker age_picker;
-//    private EditText age_editText;
     private int year, month, day = 0;
-    String str_month, str_day;  // 월, 일이 10보다 작을 경우 앞에 0을 붙여야 하는데 0을 붙인 다음 저장할 때 사용할 변수
-    String result_date;         // 최종적으로 "19990101" 형태의 날짜를 담을 변수, 이 변수에 담긴 값은 쉐어드에 저장 및 서버로 보낸다
+    String str_month, str_day;
+    String result_date;
 
     String nickname;
 
-    // 성별 입력받는 라디오 버튼
     RadioGroup radioGroup;
     RadioButton male_radiobutton, female_radiobutton;
     String gender;
 
-    // 지역 입력받는 NumberPicker
     NumberPicker area_picker;
     final String[] first_area = {"지역 선택", "서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종", "경기도 가평군",
             "경기도 고양시", "경기도 과천시", "경기도 광명시", "경기도 광주시", "경기도 구리시", "경기도 군포시", "경기도 남양주시", "경기도 동두천시", "경기도 부천시", "경기도 성남시",
             "경기도 수원시", "경기도 시흥시", "경기도 안산시", "경기도 안성시", "경기도 안양시", "경기도 양주시", "경기도 양평군", "경기도 여주시", "경기도 연천군", "경기도 오산시",
             "경기도 용인시", "경기도 의왕시", "경기도 의정부시", "경기도 이천시", "경기도 파주시", "경기도 평택시", "경기도 포천시", "경기도 하남시", "경기도 화성시"};
-    // NumberPicker에서 선택한 도시명을 담을 변수
     String user_area;
 
     // 성별, 나이, 지역, 닉네임을 저장할 쉐어드

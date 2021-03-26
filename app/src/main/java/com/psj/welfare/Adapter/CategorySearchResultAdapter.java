@@ -1,19 +1,18 @@
 package com.psj.welfare.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.psj.welfare.data.CategorySearchResultItem;
 import com.psj.welfare.R;
+import com.psj.welfare.data.CategorySearchBottomResultItem;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +23,7 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
     private final String TAG = "CategorySearchResultAdapter";
 
     private Context context;
-    private List<CategorySearchResultItem> list;
+    private List<CategorySearchBottomResultItem> list;
     private ItemClickListener itemClickListener;
 
     public void setOnItemClickListener(ItemClickListener itemClickListener)
@@ -32,7 +31,7 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
         this.itemClickListener = itemClickListener;
     }
 
-    public CategorySearchResultAdapter(Context context, List<CategorySearchResultItem> list, ItemClickListener itemClickListener)
+    public CategorySearchResultAdapter(Context context, List<CategorySearchBottomResultItem> list, ItemClickListener itemClickListener)
     {
         this.context = context;
         this.list = list;
@@ -60,7 +59,7 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
     @Override
     public void onBindViewHolder(@NonNull CategorySearchResultAdapter.CategorySearchResultViewHolder holder, int position)
     {
-        CategorySearchResultItem item = list.get(position);
+        CategorySearchBottomResultItem item = list.get(position);
         holder.welf_local_textview.setText("#" + item.getWelf_local());
         holder.result_textview.setText(item.getWelf_name());
 
@@ -73,7 +72,7 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
             listToString.append(str);
         }
         String after_str = listToString.toString().split(";;")[0];
-        Log.e(TAG, "1번째 OO 지원 : " + after_str);
+//        Log.e(TAG, "1번째 OO 지원 : " + after_str);
 
         switch (after_str)
         {
@@ -210,7 +209,7 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
 
     public static class CategorySearchResultViewHolder extends RecyclerView.ViewHolder
     {
-        CardView category_search_item;
+        LinearLayout category_search_item;
         ImageView result_imageview;
         TextView result_textview, welf_local_textview;
         ItemClickListener itemClickListener;
