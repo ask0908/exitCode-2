@@ -45,7 +45,6 @@ public class YoutubeAdapter extends RecyclerView.Adapter<YoutubeAdapter.YoutubeV
         YoutubeItem dto = list.get(position);
         holder.youtube_player_title.setText(dto.getTitle());
         holder.youtube_url_id.setText(dto.getUrl_id());
-        Log.e("onBindViewHolder()", "youtube_url_id = " + dto.getUrl_id());
         for (int i = 0; i < list.size(); i++)
         {
             holder.youtube_player.addYouTubePlayerListener(new AbstractYouTubePlayerListener()
@@ -54,26 +53,10 @@ public class YoutubeAdapter extends RecyclerView.Adapter<YoutubeAdapter.YoutubeV
                 public void onVideoId(YouTubePlayer youTubePlayer, String videoId)
                 {
                     videoId = dto.getUrl_id();
-                    Log.e("bbb", "video_id : " + videoId);
                     youTubePlayer.cueVideo(videoId, 0);
                 }
             });
         }
-//        holder.youtube_player.addYouTubePlayerListener(new AbstractYouTubePlayerListener()
-//        {
-//            @Override
-//            public void onReady(YouTubePlayer youTubePlayer)
-//            {
-//                switch (dto.getUrl_id())
-//                {
-//                    case "0" :
-//                        video_id = String.valueOf(list.get(0));
-//                        youTubePlayer.cueVideo(video_id, 0);
-//                        youTubePlayer.pause();
-//                        break;
-//                }
-//            }
-//        });
     }
 
     @Override

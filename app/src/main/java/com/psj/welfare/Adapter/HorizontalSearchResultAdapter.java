@@ -16,15 +16,12 @@ import com.psj.welfare.R;
 
 import java.util.List;
 
-/* SearchResultActivity의 가로 리사이클러뷰에 쓰이는 어댑터
-* 하위 카테고리들을 보여주는데 중복된 카테고리들을 쳐내고 하나만 보이게 해야 함 */
 public class HorizontalSearchResultAdapter extends RecyclerView.Adapter<HorizontalSearchResultAdapter.HorizontalSearchResultViewHolder>
 {
     private Context context;
     private List<SearchItem> list;
     private ItemClickListener itemClickListener;
 
-    // 아이템 색 바꿀 때 쓰는 변수
     private int selected_position = -1;
 
     public void setOnItemClickListener(ItemClickListener itemClickListener)
@@ -53,7 +50,6 @@ public class HorizontalSearchResultAdapter extends RecyclerView.Adapter<Horizont
         SearchItem item = list.get(position);
         holder.category_btn.setText(item.getWelf_category());
 
-        /* 필터 색 바꾸기 */
         if (selected_position == position)
         {
             holder.sub_category_layout.setBackgroundResource(R.drawable.textlines_after);
@@ -92,7 +88,6 @@ public class HorizontalSearchResultAdapter extends RecyclerView.Adapter<Horizont
                 {
                     itemClickListener.onItemClick(v, pos);
 
-                    /* 필터 색 바꾸기 */
                     selected_position = pos;
                     notifyDataSetChanged();
                 }

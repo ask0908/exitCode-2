@@ -17,7 +17,6 @@ import com.psj.welfare.R;
 import java.util.Collections;
 import java.util.List;
 
-/* MapDetailActivity에서 상단 리사이클러뷰에 카테고리들을 세팅하는 리사이클러뷰에서 사용하는 어댑터 */
 public class ResultKeywordAdapter extends RecyclerView.Adapter<ResultKeywordAdapter.ResultKeywordViewHolder>
 {
     private final String TAG = "ResultKeywordAdapter";
@@ -26,7 +25,6 @@ public class ResultKeywordAdapter extends RecyclerView.Adapter<ResultKeywordAdap
     private List<ResultKeywordItem> lists;
     private ItemClickListener itemClickListener;
 
-    // 아이템 색 바꿀 때 쓰는 변수
     private int selected_position = -1;
 
     public void setOnResultKeywordClickListener(ItemClickListener itemClickListener)
@@ -56,33 +54,24 @@ public class ResultKeywordAdapter extends RecyclerView.Adapter<ResultKeywordAdap
         holder.keyword_category.setText(item.getWelf_category());
         holder.keyword_layout.setTag(position);
 
-        /* 구분자를 기준으로 앞의 요소를 제외한 뒤의 요소를 전부 없애는 로직 */
-        // 서버에서 받아온 모든 데이터가 아래 리스트에 담겨진다. 아래에서 뷰에 변화를 줄 때 위치를 참고하기 위해 이 리스트에 모든 데이터를 담아두고
-        // position 값을 통해 수정한다
         List<String> item_list = Collections.singletonList(lists.get(position).getWelf_category());
 
-        // 서버에서 받아온 요소들을 하나씩 아이템에 출력시킬 때 사용할 StringBuilder
-        // StringBuilder로 문자열들을 '문자열+구분자+문자열' 형태로 묶은 다음, 구분자를 기준으로 파싱해서 아이템에 하나씩 나오도록 한다
         StringBuilder listToString = new StringBuilder();
         for (String str : item_list)
         {
             listToString.append(str);
         }
 
-        /* 아래 코드를 실행하면 split()한 후 첫 번째 요소만을 담는다. 그래서 welf_category가 2개인 경우는 보여지지 않는 것 같다 */
         String after_str = listToString.toString().split(";; ")[0];
 
         for (int i = 0; i < lists.size(); i++)
         {
-            /* 아래에서 equals()를 쓸 경우 welf_category가 1개인 혜택만 보이고 2개 이상인 혜택은 필터링되서 보이지 않는다
-            * 그래서 equals()가 아닌 contains()를 써야 welf_category가 2개 이상인 혜택도 잘 필터링된다 */
             if (!lists.get(i).getWelf_category().contains(after_str))
             {
                 holder.keyword_category.setText(after_str);
             }
         }
 
-        /* 필터 색 바꾸기 */
         if (selected_position == position)
         {
             holder.keyword_layout.setBackgroundResource(R.drawable.textlines_after);
@@ -122,7 +111,6 @@ public class ResultKeywordAdapter extends RecyclerView.Adapter<ResultKeywordAdap
                 {
                     itemClickListener.onItemClick(v, pos);
 
-                    /* 필터 색 바꾸기 */
                     selected_position = pos;
                     notifyDataSetChanged();
                 }
