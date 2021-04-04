@@ -45,23 +45,18 @@ public class ChoiceKeywordAdapter extends RecyclerView.Adapter<ChoiceKeywordAdap
     @Override
     public void onBindViewHolder(@NonNull final ChoiceKeywordAdapter.ChoiceKeywordViewHolder holder, int position)
     {
-        // final로 선언해야 체크박스의 체크 상태값(T/F)이 바뀌지 않는다
         final ChoiceKeywordItem item = list.get(position);
         holder.search_category_checkbox.setText(item.getInterest());
 
-        // 먼저 체크박스의 리스너를 null로 초기화한다
         holder.search_category_checkbox.setOnCheckedChangeListener(null);
 
-        // 모델 클래스의 게터로 체크 상태값을 가져온다
         holder.search_category_checkbox.setChecked(item.getSelected());
 
-        // 체크박스의 상태값을 알기 위해 리스너 부착
         holder.search_category_checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
         {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
             {
-                // 여기의 item은 final 키워드를 붙인 모델 클래스의 객체와 동일하다
                 item.setSelected(isChecked);
             }
         });

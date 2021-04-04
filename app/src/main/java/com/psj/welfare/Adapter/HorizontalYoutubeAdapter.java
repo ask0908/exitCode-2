@@ -5,19 +5,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.psj.welfare.data.HorizontalYoutubeItem;
 import com.psj.welfare.R;
+import com.psj.welfare.data.HorizontalYoutubeItem;
 
 import java.util.List;
 
-/* MainFragment의 가로 리사이클러뷰에 사용하는 어댑터 */
 public class HorizontalYoutubeAdapter extends RecyclerView.Adapter<HorizontalYoutubeAdapter.HorizontalYoutubeViewHolder>
 {
     private Context context;
@@ -51,6 +50,7 @@ public class HorizontalYoutubeAdapter extends RecyclerView.Adapter<HorizontalYou
         Glide.with(context)
                 .load(item.getYoutube_thumbnail())
                 .into(holder.youtube_image);
+        holder.youtube_image.setClipToOutline(true);
         holder.youtube_title.setText(item.getYoutube_name());
     }
 
@@ -62,7 +62,7 @@ public class HorizontalYoutubeAdapter extends RecyclerView.Adapter<HorizontalYou
 
     public class HorizontalYoutubeViewHolder extends RecyclerView.ViewHolder
     {
-        LinearLayout horizontal_youtube_layout;
+        ConstraintLayout horizontal_youtube_layout;
         ImageView youtube_image;
         TextView youtube_title;
         ItemClickListener itemClickListener;

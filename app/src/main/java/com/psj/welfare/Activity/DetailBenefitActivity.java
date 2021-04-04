@@ -61,7 +61,6 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -90,9 +89,6 @@ public class DetailBenefitActivity extends AppCompatActivity
 
     String benefit_image_url = "http://3.34.64.143/images/reviews/조제분유.jpg";
 
-    String user_area;
-
-    private String detail_data;
     private String push_welf_name;
 
     TextView first_target;
@@ -133,9 +129,6 @@ public class DetailBenefitActivity extends AppCompatActivity
 
     String first_welf_target;
     String erase_str;
-    String first_welf_content;
-    List<String> target_list = new ArrayList<>();
-    List<String> content_list = new ArrayList<>();
     TextView first_target_textview;
 
     LinearLayout target_layout, condition_layout;
@@ -183,7 +176,6 @@ public class DetailBenefitActivity extends AppCompatActivity
 
         getWelfareInformation();
 
-        // 공유 모양 이미지뷰 클릭 리스너
         review_share_imageview.setOnClickListener(v ->
         {
             /* 카카오 링크 적용 */
@@ -195,13 +187,13 @@ public class DetailBenefitActivity extends AppCompatActivity
                             .setDescrption(name_of_benefit.getText().toString())  // 제목 밑의 본문
                             .build())
                     .setSocial(SocialObject.newBuilder().build()).addButton(new ButtonObject("앱에서 보기", LinkObject.newBuilder()
-                            .setWebUrl("https://www.urbene-fit.com")
+                            .setWebUrl("https://www.hyemo.com/")
                             .setMobileWebUrl("https://developers.kakao.com")
                             .setAndroidExecutionParams("key1=value1")
                             .setIosExecutionParams("key1=value1")
                             .build()))
 //                    .setSocial(SocialObject.newBuilder().build()).addButton(new ButtonObject("웹에서 보기", LinkObject.newBuilder()
-//                            .setWebUrl("https://www.urbene-fit.com")
+//                            .setWebUrl("https://www.hyemo.com/")
 //                            .setMobileWebUrl("https://developers.kakao.com")
 //                            .setAndroidExecutionParams("key2=value2")
 //                            .setIosExecutionParams("key2=value2")
@@ -262,13 +254,11 @@ public class DetailBenefitActivity extends AppCompatActivity
                 }
                 else
                 {
-                    Log.e(TAG, "내 닉네임:"+sharedPreferences.getString("user_nickname", ""));
                     boolean alreadyWriten = false;
                     for (int i = 0; i < list.size(); i++)
                     {
                         if (list.get(i).getWriter().equals(sharedPreferences.getString("user_nickname", "")))
                         {
-                            Log.e(TAG, "이미 쓴 적이 있는 닉네임");
                             alreadyWriten = true;
                             break;
                         }
@@ -293,7 +283,6 @@ public class DetailBenefitActivity extends AppCompatActivity
             public void onSingleClick(View v)
             {
                 AlertDialog.Builder builder = new AlertDialog.Builder(DetailBenefitActivity.this);
-                /* target_tag 넣기 */
                 builder.setMessage(erase_str)
                         .setPositiveButton("확인", new DialogInterface.OnClickListener()
                         {
@@ -339,7 +328,6 @@ public class DetailBenefitActivity extends AppCompatActivity
         percent_easy = findViewById(R.id.percent_easy);
         percent_helpful = findViewById(R.id.percent_helpful);
         percent_nothelpful = findViewById(R.id.percent_nothelpful);
-
 
         first_target = findViewById(R.id.first_target);
 
@@ -433,7 +421,7 @@ public class DetailBenefitActivity extends AppCompatActivity
             JSONObject inner_obj = jsonArray.getJSONObject(0);
             welf_id = inner_obj.getString("id");
             welf_name = inner_obj.getString("welf_name");
-            welf_contents = inner_obj.getString("welf_contents");Log.e(TAG, "555");
+            welf_contents = inner_obj.getString("welf_contents");
             welf_apply = inner_obj.getString("welf_apply");
             welf_target = inner_obj.getString("welf_target");
             welf_contact = inner_obj.getString("welf_contact");
@@ -513,13 +501,18 @@ public class DetailBenefitActivity extends AppCompatActivity
                 conditions_array[i] = conditions_array[i].replace("#", "\n#");
             }
 
-            List<String> test = Arrays.asList(conditions_array);
-
             List<String> target_list = new ArrayList<>();
             List<String> condition_list = new ArrayList<>();
 
             Collections.addAll(target_list, targets_array);
             Collections.addAll(condition_list, conditions_array);
+
+            for (int i = 0; i < condition_list.size(); i++)
+            {
+                String letter = condition_list.get(i);
+                String replace_letter = letter.replaceAll(";;", ",");
+                condition_list.set(i, replace_letter);
+            }
 
             target_layout = findViewById(R.id.target_layout);
             condition_layout = findViewById(R.id.condition_layout);
@@ -528,7 +521,7 @@ public class DetailBenefitActivity extends AppCompatActivity
             condition_layout.setOrientation(LinearLayout.VERTICAL);
 
             LinearLayout.LayoutParams left_param = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 9f);
-            left_param.setMargins(0, 10, 0, 10);
+            left_param.setMargins(0, 20, 0, 30);
             LinearLayout.LayoutParams right_param = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
             right_param.setMargins(0, 0, 0, 10);
 
@@ -579,17 +572,11 @@ public class DetailBenefitActivity extends AppCompatActivity
             String target_line = welf_target.replace("^;", "\n");
             String target_comma = target_line.replace(";;", ",");
             String[] str = target_comma.split(", ");
-            for (int i = 0; i < str.length; i++)
-            {
-                target_list.add(str[i]);
-            }
         }
         if (welf_content != null)
         {
             String contents_line = welf_content.replace("^;", "\n");
-            Log.e("asdf", "contents_line:"+contents_line);
             String contents_comma = contents_line.replace(";;", ",");
-            Log.e("asdf", "contents_comma:"+contents_comma);
             detail_description.setText(contents_comma);
         }
         if (welf_contact != null)
@@ -640,7 +627,6 @@ public class DetailBenefitActivity extends AppCompatActivity
 
     private void jsonParse(String detail)
     {
-        Log.e("jung", "jsonParse 할 detail : " + detail);
         try
         {
             list.clear();
@@ -810,7 +796,6 @@ public class DetailBenefitActivity extends AppCompatActivity
                 String posting_id = list.get(position).getId();
                 int id = Integer.parseInt(posting_id);
 
-                Log.e(TAG, "포스팅 id:" + id);
                 if (user_nickname.equals(writer_nickname))
                 {
                     AlertDialog.Builder builder = new AlertDialog.Builder(DetailBenefitActivity.this);
@@ -881,12 +866,11 @@ public class DetailBenefitActivity extends AppCompatActivity
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-                    Log.e(TAG, "삭제 결과 = " + result);
                     getReview(welf_id);
                 }
                 else
                 {
-                    Log.e(TAG, "실패 : " + response.body());
+                    //
                 }
             }
 
@@ -921,11 +905,11 @@ public class DetailBenefitActivity extends AppCompatActivity
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    String result = response.body();
+                    //
                 }
                 else
                 {
-                    Log.e(TAG, "실패 : " + response.body());
+                    //
                 }
             }
 

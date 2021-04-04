@@ -5,10 +5,10 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.psj.welfare.R;
@@ -17,7 +17,6 @@ import com.psj.welfare.data.CategorySearchResultItem;
 import java.util.Collections;
 import java.util.List;
 
-/* 관심사 선택 후 이동하는 ResultBenefitActivity의 가로 리사이클러뷰(category_recycler)에 카테고리명들을 붙이는 어댑터 */
 public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCategoryAdapter.SelectedCategoryViewHolder>
 {
     private final String TAG = "SelectedCategoryAdapter";
@@ -26,7 +25,6 @@ public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCatego
     private List<CategorySearchResultItem> list;
     private ItemClickListener itemClickListener;
 
-    // 아이템 색 바꿀 때 쓰는 변수
     private int selected_position = 0;
 
     public void setOnItemClickListener(ItemClickListener itemClickListener)
@@ -64,30 +62,15 @@ public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCatego
     {
         CategorySearchResultItem item = list.get(position);
 
-        // 현금 지원 뒤에 ;;가 붙어서 이것에 대한 예외처리
         List<String> item_list = Collections.singletonList(list.get(position).getWelf_category());
-//        for (int i = 0; i < item_list.size(); i++)
-//        {
-//            Log.e("SelectedCategoryAdapter", "item_list = " + item_list);
-//        }
-        /* item_list에 null이 섞여 있는데 이것만 따로 삭제해야 한다 */
-//        LinkedHashSet<String> hashSet = new LinkedHashSet<>(item_list);
-//        item_list = new ArrayList<>(hashSet);
-//        for (int i = 0; i < item_list.size(); i++)
-//        {
-//            Log.e("SelectedCategoryAdapter", "LinkedHashSet에 넣었다 뺀 후 item_list 안의 값 = " + item_list);
-//        }
-        /* item_list에 null이 섞여 있는데 이것만 따로 삭제해야 한다 */
         StringBuilder listToString = new StringBuilder();
         for (String str : item_list)
         {
             listToString.append(str);
         }
-//        Log.e("zzz", "listToString : " + listToString);
         String after_str = listToString.toString().split(";;")[0];
         holder.category_btn.setText(after_str);
 
-        /* 필터 색 바꾸기 */
         if (selected_position == position)
         {
             holder.sub_category_layout.setBackgroundResource(R.drawable.radius_pink_border);
@@ -108,7 +91,7 @@ public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCatego
 
     public class SelectedCategoryViewHolder extends RecyclerView.ViewHolder
     {
-        LinearLayout sub_category_layout;
+        ConstraintLayout sub_category_layout;
         TextView category_btn;
         ItemClickListener itemClickListener;
 
@@ -126,7 +109,6 @@ public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCatego
                 {
                     itemClickListener.onItemClick(v, pos);
 
-                    /* 필터 색 바꾸기 */
                     selected_position = pos;
                     notifyDataSetChanged();
                 }

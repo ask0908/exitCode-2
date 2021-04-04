@@ -78,7 +78,6 @@ public class PushGatherFragment extends Fragment
     public void onActivityCreated(@Nullable Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
-        Log.e(TAG, "onActivityCreated() 호출");
     }
 
     @Override
@@ -93,7 +92,6 @@ public class PushGatherFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-        Log.e(TAG, "onViewCreated() 호출");
 
         activity_list = new ArrayList<>();
 
@@ -158,7 +156,6 @@ public class PushGatherFragment extends Fragment
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-                    Log.e("changePushStatus()", "수신 상태값 변경 성공 : " + result);
                 }
                 else
                 {
@@ -189,7 +186,6 @@ public class PushGatherFragment extends Fragment
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    Log.e(TAG, "서버에서 받은 푸시 알림 데이터 = " + response.body());
                     messageParsing(response.body());
                     changePushStatus();
                 }
@@ -253,12 +249,6 @@ public class PushGatherFragment extends Fragment
                 String welf_name = list.get(position).getWelf_name();
                 welf_local = list.get(position).getWelf_local();
                 // 혜택 이름을 뽑고 푸시를 클릭하면 해당 액티비티로 이동하도록 한다
-                Log.e(TAG, "알림 화면에서 아이템 클릭 - id : " + pushId);
-                Log.e(TAG, "알림 화면에서 아이템 클릭 - 혜택명 : " + welf_name);
-                Log.e(TAG, "알림 화면에서 아이템 클릭 - 지역 : " + welf_local);
-                Log.e(TAG, "알림 화면에서 아이템 클릭 - 이름 : " + push_title);
-                Log.e(TAG, "알림 화면에서 아이템 클릭 - 내용 : " + push_body);
-                Log.e(TAG, "알림 화면에서 아이템 클릭 - 날짜 : " + push_date);
                 // 알림 클릭 시 해당 알림의 id와 일치하는 알림 데이터의 수신 상태값을 바꾼다
                 checkUserWatchedPush();
                 Intent intent = new Intent(getActivity(), DetailBenefitActivity.class);
@@ -297,7 +287,6 @@ public class PushGatherFragment extends Fragment
         {
             token = app_pref.getString("token", "");
         }
-        Log.e(TAG, "pushId 확인 : " + pushId);
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Call<String> call = apiInterface.checkUserWatchedPush(session, token, pushId, "pushRecv");
         call.enqueue(new Callback<String>()
@@ -307,8 +296,7 @@ public class PushGatherFragment extends Fragment
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    String result = response.body();
-                    Log.e(TAG, "수신 알림값 변경 결과 : " + result);
+                    //
                 }
                 else
                 {
@@ -340,7 +328,6 @@ public class PushGatherFragment extends Fragment
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-                    Log.e(TAG, "알림 삭제 성공 : " + result);
                     toastParse(result);
                 }
                 else

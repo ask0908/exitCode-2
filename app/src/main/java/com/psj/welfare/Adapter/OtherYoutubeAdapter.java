@@ -17,7 +17,6 @@ import com.psj.welfare.R;
 
 import java.util.List;
 
-/* 유튜브 보는 화면의 하단 리사이클러뷰(영상 목록)에 데이터 뿌릴 때 쓰는 어댑터 */
 public class OtherYoutubeAdapter extends RecyclerView.Adapter<OtherYoutubeAdapter.OtherYoutubeViewHolder>
 {
     private Context context;

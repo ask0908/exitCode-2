@@ -23,6 +23,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
+        <activity android:name=".activity.YoutubeTestActivity"></activity>
         <activity android:name=".activity.RegionResultActivity" />
         <activity android:name=".test.TestActivity" />
         <activity android:name=".activity.RegionChooseActivity" />

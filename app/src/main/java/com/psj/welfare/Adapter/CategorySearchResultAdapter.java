@@ -17,7 +17,6 @@ import com.psj.welfare.data.CategorySearchBottomResultItem;
 import java.util.Collections;
 import java.util.List;
 
-/* ResultBenefitActivity의 세로 리사이클러뷰(선택한 OO 지원 필터에 따른 혜택 출력)에 쓰는 어댑터 */
 public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySearchResultAdapter.CategorySearchResultViewHolder>
 {
     private final String TAG = "CategorySearchResultAdapter";
@@ -63,16 +62,13 @@ public class CategorySearchResultAdapter extends RecyclerView.Adapter<CategorySe
         holder.welf_local_textview.setText("#" + item.getWelf_local());
         holder.result_textview.setText(item.getWelf_name());
 
-        /* 첫 번째 요소만 빼고 뒤의 요소를 전부 없애는 로직 */
         List<String> item_list = Collections.singletonList(list.get(position).getWelf_category());
-        // 리스트의 요소 뒤에 붙어있는 ;; 같은 구분자들을 전부 공백으로 바꾼다
         StringBuilder listToString = new StringBuilder();
         for (String str : item_list)
         {
             listToString.append(str);
         }
         String after_str = listToString.toString().split(";;")[0];
-//        Log.e(TAG, "1번째 OO 지원 : " + after_str);
 
         switch (after_str)
         {

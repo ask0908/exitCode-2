@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -31,6 +32,7 @@ import com.psj.welfare.fragment.MainFragment;
 import com.psj.welfare.fragment.MyPageFragment;
 import com.psj.welfare.fragment.PushGatherFragment;
 import com.psj.welfare.fragment.SearchFragment;
+import com.psj.welfare.util.DBOpenHelper;
 import com.psj.welfare.util.LogUtil;
 
 import java.io.UnsupportedEncodingException;
@@ -58,7 +60,10 @@ public class MainTabLayoutActivity extends AppCompatActivity
 
     boolean isConnected = false;
 
-    String result, userOrder;
+    String result;
+
+    DBOpenHelper helper;
+    String sqlite_token;
 
 //    DataFromActivityToFragment dataFromActivityToFragment;
 
@@ -74,6 +79,19 @@ public class MainTabLayoutActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setStatusBarGradiant(MainTabLayoutActivity.this);
         setContentView(R.layout.activity_maintablayout);
+
+        helper = new DBOpenHelper(this);
+        helper.openDatabase();
+        helper.create();
+
+        Cursor cursor = helper.selectColumns();
+        if (cursor != null)
+        {
+            while(cursor.moveToNext())
+            {
+                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+            }
+        }
 
         analytics = FirebaseAnalytics.getInstance(this);
 
@@ -105,22 +123,20 @@ public class MainTabLayoutActivity extends AppCompatActivity
                 switch (position)
                 {
                     case 0:
-                        Log.e(TAG, "메인 프래그먼트 호출");
                         String token = sharedPreferences.getString("token", "");
-                        Log.e(TAG, "112 - 쉐어드 안의 토큰값 : " + token);
                         userOrderedWelfare(token);
                         break;
 
                     case 1:
-                        Log.e(TAG, "검색 프래그먼트 호출");
+                        //
                         break;
 
                     case 2:
-                        Log.e(TAG, "알람 프래그먼트 호출");
+                        //
                         break;
 
                     case 3:
-                        Log.e(TAG, "마이페이지 프래그먼트 호출");
+                        //
                         break;
 
                     default:
@@ -204,7 +220,6 @@ public class MainTabLayoutActivity extends AppCompatActivity
                                         }
                                     }).show();
                         }
-                        Log.e("SearchFragment", "MainTabLayoutActivity - 검색 아이콘 클릭");
                         Bundle bundle = new Bundle();
                         bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 검색 프래그먼트로 진입");
                         analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
@@ -358,7 +373,6 @@ public class MainTabLayoutActivity extends AppCompatActivity
                                         }
                                     }).show();
                         }
-                        Log.e("SearchFragment", "MainTabLayoutActivity - 검색 아이콘 클릭");
                         Bundle bundle = new Bundle();
                         bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 검색 프래그먼트로 진입");
                         analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
@@ -436,6 +450,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
                     if (position == 0)
                     {
                         tab.setIcon(R.drawable.home_icon_gray);
+                        userOrderedWelfare(sqlite_token);
                     }
                     else if (position == 1)
                     {
@@ -497,8 +512,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    String result = response.body();
-                    Log.e(TAG, "마이페이지 진입 로그 전송 결과 : " + result);
+                    //
                 }
                 else
                 {
@@ -538,8 +552,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    String result = response.body();
-                    Log.e(TAG, "검색 화면 진입 로그 전송 결과 : " + result);
+                    //
                 }
                 else
                 {
@@ -579,8 +592,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    String result = response.body();
-                    Log.e(TAG, "알림 모아보는 화면으로 이동하는 로그 전송 결과 : " + result);
+                    //
                 }
                 else
                 {
@@ -620,8 +632,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    String result = response.body();
-                    Log.e(TAG, "다시 홈 화면으로 이동 로그 전송 결과 : " + result);
+                    //
                 }
                 else
                 {
@@ -729,7 +740,6 @@ public class MainTabLayoutActivity extends AppCompatActivity
                 if (response.isSuccessful() && response.body() != null)
                 {
                     result = response.body();
-                    Log.e(TAG, "메서드 안에서 result 값 확인 : " + result);
                 }
                 else
                 {
@@ -744,41 +754,6 @@ public class MainTabLayoutActivity extends AppCompatActivity
             }
         });
     }
-
-//    private void sendToMainFragment(String result)
-//    {
-//        /**
-//         * 액티비티에서 맞춤 혜택을 가져온 뒤 그 결과를 MainFragment로 넘겨 MainFragment에서 각 뷰에 set할 수 있도록 한다
-//         *
-//         * 1. 이 액티비티의 onCreate()에서 결과를 제대로 가져오는지 확인한다
-//         * 2. 결과를 제대로 가져오지 못한다면 프래그먼트의 생명주기 쪽으로 방향성을 잡고 해보거나 하브루타한다
-//         * 3. 결과를 제대로 가져온다면 액티비티 -> 프래그먼트로 데이터를 보내는 처리를 이 메서드 안에서 수행한다
-//         * 4. 이 액티비티에서 보낸 데이터를 MainFragment에서 정상적으로 받는지 확인한다
-//         * 5. MainFragment에서 정상적으로 받았다면 받은 데이터들을 뷰에 set하는 메서드로 값을 보내 뷰에 set한다
-//         */
-//        MainFragment fragment = new MainFragment();
-//        FragmentManager fm = getSupportFragmentManager();
-//        dataFromActivityToFragment = (DataFromActivityToFragment) fragment;
-//        FragmentTransaction fragmentTransaction = fm.beginTransaction();
-//        fragmentTransaction.replace(R.id.fragments_main, fragment);
-//        fragmentTransaction.commit();
-//
-//        final Handler handler = new Handler();
-//        final Runnable r = new Runnable()
-//        {
-//            @Override
-//            public void run()
-//            {
-//                dataFromActivityToFragment.sendData(result);
-//            }
-//        };
-//        handler.postDelayed(r, 0);
-//    }
-//
-//    public interface DataFromActivityToFragment
-//    {
-//        void sendData(String data);
-//    }
 
     @Override
     protected void onResume()

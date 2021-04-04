@@ -35,11 +35,10 @@ import com.kakao.util.OptionalBoolean;
 import com.kakao.util.exception.KakaoException;
 import com.nhn.android.naverlogin.OAuthLogin;
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton;
-import com.orhanobut.logger.Logger;
 import com.psj.welfare.R;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
-import com.psj.welfare.fragment.MainFragment;
+import com.psj.welfare.util.DBOpenHelper;
 import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONException;
@@ -95,13 +94,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     // 구글 애널리틱스
     private FirebaseAnalytics analytics;
 
-    public static String result_str;
+    DBOpenHelper helper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        helper = new DBOpenHelper(this);
+        helper.openDatabase();
+        helper.create();
 
         analytics = FirebaseAnalytics.getInstance(this);
 
@@ -116,7 +119,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         {
             Intent intent = getIntent();
             loggedOut = intent.getBooleanExtra("loggedOut", false);
-            Log.e(TAG, "로그아웃 상태 : " + loggedOut);
         }
 
         google_login_btn = findViewById(R.id.google_login_btn);
@@ -142,10 +144,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginClose = findViewById(R.id.loginClose);
         // 카카오 로그인 버튼
         fake_kakao = findViewById(R.id.fake_kakao);
-
-        // 카카오 키 해시 생성
-//        String keyhash = com.kakao.util.helper.Utility.getKeyHash(this);
-//        Log.e(TAG, "keyhash = " + keyhash);
 
         // 카카오 로그인 시작. 195번 줄의 onClick() 참고
         fake_kakao.setOnClickListener(this);
@@ -216,7 +214,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 }
                 else
                 {
-                    Log.e(TAG, "카카오 버튼 클릭안됨");
+                    //
                 }
                 break;
 
@@ -233,7 +231,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onCompleteLogout()
             {
-                Log.e(TAG, "로그아웃 성공");
+                //
             }
         });
     }
@@ -252,25 +250,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     @Override
                     public void onFailure(ErrorResult errorResult)
                     {
-                        Log.e("다이얼로그 안", "회원탈퇴 실패");
+                        //
                     }
 
                     @Override
                     public void onSessionClosed(ErrorResult errorResult)
                     {
-                        Log.e("다이얼로그 안", "onSessionClosed");
+                        //
                     }
 
                     @Override
                     public void onNotSignedUp()
                     {
-                        Log.e("다이얼로그 안", "onNotSignedUp");
+                        //
                     }
 
                     @Override
                     public void onSuccess(Long userId)
                     {
-                        Log.e("다이얼로그 안", "onSuccess");
+                        //
                     }
                 });
                 dialog.dismiss();
@@ -374,7 +372,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     void sendUserTypeAndPlatform()
     {
         String email = kakao_email;
-        Log.e(TAG, "쉐어드의 FCM 토큰값 = " + token);
         String os_type = getString(R.string.login_os);
         String platform = getString(R.string.main_platform);
 
@@ -400,7 +397,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onFailure(Call<String> call, Throwable t)
             {
-                Logger.e("에러 = " + t.getMessage());
+                Log.e(TAG, "에러 = " + t.getMessage());
             }
         });
     }
@@ -429,8 +426,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    String result = response.body();
-                    Log.e(TAG, "로그인 화면 로그 전송 결과 = "  + result);
+                    //
                 }
                 else
                 {
@@ -479,7 +475,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         public void run()
         {
             super.run();
-            Log.e(TAG, "구글 로그아웃 스레드 실행!");
             firebaseAuth.getInstance().signOut();
         }
     }
@@ -491,7 +486,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         // 구글 서버 토큰 존재하는지 확인
         currentUser = firebaseAuth.getCurrentUser();
-        Log.e(TAG, "G_currentUser(구글 서버 토큰) : " + currentUser);
     }
 
     @Override
@@ -505,7 +499,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onClick(View v)
             {
-                Log.e(TAG, "loginClose click");
                 Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
@@ -554,12 +547,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         /* 다른 액티비티/프래그먼트에서도 활용해야 하기 때문에 서버에서 받은 토큰값을 쉐어드에 저장해 사용한다 */
         editor.putString("token", server_token);
-        result_str = server_token;
-        Log.e(TAG, "tokenParsing()할 때 result_str에 넣은 토큰값 확인 : " + result_str);
-        Bundle bundle = new Bundle();
-        bundle.putString("order", server_token);
-        MainFragment fragment = new MainFragment();
-        fragment.setArguments(bundle);
+
+        /* SQLite에 저장 */
+        helper.insertColumn(server_token);
+
         // logout이 true라면 로그아웃한 상태에서 로그인하는 거니까 서버에서 받은 닉네임 값을 쉐어드에 저장하고 메인 화면으로 이동시킨다
         // 이렇게 메인으로 이동한 경우 로그인했을 때처럼 맞춤 혜택을 보여줘야 한다
         if (app_pref.getBoolean("logout", false))
@@ -569,5 +560,4 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
         editor.apply();
     }
-
 }
