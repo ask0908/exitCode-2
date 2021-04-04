@@ -38,16 +38,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/radius_left_pink_border">
 
-<!--                <Spinner-->
-<!--                    android:id="@+id/spinner"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:spinnerMode="dropdown"-->
-<!--                    android:dropDownVerticalOffset="40dp"-->
-<!--                    android:dropDownWidth="100dp"-->
-<!--                    android:layout_marginTop="10dp"-->
-<!--                     />-->
-                <com.psj.welfare.fragment.MaterialSpinner
+                <com.psj.welfare.custom.MaterialSpinner
                     android:id="@+id/spinner"
                     app:ms_dropdown_max_height="350dp"
                     app:ms_dropdown_height="wrap_content"
@@ -55,6 +46,7 @@
                     android:layout_height="wrap_content"/>
 
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -67,6 +59,7 @@
                     android:layout_weight="1.5"
                     android:background="@drawable/left_border_square"
                     android:text=" " />
+
             </LinearLayout>
 
             <EditText
@@ -104,8 +97,7 @@
         <LinearLayout
             android:id="@+id/white_layout"
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:background="@drawable/radius_25"
             android:orientation="vertical">
 
@@ -113,11 +105,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="30dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:paddingTop="30dp">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/keyword_category_recycler"
@@ -127,29 +115,87 @@
                     android:paddingEnd="10dp"
                     android:scrollbars="none" />
 
-                <com.psj.welfare.custom.RecyclerViewEmptySupport
-                    android:id="@+id/search_result_title_recycler"
+                <com.psj.welfare.custom.SearchRecyclerViewEmpty
+                    android:id="@+id/search_result_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="30dp"
                     android:scrollbars="none" />
 
+            </LinearLayout>
+
+            <!-- 검색 결과가 없을 때 보여줘야 할 뷰들 -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <View
+                    android:id="@+id/no_result_view"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone"
+                    app:layout_constraintHeight_percent=".15"
+                    app:layout_constraintVertical_bias="0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+                <ImageView
+                    android:id="@+id/emptyImageView"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone"
+                    app:layout_constraintWidth_percent=".3"
+                    app:layout_constraintHeight_percent=".3"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/no_result_view"
+                    app:layout_constraintBottom_toTopOf="@id/search_empty"
+                    app:layout_constraintVertical_bias="0"
+                    android:src="@drawable/no_result_gray"
+                    android:layout_gravity="center"/>
+
                 <TextView
                     android:id="@+id/search_empty"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
                     android:visibility="gone"
-                    android:layout_margin="20dp"
-                    android:fontFamily="@font/nanum_barun_gothic_bold"
+                    android:fontFamily="@font/jalnan"
                     android:gravity="center"
-                    android:text="요청하신 검색어와 일치하는 검색결과가 없습니다"
+                    android:text="검색결과가 없습니다"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHeight_percent=".1"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/no_result_view"
+                    app:layout_constraintVertical_bias="0.475"
+                    app:layout_constraintWidth_percent="1" />
+
+                <TextView
+                    android:id="@+id/search_empty2"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone"
+                    android:fontFamily="@font/jalnan"
+                    android:gravity="center"
+                    android:text="다른 키워드로 검색해보세요"
                     android:textColor="@color/grey"
                     android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHeight_percent=".1"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/review_count_and_btn_layout" />
+                    app:layout_constraintTop_toTopOf="@+id/emptyImageView"
+                    app:layout_constraintVertical_bias="0.612"
+                    app:layout_constraintWidth_percent="1" />
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
 

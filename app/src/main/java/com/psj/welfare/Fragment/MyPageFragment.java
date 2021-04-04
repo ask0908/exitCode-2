@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -55,7 +54,7 @@ public class MyPageFragment extends Fragment
 {
     private final String TAG = "MyPageFragment";
 
-    LinearLayout account_layout, benefit_type_layout, terms_location_layout, push_noti_layout, privacy_policy_layout, user_layout, keyword_layout, webview_layout;
+    LinearLayout account_layout, benefit_type_layout, terms_location_layout, push_noti_layout, privacy_policy_layout, user_layout, keyword_layout;
 
     ImageView kakao_profile_image, move_update_personal_imageview, privacy_policy_imageview, account_imageview, keyword_imageview;
     TextView kakao_name, account_platform_text, push_setting_text;
@@ -68,8 +67,6 @@ public class MyPageFragment extends Fragment
     String profile_image, kakao_nick, server_token;
     String checked;
     boolean fcm_canceled;
-
-    WebView mypage_webview;
 
     // 구글 애널리틱스
     private FirebaseAnalytics analytics;
@@ -124,8 +121,6 @@ public class MyPageFragment extends Fragment
             if (!written_nickname.equals(""))
             {
                 kakao_name.setText(sharedPreferences.getString("user_nickname", ""));
-                Log.e(TAG, "카카오 이름:" + sharedPreferences.getString("user_nickname", ""));
-                Log.e(TAG, "닉네임:" + kakao_nick);
             }
         }
         server_token = sharedPreferences.getString("token", "");
@@ -320,11 +315,8 @@ public class MyPageFragment extends Fragment
                                 {
                                     dialog.dismiss();
                                     userLog("로그아웃 클릭");
-                                    Log.e(TAG, "로그아웃 클릭");
                                     if (Session.getCurrentSession().getTokenInfo().getAccessToken() != null)
                                     {
-                                        String aaa = Session.getCurrentSession().getTokenInfo().getAccessToken();
-                                        Log.e("로그아웃 이후 카카오 토큰 상태", aaa);
                                         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
                                         SharedPreferences.Editor editor = sharedPreferences.edit();
                                         UserManagement.getInstance().requestLogout(new LogoutResponseCallback()
@@ -332,7 +324,6 @@ public class MyPageFragment extends Fragment
                                             @Override
                                             public void onCompleteLogout()
                                             {
-                                                Log.e(TAG, "로그아웃 성공");
                                                 editor.putBoolean("logout", true);
                                                 editor.remove("user_nickname");
                                                 editor.apply();
@@ -426,8 +417,7 @@ public class MyPageFragment extends Fragment
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    String result = response.body();
-                    Log.e("putPushSetting()", "성공 : " + result);
+                    //
                 }
                 else
                 {
@@ -531,8 +521,7 @@ public class MyPageFragment extends Fragment
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    String result = response.body();
-                    Log.e(TAG, "로그인/로그아웃 로그 전송 결과 : " + result);
+                    //
                 }
                 else
                 {
@@ -615,9 +604,6 @@ public class MyPageFragment extends Fragment
 
         push_setting_text = view.findViewById(R.id.push_setting_text);
         mypage_divider = view.findViewById(R.id.mypage_divider);
-
-        webview_layout = view.findViewById(R.id.webview_layout);
-        mypage_webview = view.findViewById(R.id.mypage_webview);
     }
 
 }

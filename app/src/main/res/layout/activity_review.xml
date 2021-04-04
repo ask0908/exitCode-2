@@ -8,9 +8,8 @@
     <TextView
         android:id="@+id/main_review_textview"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintWidth_percent="1"
-        app:layout_constraintHeight_percent=".085"
         app:layout_constraintVertical_bias=".0"
         android:fontFamily="@font/jalnan"
         android:gravity="left"
@@ -33,15 +32,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/main_review_textview"
+        app:layout_constraintBottom_toTopOf="@+id/review_white_layout"
         android:layout_marginTop="12dp"
-        android:layout_marginBottom="20dp"
         android:fontFamily="@font/jalnan"
         android:gravity="center_horizontal"
         android:text="리뷰 작성"
         android:textColor="@color/colorMainWhite"
-        android:textSize="24sp"/>
+        android:autoSizeTextType="none"
+        app:autoSizePresetSizes="@array/autosize_text_sizes"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/review_white_layout"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -57,9 +58,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias=".058"
             app:layout_constraintWidth_percent="1"
             app:layout_constraintHeight_percent=".04"
-            android:layout_marginTop="40dp"
             android:fontFamily="@font/nanum_barun_gothic_bold"
             android:gravity="center_horizontal"
             android:text="혜택에 대한 점수를 매겨주세요"
@@ -68,12 +70,11 @@
 
         <RatingBar
             android:id="@+id/review_rate_edit"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/rating_desc"
-            app:layout_constraintWidth_percent=".58"
             app:layout_constraintHeight_percent=".09"
             android:layout_gravity="center"
             android:numStars="5"
@@ -87,14 +88,14 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/review_rate_edit"
             app:layout_constraintWidth_percent="1"
-            app:layout_constraintHeight_percent=".03"
+            app:layout_constraintHeight_percent=".04"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintVertical_bias=".03"
+            app:layout_constraintVertical_bias=".02"
             android:fontFamily="@font/nanum_barun_gothic_bold"
             android:gravity="center_horizontal"
             android:text="신청과정에 대해 평가해주세요"
             android:textColor="@color/grey"
-            android:textSize="16sp" />
+            android:textSize="16sp"/>
 
         <RadioGroup
             android:id="@+id/difficulty_radiogroup"
@@ -106,8 +107,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_bias="0"
             app:layout_constraintWidth_percent="1"
-            app:layout_constraintHeight_percent=".1"
-            android:gravity="center"
+            app:layout_constraintHeight_percent=".118"
+            android:gravity="center|top"
             android:orientation="horizontal"
             android:padding="10dp"
             android:weightSum="1">
@@ -115,7 +116,7 @@
             <RadioButton
                 android:id="@+id/easy_radiobutton"
                 android:layout_width="0dp"
-                android:layout_height="40dp"
+                android:layout_height="36dp"
                 android:layout_weight=".40"
                 android:background="@drawable/radius_pink_border"
                 android:button="@null"
@@ -132,7 +133,7 @@
             <RadioButton
                 android:id="@+id/hard_radiobutton"
                 android:layout_width="0dp"
-                android:layout_height="40dp"
+                android:layout_height="36dp"
                 android:layout_weight=".40"
                 android:background="@drawable/radius_grey_border"
                 android:button="@null"
@@ -152,8 +153,8 @@
             app:layout_constraintTop_toBottomOf="@id/difficulty_radiogroup"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintWidth_percent="1"
-            app:layout_constraintHeight_percent=".03"
-            app:layout_constraintVertical_bias=".05"
+            app:layout_constraintHeight_percent=".04"
+            app:layout_constraintVertical_bias=".0134"
             android:fontFamily="@font/nanum_barun_gothic_bold"
             android:gravity="center_horizontal"
             android:text="만족도에 대해 평가해주세요"
@@ -169,9 +170,9 @@
             app:layout_constraintTop_toBottomOf="@+id/satisfaction_textview"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintWidth_percent="1"
-            app:layout_constraintHeight_percent=".1"
+            app:layout_constraintHeight_percent=".118"
             app:layout_constraintVertical_bias="0"
-            android:gravity="center"
+            android:gravity="center|top"
             android:orientation="horizontal"
             android:padding="10dp"
             android:weightSum="1">
@@ -179,7 +180,7 @@
             <RadioButton
                 android:id="@+id/good_radiobutton"
                 android:layout_width="0dp"
-                android:layout_height="40dp"
+                android:layout_height="36dp"
                 android:layout_weight=".40"
                 android:background="@drawable/radius_pink_border"
                 android:button="@null"
@@ -196,7 +197,7 @@
             <RadioButton
                 android:id="@+id/bad_radiobutton"
                 android:layout_width="0dp"
-                android:layout_height="40dp"
+                android:layout_height="36dp"
                 android:layout_weight=".40"
                 android:background="@drawable/radius_grey_border"
                 android:button="@null"

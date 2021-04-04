@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.psj.welfare.R;
@@ -17,8 +17,6 @@ import com.psj.welfare.data.RecommendItem;
 
 import java.util.List;
 
-/* MainFragment에서 맞춤 혜택들을 가로 리사이클러뷰로 보여줄 때 사용하는 어댑터
-* "현재 아이템의 인덱스 / 총 맞춤 혜택 개수" 형태로 몇 번째 인덱스의 맞춤 혜택을 보고 있는지 유저에게 보여준다 */
 public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.RecommendViewHolder>
 {
     private Context context;
@@ -49,7 +47,6 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.Reco
     public void onBindViewHolder(@NonNull RecommendAdapter.RecommendViewHolder holder, int position)
     {
         RecommendItem item = list.get(position);
-        // 혜택명
         if (holder.recommend_welf_name.getText().toString().length() < 15)
         {
             holder.recommend_welf_name.setGravity(Gravity.CENTER);
@@ -59,9 +56,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.Reco
         {
             holder.recommend_welf_name.setText(item.getWelf_name());
         }
-        // 혜택 실시지역
         holder.recommend_local.setText("#" + list.get(position).getWelf_local());
-        // 현재 아이템의 위치 / 총 아이템 개수
         holder.recommend_page_text.setText((position + 1) + "/" + list.size());
     }
 
@@ -73,7 +68,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.Reco
 
     public class RecommendViewHolder extends RecyclerView.ViewHolder
     {
-        CardView recommend_layout;
+        ConstraintLayout recommend_layout;
         Button recommend_detail_btn;
         TextView recommend_welf_name, recommend_local, recommend_page_text;
         ItemClickListener itemClickListener;
@@ -98,7 +93,6 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.Reco
                 }
             });
 
-            /* 0322) 메인 화면에서 버튼을 눌러도 상세보기 화면으로 이동하지 않아서 버튼에도 클릭 리스너 추가함 */
             recommend_detail_btn.setOnClickListener(v -> {
                 int pos = getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION && itemClickListener != null)

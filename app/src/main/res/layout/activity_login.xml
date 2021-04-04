@@ -45,7 +45,7 @@
 
         <com.kakao.usermgmt.LoginButton
             android:id="@+id/real_kakao"
-            android:layout_width="300dp"
+            android:layout_width="250dp"
             android:layout_height="50dp"
             android:layout_gravity="center"
             android:layout_marginLeft="10dp"

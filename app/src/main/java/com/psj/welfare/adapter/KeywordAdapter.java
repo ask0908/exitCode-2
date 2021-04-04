@@ -45,7 +45,6 @@ public class KeywordAdapter extends RecyclerView.Adapter<KeywordAdapter.KeywordV
     {
         final KeywordItem item = list.get(position);
 
-        // 선택한 관심사 이름이 아이템에 만들어지도록 setText()를 활용함
         holder.selected_keyword_name.setText(item.getName());
     }
 

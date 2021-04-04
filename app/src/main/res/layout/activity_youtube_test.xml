@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#fff"
+    android:descendantFocusability="blocksDescendants"
+    tools:context=".activity.YoutubeTestActivity">
+
+    <TextView
+        android:id="@+id/youtube_toolbar"
+        app:titleTextColor="@color/colorMainWhite"
+        android:background="@drawable/gradation_background"
+        android:theme="@style/toolbar_jalnan_fontfamily"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent=".05"
+        android:text="유튜브 영상 재생"
+        android:autoSizeTextType="uniform"
+        android:gravity="center_vertical"
+        android:paddingStart="10dp"
+        android:textColor="@color/colorMainWhite"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0"/>
+
+    <com.google.android.youtube.player.YouTubePlayerView
+        android:id="@+id/youtubeView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent=".27"
+        app:layout_constraintWidth_percent="1"
+        android:layout_marginTop="0dp"
+        app:autoPlay="false"
+        app:showFullScreenButton="true"
+        app:showSeekBar="true"
+        app:handleNetworkEvents="true"
+        app:enableAutomaticInitialization="true"
+        app:useWebUi="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/youtube_toolbar"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/first_video_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/jalnan"
+        android:lineSpacingExtra="6sp"
+        android:text="텍스트"
+        android:textColor="@color/grey"
+        android:textSize="17sp"
+        android:padding="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/youtubeView"/>
+
+    <View
+        android:id="@+id/youtube_divider"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent=".001"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/first_video_title"
+        android:background="@color/colorGray_B"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/other_video_recyclerview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="1"
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/youtube_divider"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,25 +12,23 @@ import androidx.recyclerview.widget.RecyclerView;
 * DetailBenefitActivity에서 사용 */
 public class RecyclerViewEmptySupport extends RecyclerView
 {
+    private View emptyImageView;
     private View emptyView;
+    private View emptyView2;
 
     private AdapterDataObserver emptyObserver = new AdapterDataObserver()
     {
         @Override
         public void onChanged()
         {
-            // 현재 리사이클러뷰에 지정된 어댑터를 가져온다
             Adapter<?> adapter = getAdapter();
-            // 어댑터 널 체크
             if (adapter != null && emptyView != null)
             {
-                // getItemCount()로 가져온 데이터가 없으면 리사이클러뷰를 숨기고 텍스트뷰를 보이게 한다
                 if (adapter.getItemCount() == 0)
                 {
                     emptyView.setVisibility(View.VISIBLE);
                     RecyclerViewEmptySupport.this.setVisibility(View.GONE);
                 }
-                // 데이터가 있으면 텍스트뷰를 숨기고 리사이클러뷰를 보여준다
                 else
                 {
                     emptyView.setVisibility(View.GONE);
@@ -45,19 +43,24 @@ public class RecyclerViewEmptySupport extends RecyclerView
     {
         super.setAdapter(adapter);
 
-        // 어댑터가 있으면 어댑터 변경사항을 확인하기 위해 AdapterDataObserver 객체를 붙인다
         if (adapter != null)
         {
             adapter.registerAdapterDataObserver(emptyObserver);
         }
 
-        // 어댑터가 없는 경우
         emptyObserver.onChanged();
     }
 
     public void setEmptyView(View emptyView)
     {
         this.emptyView = emptyView;
+    }
+
+    public void setEmptyView(View emptyImageView, View view, View view2)
+    {
+        this.emptyImageView = emptyImageView;
+        this.emptyView = view;
+        this.emptyView2 = view2;
     }
 
     public RecyclerViewEmptySupport(@NonNull Context context)

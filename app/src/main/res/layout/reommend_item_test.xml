@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/recommend_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="10dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginEnd="10dp"
+    app:cardCornerRadius="25dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/benefit_layout"
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:background="@color/colorMainWhite"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/recommend_local"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent=".2"
+            app:layout_constraintHeight_percent=".24"
+            android:fontFamily="@font/nanum_barun_gothic_bold"
+            android:padding="12dp"
+            android:textColor="@color/layout_background_start_gradation"
+            android:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias=".11"
+            app:layout_constraintHorizontal_bias=".02"/>
+
+        <TextView
+            android:id="@+id/recommend_welf_name"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/nanum_barun_gothic_bold"
+            android:lineSpacingExtra="6sp"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:text="대학생 학자금대출 이자지원"
+            android:textColor="@color/grey"
+            android:autoSizeTextType="uniform"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent=".135"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/recommend_local"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias=".02"/>
+
+        <Button
+            android:id="@+id/recommend_detail_btn"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:autoSizeTextType="none"
+            android:background="@drawable/radius_pink_button"
+            android:fontFamily="@font/jalnan"
+            android:text="상세보기"
+            android:textColor="@color/colorMainWhite"
+            android:textSize="17sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent=".25"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/recommend_local"
+            app:layout_constraintVertical_bias=".65"
+            app:layout_constraintWidth_percent=".5" />
+
+        <TextView
+            android:id="@+id/recommend_page_text"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fontFamily="@font/jalnan"
+            android:gravity="center|bottom"
+            android:text="1/10"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent=".2"
+            app:layout_constraintHorizontal_bias="0.892"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/recommend_local"
+            app:layout_constraintVertical_bias="0.9"
+            app:layout_constraintWidth_percent=".1" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

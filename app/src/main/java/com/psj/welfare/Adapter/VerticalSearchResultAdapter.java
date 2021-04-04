@@ -1,7 +1,6 @@
 package com.psj.welfare.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.psj.welfare.data.SearchItem;
 import com.psj.welfare.R;
+import com.psj.welfare.data.SearchItem;
 
 import java.util.Collections;
 import java.util.List;
 
-/* SearchResultActivity의 세로 리사이클러뷰에 쓰이는 어댑터 */
 public class VerticalSearchResultAdapter extends RecyclerView.Adapter<VerticalSearchResultAdapter.VerticalSearchResultViewHolder>
 {
     private final String TAG = "VerticalSearchResultAdapter";
@@ -59,23 +57,14 @@ public class VerticalSearchResultAdapter extends RecyclerView.Adapter<VerticalSe
         holder.search_result_textview.setText(welf_name);
         holder.search_welf_local_textview.setText("#" + item.getWelf_local());
 
-//        Log.e("키워드 검색 후", "카테고리 = " + list.get(position).getWelf_category());
-        /* 첫 번째 요소만 빼고 뒤의 요소를 전부 없애는 로직 */
         List<String> item_list = Collections.singletonList(list.get(position).getWelf_category());
-        for (int i = 0; i < item_list.size(); i++)
-        {
-            Log.e(TAG, "item_list = " + item_list);
-        }
-        // 리스트의 요소 뒤에 붙어있는 ;; 같은 구분자들을 전부 공백으로 바꾼다
         StringBuilder listToString = new StringBuilder();
         for (String str : item_list)
         {
             listToString.append(str);
         }
         String after_str = listToString.toString().split(";;")[0];
-        Log.e(TAG, "첫 번째 OO 지원 : " + after_str);
 
-        // split한 결과의 첫 번째 요소를 변수에 담아 이 변수값을 통해 어떤 이미지를 띄울지 정한다
         switch (after_str)
         {
             case "일자리 지원" :

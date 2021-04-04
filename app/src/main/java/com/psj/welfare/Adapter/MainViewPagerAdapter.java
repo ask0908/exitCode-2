@@ -15,11 +15,8 @@ import com.psj.welfare.fragment.SearchFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-/* 프래그먼트들을 보여주는 뷰페이저가 있는 MainTabLayout에서 사용하는 어댑터 */
 public class MainViewPagerAdapter extends FragmentPagerAdapter
 {
-    // 아래에 있는 생성자에 선언한 프래그먼트들을 담을 리스트. 이 리스트에 담긴 사이즈만큼 탭 레이아웃을 만든다
-    // activity_maintest.xml에서도 프래그먼트 개수만큼 TabItem을 만들어야 함
     private final List<Fragment> list = new ArrayList<>();
     private final List<String> mFragmentTitleList = new ArrayList<>();
 
@@ -50,7 +47,6 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter
         return list.size();
     }
 
-    /* 푸시를 눌렀을 때 알림 리스트 프래그먼트로 이동시킬 때 필요한 메서드 */
     public void addFragment(Fragment fragment, String title)
     {
         list.add(fragment);

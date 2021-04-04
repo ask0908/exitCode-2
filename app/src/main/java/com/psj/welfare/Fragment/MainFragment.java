@@ -3,12 +3,14 @@ package com.psj.welfare.fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +44,7 @@ import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.OnSingleClickListener;
 import com.psj.welfare.data.HorizontalYoutubeItem;
 import com.psj.welfare.data.RecommendItem;
+import com.psj.welfare.util.DBOpenHelper;
 import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONArray;
@@ -61,7 +64,8 @@ public class MainFragment extends Fragment
     public static final String TAG = "MainFragment";
 
     ConstraintLayout main_top, go_benefit_layout, main_top_layout, middle_layout;
-    TextView main_fragment_textview;
+    TextView main_fragment_textview, youtube_text;
+    ImageView theme_image, region_image;
 
     Button kakao_unlink_btn;
     Button kakao_logout_btn;
@@ -100,7 +104,9 @@ public class MainFragment extends Fragment
 
     CardView buttonTheme, buttonRegion;
 
-    String token, userOrder;
+    String sqlite_token;
+
+    DBOpenHelper helper;
 
     public MainFragment()
     {
@@ -122,6 +128,10 @@ public class MainFragment extends Fragment
         main_top = view.findViewById(R.id.main_top);
         go_benefit_layout = view.findViewById(R.id.go_benefit_layout);
 
+        theme_image = view.findViewById(R.id.theme_image);
+        region_image = view.findViewById(R.id.region_image);
+
+        youtube_text = view.findViewById(R.id.youtube_text);
         main_fragment_textview = view.findViewById(R.id.main_fragment_textview);
         benefit_count_textview = view.findViewById(R.id.benefit_count_textview);
         recom_recycler = view.findViewById(R.id.recom_recycler);
@@ -140,13 +150,25 @@ public class MainFragment extends Fragment
     {
         super.onViewCreated(view, savedInstanceState);
 
+        helper = new DBOpenHelper(getActivity());
+        helper.openDatabase();
+        helper.create();
+
+        Cursor cursor = helper.selectColumns();
+        if (cursor != null)
+        {
+            while(cursor.moveToNext())
+            {
+                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+            }
+        }
+
         if (getActivity() != null)
         {
             analytics = FirebaseAnalytics.getInstance(getActivity());
         }
 
         userOrderedWelfare();
-        Log.e(TAG, "userOrder : " + userOrder);
 
         if (sharedPreferences.getString("interest", "").equals(""))
         {
@@ -155,7 +177,7 @@ public class MainFragment extends Fragment
             find_welfare_btn.setVisibility(View.VISIBLE);
 
             ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) middle_layout.getLayoutParams();
-            lp.matchConstraintPercentHeight = (float) 0.67;
+            lp.matchConstraintPercentHeight = (float) 0.65;
             middle_layout.setLayoutParams(lp);
             go_benefit_layout.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.radius_25));
             main_top.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.bottom_left_right_radius));
@@ -163,22 +185,29 @@ public class MainFragment extends Fragment
             other_params.matchConstraintPercentHeight = (float) 0.16;
             main_fragment_textview.setLayoutParams(other_params);
             ConstraintLayout.LayoutParams region_params = (ConstraintLayout.LayoutParams) buttonRegion.getLayoutParams();
-            region_params.matchConstraintPercentHeight = (float) 0.21;
+            region_params.matchConstraintPercentHeight = (float) 0.25;
             buttonRegion.setLayoutParams(region_params);
             ConstraintLayout.LayoutParams theme_params = (ConstraintLayout.LayoutParams) buttonTheme.getLayoutParams();
-            theme_params.matchConstraintPercentHeight = (float) 0.21;
+            theme_params.matchConstraintPercentHeight = (float) 0.25;
             buttonTheme.setLayoutParams(theme_params);
+            ConstraintLayout.LayoutParams textview_params = (ConstraintLayout.LayoutParams) youtube_text.getLayoutParams();
+            textview_params.verticalBias = (float) 0.3;
+            youtube_text.setLayoutParams(textview_params);
+            ConstraintLayout.LayoutParams find_welfare_btn_params = (ConstraintLayout.LayoutParams) find_welfare_btn.getLayoutParams();
+            find_welfare_btn_params.verticalBias = (float) 0.4;
+            find_welfare_btn.setLayoutParams(find_welfare_btn_params);
         }
         else
         {
             if (sharedPreferences.getBoolean("logout", false))
             {
+                /* 비로그인 시 */
                 recom_recycler.setVisibility(View.GONE);
                 btn_left_textview.setVisibility(View.VISIBLE);
                 find_welfare_btn.setVisibility(View.VISIBLE);
 
                 ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) middle_layout.getLayoutParams();
-                lp.matchConstraintPercentHeight = (float) 0.67;
+                lp.matchConstraintPercentHeight = (float) 0.65;
                 middle_layout.setLayoutParams(lp);
                 go_benefit_layout.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.radius_25));
                 main_top.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.bottom_left_right_radius));
@@ -186,14 +215,28 @@ public class MainFragment extends Fragment
                 other_params.matchConstraintPercentHeight = (float) 0.16;
                 main_fragment_textview.setLayoutParams(other_params);
                 ConstraintLayout.LayoutParams region_params = (ConstraintLayout.LayoutParams) buttonRegion.getLayoutParams();
-                region_params.matchConstraintPercentHeight = (float) 0.21;
+                region_params.verticalBias = (float) 0.55;
+                region_params.matchConstraintPercentHeight = (float) 0.35;
                 buttonRegion.setLayoutParams(region_params);
                 ConstraintLayout.LayoutParams theme_params = (ConstraintLayout.LayoutParams) buttonTheme.getLayoutParams();
-                theme_params.matchConstraintPercentHeight = (float) 0.21;
+                theme_params.verticalBias = (float) 0.55;
+                theme_params.matchConstraintPercentHeight = (float) 0.35;
                 buttonTheme.setLayoutParams(theme_params);
+                ConstraintLayout.LayoutParams find_welfare_btn_params = (ConstraintLayout.LayoutParams) find_welfare_btn.getLayoutParams();
+                find_welfare_btn_params.verticalBias = (float) 0.4;
+                find_welfare_btn.setLayoutParams(find_welfare_btn_params);
+
+                ConstraintLayout.LayoutParams theme_image_params = (ConstraintLayout.LayoutParams) theme_image.getLayoutParams();
+                theme_image_params.verticalBias = (float) 0.65;
+                theme_image.setLayoutParams(theme_image_params);
+
+                ConstraintLayout.LayoutParams region_image_params = (ConstraintLayout.LayoutParams) region_image.getLayoutParams();
+                region_image_params.verticalBias = (float) 0.65;
+                region_image.setLayoutParams(region_image_params);
             }
             else
             {
+                /* 로그인했을 경우 */
                 recom_recycler.setVisibility(View.VISIBLE);
                 btn_left_textview.setVisibility(View.GONE);
                 find_welfare_btn.setVisibility(View.GONE);
@@ -212,10 +255,12 @@ public class MainFragment extends Fragment
                 main_top.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.radius_25));
 
                 ConstraintLayout.LayoutParams region_params = (ConstraintLayout.LayoutParams) buttonRegion.getLayoutParams();
-                region_params.matchConstraintPercentHeight = (float) 0.255;
+                region_params.verticalBias = (float) 0.35;
+                region_params.matchConstraintPercentHeight = (float) 0.275;
                 buttonRegion.setLayoutParams(region_params);
                 ConstraintLayout.LayoutParams theme_params = (ConstraintLayout.LayoutParams) buttonTheme.getLayoutParams();
-                theme_params.matchConstraintPercentHeight = (float) 0.255;
+                theme_params.matchConstraintPercentHeight = (float) 0.275;
+                theme_params.verticalBias = (float) 0.35;
                 buttonTheme.setLayoutParams(theme_params);
             }
         }
@@ -226,65 +271,30 @@ public class MainFragment extends Fragment
         {
             if (sharedPreferences.getString("interest", "").equals(""))
             {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("저장된 관심사가 없습니다. 입력하시겠어요?")
-                        .setPositiveButton("다음에 할래요", new DialogInterface.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which)
-                            {
-                                dialog.dismiss();
-                            }
-                        }).setNegativeButton("지금 할래요", new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        dialog.dismiss();
-                        Intent intent = new Intent(getActivity(), ChoiceKeywordActivity.class);
-                        startActivity(intent);
-                    }
-                }).show();
+                Intent intent = new Intent(getActivity(), ChoiceKeywordActivity.class);
+                startActivity(intent);
             }
             else
             {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("맞춤 혜택을 확인하시려면 먼저 로그인이 필요해요\n로그인하시겠어요?")
-                        .setPositiveButton("예", new DialogInterface.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which)
-                            {
-                                dialog.dismiss();
-                                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                                if (sharedPreferences.getBoolean("logout", false))
-                                {
-                                    Bundle bundle = new Bundle();
-                                    bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "로그인 화면 이동");
-                                    analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-                                    // logout이 true면 로그아웃한 상태니까 true
-                                    loggedOut = true;
-                                    intent.putExtra("loggedOut", loggedOut);
-                                    startActivity(intent);
-                                }
-                                else
-                                {
-                                    Bundle bundle = new Bundle();
-                                    bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "로그인 화면 이동");
-                                    analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-                                    loggedOut = false;
-                                    intent.putExtra("loggedOut", loggedOut);
-                                    startActivity(intent);
-                                }
-                            }
-                        }).setNegativeButton("아니오", new DialogInterface.OnClickListener()
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                if (sharedPreferences.getBoolean("logout", false))
                 {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        dialog.dismiss();
-                    }
-                }).show();
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "로그인 화면 이동");
+                    analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+                    loggedOut = true;
+                    intent.putExtra("loggedOut", loggedOut);
+                    startActivity(intent);
+                }
+                else
+                {
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "로그인 화면 이동");
+                    analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+                    loggedOut = false;
+                    intent.putExtra("loggedOut", loggedOut);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -305,17 +315,14 @@ public class MainFragment extends Fragment
             public void onSingleClick(View v)
             {
                 Toast.makeText(getActivity(), "로그아웃 클릭", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "로그아웃 클릭");
                 if (Session.getCurrentSession().getTokenInfo().getAccessToken() != null)
                 {
                     String aaa = Session.getCurrentSession().getTokenInfo().getAccessToken();
-                    Log.e("로그아웃 이후 카카오 토큰 상태", aaa);
                     UserManagement.getInstance().requestLogout(new LogoutResponseCallback()
                     {
                         @Override
                         public void onCompleteLogout()
                         {
-                            Log.e(TAG, "로그아웃 성공");
                             Intent intent = new Intent(getActivity(), LoginActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
@@ -325,7 +332,7 @@ public class MainFragment extends Fragment
                 }
                 else
                 {
-                    Log.e(TAG, "카카오 토큰 없음");
+                    //
                 }
             }
         });
@@ -343,13 +350,13 @@ public class MainFragment extends Fragment
                         @Override
                         public void onFailure(ErrorResult errorResult)
                         {
-                            Log.e("다이얼로그 안", "회원탈퇴 실패");
+                            //
                         }
 
                         @Override
                         public void onSessionClosed(ErrorResult errorResult)
                         {
-                            Log.e("다이얼로그 안", "onSessionClosed");
+                            //
                             SharedPreferences sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.clear();
@@ -359,13 +366,12 @@ public class MainFragment extends Fragment
                         @Override
                         public void onNotSignedUp()
                         {
-                            Log.e("다이얼로그 안", "onNotSignedUp");
+                            //
                         }
 
                         @Override
                         public void onSuccess(Long userId)
                         {
-                            Log.e(TAG, "카톡 탈퇴 성공");
                             SharedPreferences sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.clear();
@@ -402,9 +408,9 @@ public class MainFragment extends Fragment
     void userOrderedWelfare()
     {
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
-        token = sharedPreferences.getString("token", "");
+//        token = sharedPreferences.getString("token", "");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.userOrderedWelfare(token, "customized", LogUtil.getUserLog());
+        Call<String> call = apiInterface.userOrderedWelfare(sqlite_token, "customized", LogUtil.getUserLog());  // token -> sqlite_token으로 변경
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -413,7 +419,6 @@ public class MainFragment extends Fragment
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-                    Log.e(TAG, "맞춤 혜택 가져오기 성공 : " + result);
                     recommendParsing(result);
                 }
                 else
@@ -539,6 +544,7 @@ public class MainFragment extends Fragment
         adapter.setOnItemClickListener((view, position) ->
         {
             Intent intent = new Intent(getActivity(), YoutubeActivity.class);
+//            Intent intent = new Intent(getActivity(), YoutubeTestActivity.class);
             String youtube_name = lists.get(position).getYoutube_name();
             intent.putExtra("youtube_name", youtube_name);
             intent.putExtra("youtube_hashmap", youtube_hashmap);
@@ -557,4 +563,5 @@ public class MainFragment extends Fragment
         super.onResume();
         getYoutubeInformation();
     }
+
 }

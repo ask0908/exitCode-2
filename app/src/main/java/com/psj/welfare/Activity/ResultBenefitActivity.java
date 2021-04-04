@@ -22,12 +22,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.orhanobut.logger.AndroidLogAdapter;
-import com.orhanobut.logger.Logger;
 import com.psj.welfare.R;
 import com.psj.welfare.adapter.CategorySearchResultAdapter;
 import com.psj.welfare.adapter.SelectedCategoryAdapter;
@@ -54,46 +53,38 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/* SearchFragment에서 관심사 선택 후 보여주는 결과 조회 화면 */
+/* ThemeChooseActivity에서 관심사 선택 후 보여주는 결과 조회 화면 */
 public class ResultBenefitActivity extends AppCompatActivity
 {
     public final String TAG = this.getClass().getSimpleName();
 
-    // 상단 리사이클러뷰('OO 지원' 출력)에 붙일 어댑터
     private RecyclerView up_recycler;
     private SelectedCategoryAdapter up_adapter;
     private SelectedCategoryAdapter.ItemClickListener up_itemClickListener;
     List<CategorySearchResultItem> keyword_list;
 
-    // 하단 리사이클러뷰('OO 지원' 별 결과 출력)에 붙일 어댑터
     private RecyclerView bottom_recycler;
     private CategorySearchResultAdapter bottom_adapter;
     private CategorySearchResultAdapter.ItemClickListener bottom_itemClickListener;
     List<CategorySearchBottomResultItem> item_list;
 
-    // 필터를 누르면 그 필터에 해당하는 혜택 데이터만 담을 리스트
     List<CategorySearchBottomResultItem> other_list;
 
-    TextView result_benefit_title;  // 혜택 결과 개수 타이틀
-    int position_RB = 1;            // 관심사 버튼 넘버
+    TextView result_benefit_title;
+    int position_RB = 1;
 
-    private ArrayList<ResultBenefitItem> RBF_ListSet;       // 관심사 버튼 리스트
-    ArrayList<String> favor_data; // 관심사 버튼 문자열
+    private ArrayList<ResultBenefitItem> RBF_ListSet;
+    ArrayList<String> favor_data;
 
-    // 검색 api 리뉴얼로 추가한 변수
     String welf_name, parent_category, welf_category, tag, welf_local, total_count;
 
     String category, last_category;
     StringBuffer sb;
 
-    List<CategorySearchResultItem> test_list;
-    // 로그 전송 시 토큰값, 세션 id 필요한데 그 값들을 가져올 때 사용할 쉐어드
     SharedPreferences sharedPreferences;
 
-    // 구글 애널리틱스
     private FirebaseAnalytics analytics;
 
-    // 인터넷 상태 확인 후 AlertDialog를 띄울 때 사용할 변수
     boolean isConnected = false;
 
     @Override
@@ -103,7 +94,6 @@ public class ResultBenefitActivity extends AppCompatActivity
         setStatusBarGradiant(ResultBenefitActivity.this);
         setContentView(R.layout.activity_resultbenefit);
 
-        /* 인터넷 연결 상태 체크 */
         isConnected = isNetworkConnected(ResultBenefitActivity.this);
         if (!isConnected)
         {
@@ -125,14 +115,12 @@ public class ResultBenefitActivity extends AppCompatActivity
         categoryChoiceLog("테마 선택 후 결과 화면으로 이동");
 
         result_benefit_title = findViewById(R.id.result_benefit_title);
-        up_recycler = findViewById(R.id.category_recycler);           // 위의 가로 리사이클러뷰(카테고리 이름들 출력)
-        bottom_recycler = findViewById(R.id.result_title_recycler);   // 아래의 세로 리사이클러뷰(혜택 이름들 출력)
+        up_recycler = findViewById(R.id.category_recycler);
+        bottom_recycler = findViewById(R.id.result_title_recycler);
 
-        /* 상단 리사이클러뷰(필터들 나오는 리사이클러뷰) 처리 */
         up_recycler.setHasFixedSize(true);
         up_recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
-        /* 하단 리사이클러뷰(혜택들 제목 나오는 리사이클러뷰) 처리 */
         bottom_recycler.setHasFixedSize(true);
         bottom_recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
@@ -143,23 +131,15 @@ public class ResultBenefitActivity extends AppCompatActivity
 
         other_list = new ArrayList<>();
 
-        Logger.addLogAdapter(new AndroidLogAdapter());
-
-        // 메인에서 전달받은 인텐트를 검사하는 곳
-        // 선택한 관심사를 현재 페이지에서 버튼으로 표현하기 위한 데이터
         if (getIntent().hasExtra("favor_btn"))
         {
             Intent RB_intent = getIntent();
             favor_data = RB_intent.getStringArrayListExtra("favor_btn");
             RBF_ListSet.add(0, new ResultBenefitItem(favor_data.get(0), R.drawable.rbf_btn_after));
-            Log.e(TAG, "리스트 형태 관심사 정보 -> " + favor_data.toString());
 
-            // 메인에서 전달받은 리스트의 1번 요소를 제외한 나머지 정보는 포커싱 상태를 해제
             for (int i = 1; i < favor_data.size(); i++)
             {
-                Log.e(TAG, "리스트 형태 관심사 버튼 반복문 -> " + favor_data.get(i));
                 RBF_ListSet.add(position_RB, new ResultBenefitItem(favor_data.get(i), R.drawable.rbf_btn_before));
-                Log.e(TAG, "for문 안 position_RB = " + position_RB);
                 position_RB++;
             }
 
@@ -169,38 +149,28 @@ public class ResultBenefitActivity extends AppCompatActivity
             Intent RB_intent = getIntent();
             favor_data = RB_intent.getStringArrayListExtra("region_btn");
             RBF_ListSet.add(0, new ResultBenefitItem(favor_data.get(0), R.drawable.rbf_btn_after));
-            Log.e(TAG, "리스트 형태 관심사 정보 -> " + favor_data.toString());
 
             // 메인에서 전달받은 리스트의 1번 요소를 제외한 나머지 정보는 포커싱 상태를 해제
             for (int i = 1; i < favor_data.size(); i++)
             {
-                Log.e(TAG, "리스트 형태 관심사 버튼 반복문 -> " + favor_data.get(i));
                 RBF_ListSet.add(position_RB, new ResultBenefitItem(favor_data.get(i), R.drawable.rbf_btn_before));
-                Log.e(TAG, "for문 안 position_RB = " + position_RB);
                 position_RB++;
             }
         }
-        {
-            Log.e(TAG, "전달 받은 인텐트 값 없어요!");
-        }
 
-        /* MainFragment에서 유저가 선택한 카테고리들에 구분자를 붙여서 변수에 저장한다 */
         for (int i = 0; i < favor_data.size(); i++)
         {
-            category += favor_data.get(i) + "|";   // api 내용 수정으로 ,에서 |로 구분자 변경
-            Log.e(TAG, "for문 안 favor_data = " + category);
+            category += favor_data.get(i) + "|";
             if (category.contains("null전체|"))
             {
                 category = category.replace("null전체|", "");
             }
         }
-        // "null전체|" 문자열을 지우고 StringBuilder를 써서 아이템에 각 문자열을 set한다
         if (category.length() > 0)
         {
             sb = new StringBuffer(category);
             sb.deleteCharAt(category.length() - 1);
             last_category = sb.toString();
-            Log.e(TAG, "sb = " + sb);
         }
         Log.e(TAG, "리스트값 스트링으로 변환 -> " + last_category);
 
@@ -217,18 +187,9 @@ public class ResultBenefitActivity extends AppCompatActivity
         }
     }
 
-    /* 선택한 카테고리에 속하는 정책들의 정보들을 가져와 뷰에 set하는 메서드 (혜택 상위 카테고리 검색)
-     * 처음 이 액티비티에 들어올 때 호출되는 메서드라 처음이자 마지막으로 데이터를 가져올 때 로딩중이라는 프로그레스 다이어로그를 띄웠다
-     * 프로그레스 다이얼로그는 모든 데이터를 다 가져오게 되면 사라지고, jsonParse()에서 파싱 및 필터링 처리를 수행한다 */
     void searchWelfareCategory(String category)
     {
-        final ProgressDialog dialog = new ProgressDialog(this);
-        dialog.setMax(100);
-        dialog.setMessage("로딩중입니다...");
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        dialog.show();
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Log.e(TAG, "검색 키워드 = " + category);
         SharedPreferences sharedPreferences = getSharedPreferences("app_pref", 0);
         String session = sharedPreferences.getString("sessionId", "");
         String token = sharedPreferences.getString("token", "");
@@ -241,14 +202,11 @@ public class ResultBenefitActivity extends AppCompatActivity
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String category_result = response.body();
-                    Log.e(TAG, "category_result = " + category_result);
                     jsonParse(category_result);
-                    dialog.dismiss();
                 }
                 else
                 {
                     Log.e(TAG, "실패 : " + response.body());
-                    dialog.dismiss();
                 }
             }
 
@@ -256,12 +214,10 @@ public class ResultBenefitActivity extends AppCompatActivity
             public void onFailure(Call<String> call, Throwable t)
             {
                 Log.e(TAG, "에러 : " + t.getMessage());
-                dialog.dismiss();
             }
         });
     }
 
-    ////////////////////////////////////////////
     void searchWelfareCategory_region(String category)
     {
         final ProgressDialog dialog = new ProgressDialog(this);
@@ -301,7 +257,6 @@ public class ResultBenefitActivity extends AppCompatActivity
         });
     }
 
-    /* MapDetailActivity에 있던 필터링 메서드 응용 */
     private void jsonParse(String number_of_benefit)
     {
         keyword_list = new ArrayList<>();
@@ -408,14 +363,21 @@ public class ResultBenefitActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        for (int i = 0; i < keyword_list.size(); i++)
+        result_benefit_title.setText("혜택, 총 " + total_count + "개");
+        int first_changed_count = Integer.parseInt(total_count);
+        if (first_changed_count < 10)
         {
-            Log.e(TAG, "keyword_list - getWelf_category : " + keyword_list.get(i).getWelf_category());
-            Log.e(TAG, "keyword_list - getWelf_name : " + keyword_list.get(i).getWelf_name());
+            SpannableString spannableString = new SpannableString(result_benefit_title.getText().toString());
+            spannableString.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.colorPrimaryDark)),
+                    6, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            result_benefit_title.setText(spannableString);
         }
-        for (int i = 0; i < item_list.size(); i++)
+        else
         {
-            Log.e(TAG, "keyword_list - getWelf_local : " + keyword_list.get(i).getWelf_local());
+            SpannableString spannableString = new SpannableString(result_benefit_title.getText().toString());
+            spannableString.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.colorPrimaryDark)),
+                    6, 8, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            result_benefit_title.setText(spannableString);
         }
 
         /* 상단 리사이클러뷰에 들어갈 "OO 지원"의 중복처리 로직 시작 */
@@ -442,9 +404,6 @@ public class ResultBenefitActivity extends AppCompatActivity
         {
             welfareLocalBuilder.append(item_list.get(i).getWelf_local()).append(";;");
         }
-        Log.e(TAG, "welf_category : " + stringBuilder.toString());
-        Log.e(TAG, "welf_name : " + welfareNameBuilder.toString());
-        Log.e(TAG, "welf_local : " + welfareLocalBuilder.toString());
 
         // ";;"가 섞인 문자열 2개를 구분자로 각각 split()한다
         String[] arr = stringBuilder.toString().split(";;");
@@ -454,10 +413,6 @@ public class ResultBenefitActivity extends AppCompatActivity
         // split() 처리 후 중복되는 것들을 없애기 위해 HashSet을 썼다
         arr = new LinkedHashSet<>(Arrays.asList(arr)).toArray(new String[0]);
         nameArr = new HashSet<>(Arrays.asList(nameArr)).toArray(new String[0]);
-//        localArr = new HashSet<>(Arrays.asList(localArr)).toArray(new String[0]);
-
-        Log.e(TAG, "461 - LinkedHashSet 변환 결과 : " + Arrays.toString(arr));
-        Log.e(TAG, "462 - 지역 LinkedHashSet 변환 결과 : " + Arrays.toString(localArr));
 
         // String[] arr 안에 들어있는 데이터 양만큼 반복문을 돌리며 setter로 welf_category를 넣기 위해 객체를 만들고, 아래 for문에서 setter로 값들을 박는다
         keyword_list.clear();
@@ -479,20 +434,11 @@ public class ResultBenefitActivity extends AppCompatActivity
             other_list.add(item);
         }
 
-//        for (int i = 0; i < nameArr.length; i++)
-//        {
-//            MapResultItem item = new MapResultItem();           // 하단 리사이클러뷰에 사용할 모델 클래스
-//            item.setWelf_name(nameArr[i]);
-//        }
-
-        // 아래 처리를 하지 않으면 이 액티비티로 들어올 때마다 전체 카테고리 개수가 1개씩 증가한다
-        // keyword_list 크기가 0일 경우 아래에서 에러가 발생한다
         if (!keyword_list.get(0).getWelf_category().equals("전체") && !keyword_list.contains("전체"))
         {
             keyword_list.add(0, new CategorySearchResultItem("전체"));
         }
 
-        // 상단 리사이클러뷰에 붙일 어댑터 초기화
         up_adapter = new SelectedCategoryAdapter(this, keyword_list, up_itemClickListener);
         up_adapter.setOnItemClickListener((view, position) ->
         {
@@ -518,22 +464,14 @@ public class ResultBenefitActivity extends AppCompatActivity
             else
             {
                 /* 상단 리사이클러뷰에서 전체 이외의 필터를 클릭한 경우 */
-                // 여기서 선택한 'OO 지원'에 맞는 혜택들로 하단 리사이클러뷰 어댑터 초기화 시 사용되는 리스트를 채워야 한다
-
                 other_list.clear();
 
-                String up_category = keyword_list.get(position).getWelf_category();
-                Log.e(TAG, "519 - 상단 필터에서 선택한 카테고리명 : " + up_category);
-
-                /* 선택한 OO 지원에 속하는 혜택들만을 리사이클러뷰에 보여주는 처리 시작 */
-                // 현금 지원을 선택했으면 전체 데이터가 담긴 리스트에서 welf_category가 현금 지원인 혜택들을 리스트에 담아서 하단 리사이클러뷰 어댑터에 넣어야 한다
                 for (int i = 0; i < item_list.size(); i++)
                 {
                     CategorySearchBottomResultItem item = new CategorySearchBottomResultItem();
                     if (item_list.get(i).getWelf_category().contains(keyword_list.get(position).getWelf_category()))
                     {
                         item.setWelf_category(keyword_list.get(position).getWelf_category());
-//                        item.setWelf_local(keyword_list.get(position).getWelf_local());
                         item.setWelf_local(item_list.get(i).getWelf_local());
                         item.setWelf_name(item_list.get(i).getWelf_name());
                         other_list.add(item);
@@ -554,15 +492,11 @@ public class ResultBenefitActivity extends AppCompatActivity
                     result_benefit_title.setText(spannableString);
                 }
 
-                // 새 데이터가 들어있는 리스트(other_list)로 하단 리사이클러뷰의 내용물을 바꾼다
                 bottom_adapter = new CategorySearchResultAdapter(this, other_list, bottom_itemClickListener);
                 bottom_adapter.setOnItemClickListener((view1, pos) ->
                 {
                     String name = other_list.get(pos).getWelf_name();
                     String local = other_list.get(pos).getWelf_local();
-
-                    Log.e(TAG, "555 - 필터 바꾼 후 선택한 혜택 이름 : " + name);
-                    Log.e(TAG, "556 - 필터 바꾼 후 선택한 혜택 이름의 실시 지역 : " + local);
 
                     Intent see_detail_intent = new Intent(ResultBenefitActivity.this, DetailBenefitActivity.class);
                     see_detail_intent.putExtra("name", name);
@@ -573,15 +507,10 @@ public class ResultBenefitActivity extends AppCompatActivity
             }
         });
 
-        // 상단 리사이클러뷰에 전체, 청년, 노인 등 문자열들을 넣는다
         up_recycler.setAdapter(up_adapter);
 
-        // 하단 리사이클러뷰에 붙일 어댑터 초기화, 이 때 for문 안에서 값이 들어간 List를 인자로 넣는다
-        // 이 부분의 하단 리사이클러뷰 어댑터 초기화는 처음 화면에 들어왔을 때 해당 지역의 전체 데이터를 보여주기 위해서 수행한다
         bottom_adapter = new CategorySearchResultAdapter(this, item_list, bottom_itemClickListener);
 
-        /* 화면에 처음 들어온 상태에서 아이템을 누르면 이 곳이 호출된다 */
-        // 하단 리사이클러뷰 아이템 클릭 시 해당 혜택의 상세보기 화면으로 이동한다
         bottom_adapter.setOnItemClickListener((view, position) ->
         {
             String name = item_list.get(position).getWelf_name();
@@ -597,9 +526,7 @@ public class ResultBenefitActivity extends AppCompatActivity
         });
         bottom_recycler.setAdapter(bottom_adapter);
     }
-    /* MapDetailActivity에 있던 필터링 메서드 응용 */
 
-    /* 카테고리 선택 후 이동하는 결과 리스트 화면에 유저가 들어왔음을 로그로 보내는 메서드 */
     void categoryChoiceLog(String category_action)
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
@@ -640,8 +567,6 @@ public class ResultBenefitActivity extends AppCompatActivity
         });
     }
 
-    /* 서버로 한글 보낼 때 인코딩해서 보내야 해서 만든 한글 인코딩 메서드
-     * 로그 내용을 전송할 때 한글은 반드시 아래 메서드에 넣어서 인코딩한 후 변수에 저장하고 그 변수를 서버로 전송해야 한다 */
     private String userAction(String user_action)
     {
         try

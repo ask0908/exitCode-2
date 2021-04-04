@@ -25,7 +25,6 @@ public class App extends Application
         // 카카오 로그인 세션을 불러올 때의 설정값을 설정하는 부분.
         public ISessionConfig getSessionConfig()
         {
-
             return new ISessionConfig()
             {
                 @Override

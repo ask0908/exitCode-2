@@ -1,10 +1,8 @@
 package com.psj.welfare.fragment;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -18,14 +16,15 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,9 +36,10 @@ import com.psj.welfare.adapter.CategorySearchResultAdapter;
 import com.psj.welfare.adapter.SelectedCategoryAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.custom.MaterialSpinner;
+import com.psj.welfare.custom.SearchRecyclerViewEmpty;
 import com.psj.welfare.data.CategorySearchBottomResultItem;
 import com.psj.welfare.data.CategorySearchResultItem;
-import com.psj.welfare.data.SearchItem;
 import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONArray;
@@ -47,13 +47,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
-import fr.ganfra.materialspinner.MaterialSpinner;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 
 /* 혜택 이름 검색하는 프래그먼트
  * 하단의 카테고리들을 선택하고 버튼을 눌러 이동한 경우, 혜택 하위 카테고리 검색을 적용해 결과를 보여준다
@@ -78,41 +79,31 @@ public class SearchFragment extends Fragment
     // 구글 애널리틱스
     private FirebaseAnalytics analytics;
 
-    public SearchFragment()
-    {
-    }
-
     //    Spinner s1;
     MaterialSpinner s1;
 
     //Create Spinner
     private Spinner mSpinner;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
+    // 하단 리사이클러뷰에 검색 결과가 없을 때 보여줄 뷰
+    private ImageView emptyImageView;
+    private TextView emptyView;
+    private TextView emptyView2;
+    private View no_result_view;
 
-    }
+    private RecyclerView up_recycler;
+    // 상단 리사이클러뷰에 붙일 어댑터
+    private SelectedCategoryAdapter up_adapter;
+    private SelectedCategoryAdapter.ItemClickListener up_itemClickListener;
+    // 상단 리사이클러뷰에 쓸 리스트
+    List<CategorySearchResultItem> keyword_list;
 
-    //SearchResultActivity에서 복붙한 변수들
-
-    // 가로로 하위 카테고리들을 보여줄 리사이클러뷰, 세로로 검색 결과들을 보여줄 리사이클러뷰뷰
-    private RecyclerView keyword_category_recycler, search_result_title_recycler;
-
-    // 가로 리사이클러뷰에 붙일 어댑터
-    private SelectedCategoryAdapter category_adapter;
-    private SelectedCategoryAdapter.ItemClickListener category_clickListener;
-
-    // 세로 리사이클러뷰에 붙일 어댑터
-    private CategorySearchResultAdapter adapter;
-    private CategorySearchResultAdapter.ItemClickListener itemClickListener;
-
-    // parent_category를 모아둘 list
-    List<SearchItem> parent_list;
-    List<CategorySearchResultItem> top_list;
-    // 세로 리사이클러뷰에 넣을 혜택 이름(welf_name)을 넣을 리스트
-    List<CategorySearchBottomResultItem> name_list;
+    private SearchRecyclerViewEmpty bottom_recycler;
+    // 하단 리사이클러뷰에 붙일 어댑터
+    private CategorySearchResultAdapter bottom_adapter;
+    private CategorySearchResultAdapter.ItemClickListener bottom_itemClickListener;
+    // 하단 리사이클러뷰에 쓸 리스트
+    List<CategorySearchBottomResultItem> item_list;
 
     // 서버에서 받은 JSONObject 안의 값들을 담을 변수, 검색 결과값이 없을 경우 판단 시 사용
     String status;
@@ -130,12 +121,10 @@ public class SearchFragment extends Fragment
     TextView search_result_benefit_title;
 
     // 중복 제거에 사용할 리스트
-    List<SearchItem> other_list;
+    List<CategorySearchBottomResultItem> other_list;
 
-    // SearchFragment에서 editText에 입력한 검색 내용. 인텐트로 담아온다
-    String keyword;
     //    String city;
-    String region_name = "전국";
+    String region_name;
 
 
     // 구글 애널리틱스
@@ -143,32 +132,29 @@ public class SearchFragment extends Fragment
     // 인터넷 상태 확인 후 AlertDialog를 띄울 때 사용할 변수
     boolean isConnected = false;
 
+    String original_local, original_name;
+
+    public SearchFragment()
+    {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
-        init(view);
 
-//        recommend_search_textview = view.findViewById(R.id.recomm);
-//        recent_search_history_textview = view.findViewById(R.id.recent_search_history_textview);
-//        map_btn = view.findViewById(R.id.map_btn);
         search_edittext = view.findViewById(R.id.search_edittext);
 
-//        search_toolbar = view.findViewById(R.id.search_toolbar);
+        final String[] city = {"전국", "서울", "경기", "인천", "강원", "세종", "충북", "충남", "대전",
+                "대구", "경북", "경남", "전북", "전남", "광주", "부산", "울산", "제주"};
 
-
-
-        //두번째 테스트
-        final String [] city = {"전국", "서울", "경기", "인천", "강원", "세종", "충북", "충남", "대전",
-                "대구", "경북", "경남", "전북", "전남", "광주", "부산", "울산", "제주" };
-
-
-        //세번째 스피너 라이브러리 테스트
-
-        com.psj.welfare.fragment.MaterialSpinner s1 = (com.psj.welfare.fragment.MaterialSpinner) view.findViewById(R.id.spinner);
-
-
+        com.psj.welfare.custom.MaterialSpinner s1 = (com.psj.welfare.custom.MaterialSpinner) view.findViewById(R.id.spinner);
 
         ArrayAdapter adapter = new ArrayAdapter(
                 getContext(), // 현재화면의 제어권자
@@ -178,44 +164,44 @@ public class SearchFragment extends Fragment
 
         s1.setAdapter(adapter);
 
-        s1.setOnItemSelectedListener(new com.psj.welfare.fragment.MaterialSpinner.OnItemSelectedListener() {
+        region_name = "전국";
+
+        s1.setOnItemSelectedListener(new com.psj.welfare.custom.MaterialSpinner.OnItemSelectedListener()
+        {
             @Override
-            public void onItemSelected(com.psj.welfare.fragment.MaterialSpinner view, int position, long id, Object item) {
-                Log.e(TAG, "선택된거 포지션:"+position);
-                Log.e(TAG, "선택된 지역이름:"+item);
-                Log.e(TAG, "선택된 id:"+id);
+            public void onItemSelected(com.psj.welfare.custom.MaterialSpinner view, int position, long id, Object item)
+            {
                 region_name = item.toString();
             }
         });
 
-
-        parent_list = new ArrayList<>();
         other_list = new ArrayList<>();
-        name_list = new ArrayList<>();
-        top_list = new ArrayList<>();
+        item_list = new ArrayList<>();
+        keyword_list = new ArrayList<>();
 
         search_result_benefit_title = view.findViewById(R.id.search_result_benefit_title);
-        keyword_category_recycler = view.findViewById(R.id.keyword_category_recycler);
-        search_result_title_recycler = view.findViewById(R.id.search_result_title_recycler);
+        up_recycler = view.findViewById(R.id.keyword_category_recycler);
+        bottom_recycler = view.findViewById(R.id.search_result_recycler);
+
+        emptyImageView = view.findViewById(R.id.emptyImageView);
+        emptyView = view.findViewById(R.id.search_empty);
+        emptyView2 = view.findViewById(R.id.search_empty2);
+        no_result_view = view.findViewById(R.id.no_result_view);
 
         // 가로 리사이클러뷰 처리
-        keyword_category_recycler.setHasFixedSize(true);
-        keyword_category_recycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        up_recycler.setHasFixedSize(true);
+        up_recycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         // 세로 리사이클러뷰 처리
-        search_result_title_recycler.setHasFixedSize(true);
-        search_result_title_recycler.setLayoutManager(new LinearLayoutManager(getContext()));
-
+        bottom_recycler.setHasFixedSize(true);
+        bottom_recycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
         return view;
     }
 
-
-    /* 항상 onViewCreated()에서 findViewById()를 쓰고(뷰들이 완전히 생성됐기 때문) 뷰를 매개변수로 전달한다 */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-        Log.e(TAG, "onViewCreated() 호출");
 
         if (getActivity() != null)
         {
@@ -224,13 +210,11 @@ public class SearchFragment extends Fragment
         m_favorList = new ArrayList<>();
 
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
-        if ((AppCompatActivity)getActivity() != null)
+        if ((AppCompatActivity) getActivity() != null)
         {
-            ((AppCompatActivity)getActivity()).setSupportActionBar(search_toolbar);
+            ((AppCompatActivity) getActivity()).setSupportActionBar(search_toolbar);
         }
-//        search_toolbar.setTitle("검색");
 
-        // 안드로이드 EditText 키보드에서 검색 버튼 추가 코드
         search_edittext.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
             @Override
@@ -238,12 +222,9 @@ public class SearchFragment extends Fragment
             {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH)
                 {
-                    Log.e(TAG, "검색 키워드 : " + search_edittext.getText());
-                    Log.e(TAG, "선택한 지역 : " + region_name);
                     Bundle bundle = new Bundle();
                     bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "검색 화면에서 키워드 검색 결과 화면으로 이동. 검색한 키워드 : " + search_edittext.getText());
                     analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-                    // 검색 버튼 클릭 되었을 때 처리하는 기능
                     performSearch(search_edittext.getText().toString(), region_name);
                     return true;
                 }
@@ -253,183 +234,20 @@ public class SearchFragment extends Fragment
 
         });
 
-        // 내 주변 혜택 찾기 버튼
-        // 이거 누를 때에도 위치 권한을 허용했는지 확인해야 한다
-//        map_btn.setOnClickListener(new OnSingleClickListener()
-//        {
-//            @Override
-//            public void onSingleClick(View v)
-//            {
-//                // TODO : 위치정보 권한 설정
-//                if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-//                {
-//                    // 위치 권한 거부됐을 시
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//                    builder.setTitle("권한 허용")
-//                            .setMessage("지역별 혜택을 확인하시려면 권한 허용이 필요합니다")
-//                            .setPositiveButton("허용하러 가기", new DialogInterface.OnClickListener()
-//                            {
-//                                @Override
-//                                public void onClick(DialogInterface dialog, int which)
-//                                {
-//                                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + getActivity().getPackageName()));
-//                                    intent.addCategory(Intent.CATEGORY_DEFAULT);
-//                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                                    startActivity(intent);
-//                                    dialog.dismiss();
-//                                }
-//                            }).setNegativeButton("종료", new DialogInterface.OnClickListener()
-//                    {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which)
-//                        {
-//                            dialog.dismiss();
-//                            Toast.makeText(getActivity(), "권한 설정 하지 않음", Toast.LENGTH_SHORT).show();
-//                        }
-//                    }).show();
-//                }
-//                else
-//                {
-//                    // 유저의 위치정보를 찾는 클래스의 객체 생성(Fragment기 때문에 인자로 getActivity()를 넣어야 함!!)
-//                    gpsTracker = new GpsTracker(getActivity());
-//
-//                    // 유저의 위치에서 위도, 경도값을 가져와 변수에 저장
-//                    double latitude = gpsTracker.getLatitude();
-//                    double longitude = gpsTracker.getLongitude();
-//
-//                    // 위도, 경도값으로 주소를 만들어 String 변수에 저장
-//                    String address = s1.getSelectedItem().toString();
-//
-//                    // String 변수 안의 값을 " "을 기준으로 split해서 'OO구' 글자를 빼낸다
-//                    split_list = new ArrayList<>();
-//                    String[] result = address.split(" ");
-//                    split_list.addAll(Arrays.asList(result));
-//
-//                    // OO시, OO구에 대한 정보를 각각 변수에 집어넣는다
-//                    city = split_list.get(1);
-//                    district = split_list.get(2);
-//
-//                    // 들어있는 값에 따라 지역명을 바꿔서 변수에 저장한다
-//                    if (address.contains("서울특별시"))
-//                    {
-//                        user_area = "서울";
-//                    }
-//                    if (address.contains("인천광역시"))
-//                    {
-//                        user_area = "인천";
-//                    }
-//                    if (address.contains("강원도"))
-//                    {
-//                        user_area = "강원";
-//                    }
-//                    if (address.contains("경기"))
-//                    {
-//                        user_area = "경기";
-//                    }
-//                    if (address.contains("충청북도"))
-//                    {
-//                        user_area = "충북";
-//                    }
-//                    if (address.contains("충청남도"))
-//                    {
-//                        user_area = "충남";
-//                    }
-//                    if (address.contains("세종시"))
-//                    {
-//                        user_area = "세종";
-//                    }
-//                    if (address.contains("대전시"))
-//                    {
-//                        user_area = "대전";
-//                    }
-//                    if (address.contains("경상북도"))
-//                    {
-//                        user_area = "경북";
-//                    }
-//                    if (address.contains("울산"))
-//                    {
-//                        user_area = "울산";
-//                    }
-//                    if (address.contains("대구"))
-//                    {
-//                        user_area = "대구";
-//                    }
-//                    if (address.contains("부산광역시"))
-//                    {
-//                        user_area = "부산";
-//                    }
-//                    if (address.contains("경상남도"))
-//                    {
-//                        user_area = "경남";
-//                    }
-//                    if (address.contains("전라북도"))
-//                    {
-//                        user_area = "전북";
-//                    }
-//                    if (address.contains("광주광역시"))
-//                    {
-//                        user_area = "광주";
-//                    }
-//                    if (address.contains("전라남도"))
-//                    {
-//                        user_area = "전남";
-//                    }
-//                    if (address.contains("제주도"))
-//                    {
-//                        user_area = "제주";
-//                    }
-//
-//                    // 변환이 끝난 지역명은 인텐트에 담아서 지도 화면으로 보낸다
-//                    Bundle bundle = new Bundle();
-//                    bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "지도 화면으로 이동");
-//                    analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-//                    Intent intent = new Intent(getActivity(), MapActivity.class);
-//                    intent.putExtra("user_area", user_area);
-//                    intent.putExtra("city", city);
-//                    intent.putExtra("district", district);
-//                    startActivity(intent);
-//                }
-//            }
-//        });
-
-
-
-
-
     }
 
-    // 모바일 키보드에서 검색 버튼 눌렀을 때
     public void performSearch(String search, String city)
     {
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(search_edittext.getWindowToken(), 0);
-        Log.e(TAG, "performSearch() 안으로 들어온 검색 키워드 : " + search);
-        Log.e(TAG, "performSearch() 안으로 들어온 선택 지역 : " + city);
+        original_local = city;
+        original_name = search;
 
-        name_list.clear();
-        top_list.clear();
-//        Intent intent = new Intent(getActivity(), SearchResultActivity.class);
-//        intent.putExtra("search", search);
-//        intent.putExtra("city", city);
-//        startActivity(intent);
-        searchWelfare(search,city);
+        item_list.clear();
+        keyword_list.clear();
+        searchWelfare(search, city);
     }
 
-    @Override
-    public void onStart()
-    {
-        super.onStart();
-
-
-    }
-
-    private void init(View view)
-    {
-
-    }
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
     void searchWelfare(String keyword, String city)
     {
         sharedPreferences = getContext().getSharedPreferences("app_pref", 0);
@@ -445,8 +263,7 @@ public class SearchFragment extends Fragment
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String search_result = response.body();
-                    Log.e(TAG, "search_result = " + search_result);
-                    jsonParsing(search_result);
+                    jsonParse(search_result);
                 }
                 else
                 {
@@ -462,266 +279,291 @@ public class SearchFragment extends Fragment
         });
     }
 
-    /* 서버에서 받은 키워드 검색 결과값들을 파싱하는 메서드 */
-    private void jsonParsing(String search_result)
+    private void jsonParse(String search_result)
     {
+        keyword_list = new ArrayList<>();
+        item_list = new ArrayList<>();
         try
         {
             JSONObject jsonObject = new JSONObject(search_result);
+            total_count = jsonObject.getString("TotalCount");
             status = jsonObject.getString("Status");
             JSONArray jsonArray = jsonObject.getJSONArray("Message");
             for (int i = 0; i < jsonArray.length(); i++)
             {
-                /* 이 중 welf_category를 가로 리사이클러뷰에 넣어야 한다 */
-                JSONObject inner_obj = jsonArray.getJSONObject(i);
-                welf_name = inner_obj.getString("welf_name");
-                welf_local = inner_obj.getString("welf_local");
-                parent_category = inner_obj.getString("parent_category");
-                welf_category = inner_obj.getString("welf_category");
-                tag = inner_obj.getString("tag");
+                JSONObject inner_json = jsonArray.getJSONObject(i);
+                parent_category = inner_json.getString("parent_category");
+                welf_name = inner_json.getString("welf_name");
+                welf_category = inner_json.getString("welf_category");
+                welf_local = inner_json.getString("welf_local");
+                tag = inner_json.getString("tag");
 
-                SearchItem item = new SearchItem();
+                /**
+                 * CategorySearchResultItem : 상단 (이전 ResultKeywordItem)
+                 * CategorySearchBottomResultItem : 하단 (이전 MapResultItem)
+                 */
+
+                // 상단 리사이클러뷰에 넣을 키워드(welf_category)를 저장할 객체 생성
+                CategorySearchResultItem keywordItem = new CategorySearchResultItem();
+                keywordItem.setWelf_name(welf_name);
+                keywordItem.setWelf_category(welf_category);
+
+                // 하단 리사이클러뷰에 넣을 혜택 관련 값들을 객체에 대입해서 나중에 getter로 가져와 상/하단 리사이클러뷰에서 보여줄 수 있게 한다
+                CategorySearchBottomResultItem item = new CategorySearchBottomResultItem();
                 item.setWelf_name(welf_name);
-                item.setWelf_local(welf_local);
-                item.setParent_category(parent_category);
                 item.setWelf_category(welf_category);
-                item.setTag(tag);
+                item.setWelf_local(welf_local);
 
-                CategorySearchResultItem top_item = new CategorySearchResultItem();
-
-                // 상단의 가로 리사이클러뷰(하위 카테고리 보이는곳)에 넣을 리스트에 넣을 객체
-                top_item.setWelf_category(welf_category);
-                Log.e("fff", "top_item = " + top_item.getWelf_category());
-                boolean hasDuplicate = false;
-                for (int j = 0; j < top_list.size(); j++)
+                // 상단 리사이클러뷰에 넣을 welf_category 값들에 붙어 있는 특수문자들을 파싱, 중복되지 않게 처리한다
+                // 객체가 가진 값에 ';; '이 포함되어 있을 경우 ';; '을 기준으로 split()한 후, 상단 리사이클러뷰 어댑터에 넣을 리스트(keyword_list)에 값들을 넣는다
+                if (keywordItem.getWelf_category().contains(";; "))
                 {
-                    // 1번이라도 중복되는 게 있으면 break로 for문 탈출
-                    if (top_list.get(j).getWelf_category().equals(top_item.getWelf_category()))
+                    // ';; ' 구분자가 포함된 welf_category 파싱 시작
+                    String beforeWelfCategory = keywordItem.getWelf_category();
+                    String[] category_array = beforeWelfCategory.split(";; ");
+                    // 취업 지원이 보이지 않아서 작성한 로직. category_array 안의 값들을 keyword_list에 넣어서 취업 지원이 나오도록 시도
+                    for (int j = 0; j < category_array.length; j++)
                     {
-                        Log.e("fff", top_list.get(j).getWelf_category());
-                        hasDuplicate = true;
-                        break;
+                        CategorySearchResultItem keyword = new CategorySearchResultItem();
+                        keyword.setWelf_category(category_array[j]);
+                        keyword_list.add(keyword);
+                    }
+                    // 상단 리사이클러뷰에 붙이기 위해 상단 리사이클러뷰 어댑터 초기화 시 사용하는 모델 클래스의 객체를 생성해서
+                    // setter()로 welf_category, welf_name 값들을 집어넣는다
+                    CategorySearchResultItem items = new CategorySearchResultItem();
+                    for (int j = 0; j < category_array.length; j++) // category_array는 ';; '을 기준으로 split()한 결과물들이 담겨 있는 String[]이다
+                    {
+                        // split()한 결과가 들어있는 String[]의 크기만큼 반복해서 상단 리사이클러뷰 어댑터에 넣을 리스트에 값들을 setter()로 넣는다
+                        items.setWelf_category(category_array[j]);
+                        items.setWelf_name(keywordItem.getWelf_name());
+                        // 상단 리사이클러뷰에 'OO 지원'을 보여줄 때 사용하는 리스트에 값을 넣는다
+                        // keyword_list는 ResultKeywordItem 객체만 받는 ArrayList다
+                        keyword_list.add(items);
                     }
                 }
-                // 여기선 같은 게 있어서 나온건지 하나도 없어서 나온건지 모른다
-                // 그래서 boolean 변수를 통해 같은 게 있었으면 true, 없었으면 false로 설정하고 false일 때 리스트에 아이템을 추가한다
-                if (!hasDuplicate)
+                else if (keywordItem.getWelf_name().contains(";; "))
                 {
-                    /* top_list 안에 ;;이 들어간 아이템을 제외하고 값을 넣는다 */
-                    if (!top_item.getWelf_category().contains(";; "))
+                    String beforeWelfName = keywordItem.getWelf_name();
+                    String[] name_array = beforeWelfName.split(";; ");
+                    for (int j = 0; j < name_array.length; j++)
                     {
-                        top_list.add(top_item);
+                        CategorySearchResultItem keyword = new CategorySearchResultItem();
+                        keyword.setWelf_name(name_array[j]);
+                        keyword_list.add(keyword);
                     }
-                }
-
-                // 하단의 세로 리사이클러뷰에 넣을 리스트
-                CategorySearchBottomResultItem name_item = new CategorySearchBottomResultItem();
-                name_item.setWelf_name(welf_name);
-                name_item.setWelf_category(welf_category);
-                name_item.setWelf_local(welf_local);
-//                name_list.clear();
-                name_list.add(name_item);
-            }
-            total_count = jsonObject.getString("TotalCount");
-            Log.e(TAG, "TotalCount = " + total_count);
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        if (status.equals("500") || status.equals("404"))
-        {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            builder.setMessage("요청하신 검색어와 일치하는 검색 결과가 없습니다")
-                    .setPositiveButton("확인", new DialogInterface.OnClickListener()
+                    CategorySearchResultItem items = new CategorySearchResultItem();
+                    for (int j = 0; j < name_array.length; j++) // name_array는 ';; '을 기준으로 split()한 결과물들이 담겨 있는 String[]이다
                     {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            dialog.dismiss();
-//                            finish();
-                        }
-                    }).show();
-        }
-
-        // 가로 리사이클러뷰에 쓸 어댑터의 리스트에 값들을 넣는다
-//        top_list.clear();
-        top_list.add(0, new CategorySearchResultItem("전체"));
-        category_adapter = new SelectedCategoryAdapter(getContext(), top_list, category_clickListener);
-        category_adapter.setOnItemClickListener((view, pos) ->
-        {
-            String name = top_list.get(pos).getWelf_category();
-            Log.e(TAG, "선택한 하위 카테고리명 = " + name);
-            // 선택한 하위 카테고리에 속하는 정책들을 하단 리사이클러뷰에 표시한다
-            // 이 메서드의 JSON 파싱 메서드가 호출되면, 이 파싱 메서드 안에서 해당 하위 카테고리를 상징하는 이미지를 아이템에 set한다
-            Bundle bundle = new Bundle();
-            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "키워드 검색 결과 화면에서 'OO 지원' 클릭. 선택한 하위 카테고리 : " + name);
-            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-            searchSubCategoryWelfare(name, search_edittext.getText().toString(),region_name); //현금지원, 주거, 충북
-        });
-        keyword_category_recycler.setAdapter(category_adapter);
-
-        /* 쿼리 결과 개수로 몇 개가 검색됐는지 유저에게 알려준다 */
-        if (total_count == null)
-        {
-            search_result_benefit_title.setText("검색 결과가 없습니다");
-        }
-        else
-        {
-            if (Integer.parseInt(total_count) != 0)
-            {
-                if (Integer.parseInt(total_count) < 10)
-                {
-                    // 숫자가 1자리수인 경우
-                    SpannableString spannableString = new SpannableString("검색결과 " + total_count + "개입니다");
-                    spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 4, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    search_result_benefit_title.setText(spannableString);
-                }
-                else if (Integer.parseInt(total_count) > 9)
-                {
-                    // 숫자가 2자리수인 경우
-                    SpannableString spannableString = new SpannableString("검색결과 " + total_count + "개입니다");
-                    spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 4, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    search_result_benefit_title.setText(spannableString);
-                }
-                else if (Integer.parseInt(total_count) > 99)
-                {
-                    // 숫자가 3자리수인 경우
-                    SpannableString spannableString = new SpannableString("검색결과 " + total_count + "개입니다");
-                    spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 4, 8, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    search_result_benefit_title.setText(spannableString);
-                }
-            }
-        }
-
-        // 세로 리사이클러뷰(필터링 결과 출력)에 쓸 어댑터의 리스트에 값들을 넣는다
-        adapter = new CategorySearchResultAdapter(getContext(), name_list, itemClickListener);
-        adapter.setOnItemClickListener((((view, pos) -> {
-            // 선택한 혜택의 이름, 실시지역을 따서 인텐트로 넘겨 상세정보를 볼 수 있게 한다
-            String name = name_list.get(pos).getWelf_name();
-            String local = name_list.get(pos).getWelf_local();
-            Log.e(TAG, "선택한 혜택명 = " + name);
-            Log.e(TAG, "카테고리 : " + name_list.get(pos).getWelf_category());
-            Bundle bundle = new Bundle();
-            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "키워드 검색 결과 화면에서 상세보기 화면으로 이동. 선택한 혜택 : " + name);
-            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-            Intent intent = new Intent(getActivity(), DetailBenefitActivity.class);
-            intent.putExtra("name", name);
-            intent.putExtra("welf_local", local);
-            startActivity(intent);
-        })));
-        search_result_title_recycler.setAdapter(adapter);
-    }
-
-    /* 가로 리사이클러뷰 클릭 리스너에서도 이 메서드를 호출해야 세로 리사이클러뷰에 쓰이는 리스트 안의 값들을 바꿀 수 있다 */
-    void searchSubCategoryWelfare(String sub_category, String keyword, String city)
-    {
-        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        // 현물 지원, 현금 지원 등의 키워드를 받아야 하니까 상단 가로 리사이클러뷰 클릭 리스너에서 클릭 이벤트가 일어날 때마다, 아이템 안의 문자를 담아와야 한다
-        Call<String> call = apiInterface.searchSubCategoryWelfare("child_category_search", sub_category, keyword, city);
-        call.enqueue(new Callback<String>()
-        {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response)
-            {
-                if (response.isSuccessful() && response.body() != null)
-                {
-                    String result = response.body();
-                    Log.e(TAG, "선택한 서브카테고리(현금지원,..):"+sub_category);
-                    Log.e(TAG, "상단 리사이클러뷰 아이템 선택에 따른 연관 혜택 출력 = " + result);
-                    secondJsonParsing(result);
+                        // split()한 결과가 들어있는 String[]의 크기만큼 반복해서 상단 리사이클러뷰 어댑터에 넣을 리스트에 값들을 setter()로 넣는다
+                        items.setWelf_name(keywordItem.getWelf_name());
+                        // 상단 리사이클러뷰에 'OO 지원'을 보여줄 때 사용하는 리스트에 값을 넣는다
+                        // keyword_list는 ResultKeywordItem 객체만 받는 ArrayList다
+                        keyword_list.add(items);
+                    }
                 }
                 else
                 {
-                    Log.e(TAG, "실패 : " + response.body());
+                    // ';; ' 구분자가 붙어서 오지 않은 경우에는 중복되는 값이 없도록 처리한 다음 'OO 지원' 문자열들을 넣는다
+                    CategorySearchResultItem item1 = new CategorySearchResultItem();
+                    item1.setWelf_category(keywordItem.getWelf_category());
+                    item1.setWelf_name(keywordItem.getWelf_name());
+
+                    // 중복되는 값이 있는지 확인한 후 리스트에 add()한다
+                    // 아래 코드를 없애면 기능이 제대로 작동하지 않는다
+                    if (!keyword_list.contains(item1))
+                    {
+                        keyword_list.add(item1);
+                    }
                 }
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t)
-            {
-                Log.e(TAG, "에러 = " + t.getMessage());
-            }
-        });
-    }
-
-    /* 상단 리사이클러뷰에서 하위 카테고리를 선택하면, 그 카테고리에 매핑된 혜택들로 하단 리사이클러뷰 내용을 수정한다 */
-    private void secondJsonParsing(String result)
-    {
-        name_list.clear();
-        try
-        {
-            JSONObject jsonObject = new JSONObject(result);
-            JSONArray jsonArray = jsonObject.getJSONArray("Message");
-            second_total_count = jsonObject.getString("TotalCount");
-            for (int i = 0; i < jsonArray.length(); i++)
-            {
-                JSONObject inner_obj = jsonArray.getJSONObject(i);
-                second_welf_name = inner_obj.getString("welf_name");
-                second_welf_local = inner_obj.getString("welf_local");
-                second_parent_category = inner_obj.getString("parent_category");
-                second_welf_category = inner_obj.getString("welf_category");
-                second_tag = inner_obj.getString("tag");
-
-                // 하단 리사이클러뷰에 박을 모델 클래스 객체 정의 후 값 대입
-
-                CategorySearchBottomResultItem item = new
-                        CategorySearchBottomResultItem();
-                item.setWelf_name(second_welf_name);
-                item.setWelf_local(second_welf_local);
-                item.setParent_category(second_parent_category);
-                item.setWelf_category(second_welf_category);
-                item.setTag(second_tag);
-
-                // 하단 리사이클러뷰에 쓰이는 리스트에 모델 클래스 객체 대입
-                name_list.add(item);
+                // 혜택 이름들을 보여주는 하단 리사이클러뷰의 어댑터에 넣을 List에
+                // for문이 반복된 만큼 생성된 DTO 객체들을 넣는다. 이 부분이 for문의 마지막 부분이다
+                item_list.add(item);
             }
         }
         catch (JSONException e)
         {
             e.printStackTrace();
         }
-        search_result_benefit_title.setText("검색결과 " + second_total_count + "개입니다");
-        if (Integer.parseInt(second_total_count) < 10)
+
+        if (status.equals("500") || status.equals("404"))
         {
-            // 숫자가 1자리수인 경우
+            up_recycler.setVisibility(View.INVISIBLE);
+            search_result_benefit_title.setVisibility(View.INVISIBLE);
+            no_result_view.setVisibility(View.VISIBLE);
+            bottom_recycler.setEmptyView(emptyImageView, emptyView, emptyView2);
+        }
+        else
+        {
+            search_result_benefit_title.setVisibility(View.VISIBLE);
+            up_recycler.setVisibility(View.VISIBLE);
+            no_result_view.setVisibility(View.GONE);
+        }
+
+        search_result_benefit_title.setText("검색결과 " + total_count + "개입니다");
+        int first_changed_count = Integer.parseInt(total_count);
+        if (first_changed_count < 10)
+        {
             SpannableString spannableString = new SpannableString(search_result_benefit_title.getText().toString());
-            spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 4, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannableString.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark)),
+                    5, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             search_result_benefit_title.setText(spannableString);
         }
-        else if (Integer.parseInt(second_total_count) > 9)
+        else
         {
-            // 숫자가 2자리수인 경우
             SpannableString spannableString = new SpannableString(search_result_benefit_title.getText().toString());
-            spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 4, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannableString.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark)),
+                    5, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             search_result_benefit_title.setText(spannableString);
         }
-        else if (Integer.parseInt(second_total_count) > 99)
+
+        /* 상단 리사이클러뷰에 들어갈 "OO 지원"의 중복처리 로직 시작 */
+        // ArrayList 안의 데이터를 중복처리하기 위해 먼저 StringBuilder에 넣는다
+        StringBuilder stringBuilder = new StringBuilder();          // 상단 리사이클러뷰에 보일 'OO 지원'을 담을 StringBuilder
+        StringBuilder welfareNameBuilder = new StringBuilder();     // 하단 리사이클러뷰에 보일 혜택명들을 담을 StringBuilder
+        StringBuilder welfareLocalBuilder = new StringBuilder();
+
+        /* 중복처리를 하기 위해 ';;' 구분자를 한번 더 붙인 다음 이를 파싱해서 HashSet에 넣어 중복되는 값들을 없애는 처리를 수행했다
+         * 일을 2번 하는 느낌이라 이 부분은 나중에 확인한다 */
+        // 상단 리사이클러뷰에 쓰는 리스트의 크기만큼 반복해서 'OO 지원' 사이사이에 ';;'을 붙인다
+        for (int i = 0; i < keyword_list.size(); i++)
         {
-            // 숫자가 3자리수인 경우
-            SpannableString spannableString = new SpannableString(search_result_benefit_title.getText().toString());
-            spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#EE2F43")), 4, 8, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            search_result_benefit_title.setText(spannableString);
+            stringBuilder.append(keyword_list.get(i).getWelf_category()).append(";;");
         }
-        // 세로 리사이클러뷰에 쓸 어댑터의 리스트에 값들을 넣는다
-        adapter = new CategorySearchResultAdapter(getContext(), name_list, itemClickListener);
-        adapter.setOnItemClickListener((((view, pos) -> {
-            String name = name_list.get(pos).getWelf_name();
-            String local = name_list.get(pos).getWelf_local();
-            Log.e(TAG, "선택한 혜택명 = " + name);
-            Log.e(TAG, "카테고리 : " + name_list.get(pos).getWelf_category());
+
+        // 하단 리사이클러뷰에 쓰는 리스트의 크기만큼 반복해서 혜택명 사이사이에 ';;'을 붙인다
+        for (int i = 0; i < item_list.size(); i++)
+        {
+            welfareNameBuilder.append(item_list.get(i).getWelf_name()).append(";;");
+        }
+
+        for (int i = 0; i < item_list.size(); i++)
+        {
+            welfareLocalBuilder.append(item_list.get(i).getWelf_local()).append(";;");
+        }
+
+        // ";;"가 섞인 문자열 2개를 구분자로 각각 split()한다
+        String[] arr = stringBuilder.toString().split(";;");
+        String[] nameArr = welfareNameBuilder.toString().split(";;");
+        String[] localArr = welfareLocalBuilder.toString().split(";;");
+
+        // split() 처리 후 중복되는 것들을 없애기 위해 HashSet을 썼다
+        arr = new LinkedHashSet<>(Arrays.asList(arr)).toArray(new String[0]);
+        nameArr = new HashSet<>(Arrays.asList(nameArr)).toArray(new String[0]);
+
+        // String[] arr 안에 들어있는 데이터 양만큼 반복문을 돌리며 setter로 welf_category를 넣기 위해 객체를 만들고, 아래 for문에서 setter로 값들을 박는다
+        keyword_list.clear();
+        /* ResultKeywordItem : 상단 리사이클러뷰에 쓰는 모델 클래스 / MapResultItem : 하단 리사이클러뷰에 쓰는 모델 클래스 */
+        for (int i = 0; i < arr.length; i++)
+        {
+            // setter 사용을 위한 객체 생성
+            CategorySearchResultItem item = new CategorySearchResultItem();   // 상단 필터 리사이클러뷰에 사용할 모델 클래스
+            item.setWelf_category(arr[i]);
+            item.setWelf_name(nameArr[i]);
+            item.setWelf_local(localArr[i]);
+            keyword_list.add(item);
+        }
+
+        for (int i = 0; i < localArr.length; i++)
+        {
+            CategorySearchBottomResultItem item = new CategorySearchBottomResultItem();
+            item.setWelf_local(localArr[i]);
+            other_list.add(item);
+        }
+
+        if (!keyword_list.get(0).getWelf_category().equals("전체") && !keyword_list.contains("전체"))
+        {
+            keyword_list.add(0, new CategorySearchResultItem("전체"));
+        }
+
+        up_adapter = new SelectedCategoryAdapter(getActivity(), keyword_list, up_itemClickListener);
+        up_adapter.setOnItemClickListener((view, position) ->
+        {
+            /* 상단 리사이클러뷰에서 전체를 클릭한 경우 */
+            if (keyword_list.get(position).getWelf_category().equals("전체"))
+            {
+                searchWelfare(original_name, original_local);
+                search_result_benefit_title.setText("검색결과 " + total_count + "개입니다");
+                int changed_count = Integer.parseInt(total_count);
+                if (changed_count < 10)
+                {
+                    SpannableString spannableString = new SpannableString(search_result_benefit_title.getText().toString());
+                    spannableString.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark)),
+                            5, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    search_result_benefit_title.setText(spannableString);
+                }
+                else
+                {
+                    SpannableString spannableString = new SpannableString(search_result_benefit_title.getText().toString());
+                    spannableString.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark)),
+                            5, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    search_result_benefit_title.setText(spannableString);
+                }
+            }
+            else
+            {
+                /* 상단 리사이클러뷰에서 전체 이외의 필터를 클릭한 경우 */
+                other_list.clear();
+
+                for (int i = 0; i < item_list.size(); i++)
+                {
+                    CategorySearchBottomResultItem item = new CategorySearchBottomResultItem();
+                    if (item_list.get(i).getWelf_category().contains(keyword_list.get(position).getWelf_category()))
+                    {
+                        item.setWelf_category(keyword_list.get(position).getWelf_category());
+                        item.setWelf_local(item_list.get(i).getWelf_local());
+                        item.setWelf_name(item_list.get(i).getWelf_name());
+                        other_list.add(item);
+                    }
+                }
+
+                search_result_benefit_title.setText("검색결과 " + other_list.size() + "개입니다");
+                if (other_list.size() < 10)
+                {
+                    SpannableString spannableString = new SpannableString(search_result_benefit_title.getText().toString());
+                    spannableString.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark)),
+                            5, 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    search_result_benefit_title.setText(spannableString);
+                }
+                else
+                {
+                    SpannableString spannableString = new SpannableString(search_result_benefit_title.getText().toString());
+                    spannableString.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark)),
+                            5, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    search_result_benefit_title.setText(spannableString);
+                }
+
+                bottom_adapter = new CategorySearchResultAdapter(getActivity(), other_list, bottom_itemClickListener);
+                bottom_adapter.setOnItemClickListener((view1, pos) ->
+                {
+                    String name = other_list.get(pos).getWelf_name();
+                    String local = other_list.get(pos).getWelf_local();
+
+                    Intent see_detail_intent = new Intent(getActivity(), DetailBenefitActivity.class);
+                    see_detail_intent.putExtra("name", name);
+                    see_detail_intent.putExtra("welf_local", local);
+                    startActivity(see_detail_intent);
+                });
+                bottom_recycler.setAdapter(bottom_adapter);
+            }
+        });
+
+        up_recycler.setAdapter(up_adapter);
+
+        bottom_adapter = new CategorySearchResultAdapter(getActivity(), item_list, bottom_itemClickListener);
+
+        bottom_adapter.setOnItemClickListener((view, position) ->
+        {
+            String name = item_list.get(position).getWelf_name();
+            String local = item_list.get(position).getWelf_local();
             Bundle bundle = new Bundle();
-            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "키워드 검색 결과 화면에서 상세보기 화면으로 이동. 선택한 혜택 : " + name);
+            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "지역 검색 화면에서 상세보기 화면으로 이동 (선택한 혜택 : " + name + ")");
             analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-            // 혜택 이름을 선택하면 이 이름을 갖고 액티비티를 이동해서 선택한 혜택의 상세 정보를 보여준다
-            Intent intent = new Intent(getContext(), DetailBenefitActivity.class);
-            intent.putExtra("name", name);
-            intent.putExtra("welf_local", local);
-            startActivity(intent);
-        })));
-        search_result_title_recycler.setAdapter(adapter);
+            Intent see_detail_intent = new Intent(getActivity(), DetailBenefitActivity.class);
+            see_detail_intent.putExtra("name", name);
+            see_detail_intent.putExtra("welf_local", local);
+            startActivity(see_detail_intent);
+        });
+        bottom_recycler.setAdapter(bottom_adapter);
     }
-
-
 
 }

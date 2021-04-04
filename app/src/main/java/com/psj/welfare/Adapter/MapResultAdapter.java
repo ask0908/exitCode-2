@@ -48,7 +48,6 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
     public void onBindViewHolder(@NonNull MapResultAdapter.MapResultViewHolder holder, int position)
     {
         MapResultItem item = lists.get(position);
-        // 제주도의 장애인 교통비;; 영상전화 사용료 지원 혜택의 중간에 ;;이 껴있어서 이걸 빼야 한다
         String welf_name = item.getWelf_name();
         if (welf_name != null)
         {
@@ -60,9 +59,7 @@ public class MapResultAdapter extends RecyclerView.Adapter<MapResultAdapter.MapR
         holder.map_result_benefit_name.setText(welf_name);
         holder.map_result_layout.setTag(position);
 
-        /* 첫 번째 요소만 빼고 뒤의 요소를 전부 없애는 로직 */
         List<String> item_list = Collections.singletonList(lists.get(position).getWelf_category());
-        // 리스트의 요소 뒤에 붙어있는 ;; 같은 구분자들을 전부 공백으로 바꾼다
         StringBuilder listToString = new StringBuilder();
         for (String str : item_list)
         {
