@@ -53,7 +53,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/* ThemeChooseActivity에서 관심사 선택 후 보여주는 결과 조회 화면 */
 public class ResultBenefitActivity extends AppCompatActivity
 {
     public final String TAG = this.getClass().getSimpleName();
@@ -142,7 +141,6 @@ public class ResultBenefitActivity extends AppCompatActivity
                 RBF_ListSet.add(position_RB, new ResultBenefitItem(favor_data.get(i), R.drawable.rbf_btn_before));
                 position_RB++;
             }
-
         }
         else if (getIntent().hasExtra("region_btn"))
         {
@@ -172,7 +170,6 @@ public class ResultBenefitActivity extends AppCompatActivity
             sb.deleteCharAt(category.length() - 1);
             last_category = sb.toString();
         }
-        Log.e(TAG, "리스트값 스트링으로 변환 -> " + last_category);
 
         if (last_category.equals("취업·창업") || last_category.equals("청년") || last_category.equals("주거") || last_category.equals("아기·어린이")
                 || last_category.equals("육아·임신") || last_category.equals("문화·생활") || last_category.equals("기업·자영업자") || last_category.equals("저소득층")
@@ -226,7 +223,6 @@ public class ResultBenefitActivity extends AppCompatActivity
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.show();
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Log.e(TAG, "검색 키워드 = " + category);
         SharedPreferences sharedPreferences = getSharedPreferences("app_pref", 0);
         String session = sharedPreferences.getString("sessionId", "");
         String token = sharedPreferences.getString("token", "");
@@ -239,7 +235,6 @@ public class ResultBenefitActivity extends AppCompatActivity
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String category_result = response.body();
-                    Log.e(TAG, "category_result = " + category_result);
                     jsonParse(category_result);
                     dialog.dismiss();
                 }
@@ -302,7 +297,6 @@ public class ResultBenefitActivity extends AppCompatActivity
                     for (int j = 0; j < category_array.length; j++)
                     {
                         CategorySearchResultItem keyword = new CategorySearchResultItem();
-                        Log.e(TAG, "category_array : " + category_array[j]);
                         keyword.setWelf_category(category_array[j]);
                         keyword_list.add(keyword);
                     }
@@ -515,7 +509,6 @@ public class ResultBenefitActivity extends AppCompatActivity
         {
             String name = item_list.get(position).getWelf_name();
             String local = item_list.get(position).getWelf_local();
-            Log.e(TAG, "혜택 이름 = " + name);
             Bundle bundle = new Bundle();
             bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "지역 검색 화면에서 상세보기 화면으로 이동 (선택한 혜택 : " + name + ")");
             analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
@@ -550,8 +543,7 @@ public class ResultBenefitActivity extends AppCompatActivity
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    String result = response.body();
-                    Log.e(TAG, "검색 화면 진입 로그 전송 결과 : " + result);
+                    //
                 }
                 else
                 {

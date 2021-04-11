@@ -408,7 +408,6 @@ public class MainFragment extends Fragment
     void userOrderedWelfare()
     {
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
-//        token = sharedPreferences.getString("token", "");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Call<String> call = apiInterface.userOrderedWelfare(sqlite_token, "customized", LogUtil.getUserLog());  // token -> sqlite_token으로 변경
         call.enqueue(new Callback<String>()

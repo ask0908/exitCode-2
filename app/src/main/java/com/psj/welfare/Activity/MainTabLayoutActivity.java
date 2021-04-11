@@ -153,6 +153,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
 
         Intent intent = getIntent();
         int ddd = intent.getIntExtra("push", -1);
+        Log.e(TAG, "ddd : " + ddd);
         if (ddd == 100)
         {
             adapter = new MainViewPagerAdapter(MainTabLayoutActivity.this, getSupportFragmentManager());

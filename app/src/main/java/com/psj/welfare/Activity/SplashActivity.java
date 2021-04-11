@@ -31,9 +31,6 @@ import com.psj.welfare.util.LogUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -56,6 +53,8 @@ public class SplashActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        intent = getIntent();
 
         setStatusBarGradiant(SplashActivity.this);
 
@@ -87,7 +86,6 @@ public class SplashActivity extends AppCompatActivity
     @Override
     protected void onNewIntent(Intent intent)
     {
-        super.onNewIntent(intent);
         if (intent != null && intent.getExtras() != null)
         {
             String aaa = intent.getExtras().getString("push_clicked");
@@ -103,6 +101,7 @@ public class SplashActivity extends AppCompatActivity
             Handler handler = new Handler();
             handler.postDelayed(new NormalHandler(), 1000);
         }
+        super.onNewIntent(intent);
     }
 
     private class NormalHandler implements Runnable
@@ -173,18 +172,6 @@ public class SplashActivity extends AppCompatActivity
                 Log.e(TAG, "에러 : " + t.getMessage());
             }
         });
-    }
-
-    private void encode(String str)
-    {
-        try
-        {
-            encode_str = URLEncoder.encode(str, "UTF-8");
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            e.printStackTrace();
-        }
     }
 
     private void sessionParsing(String result)

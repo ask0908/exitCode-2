@@ -95,8 +95,11 @@ public class PushGatherFragment extends Fragment
 
         activity_list = new ArrayList<>();
 
+        // 로그인 여부를 확인하고 로그아웃돼 있다면 푸시 알림을 보여주지 않는다. 로그인한 경우에만 보여준다
+        app_pref = getActivity().getSharedPreferences("app_pref", 0);
+
         /* 서버에 저장된 푸시 데이터들을 가져오는 메서드 */
-        getPushData();
+//        getPushData();
 
         push_layout_recycler = view.findViewById(R.id.push_layout_recycler);
         push_layout_recycler.setHasFixedSize(true);
@@ -131,6 +134,21 @@ public class PushGatherFragment extends Fragment
         // 위에서 만든 콜백을 ItemTouchHelper에 붙인 다음 리사이클러뷰에 붙여야 밀어서 삭제하기가 가능하다
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(push_layout_recycler);
+
+        boolean isLogin = app_pref.getBoolean("logout", false);
+        Log.e(TAG, "로그아웃 상태 : " + isLogin);
+        if (isLogin)
+        {
+            push_layout_recycler.setVisibility(View.GONE);
+            nothing_noti.setText("도착한 혜택 알림이 없어요");
+            nothing_noti.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            nothing_noti.setVisibility(View.GONE);
+            push_layout_recycler.setVisibility(View.VISIBLE);
+            getPushData();
+        }
 
     }
 
