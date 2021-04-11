@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -32,25 +31,25 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
     String channelID = "ch_push";
     String token;
 
-    private Context context;
-
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage)
     {
+        Log.e(TAG, "onMessageReceived 실행!");
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
         sharedPreferences = getSharedPreferences("app_pref", 0);
         boolean isPushDisabled = sharedPreferences.getBoolean("fcm_canceled", false);
+        Log.e(TAG, "isPushDisabled = " + isPushDisabled);
         String msg, title, icon;
-
         if (remoteMessage.getNotification() != null)
         {
+            Log.e(TAG, "getBody : " + remoteMessage.getNotification().getBody());
+            Log.e(TAG, "getTitle : " + remoteMessage.getNotification().getTitle());
             msg = remoteMessage.getNotification().getBody();
             title = remoteMessage.getNotification().getTitle();
             icon = remoteMessage.getNotification().getIcon();
-
             if (isPushDisabled)
             {
+                // true면 fcm 푸시 받도록 설정
                 showNotification(title, msg, icon);
             }
             else
@@ -60,7 +59,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                     manager.deleteNotificationChannel(channelID);
                 }
             }
-
         }
     }
 
@@ -68,9 +66,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
     {
         Intent intent = new Intent(this, SplashActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        Bundle bundle = new Bundle();
-        bundle.putString("push_clicked", "noti_intent");
-        intent.putExtras(bundle);
         intent.putExtra("push_clicked", "noti_intent");
         intent.setAction("com.psj.welfare.push");
 
@@ -102,7 +97,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
     public void onNewToken(@NonNull String token)
     {
         super.onNewToken(token);
-        Log.e(TAG, "Refreshed token : " + token);
     }
 
     void changePushStatus()
