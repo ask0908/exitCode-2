@@ -161,7 +161,15 @@ public class DetailBenefitActivity extends AppCompatActivity
         {
             Intent intent = getIntent();
             push_welf_name = intent.getStringExtra("name");
-            name_of_benefit.setText(push_welf_name);
+            if (push_welf_name.contains(";; "))
+            {
+                push_welf_name = push_welf_name.replace(";; ", ", ");
+                name_of_benefit.setText(push_welf_name);
+            }
+            else
+            {
+                name_of_benefit.setText(push_welf_name);
+            }
             editor.putString("detail_benefit_name", push_welf_name);
             editor.apply();
         }
