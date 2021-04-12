@@ -72,7 +72,6 @@ public class SplashActivity extends AppCompatActivity
                     return;
                 }
                 token = task.getResult().getToken();
-                Log.e(TAG, "FCM token = " + token);
                 editor.putString("fcm_token", token);
                 editor.apply();
             }
