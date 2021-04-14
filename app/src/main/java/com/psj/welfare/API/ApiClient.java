@@ -49,7 +49,7 @@ public class ApiClient
     }
 
     /* rest api call의 상태를 확인하는 메서드 */
-    private static HttpLoggingInterceptor httpLoggingInterceptor()
+    public static HttpLoggingInterceptor httpLoggingInterceptor()
     {
 
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger()

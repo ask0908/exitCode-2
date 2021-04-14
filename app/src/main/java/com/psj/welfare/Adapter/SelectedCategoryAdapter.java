@@ -60,8 +60,6 @@ public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCatego
     @Override
     public void onBindViewHolder(@NonNull SelectedCategoryAdapter.SelectedCategoryViewHolder holder, int position)
     {
-        CategorySearchResultItem item = list.get(position);
-
         List<String> item_list = Collections.singletonList(list.get(position).getWelf_category());
         StringBuilder listToString = new StringBuilder();
         for (String str : item_list)

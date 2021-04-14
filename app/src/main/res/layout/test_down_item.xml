@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_result_layout"
+    android:layout_width="match_parent"
+    android:layout_height="90dp"
+    android:layout_marginStart="10dp"
+    android:layout_marginTop="18dp"
+    android:layout_marginEnd="10dp"
+    android:elevation="10dp"
+    app:cardElevation="5dp"
+    app:cardCornerRadius="17dp"
+    android:orientation="horizontal">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/bottom_result_name"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent=".9"
+            app:layout_constraintHeight_percent=".36"
+            app:layout_constraintVertical_bias=".3"
+            app:layout_constraintHorizontal_bias=".5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:fontFamily="@font/jalnan"
+            android:gravity="start"
+            android:text="행복주택공급"
+            android:textColor="@color/gray"
+            android:autoSizeTextType="none"
+            app:autoSizePresetSizes="@array/autosize_text_sizes"/>
+
+        <TextView
+            android:id="@+id/bottom_result_subject"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent=".5"
+            app:layout_constraintHeight_percent=".18"
+            app:layout_constraintVertical_bias=".8"
+            app:layout_constraintHorizontal_bias=".1"
+            android:fontFamily="@font/nanum_barun_gothic_bold"
+            android:text="#전국 #다자녀 #다문화"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:autoSizeTextType="none"
+            app:autoSizePresetSizes="@array/autosize_text_sizes"/>
+
+        <TextView
+            android:id="@+id/bottom_result_views"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent=".3"
+            app:layout_constraintHeight_percent=".22"
+            app:layout_constraintHorizontal_bias=".94"
+            app:layout_constraintVertical_bias=".81"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:gravity="center|end"
+            android:text="view 100+"
+            android:autoSizeTextType="none"
+            app:autoSizePresetSizes="@array/autosize_text_sizes"
+            android:fontFamily="@font/nanum_barun_gothic_bold"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

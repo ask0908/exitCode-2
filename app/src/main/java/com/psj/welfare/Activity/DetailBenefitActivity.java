@@ -69,6 +69,7 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class DetailBenefitActivity extends AppCompatActivity
 {
@@ -134,6 +135,8 @@ public class DetailBenefitActivity extends AppCompatActivity
     LinearLayout target_layout, condition_layout;
 
     List<ReviewItem> list;
+
+    Retrofit retrofit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -360,10 +363,16 @@ public class DetailBenefitActivity extends AppCompatActivity
 
     void getWelfareInformation()
     {
+        Log.e(TAG, "getWelfareInformation() 호출");
+
         String token = sharedPreferences.getString("token", "");
+        Log.e(TAG, "token : " + token);
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         sharedPreferences = getSharedPreferences("app_pref", 0);
         String session = sharedPreferences.getString("sessionId", "");
+        Log.e(TAG, "session : " + session);
+        Log.e(TAG, "push_welf_local : " + push_welf_local);
+        Log.e(TAG, "push_welf_name : " + push_welf_name);
         Call<String> call = apiInterface.getWelfareInformation(token, session, "detail", push_welf_local, push_welf_name, token, LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
@@ -373,11 +382,13 @@ public class DetailBenefitActivity extends AppCompatActivity
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
+                    Log.e(TAG, "result : " + result);
                     jsonParsing(result);
                 }
                 else
                 {
                     Toast.makeText(DetailBenefitActivity.this, "에러가 발생했습니다. 잠시 후 다시 시도해 주세요", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "errorBody() : " + response.errorBody());
                 }
             }
 
@@ -422,6 +433,7 @@ public class DetailBenefitActivity extends AppCompatActivity
 
     private void jsonParsing(String result)
     {
+        Log.e(TAG, "jsonParsing() 안의 result : " + result);
         try
         {
             JSONObject jsonObject = new JSONObject(result);
@@ -544,7 +556,7 @@ public class DetailBenefitActivity extends AppCompatActivity
                 myTextView[i].setTypeface(face);
                 myTextView[i].setText(target_list.get(i));
                 myTextView[i].setTextSize(15);
-                myTextView[i].setTextColor(ContextCompat.getColor(DetailBenefitActivity.this, R.color.grey));
+                myTextView[i].setTextColor(ContextCompat.getColor(DetailBenefitActivity.this, R.color.gray));
                 myTextView[i].setPadding(0, 0, 20, 10);
                 target_layout.addView(myTextView[i]);
             }

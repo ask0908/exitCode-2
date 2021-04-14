@@ -61,7 +61,7 @@
             android:fontFamily="@font/nanum_barun_gothic_bold"
             android:lineSpacingExtra="6sp"
             android:text="청년농부"
-            android:textColor="@color/grey"
+            android:textColor="@color/gray"
             android:textSize="20sp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

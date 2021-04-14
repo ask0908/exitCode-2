@@ -1,9 +1,13 @@
 package com.psj.welfare.fragment;
 
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -45,6 +49,7 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -66,7 +71,6 @@ public class MyPageFragment extends Fragment
     SharedPreferences sharedPreferences;
     String profile_image, kakao_nick, server_token;
     String checked;
-    boolean fcm_canceled;
 
     // 구글 애널리틱스
     private FirebaseAnalytics analytics;
@@ -222,12 +226,15 @@ public class MyPageFragment extends Fragment
         });
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        boolean isAllowed = NotificationManagerCompat.from(getActivity()).areNotificationsEnabled();
-        if (isAllowed)
+
+        // 안드로이드 os 자체의 설정 화면에서 알림 설정값을 가져와 그 값대로 스위치를 바꾼다
+        // 여기 뿐 아니라 onResume()에도 같은 처리를 해야 한다. 왜냐면 화면을 이동해서 설정값을 바꾸고 백버튼을 누르면 마이페이지로 돌아오는데, 이 때 호출되는 onResume()에서
+        // 알림 설정값을 체크해야 스위치의 on/off가 바뀌고 유저는 실시간으로 설정값이 반영되는 걸 확인할 수 있다
+        boolean isAllowed = areNotificationsEnabled();
+        if (isAllowed == true)
         {
             push_noti_switch.setChecked(true);
             putPushSetting(true);
-            fcm_canceled = true;
             editor.putBoolean("fcm_canceled", true);
             editor.apply();
         }
@@ -235,7 +242,6 @@ public class MyPageFragment extends Fragment
         {
             push_noti_switch.setChecked(false);
             putPushSetting(false);
-            fcm_canceled = false;
             editor.putBoolean("fcm_canceled", false);
             editor.apply();
         }
@@ -391,8 +397,6 @@ public class MyPageFragment extends Fragment
         {
             kakao_name.setVisibility(View.VISIBLE);
             kakao_profile_image.setVisibility(View.VISIBLE);
-            push_noti_switch.setChecked(false);
-            putPushSetting(false);
             mypage_login_btn.setText("로그아웃");
             user_layout.setVisibility(View.VISIBLE);
             terms_location_layout.setVisibility(View.VISIBLE);
@@ -400,6 +404,31 @@ public class MyPageFragment extends Fragment
             mypage_divider.setVisibility(View.VISIBLE);
         }
 
+    }
+
+    public boolean areNotificationsEnabled()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+            if (!manager.areNotificationsEnabled())
+            {
+                return false;
+            }
+            List<NotificationChannel> channels = manager.getNotificationChannels();
+            for (NotificationChannel channel : channels)
+            {
+                if (channel.getImportance() == NotificationManager.IMPORTANCE_NONE)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        else
+        {
+            return NotificationManagerCompat.from(getActivity()).areNotificationsEnabled();
+        }
     }
 
     void putPushSetting(boolean isPushed)
@@ -480,8 +509,8 @@ public class MyPageFragment extends Fragment
     public void onResume()
     {
         super.onResume();
-        boolean isAllowed = NotificationManagerCompat.from(getActivity()).areNotificationsEnabled();
-        if (sharedPreferences.getBoolean("logout", true))
+        boolean isAllowed = areNotificationsEnabled();
+        if (sharedPreferences.getBoolean("logout", false))
         {
             push_noti_switch.setChecked(false);
         }
@@ -490,10 +519,12 @@ public class MyPageFragment extends Fragment
             if (isAllowed)
             {
                 push_noti_switch.setChecked(true);
+                putPushSetting(true);
             }
             else
             {
                 push_noti_switch.setChecked(false);
+                putPushSetting(false);
             }
         }
     }
