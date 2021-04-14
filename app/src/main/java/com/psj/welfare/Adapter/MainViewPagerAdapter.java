@@ -29,6 +29,7 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter
         super(fm);
         mContext = context;
         list.add(new MainFragment());
+//        list.add(new TestFragment());
         list.add(new SearchFragment());
         list.add(new PushGatherFragment());
         list.add(new MyPageFragment());

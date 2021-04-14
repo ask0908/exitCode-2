@@ -53,7 +53,7 @@
         android:fontFamily="@font/jalnan"
         android:lineSpacingExtra="6sp"
         android:text="텍스트"
-        android:textColor="@color/grey"
+        android:textColor="@color/gray"
         android:textSize="17sp"
         android:padding="16dp"
         app:layout_constraintStart_toStartOf="parent"

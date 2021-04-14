@@ -101,7 +101,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="16sp"
                             android:fontFamily="@font/jalnan"
-                            android:textColor="@color/grey"
+                            android:textColor="@color/gray"
                             android:text=" 님"/>
 
                         <TextView
@@ -157,7 +157,7 @@
                         android:fontFamily="@font/jalnan"
                         android:gravity="start|center"
                         android:text="개인정보 수정"
-                        android:textColor="@color/grey"
+                        android:textColor="@color/gray"
                         android:textSize="17sp" />
 
                     <ImageView
@@ -191,7 +191,7 @@
                         android:fontFamily="@font/jalnan"
                         android:gravity="start|center"
                         android:text="키워드 정보 수정"
-                        android:textColor="@color/grey"
+                        android:textColor="@color/gray"
                         android:textSize="17sp" />
 
                     <ImageView
@@ -225,7 +225,7 @@
                         android:fontFamily="@font/nanum_barun_gothic_bold"
                         android:text="푸쉬알림설정"
                         android:textSize="17sp"
-                        android:textColor="@color/grey"/>
+                        android:textColor="@color/gray"/>
 
                     <Switch
                         android:id="@+id/push_noti_switch"
@@ -235,7 +235,7 @@
                         android:clickable="false"
                         android:theme="@style/switch_font"
                         android:fontFamily="@font/jalnan"
-                        android:textColor="@color/grey"/>
+                        android:textColor="@color/gray"/>
 
                 </LinearLayout>
 
@@ -294,7 +294,7 @@
                         android:fontFamily="@font/nanum_barun_gothic_bold"
                         android:gravity="start|center"
                         android:text="이용약관"
-                        android:textColor="@color/grey"
+                        android:textColor="@color/gray"
                         android:textSize="17sp" />
 
                     <ImageView
@@ -327,7 +327,7 @@
                         android:fontFamily="@font/nanum_barun_gothic_bold"
                         android:gravity="start|center"
                         android:text="개인정보처리방침"
-                        android:textColor="@color/grey"
+                        android:textColor="@color/gray"
                         android:textSize="17sp" />
 
                     <ImageView
@@ -359,7 +359,7 @@
                         android:text="버전정보"
                         android:layout_marginTop="10dp"
                         android:layout_marginBottom="10dp"
-                        android:textColor="@color/grey"
+                        android:textColor="@color/gray"
                         android:textSize="17sp" />
 
                     <TextView
@@ -369,7 +369,7 @@
                         android:layout_weight=".70"
                         android:fontFamily="@font/nanum_barun_gothic_bold"
                         android:text="1.0.0"
-                        android:textColor="@color/grey"
+                        android:textColor="@color/gray"
                         android:gravity="end" />
 
                 </LinearLayout>
