@@ -16,6 +16,7 @@ public class ApiClient
     // 클라이언트가 통신할 서버 URL
 //    public static final String BASE_URL = "https://www.urbene-fit.com/";
     public static final String BASE_URL = "https://www.hyemo.com/";
+    public static final String SECOND_URL = "https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/";
 
     // 사용자에 대한 인증정보를 매 요청마다 서버로 함께 전달해 주어야 하는 경우가 발생하거나,
     // 개발 중 요청과 응답에 대한 로깅을 해야되는 경우가 발생합니다
@@ -24,6 +25,25 @@ public class ApiClient
 //     OkHttpClient client = new OkHttpClient();
 
     private static Retrofit retrofit;
+
+    /* 람다로 바뀐 후 새 주소를 기반으로 만들어진 메서드를 쓰기 위해 호출해야 하는 메서드 */
+    public static Retrofit getRetrofit()
+    {
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        if (retrofit == null)
+        {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(SECOND_URL)
+                    .addConverterFactory(ScalarsConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+//                    .client(client)
+                    .build();
+        }
+        return retrofit;
+    }
 
     public static Retrofit getApiClient()
     {

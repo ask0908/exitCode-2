@@ -255,7 +255,6 @@ public class MainTabLayoutActivity extends AppCompatActivity
                         if (sharedPreferences.getString("push_status", "").equals("400") ||
                                 sharedPreferences.getString("push_status", "").equals("500"))
                         {
-                            // TODO : 받은 알림이 없으면 알림이 없다는 화면을 띄워야 한다 (ios와 맞추기)
 //                        Toast.makeText(MainTabLayoutActivity.this, "현재 받은 알림이 없습니다", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -408,7 +407,6 @@ public class MainTabLayoutActivity extends AppCompatActivity
                         if (sharedPreferences.getString("push_status", "").equals("400") ||
                                 sharedPreferences.getString("push_status", "").equals("500"))
                         {
-                            // TODO : 받은 알림이 없으면 알림이 없다는 화면을 띄워야 한다 (ios와 맞추기)
 //                        Toast.makeText(MainTabLayoutActivity.this, "현재 받은 알림이 없습니다", Toast.LENGTH_SHORT).show();
                         }
                     }

@@ -363,8 +363,7 @@ public class DetailBenefitActivity extends AppCompatActivity
 
     void getWelfareInformation()
     {
-        Log.e(TAG, "getWelfareInformation() 호출");
-
+        // 메서드는 호출되는 것 확인
         String token = sharedPreferences.getString("token", "");
         Log.e(TAG, "token : " + token);
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
@@ -373,7 +372,8 @@ public class DetailBenefitActivity extends AppCompatActivity
         Log.e(TAG, "session : " + session);
         Log.e(TAG, "push_welf_local : " + push_welf_local);
         Log.e(TAG, "push_welf_name : " + push_welf_name);
-        Call<String> call = apiInterface.getWelfareInformation(token, session, "detail", push_welf_local, push_welf_name, token, LogUtil.getUserLog());
+        // 여기서 이상하다
+        Call<String> call = apiInterface.getWelfareInformation(token, session, "detail", push_welf_local, push_welf_name);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -382,13 +382,11 @@ public class DetailBenefitActivity extends AppCompatActivity
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-                    Log.e(TAG, "result : " + result);
                     jsonParsing(result);
                 }
                 else
                 {
                     Toast.makeText(DetailBenefitActivity.this, "에러가 발생했습니다. 잠시 후 다시 시도해 주세요", Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, "errorBody() : " + response.errorBody());
                 }
             }
 

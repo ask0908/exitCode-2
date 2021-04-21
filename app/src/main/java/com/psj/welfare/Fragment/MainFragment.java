@@ -170,8 +170,74 @@ public class MainFragment extends Fragment
 
         userOrderedWelfare();
 
-        if (sharedPreferences.getString("interest", "").equals(""))
+        boolean isLogouted = sharedPreferences.getBoolean("logout", false);
+        if (sharedPreferences.getString("interest", "") != null && isLogouted)
         {
+            // 관심사가 있고 비로그인인 경우 비로그인 UI를 보여준다
+            recom_recycler.setVisibility(View.GONE);
+            btn_left_textview.setVisibility(View.VISIBLE);
+            find_welfare_btn.setVisibility(View.VISIBLE);
+
+            ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) middle_layout.getLayoutParams();
+            lp.matchConstraintPercentHeight = (float) 0.65;
+            middle_layout.setLayoutParams(lp);
+            go_benefit_layout.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.radius_25));
+            main_top.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.bottom_left_right_radius));
+            ConstraintLayout.LayoutParams other_params = (ConstraintLayout.LayoutParams) main_fragment_textview.getLayoutParams();
+            other_params.matchConstraintPercentHeight = (float) 0.16;
+            main_fragment_textview.setLayoutParams(other_params);
+            ConstraintLayout.LayoutParams region_params = (ConstraintLayout.LayoutParams) buttonRegion.getLayoutParams();
+            region_params.verticalBias = (float) 0.55;
+            region_params.matchConstraintPercentHeight = (float) 0.35;
+            buttonRegion.setLayoutParams(region_params);
+            ConstraintLayout.LayoutParams theme_params = (ConstraintLayout.LayoutParams) buttonTheme.getLayoutParams();
+            theme_params.verticalBias = (float) 0.55;
+            theme_params.matchConstraintPercentHeight = (float) 0.35;
+            buttonTheme.setLayoutParams(theme_params);
+            ConstraintLayout.LayoutParams find_welfare_btn_params = (ConstraintLayout.LayoutParams) find_welfare_btn.getLayoutParams();
+            find_welfare_btn_params.verticalBias = (float) 0.4;
+            find_welfare_btn.setLayoutParams(find_welfare_btn_params);
+
+            ConstraintLayout.LayoutParams theme_image_params = (ConstraintLayout.LayoutParams) theme_image.getLayoutParams();
+            theme_image_params.verticalBias = (float) 0.65;
+            theme_image.setLayoutParams(theme_image_params);
+
+            ConstraintLayout.LayoutParams region_image_params = (ConstraintLayout.LayoutParams) region_image.getLayoutParams();
+            region_image_params.verticalBias = (float) 0.65;
+            region_image.setLayoutParams(region_image_params);
+        }
+        else if (sharedPreferences.getString("interest", "") != null && !isLogouted)
+        {
+            // 관심사가 있고 로그인한 경우 로그인 UI를 보여준다
+            recom_recycler.setVisibility(View.VISIBLE);
+            btn_left_textview.setVisibility(View.GONE);
+            find_welfare_btn.setVisibility(View.GONE);
+
+            ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) middle_layout.getLayoutParams();
+            lp.matchConstraintPercentHeight = (float) 0.52;
+            middle_layout.setLayoutParams(lp);
+            ConstraintLayout.LayoutParams other_params = (ConstraintLayout.LayoutParams) main_fragment_textview.getLayoutParams();
+            other_params.matchConstraintPercentHeight = (float) 0.16;
+            main_fragment_textview.setLayoutParams(other_params);
+            ConstraintLayout.LayoutParams count_params = (ConstraintLayout.LayoutParams) benefit_count_textview.getLayoutParams();
+            count_params.matchConstraintPercentHeight = (float) 0.15;
+            benefit_count_textview.setLayoutParams(count_params);
+            benefit_count_textview.setText("추천 혜택");
+            go_benefit_layout.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.bottom_left_right_radius));
+            main_top.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.radius_25));
+
+            ConstraintLayout.LayoutParams region_params = (ConstraintLayout.LayoutParams) buttonRegion.getLayoutParams();
+            region_params.verticalBias = (float) 0.35;
+            region_params.matchConstraintPercentHeight = (float) 0.275;
+            buttonRegion.setLayoutParams(region_params);
+            ConstraintLayout.LayoutParams theme_params = (ConstraintLayout.LayoutParams) buttonTheme.getLayoutParams();
+            theme_params.matchConstraintPercentHeight = (float) 0.275;
+            theme_params.verticalBias = (float) 0.35;
+            buttonTheme.setLayoutParams(theme_params);
+        }
+        else
+        {
+            // 그 외의 경우에는 모두 비로그인 UI를 보여준다
             recom_recycler.setVisibility(View.GONE);
             btn_left_textview.setVisibility(View.VISIBLE);
             find_welfare_btn.setVisibility(View.VISIBLE);
@@ -197,79 +263,13 @@ public class MainFragment extends Fragment
             find_welfare_btn_params.verticalBias = (float) 0.4;
             find_welfare_btn.setLayoutParams(find_welfare_btn_params);
         }
-        else
-        {
-            if (sharedPreferences.getBoolean("logout", false))
-            {
-                /* 비로그인 시 */
-                recom_recycler.setVisibility(View.GONE);
-                btn_left_textview.setVisibility(View.VISIBLE);
-                find_welfare_btn.setVisibility(View.VISIBLE);
 
-                ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) middle_layout.getLayoutParams();
-                lp.matchConstraintPercentHeight = (float) 0.65;
-                middle_layout.setLayoutParams(lp);
-                go_benefit_layout.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.radius_25));
-                main_top.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.bottom_left_right_radius));
-                ConstraintLayout.LayoutParams other_params = (ConstraintLayout.LayoutParams) main_fragment_textview.getLayoutParams();
-                other_params.matchConstraintPercentHeight = (float) 0.16;
-                main_fragment_textview.setLayoutParams(other_params);
-                ConstraintLayout.LayoutParams region_params = (ConstraintLayout.LayoutParams) buttonRegion.getLayoutParams();
-                region_params.verticalBias = (float) 0.55;
-                region_params.matchConstraintPercentHeight = (float) 0.35;
-                buttonRegion.setLayoutParams(region_params);
-                ConstraintLayout.LayoutParams theme_params = (ConstraintLayout.LayoutParams) buttonTheme.getLayoutParams();
-                theme_params.verticalBias = (float) 0.55;
-                theme_params.matchConstraintPercentHeight = (float) 0.35;
-                buttonTheme.setLayoutParams(theme_params);
-                ConstraintLayout.LayoutParams find_welfare_btn_params = (ConstraintLayout.LayoutParams) find_welfare_btn.getLayoutParams();
-                find_welfare_btn_params.verticalBias = (float) 0.4;
-                find_welfare_btn.setLayoutParams(find_welfare_btn_params);
-
-                ConstraintLayout.LayoutParams theme_image_params = (ConstraintLayout.LayoutParams) theme_image.getLayoutParams();
-                theme_image_params.verticalBias = (float) 0.65;
-                theme_image.setLayoutParams(theme_image_params);
-
-                ConstraintLayout.LayoutParams region_image_params = (ConstraintLayout.LayoutParams) region_image.getLayoutParams();
-                region_image_params.verticalBias = (float) 0.65;
-                region_image.setLayoutParams(region_image_params);
-            }
-            else
-            {
-                /* 로그인했을 경우 */
-                recom_recycler.setVisibility(View.VISIBLE);
-                btn_left_textview.setVisibility(View.GONE);
-                find_welfare_btn.setVisibility(View.GONE);
-
-                ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) middle_layout.getLayoutParams();
-                lp.matchConstraintPercentHeight = (float) 0.52;
-                middle_layout.setLayoutParams(lp);
-                ConstraintLayout.LayoutParams other_params = (ConstraintLayout.LayoutParams) main_fragment_textview.getLayoutParams();
-                other_params.matchConstraintPercentHeight = (float) 0.16;
-                main_fragment_textview.setLayoutParams(other_params);
-                ConstraintLayout.LayoutParams count_params = (ConstraintLayout.LayoutParams) benefit_count_textview.getLayoutParams();
-                count_params.matchConstraintPercentHeight = (float) 0.15;
-                benefit_count_textview.setLayoutParams(count_params);
-                benefit_count_textview.setText("추천 혜택");
-                go_benefit_layout.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.bottom_left_right_radius));
-                main_top.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.radius_25));
-
-                ConstraintLayout.LayoutParams region_params = (ConstraintLayout.LayoutParams) buttonRegion.getLayoutParams();
-                region_params.verticalBias = (float) 0.35;
-                region_params.matchConstraintPercentHeight = (float) 0.275;
-                buttonRegion.setLayoutParams(region_params);
-                ConstraintLayout.LayoutParams theme_params = (ConstraintLayout.LayoutParams) buttonTheme.getLayoutParams();
-                theme_params.matchConstraintPercentHeight = (float) 0.275;
-                theme_params.verticalBias = (float) 0.35;
-                buttonTheme.setLayoutParams(theme_params);
-            }
-        }
 
         youtube_hashmap = new HashMap<>();
 
         find_welfare_btn.setOnClickListener(v ->
         {
-            if (sharedPreferences.getString("interest", "").equals(""))
+            if (sharedPreferences.getString("interest", "") == null)
             {
                 Intent intent = new Intent(getActivity(), ChoiceKeywordActivity.class);
                 startActivity(intent);

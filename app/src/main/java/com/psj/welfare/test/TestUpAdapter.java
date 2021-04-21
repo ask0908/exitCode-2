@@ -51,7 +51,7 @@ public class TestUpAdapter extends RecyclerView.Adapter<TestUpAdapter.TestUpView
         }
         else
         {
-            holder.interest_text.setTextColor(ContextCompat.getColor(context, R.color.colorGray_L));
+            holder.interest_text.setTextColor(ContextCompat.getColor(context, R.color.middle_gray));
             holder.interest_bottom_view.setVisibility(View.INVISIBLE);
         }
     }

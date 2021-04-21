@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/test_youtube_layout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginStart="10dp"
+    android:orientation="vertical"
+    android:layout_marginStart="15dp"
+    android:layout_marginTop="10dp"
     app:cardElevation="5dp"
     app:cardCornerRadius="10dp">
 
@@ -13,16 +16,23 @@
         android:orientation="vertical">
 
         <ImageView
-            android:layout_width="250dp"
-            android:layout_height="140dp"
+            android:id="@+id/test_youtube_image"
+            android:layout_width="160dp"
+            android:layout_height="90dp"
             android:scaleType="centerCrop"
             android:src="@mipmap/ic_launcher" />
 
         <TextView
+            android:id="@+id/test_youtube_title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:lineSpacingExtra="10sp"
             android:fontFamily="@font/jalnan"
             android:layout_marginTop="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:text="재난지원금"
             android:autoSizeTextType="none"
             app:autoSizePresetSizes="@array/autosize_text_sizes"
