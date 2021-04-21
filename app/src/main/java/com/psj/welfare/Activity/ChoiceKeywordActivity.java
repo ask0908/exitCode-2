@@ -530,6 +530,7 @@ public class ChoiceKeywordActivity extends AppCompatActivity
         Log.e(TAG, message);
         Toast.makeText(this, "관심사 설정이 완료됐어요", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(ChoiceKeywordActivity.this, MainTabLayoutActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }

@@ -11,6 +11,7 @@ import com.psj.welfare.fragment.MainFragment;
 import com.psj.welfare.fragment.MyPageFragment;
 import com.psj.welfare.fragment.PushGatherFragment;
 import com.psj.welfare.fragment.SearchFragment;
+import com.psj.welfare.test.TestFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +29,8 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter
     {
         super(fm);
         mContext = context;
-        list.add(new MainFragment());
-//        list.add(new TestFragment());
+//        list.add(new MainFragment());
+        list.add(new TestFragment());
         list.add(new SearchFragment());
         list.add(new PushGatherFragment());
         list.add(new MyPageFragment());

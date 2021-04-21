@@ -554,7 +554,7 @@ public interface ApiInterface
     // ===================================================================================================
 
     /**
-     * 아래 인자를 서버로 넘겨서, 해당하는 혜택 정보를 조회하는 메서드
+     * 아래 인자를 서버로 넘겨서, 해당하는 혜택 정보를 조회하는 메서드 (혜택 정보 조회)
      * DetailBenefitActivity에서 사용
      *
      * @param token       - 로그인 시 서버에서 받는 토큰
@@ -562,8 +562,6 @@ public interface ApiInterface
      * @param type        - "detail" 고정(혜택 정보 조회)
      * @param local       - 혜택이 제공되는 지역의 이름
      * @param welf_name   - 혜택 이름
-     * @param login_token - 로그인 시 서버에서 받는 토큰값
-     * @param userAgent   - 사용자 정보(android|SM-543N|30 꼴)
      * @return -"Status":"200",
      * "Message":[
      * {
@@ -585,9 +583,7 @@ public interface ApiInterface
             @Header("SessionId") String session,
             @Query("type") String type,
             @Query("local") String local,
-            @Query("welf_name") String welf_name,
-            @Query("login_token") String login_token,
-            @Query("userAgent") String userAgent
+            @Query("welf_name") String welf_name
     );
 
     /**
@@ -803,6 +799,105 @@ public interface ApiInterface
     Call<String> duplicateNickname(
             @Field("nickName") String nickname,
             @Field("type") String type
+    );
+
+    /* ↓ 람다로 바뀐 후 새로 추가된 메서드
+    * TestFragment(바꾸고 있는 메인 화면)에서 사용한다 */
+    // ===================================================================================================
+
+    /**
+     * 비로그인이고 관심사를 선택하지 않은 유저에게 보여줄 전체 혜택과 유튜브 영상을 SELECT하는 메서드
+     * @param type - "total_main" 고정
+     * @return - {
+     *     "statusCode": 200,
+     *     "message": [
+     *         {
+     *             "youtube": [
+     *                 {
+     *                     "id": 208,
+     *                     "title": "카카오뱅크 청년 전월세 보증금 대출 받기! 금리는? | 월세탈출기",
+     *                     "thumbnail": "https://i.ytimg.com/vi/vylRbcluNuo/hqdefault.jpg"
+     *                 },
+     *                 {
+     *                     "id": 207,
+     *                     "title": "근무시간, 대기시간, 휴게시간 구분하는 방법",
+     *                     "thumbnail": "https://i.ytimg.com/vi/IIab7DdSauY/hqdefault.jpg"
+     *                 },
+     *                 {
+     *                     "id": 206,
+     *                     "title": "이제 이 것 안하면 과태료 100만원 물어야 합니다!!!",
+     *                     "thumbnail": "https://i.ytimg.com/vi/r22cxGM_tlQ/hqdefault.jpg"
+     *                 }
+     *             ],
+     *             "welf_data": [
+     *                 {
+     *                     "welf_id": 843,
+     *                     "welf_name": "통합사례관리 지원",
+     *                     "welf_tag": "환자 - 저소득층 - 한부모/조손가정",
+     *                     "welf_field": "주거"
+     *                 },
+     *                 {
+     *                     "welf_id": 659,
+     *                     "welf_name": "지역아동센터 지원",
+     *                     "welf_tag": "아동/청소년 -장애인 -저소득층 -한부모/조손가정 -다문화",
+     *                     "welf_field": "주거"
+     *                 }
+     */
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/welf")
+    Call<String> showWelfareAndYoutubeNotLogin(
+            @Query("type") String type
+    );
+
+    /**
+     * 관심사를 선택한 유저에게 보여줄 전체 혜택 리스트와 유튜브 영상을 SELECT하는 메서드
+     * 비로그인일 시 나이, 성별, 지역이 필수 인자고 로그인했을 시 로그인 토큰이 필수다
+     * @param age - 사용자 나이대(20, 30처럼 숫자만 넣음)
+     * @param gender - 사용자 성별 (남성, 여성)
+     * @param local - 사용자 지역(서울, 경기) <- 전국 넣어도 나오는데 이건 이상한 듯
+     * @param type - "main" 고정
+     * @param token - 로그인 시 서버에서 받는 토큰
+     * @return - {
+     *     "statusCode": 200,
+     *     "message": [
+     *         {
+     *             "youtube": [
+     *                 {
+     *                     "id": 208,
+     *                     "title": "카카오뱅크 청년 전월세 보증금 대출 받기! 금리는? | 월세탈출기",
+     *                     "thumbnail": "https://i.ytimg.com/vi/vylRbcluNuo/hqdefault.jpg"
+     *                 },
+     *                 {
+     *                     "id": 207,
+     *                     "title": "근무시간, 대기시간, 휴게시간 구분하는 방법",
+     *                     "thumbnail": "https://i.ytimg.com/vi/IIab7DdSauY/hqdefault.jpg"
+     *                 },
+     *                 {
+     *                     "id": 206,
+     *                     "title": "이제 이 것 안하면 과태료 100만원 물어야 합니다!!!",
+     *                     "thumbnail": "https://i.ytimg.com/vi/r22cxGM_tlQ/hqdefault.jpg"
+     *                 }
+     *             ],
+     *             "welf_data": [ <- 이 JSONArray 안의 내용을 메인 화면의 3개 아이템만 있는 리사이클러뷰에 넣어야 한다
+     *                 {
+     *                     "welf_id": 843,
+     *                     "welf_name": "통합사례관리 지원",
+     *                     "welf_tag": "환자 - 저소득층 - 한부모/조손가정",
+     *                     "welf_field": "주거"
+     *                 },
+     *                 {
+     *                     "welf_id": 633,
+     *                     "welf_name": "백천사회복지관 특화 서비스제공(경산시)",
+     *                     "welf_tag": "저소득층 - 아동/청소년 - 노년 - 한부모/조손가정 - 다자녀 - 다문화",
+     *                     "welf_field": "주거"
+     *                 }...
+     */
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/welf")
+    Call<String> showWelfareAndYoutubeLogin(
+            @Query("age") String age,
+            @Query("gender") String gender,
+            @Query("local") String local,
+            @Query("type") String type,
+            @Query("LoginToken") String token
     );
 
 }
