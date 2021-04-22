@@ -53,7 +53,7 @@ public class MainDownAdapter extends RecyclerView.Adapter<MainDownAdapter.MainDo
     @Override
     public void onBindViewHolder(@NonNull MainDownAdapter.MainDownViewHolder holder, int position)
     {
-        final MainThreeDataItem item = list.get(position);
+        MainThreeDataItem item = list.get(position);
         holder.bottom_result_name.setText(item.getWelf_name());
         if (item.getWelf_tag().contains("-"))
         {
@@ -67,8 +67,6 @@ public class MainDownAdapter extends RecyclerView.Adapter<MainDownAdapter.MainDo
             String s3 = s2.replace(" - ", " #");
             Log.e(TAG, "'-'을 '#'으로 바꾼 결과 : " + s3);
             holder.bottom_result_subject.setText(s3);
-//            String ss = s.replaceAll(" "," ");
-//            Log.e(TAG, "ss : " + ss);
         }
     }
 
@@ -99,6 +97,7 @@ public class MainDownAdapter extends RecyclerView.Adapter<MainDownAdapter.MainDo
                 if (pos != RecyclerView.NO_POSITION && itemClickListener != null)
                 {
                     itemClickListener.onMainThreeClick(v, pos);
+                    notifyDataSetChanged();
                 }
             });
         }
