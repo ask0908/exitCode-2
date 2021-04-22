@@ -17,6 +17,7 @@ import com.psj.welfare.data.CategorySearchResultItem;
 import java.util.Collections;
 import java.util.List;
 
+/* 상단 리사이클러뷰에 쓸 어댑터 */
 public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCategoryAdapter.SelectedCategoryViewHolder>
 {
     private final String TAG = "SelectedCategoryAdapter";

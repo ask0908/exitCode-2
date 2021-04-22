@@ -1,30 +1,19 @@
 package com.psj.welfare.data;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 public class OtherYoutubeItem
 {
-    @Expose
-    @SerializedName("videoId")
-    private String url_id;
-
-    @Expose
-    @SerializedName("thumbnail")
+    private String video_id;
     private String thumbnail;
-
-    @Expose
-    @SerializedName("title")
     private String title;
 
-    public String getUrl_id()
+    public String getVideo_id()
     {
-        return url_id;
+        return video_id;
     }
 
-    public void setUrl_id(String url_id)
+    public void setVideo_id(String video_id)
     {
-        this.url_id = url_id;
+        this.video_id = video_id;
     }
 
     public String getThumbnail()
@@ -46,4 +35,34 @@ public class OtherYoutubeItem
     {
         this.title = title;
     }
+
+    //    public String getUrl_id()
+//    {
+//        return url_id;
+//    }
+//
+//    public void setUrl_id(String url_id)
+//    {
+//        this.url_id = url_id;
+//    }
+//
+//    public String getThumbnail()
+//    {
+//        return thumbnail;
+//    }
+//
+//    public void setThumbnail(String thumbnail)
+//    {
+//        this.thumbnail = thumbnail;
+//    }
+//
+//    public String getTitle()
+//    {
+//        return title;
+//    }
+//
+//    public void setTitle(String title)
+//    {
+//        this.title = title;
+//    }
 }

@@ -1,19 +1,16 @@
 package com.psj.welfare.data;
 
-public class MainThreeDataItem
+/* 새로 바뀐 메인 화면의 하단 리사이클러뷰에 쓸 모델 클래스 */
+public class MainCategoryBottomItem
 {
     private String welf_id;
     private String welf_name;
     private String welf_tag;
+    private String welf_count;
     private String welf_field;
 
-    public MainThreeDataItem()
+    public MainCategoryBottomItem()
     {
-    }
-
-    public MainThreeDataItem(String welf_field)
-    {
-        this.welf_field = welf_field;
     }
 
     public String getWelf_id()
@@ -44,6 +41,16 @@ public class MainThreeDataItem
     public void setWelf_tag(String welf_tag)
     {
         this.welf_tag = welf_tag;
+    }
+
+    public String getWelf_count()
+    {
+        return welf_count;
+    }
+
+    public void setWelf_count(String welf_count)
+    {
+        this.welf_count = welf_count;
     }
 
     public String getWelf_field()

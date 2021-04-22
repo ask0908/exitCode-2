@@ -11,19 +11,25 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.psj.welfare.R;
+import com.psj.welfare.data.MainThreeDataItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestUpAdapter extends RecyclerView.Adapter<TestUpAdapter.TestUpViewHolder>
+public class MainCategoryAdapter extends RecyclerView.Adapter<MainCategoryAdapter.TestUpViewHolder>
 {
     private Context context;
-    private List<TestUpModel> list = new ArrayList<>();
+    private List<MainThreeDataItem> list = new ArrayList<>();
     private ItemClickListener itemClickListener;
 
     private int selected_position = 0;
 
-    public TestUpAdapter(Context context, List<TestUpModel> list, ItemClickListener itemClickListener)
+    public void setOnItemClickListener(ItemClickListener itemClickListener)
+    {
+        this.itemClickListener = itemClickListener;
+    }
+
+    public MainCategoryAdapter(Context context, List<MainThreeDataItem> list, ItemClickListener itemClickListener)
     {
         this.context = context;
         this.list = list;
@@ -32,22 +38,24 @@ public class TestUpAdapter extends RecyclerView.Adapter<TestUpAdapter.TestUpView
 
     @NonNull
     @Override
-    public TestUpAdapter.TestUpViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+    public MainCategoryAdapter.TestUpViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         View view = LayoutInflater.from(context).inflate(R.layout.test_up_item, parent, false);
         return new TestUpViewHolder(view, itemClickListener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TestUpAdapter.TestUpViewHolder holder, int position)
+    public void onBindViewHolder(@NonNull MainCategoryAdapter.TestUpViewHolder holder, int position)
     {
-        final TestUpModel model = list.get(position);
-        holder.interest_text.setText(model.getWelf_category());
+        MainThreeDataItem model = list.get(position);
+        holder.interest_text.setText(model.getWelf_field());
 
         if (selected_position == position)
         {
             holder.interest_text.setTextColor(ContextCompat.getColor(context, R.color.layout_background_start_gradation));
             holder.interest_bottom_view.setBackgroundColor(ContextCompat.getColor(context, R.color.layout_background_start_gradation));
+            holder.interest_bottom_view.setVisibility(View.VISIBLE);
+
         }
         else
         {
@@ -59,7 +67,7 @@ public class TestUpAdapter extends RecyclerView.Adapter<TestUpAdapter.TestUpView
     @Override
     public int getItemCount()
     {
-        return 5;
+        return list.size();
     }
 
     public class TestUpViewHolder extends RecyclerView.ViewHolder

@@ -2,22 +2,17 @@ package com.psj.welfare.data;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /* MainFragment에서 가로로 유튜브 영상들을 보여주는 리사이클러뷰에 사용할 모델 클래스 */
-public class HorizontalYoutubeItem
+public class HorizontalYoutubeItem implements Serializable
 {
     private String category;
     @SerializedName("title")
     private String youtube_name;
     private String youtube_id;
     private String youtube_thumbnail;
-
-    /* 하드코딩에 쓰기 위해 추가한 생성자 */
-    public HorizontalYoutubeItem(String category, String youtube_name, String youtube_id)
-    {
-        this.category = category;
-        this.youtube_name = youtube_name;
-        this.youtube_id = youtube_id;
-    }
+    private String youtube_videoId;
 
     public HorizontalYoutubeItem()
     {
@@ -61,5 +56,15 @@ public class HorizontalYoutubeItem
     public void setYoutube_id(String youtube_id)
     {
         this.youtube_id = youtube_id;
+    }
+
+    public String getYoutube_videoId()
+    {
+        return youtube_videoId;
+    }
+
+    public void setYoutube_videoId(String youtube_videoId)
+    {
+        this.youtube_videoId = youtube_videoId;
     }
 }
