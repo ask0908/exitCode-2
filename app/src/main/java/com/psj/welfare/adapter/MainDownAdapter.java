@@ -1,7 +1,6 @@
 package com.psj.welfare.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,8 +42,8 @@ public class MainDownAdapter extends RecyclerView.Adapter<MainDownAdapter.MainDo
         View view = LayoutInflater.from(context).inflate(R.layout.test_down_item, parent, false);
 
         ViewGroup.LayoutParams params = view.getLayoutParams();
-        params.height = (int) (parent.getHeight() * 0.25);
         params.width = (int) (parent.getWidth() * 0.85);
+        params.height = (int) (parent.getHeight() * 0.25);
         view.setLayoutParams(params);
 
         return new MainDownViewHolder(view, itemClickListener);
@@ -58,14 +57,11 @@ public class MainDownAdapter extends RecyclerView.Adapter<MainDownAdapter.MainDo
         if (item.getWelf_tag().contains("-"))
         {
             String before = item.getWelf_tag().replace(" ", "");
-            Log.e(TAG, "before : " + before);
             String str = "#" + before;
-            Log.e(TAG, "첫 글자에만 # 붙인 결과 : " + str);
             String s = str.replace("-", " #");
             String s1 = s.replace(" -", " #");
             String s2 = s1.replace("- ", " #");
             String s3 = s2.replace(" - ", " #");
-            Log.e(TAG, "'-'을 '#'으로 바꾼 결과 : " + s3);
             holder.bottom_result_subject.setText(s3);
         }
     }

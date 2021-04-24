@@ -1,20 +1,9 @@
 package com.psj.welfare.data;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 public class YoutubeItem
 {
-    @Expose
-    @SerializedName("videoId")
     private String url_id;
-
-    @Expose
-    @SerializedName("thumbnail")
     private String thumbnail;
-
-    @Expose
-    @SerializedName("title")
     private String title;
 
     public String getUrl_id()
