@@ -1,5 +1,6 @@
 package com.psj.welfare.test;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,19 +13,21 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.psj.welfare.R;
+import com.psj.welfare.activity.YoutubeActivity;
 import com.psj.welfare.adapter.MainDownAdapter;
 import com.psj.welfare.adapter.MainHorizontalYoutubeAdapter;
-import com.psj.welfare.api.ApiClient;
-import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.data.HorizontalYoutubeItem;
 import com.psj.welfare.data.MainCategoryBottomItem;
 import com.psj.welfare.data.MainThreeDataItem;
 import com.psj.welfare.util.DBOpenHelper;
+import com.psj.welfare.viewmodel.MainViewModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,10 +39,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class TestFragment extends Fragment
 {
@@ -88,6 +87,9 @@ public class TestFragment extends Fragment
     String welf_name, welf_local, welf_category, tag, count;
 
     private FirebaseAnalytics analytics;
+
+    /* MVVM 테스트 */
+    MainViewModel mainViewModel;
 
     // 새 서버에서 가져온 유튜브 데이터를 저장할 변수
     String youtube_id, youtube_title, youtube_thumbnail, youtube_videoId;
@@ -156,32 +158,21 @@ public class TestFragment extends Fragment
 
     }
 
-    void showWelfareAndYoutubeNotLogin()
+    /* MVVM 디자인 패턴으로 바꾼 후 추가한 메서드
+    * MVVM에 맞게 Observer와 뷰모델을 사용해 서버에서 결과값을 가져온 다음 파싱해 뷰에 붙인다 */
+    private void showWelfareAndYoutubeNotLogin()
     {
-        ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
-        Call<String> call = apiInterface.showWelfareAndYoutubeNotLogin("total_main");
-        call.enqueue(new Callback<String>()
+        mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
+        final Observer<String> mainObserver = new Observer<String>()
         {
             @Override
-            public void onResponse(Call<String> call, Response<String> response)
+            public void onChanged(String s)
             {
-                if (response.isSuccessful() && response.body() != null)
-                {
-                    String result = response.body();
-                    responseParse(result);
-                }
-                else
-                {
-                    Log.e(TAG, "비로그인일 시 데이터 가져오기 실패 : " + response.body());
-                }
+                Log.e(TAG, "s : " + s);
+                responseParse(s);
             }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t)
-            {
-                Log.e(TAG, "비로그인일 시 데이터 가져오기 에러 : " + t.getMessage());
-            }
-        });
+        };
+        mainViewModel.getAllData().observe(getActivity(), mainObserver);
     }
 
     private void responseParse(String result)
@@ -313,11 +304,6 @@ public class TestFragment extends Fragment
             other_list.add(all_item);
         }
 
-        for (int i = 0; i < keyword_list.size(); i++)
-        {
-            Log.e(TAG, "태그 확인 : " + keyword_list.get(i).getWelf_tag());
-        }
-
         // 아래 처리를 하지 않으면 이 액티비티로 들어올 때마다 전체 카테고리 개수가 1개씩 증가한다
         // keyword_list 크기가 0일 경우 아래에서 에러가 발생한다
         if (!keyword_list.get(0).getWelf_field().equals("전체") && !keyword_list.contains("전체"))
@@ -382,20 +368,20 @@ public class TestFragment extends Fragment
             public void onItemClick(View v, int pos)
             {
                 /* 수정 중이라 주석 처리 */
-//                HorizontalYoutubeItem item = new HorizontalYoutubeItem();
-//                item.setYoutube_id(youtube_id);
-//                item.setYoutube_name(youtube_title);
-//                item.setYoutube_thumbnail(youtube_thumbnail);
-//                item.setYoutube_videoId(youtube_videoId);
-//                Intent intent = new Intent(getActivity(), YoutubeActivity.class);
-//                String youtube_name = youtube_list.get(pos).getYoutube_name();
-//                Log.e(TAG, "선택한 유튜브 영상 : " + youtube_list.get(pos).getYoutube_name());
-//                intent.putExtra("youtube_information", item);
-//                intent.putExtra("youtube_hashmap", youtube_hashmap);
-//                Bundle bundle = new Bundle();
-//                bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "유튜브 화면으로 이동");
-//                analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-//                startActivity(intent);
+                HorizontalYoutubeItem item = new HorizontalYoutubeItem();
+                item.setYoutube_id(youtube_id);
+                item.setYoutube_name(youtube_title);
+                item.setYoutube_thumbnail(youtube_thumbnail);
+                item.setYoutube_videoId(youtube_videoId);
+                Intent intent = new Intent(getActivity(), YoutubeActivity.class);
+                String youtube_name = youtube_list.get(pos).getYoutube_name();
+                Log.e(TAG, "선택한 유튜브 영상 : " + youtube_list.get(pos).getYoutube_name());
+                intent.putExtra("youtube_information", item);
+                intent.putExtra("youtube_hashmap", youtube_hashmap);
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "유튜브 화면으로 이동");
+                analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+                startActivity(intent);
             }
         });
         youtube_video_recyclerview.setAdapter(youtubeAdapter);
