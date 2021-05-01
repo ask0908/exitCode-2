@@ -1,20 +1,16 @@
 package com.psj.welfare.data;
 
-public class MainThreeDataItem
+public class SearchResultItem
 {
     private String welf_id;
     private String welf_name;
     private String welf_tag;
-    private String welf_field;
     private String welf_count;
+    private String welf_local;
+    private String welf_thema;
 
-    public MainThreeDataItem()
+    public SearchResultItem()
     {
-    }
-
-    public MainThreeDataItem(String welf_field)
-    {
-        this.welf_field = welf_field;
     }
 
     public String getWelf_id()
@@ -47,16 +43,6 @@ public class MainThreeDataItem
         this.welf_tag = welf_tag;
     }
 
-    public String getWelf_field()
-    {
-        return welf_field;
-    }
-
-    public void setWelf_field(String welf_field)
-    {
-        this.welf_field = welf_field;
-    }
-
     public String getWelf_count()
     {
         return welf_count;
@@ -65,5 +51,25 @@ public class MainThreeDataItem
     public void setWelf_count(String welf_count)
     {
         this.welf_count = welf_count;
+    }
+
+    public String getWelf_local()
+    {
+        return welf_local;
+    }
+
+    public void setWelf_local(String welf_local)
+    {
+        this.welf_local = welf_local;
+    }
+
+    public String getWelf_thema()
+    {
+        return welf_thema;
+    }
+
+    public void setWelf_thema(String welf_thema)
+    {
+        this.welf_thema = welf_thema;
     }
 }

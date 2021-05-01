@@ -12,6 +12,7 @@ import com.psj.welfare.repository.MainRepository;
 * 참고 : https://medium.com/teachmind/necessity-of-viewmodel-and-difference-between-mutablelivedata-and-mediatorlivedata-f1c30df27232 */
 public class MainViewModel extends AndroidViewModel
 {
+    public final String TAG = MainViewModel.class.getSimpleName();
     private MainRepository mainRepository;
     private MutableLiveData<String> mainLiveData;
 

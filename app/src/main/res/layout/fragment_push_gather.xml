@@ -54,7 +54,7 @@
                 android:textSize="22dp"/>
 
             <!-- 왼쪽으로 밀어서 푸시 알림 삭제 기능을 구현하기 위한 리사이클러뷰 라이브러리 -->
-            <com.aitsuki.swipe.SwipeMenuRecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/push_layout_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
