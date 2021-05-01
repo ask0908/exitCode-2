@@ -21,27 +21,28 @@
         app:layout_constraintVertical_bias=".05"
         app:layout_constraintHorizontal_bias=".12"
         android:fontFamily="@font/jalnan"
-        android:text="30대, 서울, 남성"
         android:textColor="@color/colorMainWhite"
         app:autoSizePresetSizes="@array/autosize_text_sizes"/>
 
     <Button
         android:id="@+id/edit_interest_btn"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
-        app:layout_constraintWidth_percent=".23"
+        app:layout_constraintWidth_percent=".38"
         app:layout_constraintHeight_percent=".055"
         app:layout_constraintHorizontal_bias=".95"
         app:layout_constraintVertical_bias=".053"
         android:background="@drawable/btn_transparent"
         android:fontFamily="@font/nanum_barun_gothic_bold"
-        android:text="편집하기"
+        android:text="나에게 맞는 혜택 찾기"
+        android:paddingHorizontal="14dp"
         android:textStyle="bold"
         android:textColor="@color/colorMainWhite"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="gone"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/middle_white_layout"
@@ -63,6 +64,7 @@
             android:layout_height="0dp"
             android:scrollbars="none"
             android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             app:layout_constraintWidth_percent="1"
             app:layout_constraintHeight_percent=".1"
             app:layout_constraintVertical_bias="0"

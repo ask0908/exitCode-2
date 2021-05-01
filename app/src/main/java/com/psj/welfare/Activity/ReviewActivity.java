@@ -99,12 +99,12 @@ public class ReviewActivity extends AppCompatActivity
                 btn_easy.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_pink_border));
                 btn_easy.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.colorPink));
                 btn_difficult.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_grey_border));
-                btn_difficult.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.gray));
+                btn_difficult.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.grey));
             }
             else
             {
                 btn_easy.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_grey_border));
-                btn_easy.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.gray));
+                btn_easy.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.grey));
                 btn_difficult.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_pink_border));
                 btn_difficult.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.colorPink));
             }
@@ -114,12 +114,12 @@ public class ReviewActivity extends AppCompatActivity
                 btn_satisfied.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_pink_border));
                 btn_satisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.colorPink));
                 btn_unsatisfied.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_grey_border));
-                btn_unsatisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.gray));
+                btn_unsatisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.grey));
             }
             else
             {
                 btn_satisfied.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_grey_border));
-                btn_satisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.gray));
+                btn_satisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.grey));
                 btn_unsatisfied.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_pink_border));
                 btn_unsatisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.colorPink));
             }
@@ -141,13 +141,13 @@ public class ReviewActivity extends AppCompatActivity
                         btn_easy.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_pink_border));
                         btn_easy.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.colorPink));
                         btn_difficult.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_grey_border));
-                        btn_difficult.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.gray));
+                        btn_difficult.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.grey));
                         break;
 
                     case R.id.hard_radiobutton:
                         difficulty_level = "어려워요";
                         btn_easy.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_grey_border));
-                        btn_easy.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.gray));
+                        btn_easy.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.grey));
                         btn_difficult.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_pink_border));
                         btn_difficult.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.colorPink));
                         break;
@@ -169,12 +169,12 @@ public class ReviewActivity extends AppCompatActivity
                         btn_satisfied.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_pink_border));
                         btn_satisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.colorPink));
                         btn_unsatisfied.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_grey_border));
-                        btn_unsatisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.gray));
+                        btn_unsatisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.grey));
                         break;
 
                     case R.id.bad_radiobutton:
                         btn_satisfied.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_grey_border));
-                        btn_satisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.gray));
+                        btn_satisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.grey));
                         btn_unsatisfied.setBackground(ContextCompat.getDrawable(ReviewActivity.this, R.drawable.radius_pink_border));
                         btn_unsatisfied.setTextColor(ContextCompat.getColor(ReviewActivity.this, R.color.colorPink));
                         break;

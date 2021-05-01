@@ -42,7 +42,7 @@
             android:paddingStart="30dp"
             android:paddingEnd="30dp"
             android:text="대학생 학자금대출 이자지원"
-            android:textColor="@color/gray"
+            android:textColor="@color/grey"
             android:autoSizeTextType="uniform"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_percent=".135"

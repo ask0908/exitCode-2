@@ -141,6 +141,7 @@ public class ResultBenefitActivity extends AppCompatActivity
                 RBF_ListSet.add(position_RB, new ResultBenefitItem(favor_data.get(i), R.drawable.rbf_btn_before));
                 position_RB++;
             }
+
         }
         else if (getIntent().hasExtra("region_btn"))
         {

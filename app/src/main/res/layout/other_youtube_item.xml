@@ -56,7 +56,7 @@
             android:textSize="15sp"
             android:lineSpacingExtra="3sp"
             android:ellipsize="end"
-            android:textColor="@color/gray"
+            android:textColor="@color/grey"
             android:text="텍스트"/>
 
     </LinearLayout>

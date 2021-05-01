@@ -39,7 +39,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 1장 총칙\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -53,7 +53,7 @@
                 android:text="이 약관은 &quot;너의 혜택은&quot;(이하 &quot;플랫폼&quot;)에서 제공하는 회원 서비스(
 이하 &quot;서비스&quot;)를 이용함에 있어 모든 정보, 텍스트, 이미지 및 기타 자료를 이용하는 이용자(이하 &quot;회원
 &quot;)와 &quot;플랫폼&quot;간의 권리 · 의무 및 책임사항과 기타 필요한 사항을 규정함을 목적으로 합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -62,7 +62,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 1조 약관의 효력 및 변경\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -75,7 +75,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="1. &quot;플랫폼&quot;은 귀하가 이 약관의 내용에 동의하는 경우 &quot;플랫폼&quot;의
 서비스 제공 행위 및 귀하의 서비스 이용 행위에 이 약관이 우선적으로 적용됩니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -87,7 +87,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="2. &quot;플랫폼&quot;은 본 약관을 사전고지 없이 변경할 수 있고, 변경된 약관은 &quot;
 플랫폼&quot;내에 공지하거나 e-mail을 통해 회원에게 공지하며, 공지와 동시에 그 효력이 발생됩니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -99,7 +99,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="3. 이용자가 변경된 약관에 동의하지 않는 경우, 서비스 이용을 중단하고 본인의 회원등록을
 취소(회원탈퇴)할 수 있으며, 계속 사용하는 경우 약관 변경에 동의한 것으로 간주됩니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -108,7 +108,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 2조 약관 외 준칙\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -121,7 +121,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="1. 이 약관은 &quot;플랫폼&quot;의 웹 사이트가 제공하는 서비스에 관한 이용규정 및 별도
 약관과 함께 적용됩니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -133,7 +133,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="2. 이 약관에 명시되지 않은 사항은 개인정보보호법, 위치정보보호법, 디지털콘텐츠 이용
 표준약관 등 기타 대한민국의 관련법령과 상관습에 의합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -142,7 +142,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 3조 용어의 정의\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -154,7 +154,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="이 약관에서 사용하는 용어의 정의는 다음과 같습니다.\n"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -165,7 +165,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="1. 플랫폼 : 회원이 컴퓨터 등 정보통신설비를 이용하여 서비스를 이용할 수 있도록 &quot;
 플랫폼&quot;이 제공하는 가상의 영업장을 말하며, 아울러 &quot;플랫폼&quot;을 운영하는 사업자의 의미로도 사용합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -176,7 +176,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="2. 회원 : &quot;플랫폼&quot;에 개인정보를 제공하여 회원등록을 한 자로서, &quot;플랫
 폼&quot;에서 제공하는 서비스를 계속해서 이용할 수 있는 자를 말합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -187,7 +187,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="3. 비회원 : 회원가입하지 않고 &quot;플랫폼&quot;이 제공하는 서비스를 이용하는 자를
 말합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -198,7 +198,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="4. 가입 : &quot;플랫폼&quot;에서 제공하는 회원가입 양식에 해당 정보를 기입하고, 본
 약관에 동의하여 서비스 이용계약을 완료시키는 행위를 말합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -208,7 +208,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="5. 탈퇴 : 회원이 이용계약을 종료시키는 행위를 말합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -219,7 +219,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="6. 이 약관에서 정의하지 않은 용어는 개별 서비스에 대한 약관 및 이용규정에서 정하는 바에
 의합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -228,7 +228,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 2장 서비스 제공 및 이용\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -239,7 +239,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 5조 이용계약의 성립\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -251,7 +251,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="이 약관에서 사용하는 용어의 정의는 다음과 같습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -262,7 +262,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="1. 이용계약은 이용약관에 동의한다는 의사표시를 한 후 &quot;플랫폼&quot;에서 제공하는
 회원가입 양식에 따라 회원정보를 기입함으로써 가입을 완료하는 것으로 성립됩니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -272,7 +272,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="2. 당 서비스는 다음 각 호에 해당하는 이용계약에 대하여는 가입을 취소할 수 있습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -282,7 +282,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="1) 다른 사람의 명의를 사용하여 신청하였을 때"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -292,7 +292,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="2) 이용계약 신청서의 내용을 허위로 기재하였거나 신청하였을 때"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -302,7 +302,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="3) 사회의 안녕, 질서 혹은 미풍양속을 저해할 목적으로 신청하였을 때"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -313,7 +313,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="4) 다른 사람의 &quot;플랫폼&quot; 사이트 서비스 이용을 방해하거나 그 정보를 도용하는
 등의 행위를 하였을 때"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -324,7 +324,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="5) &quot;플랫폼&quot;의 웹 사이트를 이용하여 법령과 본 약관이 금지하는 행위를 하는
 경우"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -335,7 +335,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="3. 당 사이트는 다음 각 호에 해당하는 경우 그 사유가 해소될 때까지 이용계약 성립을 유보
 할 수 있습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -345,7 +345,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="1) 서비스 관련 제반 용량이 부족한 경우"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -355,7 +355,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="2) 기술상 장애 사유가 있는 경우"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -364,7 +364,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 6조 회원에 대한 통지\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -377,7 +377,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="1. &quot;회원&quot;에 대한 통지를 하는 경우, &quot;회원&quot;이 &quot;플랫폼
 &quot;에게 제공한 e-mail, 푸시와 앱 메시지 등으로 할 수 있습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -389,7 +389,7 @@
                 android:text="2. &quot;플랫폼&quot;은 불특정다수 &quot;회원&quot;에 대한 통지의 경우 1주일 이상
 &quot;플랫폼&quot;의 앱 및 웹 사이트 게시판에 게시함으로써 개별 통지를 대신할 수 있습니다. 다만, &quot;회원
 &quot; 본인에게 중대한 영향을 미치는 사항에 대하여는 개별 통지합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -398,7 +398,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 7조 회원정보 사용에 대한 동의\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -410,7 +410,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="1. &quot;회원&quot;의 개인정보는 개인정보보호법에 의해 보호됩니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -421,7 +421,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="2. &quot;플랫폼&quot;의 &quot;회원&quot;정보는 다음과 같이 수집, 사용, 관리, 보호
 됩니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -432,7 +432,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="1) 개인정보의 수집 : &quot;플랫폼&quot;은 귀하의 당 사이트 서비스 가입 시 귀하가 제공
 하는 정보를 통하여 귀하에 관한 정보를 수집합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -445,7 +445,7 @@
 &quot;의 신상정보를 본인의 승낙 없이 제3자에게 누설, 배포하지 않습니다. 단, 다른 법률의 규정에 의해 국가기관의
 요구가 있는 경우, 범죄에 대한 수사상의 목적이 있거나 정보통신윤리위원회의 요청이 있는 경우 또는 기타 관계법령에서
 정한 절차에 따른 요청이 있는 경우, 귀하가 플랫폼에 제공한 개인정보를 스스로 공지하는 경우에는 그러하지 않습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -456,7 +456,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="3) 개인정보의 관리 : 귀하는 개인정보의 보호 및 관리를 위하여 서비스의 개인정보관리에서
 수시로 귀하의 개인정보를 수정/삭제할 수 있습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -469,7 +469,7 @@
 전적으로 귀하의 아이디와 비밀번호에 의해 관리되고 있습니다. 따라서 타인에게 본인의 아이디와 비밀번호를 알려줘서는 안
 되며, 작업 종료 시에는 반드시 로그아웃 해주시고, 웹 브라우저의 창을 닫아주시기 바랍니다(이는 타인과 컴퓨터를 공유
 하는 인터넷 카페나 도서관 같은 공공장소에서 컴퓨터를 사용하는 경우에 귀하의 정보 보호를 위하여 필요한 사항입니다)"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -480,7 +480,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="3. &quot;회원&quot;이 본 약관에 따라 회원가입을 하는 것은 플랫폼 회원가입 시 기재한
 회원정보를 수집, 이용하는 것에 동의하는 것으로 간주됩니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -489,7 +489,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 8조 서비스의 이용시간 및 중단\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -503,7 +503,7 @@
                 android:text="1. &quot;플랫폼&quot;의 이용은 특별한 사유가 없는 한 연중무휴 1일 24시간을 원칙으로
 합니다. 다만, 컴퓨터 등 정보통신설비의 보수점검, 교체 및 고장, 통신 두절 등의 사유 또는 정기점검 등의 필요로 &quot;
 플랫폼&quot;이 지정한 날 등의 경우에는 &quot;플랫폼&quot;을 일시적으로 중단할 수 있습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -514,7 +514,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="2. &quot;플랫폼&quot;은 &quot;플랫폼&quot;의 원활한 운영을 위하여 기간을 정하여 사
 전에 공지하고 서비스를 중지할 수 있으며, 불가피하게 긴급한 조치를 취해야 하는 경우 사후에 통지할 수 있습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -523,7 +523,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 9조 서비스 이용 및 개인정보 동의 등\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -536,7 +536,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="1. &quot;플랫폼&quot;은 서비스를 일정 범위로 분할하여 각 범위별로 이용가능 시간을 별
 도로 정할 수 있습니다. 이 경우 그 내용을 사전에 공지합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -548,7 +548,7 @@
                 android:text="2. &quot;회원&quot;은 다음 또는 이와 유사한 방법에 의하여 플랫폼이 제공하는 서비스를
 이용하며, &quot;플랫폼&quot;은 &quot;회원&quot;이 서비스를 이용함에 있어서 다음의 각 내용을 알기 쉽게 제공하여야
 합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -558,7 +558,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="1) 플랫폼이 자체 개발하거나 다른 기관과의 협의 등을 통해 제공하는 일체의 서비스"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -569,7 +569,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="2) &quot;회원&quot;에게 제공되는 서비스 중 일부 서비스는 추가 정보를 입력해야
 서비스 이용이 가능합니다. (맞춤 혜택, 맞춤 혜택 푸시 알림)"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -578,7 +578,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 10조 서비스의 변경, 중지 및 정보의 저장과 사용\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -590,7 +590,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="1. &quot;플랫폼&quot;은 다음과 같은 업무를 수행합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -600,7 +600,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="1) 복지혜택에 대한 정보 제공"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -610,7 +610,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="2) 맞춤 복지혜택 제공"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -620,7 +620,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="3) 기타 플랫폼이 정하는 업무"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -633,7 +633,7 @@
 내용이 국가의 비상사태, 정전, 플랫폼의 관리범위 외의 서비스 설비 장애 및 기타 불가항력에 의하여 보관되지 못하였거나
 삭제된 경우, 전송하지 못한 경우 및 기타 통신 데이터의 손실에 대해 &quot;플랫폼&quot;이 관련 책임을 부담하지 아니
 합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -644,7 +644,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="3. &quot;플랫폼&quot;의 사정으로 서비스를 영구적으로 중단하여야 할 경우 제8조제1항을
 준용합니다. 다만 이 경우 사전 고지기간은 1개월로 합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -655,7 +655,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="4. &quot;플랫폼&quot;은 사전 고지 후 서비스를 일시적으로 수정, 변경 및 중단할 수 있으
 며, 이에 대하여 &quot;회원&quot; 또는 제3자에게 어떠한 책임도 부담하지 아니합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -667,7 +667,7 @@
                 android:text="5. &quot;플랫폼&quot;은 &quot;회원&quot;이 약관의 내용에 위배되는 행동을 한 경우,
 임의로 서비스 사용을 중지할 수 있습니다. 이 경우 &quot;플랫폼&quot;은 &quot;회원&quot;의 접속을 금지할 수 있으며,
 &quot;회원&quot;이 게시한 내용의 전부 또는 일부를 임의로 삭제할 수 있습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -678,7 +678,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="6. 장기간 휴면 &quot;회원&quot;인 경우 안내 메일 또는 공지사항 발표 후 1달(30일)간의
 통지기간을 거쳐 서비스 사용을 중지할 수 있습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -687,7 +687,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 11조 정보 제공 및 홍보물 게재\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -700,7 +700,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="1. &quot;플랫폼&quot; 사이트는 서비스를 운영함에 있어서 각종 정보를 게재하는 방법
 등으로 &quot;회원&quot;에게 서비스를 제공할 수 있습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -711,7 +711,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="2. &quot;플랫폼&quot; 사이트는 서비스에 적절하다고 판단되거나 활용 가능성이 있는 홍보
 물을 게재할 수 있습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -720,7 +720,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 12조 게시물 또는 내용물의 삭제\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -735,7 +735,7 @@
 회원&quot;에게 있으며, 회사는 &quot;회원&quot;이 게시하거나 등록하는 서비스의 내용물이 다음 각 항에 해당한다고
 판단되는 경우에 사전통지 없이 임시조치 및 삭제할 수 있고, 이에 대하여 &quot;플랫폼&quot;은 어떠한 책임도 지지
 않습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -746,7 +746,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="1) &quot;플랫폼&quot;, 다른 &quot;회원&quot; 또는 제3자를 비방하거나 중상모략으로
 명예를 손상시키는 내용인 경우"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -756,7 +756,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="2) 공공질서 및 미풍양속에 위반되는 내용인 경우"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -766,7 +766,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="3) 범죄적 행위에 결부된다고 인정되는 내용일 경우"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -776,7 +776,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="4) 제3자의 저작권 등 기타 권리를 침해하는 내용인 경우"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -787,7 +787,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="5) 본 서비스 약관에 위배되거나 상응 또는 불법, 음란, 저속하다고 판단되는 게시물을
 게시한 경우"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -797,7 +797,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="6) 기타 관계 법령 및 &quot;플랫폼&quot;에서 정한 규정 등에 위배되는 경우"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -807,7 +807,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="7) 동일한 내용을 중복하여 다수 게시하는 등 게시의 목적에 어긋나는 경우"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -817,7 +817,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="8) 사업주 변경 또는 권리자(사업주)의 게시물 중단 또는 삭제가 있는 경우"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -827,7 +827,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="9) 정당한 사유 없이 &quot;플랫폼&quot;의 영업을 방해하는 내용을 기재하였을 경우"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -837,7 +837,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="10) 기타 관련 법령에 위반된다고 판단되는 경우"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -849,7 +849,7 @@
                 android:text="2. 회원탈퇴 이후 &quot;회원&quot;이 작성하였던 게시물은 삭제되지 않으며, 회원탈퇴로
 인하여 회원정보가 삭제되어 작성자 본인을 확인할 수 없으면 게시물 편집 및 삭제가 원칙적으로 불가합니다. &quot;회원
 &quot;이 작성한 게시물의 삭제를 원할 경우에는 회원탈퇴 이전에 게시물을 모두 삭제해야 합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -858,7 +858,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 13조 게시물의 저작권\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -872,7 +872,7 @@
                 android:text="1. &quot;회원&quot;이 서비스 내에 게시한 게시물의 저작권은 &quot;회원&quot;에게 있으
 며, &quot;플랫폼&quot;은 &quot;회원&quot; 게시물의 일부 또는 전체를 인용하거나 편집하여 다른 서비스에서 게재 등으
 로 활용할 수 있습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -883,7 +883,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="2. &quot;회원&quot;의 게시물이 타인의 저작권, 프로그램 저작권 등을 침해함으로써 발생
 하는 민, 형사상의 책임은 전적으로 &quot;회원&quot;이 부담하여야 합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -894,7 +894,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="3. &quot;회원&quot;은 서비스를 이용하여 얻은 정보를 가공, 판매하는 행위 등 서비스에
 게재된 자료를 상업적으로 사용할 수 없습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -905,7 +905,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="4. &quot;플랫폼&quot;은 &quot;회원&quot;이 해지하거나 적법한 사유로 해지된 경우, 해당
 &quot;회원&quot;이 게시하였던 게시물을 삭제할 수 있습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -914,7 +914,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 14조 플랫폼의 소유권\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -928,7 +928,7 @@
                 android:text="1. &quot;플랫폼&quot;이 제공하는 서비스, 그에 필요한 소프트웨어, 이미지, 마크, 로고,
 디자인, 서비스 명칭, 정보 및 상표 등과 관련된 지적재산권 및 기타 권리는 보건복지부와 한국사회보장정보원에 소유권이
 있습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -940,7 +940,7 @@
                 android:text="2. &quot;회원&quot;은 보건복지부 또는 한국사회보장정보원이 명시적으로 승인한 경우를
 제외하고는 소정의 각 재산에 대한 전부 또는 일부의 수정, 대여, 대출, 판매, 배포, 제작, 양도, 재 라이센스, 담보권
 설정 행위, 상업적 이용행위를 할 수 없으며, 제3자로 하여금 이와 같은 행위를 하도록 허락할 수 없습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -949,7 +949,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 15조 개인정보 보호\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -962,7 +962,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="1. &quot;플랫폼&quot;은 &quot;회원&quot;의 개인정보 수집 시 서비스 제공을 위하여 필
 요한 범위에서 최소한의 개인정보를 수집합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -974,7 +974,7 @@
                 android:text="2. &quot;플랫폼&quot;은 회원가입 시 서비스에 필요한 정보를 미리 수집하지 않습니다. 다
 만 관련 법령상 의무이행을 위하여 서비스 이용 이전에 본인확인이 필요한 경우로서 최소한의 특정 개인정보를 수집하는 경우
 에는 그러하지 아니합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -985,7 +985,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="3. &quot;플랫폼&quot;은 &quot;회원&quot;의 개인정보를 수집, 이용하는 때에는 당해
 &quot;회원&quot;에게 그 목적을 고지하고 동의를 받습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -997,7 +997,7 @@
                 android:text="4. &quot;플랫폼&quot;은 수집된 개인정보를 목적 외의 용도로 이용할 수 없으며, 새로운
 이용목적이 발생한 경우 또는 제3자에게 제공하는 경우에는 이용 · 제공 단계에서 당해 &quot;회원&quot;에게 그 목적을
 고지하고 동의를 받습니다. 다만 관련 법령에 달리 정함이 있는 경우에는 예외로 합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1010,7 +1010,7 @@
 하는 경우에는 정보의 수집목적 및 이용목적, 제3자에 대한 정보제공 관련사항(제공받은 자, 제공목적 및 제공할 정보의
 내용) 등 「정보통신망 이용촉진 및 정보보호 등에 관한 법률」제22조1항이 규정한 사항을 미리 명시하거나 고지해야 하며,
 &quot;회원&quot;은 언제든지 이 동의를 철회할 수 있습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1023,7 +1023,7 @@
 대해 열람 및 오류정정을 요구할 수 있으며, &quot;플랫폼&quot;은 이에 대해 지체없이 필요한 조치를 취할 의무를 집
 니다. &quot;회원&quot;이 오류의 정정을 요구한 경우에는 &quot;플랫폼&quot;은 그 오류를 정정할 때까지 당해 개인
 정보를 이용하지 않습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1035,7 +1035,7 @@
                 android:text="7. &quot;플랫폼&quot;은 개인정보 보호를 위하여 &quot;회원&quot;의 개인정보를 처리
 하는 자를 최소한으로 제한하여야 하며 &quot;회원&quot;의 개인정보의 분실, 도난, 유출, 동의 없는 제3자 제공, 변조
 등으로 인한 &quot;회원&quot;의 손해에 대하여 모든 책임을 집니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1046,7 +1046,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="8. &quot;플랫폼&quot; 또는 그로부터 개인정보를 제공받은 제3자는 개인정보의 수집목적
 또는 제공받은 목적을 달성한 때에는 당해 개인정보를 지체없이 파기합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1059,7 +1059,7 @@
 것으로 설정해두지 않습니다. 또한 개인정보의 수집 · 이용 · 제공에 관한 &quot;회원&quot;의 동의거절 시 제한되는
 서비스를 구체적으로 명시하고, 필수 수집항목이 아닌 개인정보의 수집 · 이용 · 제공에 관한 &quot;회원&quot;의 동의
 거절을 이유로 회원가입 등 서비스 제공을 제한하거나 거절하지 않습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1068,7 +1068,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 16조 사용자의 행동규범 및 서비스 이용제한\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -1084,7 +1084,7 @@
 하는 불이익에 대해 책임을 부담하지 아니합니다. &quot;회원&quot;은 &quot;플랫폼&quot;이 명시적으로 승인한 경우를
 제외하고는 재산에 대한 전부 또는 일부의 수정, 대여, 대출, 판매, 배포, 제작, 양도, 재 라이센스, 담보권 설정행위,
 상업적 이용행위를 할 수 없으며, 제3자로 하여금 이와 같은 행위를 하도록 허락할 수 없습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1096,7 +1096,7 @@
                 android:text="2. 귀하가 당 사이트 서비스를 통하여 게시, 전송, 입수하였거나 전자메일, 기타 다른 수단에
 의하여 게시, 전송 또는 입수한 모든 형태의 정보에 대하여는 귀하가 모든 책임을 부담하며 당 사이트는 어떠한 책임도 부담
 하지 아니합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1108,7 +1108,7 @@
                 android:text="3. 당 사이트는 당 사이트가 제공한 서비스가 아닌 가입자 또는 유관기관이 제공하는 서비
 스의 내용상의 정확성, 완전성 및 질에 대하여 보장하지 않습니다. 따라서 당 사이트는 귀하가 위 내용을 이용함으로 인하여
 입게 된 모든 종류의 손실이나 손해에 대하여 책임을 부담하지 아니합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1118,7 +1118,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="4. 귀하는 본 서비스를 통하여 다음과 같은 행동을 하지 않는 데 동의합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1128,7 +1128,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="1) 타인의 아이디(ID)와 비밀번호를 도용하는 행위"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1139,7 +1139,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="2) 저속, 음란, 모욕적, 위협적이거나 타인의 프라이버시를 침해할 수 있는 내용을 전송,
 게시, 게재, 전자메일 또는 기타 방법으로 전송하는 행위"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1149,7 +1149,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="3) 서비스를 통하여 전송된 내용의 출처를 위장하는 행위"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1160,7 +1160,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="4) 법률, 계약에 의하여 이용할 수 없는 내용을 게시, 게재, 전자메일 또는 기타 방법으로
 전송하는 행위"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1171,7 +1171,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="5) 타인의 특허, 상표, 영업비밀, 저작권, 기타 지적재산권을 침해하는 내용을 게시, 게재,
 전자메일 또는 기타 방법으로 전송하는 행위"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1182,7 +1182,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="6) 당 사이트의 승인을 받지 아니한 광고, 판촉물, 정크메일, 스팸, 행운의 편지, 피라미드
 조직 및 기타 다른 형태의 권유를 게시, 게재, 전자메일 또는 기타 방법으로 전송하는 행위"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1192,7 +1192,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="7) 다른 사용자의 개인정보를 수집 또는 저장하는 행위"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1203,7 +1203,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="5. 당 사이트는 &quot;회원&quot;이 본 약관을 위배했다고 판단되면 서비스와 관련된 모든
 정보를 이용자의 동의 없이 삭제할 수 있습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1212,7 +1212,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 17조 개별 서비스 약관 및 이용조건\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -1226,7 +1226,7 @@
                 android:text="1. &quot;플랫폼&quot;은 개별 서비스와 관련한 별도의 약관 및 이용정책을 둘 수 있으며,
 개별 서비스에서 별도로 적용되는 약관 및 정책에 대한 동의는 &quot;회원&quot;이 개별 서비스를 이용할 경우 별도의
 동의절차를 거치게 됩니다. 이 경우 개별 서비스에 대한 약관 및 정책이 본 약관에 우선합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1237,7 +1237,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="2. 전항에도 불구하고 &quot;플랫폼&quot;은 개별 서비스에 대한 이용정책에 대해서는 푸
 시 알림을 통해 공지할 수 있으며, &quot;회원&quot;은 이용정책을 숙지하고 준수하여야 합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1246,7 +1246,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 18조 위치정보의 보호 및 이용\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -1259,7 +1259,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="1. &quot;플랫폼&quot;은 서비스의 제공과 관련하여 위치정보 서비스에 관한 약관 및
 정보 제공 동의 등 필요한 요건을 구비한 &quot;회원&quot;으로부터 위치정보를 수집 및 이용할 수 있습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1271,7 +1271,7 @@
                 android:text="2. &quot;플랫폼&quot;은 &quot;회원&quot;의 위치정보를 이용하는 경우, 위치정보의
 보호 및 이용 등에 관한 법률(이하 &quot;위치정보법&quot;) 등 관련 법령이 정하는 바에 따라서 &quot;회원&quot;의
 개인위치정보를 보호하기 위하여 노력합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1282,7 +1282,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="3. 위치정보의 수집 및 이용에 관하여는 회사가 제시하는 별도의 약관에 정한 바에 따릅
 니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1291,7 +1291,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 19조 광고성 또는 맞춤형 정보의 제공\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -1304,7 +1304,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="1. &quot;플랫폼&quot;은 본 서비스의 운영과 관련하여 광고성 정보를 제공하는 서비스를
 운영할 수 있습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1316,7 +1316,7 @@
                 android:text="2. &quot;플랫폼&quot;은 광고성 정보 및 &quot;회원&quot; 맞춤형 정보를 푸시 메시지
 형식으로 제공할 수 있으며, 이는 광고성 정보에 대한 사전 수신동의가 있는 경우 등 법령상 허용된 경우에 한하여 제공
 됩니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1325,7 +1325,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 20조 지식재산권\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -1338,7 +1338,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="1. &quot;플랫폼&quot;의 서비스와 관련된 일체의 지식재산권은 &quot;플랫폼&quot;에
 속합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1349,7 +1349,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="2. &quot;회원&quot;은 본 서비스 이용 과정에서 얻은 정보를 가공, 제공, 판매하는 등
 영리 목적으로 이용하거나 제3자에게 이용하게 할 수 없습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1358,7 +1358,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 3장 의무 및 책임\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -1369,7 +1369,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 21조 플랫폼의 의무\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -1382,7 +1382,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="1. &quot;플랫폼&quot;은 법령과 이 약관이 금지하거나 공공질서 및 미풍양속에 반하는
 행위를 하지 않으며, 이 약관이 정하는 바에 따라 지속적이고 안정적으로 서비스를 제공하는데 최선을 다하여야 합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1394,7 +1394,7 @@
                 android:text="2. &quot;플랫폼&quot;은 &quot;회원&quot;의 개인 신상정보를 본인의 승낙 없이 타인
 에게 누설, 배포하지 않습니다. 다만 전기통신관련법령 등 관계법령에 의하여 관계 국가기관 등의 요구가 있는 경우에는
 그러하지 아니합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1405,7 +1405,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="3. &quot;플랫폼&quot;은 이용자가 안전하게 당 사이트 서비스를 이용할 수 있도록 이용
 자의 개인정보(신용정보 포함) 보호를 위한 보안시스템을 갖춰야 합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1416,7 +1416,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="4. &quot;플랫폼&quot;은 이용자의 귀책사유로 인한 서비스 이용 장애에 대하여 책임을
 지지 않습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1426,7 +1426,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="5. &quot;플랫폼&quot;은 이외의 관계법령이 정한 의무사항을 준수합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1435,7 +1435,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 22조 회원의 의무\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -1449,7 +1449,7 @@
                 android:text="1. 회원가입 시에 요구되는 정보는 정확하게 기입하여야 합니다. 또한 이미 제공된 귀하에
 대한 정보가 정확한 정보가 되도록 유지, 갱신하여야 하며 &quot;회원&quot;은 자신의 ID 및 비밀번호를 제3자에게 이용
 하게 해서는 안됩니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1460,7 +1460,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="2. &quot;회원&quot;은 당 사이트의 사전 승낙 없이 서비스를 이용하여 어떠한 영리행위도
 할 수 없습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1471,7 +1471,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="3. &quot;회원&quot;은 당 사이트 서비스를 이용하여 얻은 정보를 당 사이트의 사전 승낙
 없이 복사, 복제, 변경, 번역, 출반, 방송, 기타의 방법으로 사용하거나 이를 타인에게 제공할 수 없습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1482,7 +1482,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="4. &quot;회원&quot;은 플랫폼 서비스 이용과 관련하여 다음 각 호의 행위를 하여서는
 안됩니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1492,7 +1492,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="1) 다른 &quot;회원&quot;의 ID를 부정 사용하는 행위"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1502,7 +1502,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="2) 범죄행위를 목적으로 하거나 기타 범죄행위와 관련된 행위"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1512,7 +1512,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="3) 선량한 풍속, 기타 사회질서를 해하는 행위"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1522,7 +1522,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="4) 타인의 명예를 훼손하거나 모욕하는 행위"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1532,7 +1532,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="5) 타인의 지적재산권 등의 권리를 침해하는 행위"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1542,7 +1542,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="6) 해킹행위 또는 컴퓨터 바이러스의 유포행위"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1552,7 +1552,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="7) 타인의 의사에 반하여 광고성 정보 등 일정한 내용을 지속적으로 전송하는 행위"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1562,7 +1562,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="8) 서비스의 안정적인 운영에 지장을 주거나 줄 우려가 있는 일체의 행위"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1572,7 +1572,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:lineSpacingExtra="6sp"
                 android:text="9) 당 사이트에 게시된 정보의 변경"
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1581,7 +1581,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 4장 기타\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -1592,7 +1592,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 23조 양도 금지\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -1605,7 +1605,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="1. &quot;회원&quot;은 서비스의 이용권한, 기타 이용계약상의 지위를 타인에게 양도, 증
 여할 수 없습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1614,7 +1614,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 24조 손해배상\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -1627,7 +1627,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="1. &quot;플랫폼&quot;은 무료로 제공되는 서비스와 관련하여 &quot;회원&quot;에게 어떠
 한 손해가 발생하더라도 &quot;플랫폼&quot;의 고의로 행한 범죄행위를 제외하고 이에 대하여 책임을 부담하지 아니합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1636,7 +1636,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 25조 면책조항\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -1650,7 +1650,7 @@
                 android:text="1. 당 사이트는 서비스에 표출된 어떠한 의견이나 정보에 대해 확신이나 대표할 의무가 없
 으며, &quot;회원&quot;이나 제3자에 의해 표출된 의견을 승인, 반대하거나 수정하지 않습니다. 당 사이트는 어떠한 경우
 라도 &quot;회원&quot;이 서비스에 담긴 정보에 의존해 얻은 이득이나 손해에 대해 책임이 없습니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1662,7 +1662,7 @@
                 android:text="2. 당 사이트는 &quot;회원&quot;간 또는 &quot;회원&quot;과 제3자 간에 서비스를 매개
 로 하여 물품거래 혹은 금전적 거래 등과 관련하여 어떠한 책임도 부담하지 아니하고, &quot;회원&quot;이 서비스의 이용
 과 관련하여 기대하는 이익에 관하여 책임을 부담하지 아니합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1671,7 +1671,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="제 26조 관할법원\n"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -1684,7 +1684,7 @@
                 android:lineSpacingExtra="6sp"
                 android:text="1. &quot;플랫폼&quot;과 이용자 간에 발생한 서비스 이용에 관한 분쟁에 대하여는 대한
 민국 법을 적용하며, 본 분쟁으로 인한 소는 대한민국의 법원에 제기합니다."
-                android:textColor="@color/gray" />
+                android:textColor="@color/grey" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -1693,7 +1693,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:text="(시행일) 이 약관은 2021년 2월 22일부터 시행됩니다."
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 

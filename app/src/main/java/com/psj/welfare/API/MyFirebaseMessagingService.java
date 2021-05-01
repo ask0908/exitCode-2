@@ -34,12 +34,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage)
     {
+        Log.e(TAG, "onMessageReceived 실행!");
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         sharedPreferences = getSharedPreferences("app_pref", 0);
         boolean isPushDisabled = sharedPreferences.getBoolean("fcm_canceled", false);
+        Log.e(TAG, "isPushDisabled = " + isPushDisabled);
         String msg, title, icon;
         if (remoteMessage.getNotification() != null)
         {
+            Log.e(TAG, "getBody : " + remoteMessage.getNotification().getBody());
+            Log.e(TAG, "getTitle : " + remoteMessage.getNotification().getTitle());
             msg = remoteMessage.getNotification().getBody();
             title = remoteMessage.getNotification().getTitle();
             icon = remoteMessage.getNotification().getIcon();

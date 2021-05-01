@@ -24,19 +24,12 @@ import com.psj.welfare.R;
 import com.psj.welfare.adapter.OtherYoutubeAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
-import com.psj.welfare.data.HorizontalYoutubeItem;
 import com.psj.welfare.data.OtherYoutubeItem;
 import com.psj.welfare.data.YoutubeItem;
 import com.psj.welfare.util.LogUtil;
 
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -64,13 +57,11 @@ public class YoutubeActivity extends AppCompatActivity
     String youtube_name;
 
     String key_name;
+
     String video_name;
 
     SharedPreferences sharedPreferences;
     String encode_str, encode_action;
-
-    Intent intent;
-    HorizontalYoutubeItem item;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -80,7 +71,6 @@ public class YoutubeActivity extends AppCompatActivity
         setContentView(R.layout.activity_youtube);
 
         get_youtube_hashmap = new HashMap<>();
-
         youtube_toolbar = findViewById(R.id.youtube_toolbar);
         setSupportActionBar(youtube_toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -92,16 +82,6 @@ public class YoutubeActivity extends AppCompatActivity
         {
             Intent intent = getIntent();
             get_youtube_hashmap = (HashMap<String, String>) intent.getSerializableExtra("youtube_hashmap");
-        }
-
-        /* 인텐트에서 데이터가 담긴 객체를 꺼내 YoutubeActivity의 객체에 매핑 */
-        if (getIntent().hasExtra("youtube_information"))
-        {
-            intent = getIntent();
-            item = (HorizontalYoutubeItem) intent.getSerializableExtra("youtube_information");
-            Log.e(TAG, "item에서 꺼낸 videoId" + item.getYoutube_videoId());
-            Log.e(TAG, "item에서 꺼낸 영상 이름" + item.getYoutube_name());
-            Log.e(TAG, "item에서 꺼낸 썸네일" + item.getYoutube_thumbnail());
         }
 
         if (getIntent().hasExtra("youtube_name"))
@@ -119,31 +99,6 @@ public class YoutubeActivity extends AppCompatActivity
         other_video_recyclerview = findViewById(R.id.other_video_recyclerview);
         other_video_recyclerview.setHasFixedSize(true);
         other_video_recyclerview.setLayoutManager(new LinearLayoutManager(this));
-
-        Log.e(TAG, "해시맵 값 확인 : " + get_youtube_hashmap);
-
-//        other_list = new ArrayList(get_youtube_hashmap.values());
-
-        /* 이전 유튜브 API를 삭제했기 때문에 인텐트로 받아온 해시맵을 ArrayList에 넣어서 리사이클러뷰에 넣어야 한다 */
-//        adapter = new OtherYoutubeAdapter(YoutubeActivity.this, other_list, itemClickListener);
-//        adapter.setOnItemClickListener(((view, pos) -> {
-//            String youtube_url_id = other_list.get(pos).getVideo_id();
-//            String title = other_list.get(pos).getTitle();
-//            player_1.addYouTubePlayerListener(new AbstractYouTubePlayerListener()
-//            {
-//                @Override
-//                public void onReady(@NotNull YouTubePlayer youTubePlayer)
-//                {
-//                    youTubePlayer.loadVideo(youtube_url_id, 0);
-//                    youTubePlayer.pause();
-//                }
-//            });
-//            Intent intent = getIntent();
-//            intent.putExtra("youtube_name", title);
-//            finish();
-//            startActivity(intent);
-//        }));
-//        other_video_recyclerview.setAdapter(adapter);
 
         Log.e(TAG, "key_name : " + key_name);
 
@@ -170,120 +125,116 @@ public class YoutubeActivity extends AppCompatActivity
         return null;
     }
 
-    void getYoutubeInformation()
-    {
-        encode("유튜브 재생 화면 진입");
-        sharedPreferences = getSharedPreferences("app_pref", 0);
-        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.getYoutubeInformation();
-        call.enqueue(new Callback<String>()
-        {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response)
-            {
-                if (response.isSuccessful() && response.body() != null)
-                {
-                    String result = response.body();
-                    jsonParsing(result);
-                }
-                else
-                {
-                    Log.e(TAG, "실패 : " + response.body());
-                }
-            }
+//    void getYoutubeInformation()
+//    {
+//        encode("유튜브 재생 화면 진입");
+//        sharedPreferences = getSharedPreferences("app_pref", 0);
+//        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+//        Call<String> call = apiInterface.getYoutubeInformation();
+//        call.enqueue(new Callback<String>()
+//        {
+//            @Override
+//            public void onResponse(Call<String> call, Response<String> response)
+//            {
+//                if (response.isSuccessful() && response.body() != null)
+//                {
+//                    String result = response.body();
+//                    jsonParsing(result);
+//                }
+//                else
+//                {
+//                    Log.e(TAG, "실패 : " + response.body());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<String> call, Throwable t)
+//            {
+//                Log.e(TAG, "에러 : " + t.getMessage());
+//            }
+//        });
+//    }
 
-            @Override
-            public void onFailure(Call<String> call, Throwable t)
-            {
-                Log.e(TAG, "에러 : " + t.getMessage());
-            }
-        });
-    }
+//    private void encode(String str)
+//    {
+//        try
+//        {
+//            encode_str = URLEncoder.encode(str, "UTF-8");
+//        }
+//        catch (UnsupportedEncodingException e)
+//        {
+//            e.printStackTrace();
+//        }
+//    }
 
-    private void encode(String str)
-    {
-        try
-        {
-            encode_str = URLEncoder.encode(str, "UTF-8");
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    private void jsonParsing(String result)
-    {
-        youtube_list = new ArrayList<>();
-        url_id_list = new ArrayList<>();
-        title_list = new ArrayList<>();
-        other_list = new ArrayList<>();
-        try
-        {
-            JSONObject jsonObject = new JSONObject(result);
-            JSONArray jsonArray = jsonObject.getJSONArray("Message");
-            for (int i = 0; i < jsonArray.length(); i++)
-            {
-                JSONObject inner_obj = jsonArray.getJSONObject(i);
-                thumbnail = inner_obj.getString("thumbnail");
-                url_id = inner_obj.getString("videoId");
-                title = inner_obj.getString("title");
-                url_id_list.add(url_id);
-                title_list.add(title);
-
-                OtherYoutubeItem item = new OtherYoutubeItem();
-                item.setThumbnail(thumbnail);
-                item.setVideo_id(url_id);
-                item.setTitle(title);
-                boolean isDuplicated = false;
-                for (int j = 0; j < other_list.size(); j++)
-                {
-                    if (other_list.get(j).getTitle().equals(video_name))
-                    {
-                        isDuplicated = true;
-                        break;
-                    }
-                }
-                if (!isDuplicated)
-                {
-                    if (!item.getTitle().contains(video_name))
-                    {
-                        other_list.add(item);
-                    }
-                }
-            }
-            youtube_count = jsonObject.getString("TotalCount");
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        for (int i = 0; i < other_list.size(); i++)
-        {
-            Log.e(TAG, "other_list : " + other_list.get(i).getVideo_id());
-        }
-
-        adapter = new OtherYoutubeAdapter(YoutubeActivity.this, other_list, itemClickListener);
-        adapter.setOnItemClickListener(((view, pos) -> {
-            String youtube_url_id = other_list.get(pos).getVideo_id();
-            String thumbnail = other_list.get(pos).getThumbnail();
-            String title = other_list.get(pos).getTitle();
-            player_1.addYouTubePlayerListener(new AbstractYouTubePlayerListener()
-            {
-                @Override
-                public void onReady(@NotNull YouTubePlayer youTubePlayer)
-                {
-                    youTubePlayer.loadVideo(youtube_url_id, 0);
-                    youTubePlayer.pause();
-                }
-            });
-            Intent intent = getIntent();
-            intent.putExtra("youtube_name", title);
-            finish();
-            startActivity(intent);
-        }));
-        other_video_recyclerview.setAdapter(adapter);
-    }
+//    private void jsonParsing(String result)
+//    {
+//        youtube_list = new ArrayList<>();
+//        url_id_list = new ArrayList<>();
+//        title_list = new ArrayList<>();
+//        other_list = new ArrayList<>();
+//        try
+//        {
+//            JSONObject jsonObject = new JSONObject(result);
+//            JSONArray jsonArray = jsonObject.getJSONArray("Message");
+//            for (int i = 0; i < jsonArray.length(); i++)
+//            {
+//                JSONObject inner_obj = jsonArray.getJSONObject(i);
+//                thumbnail = inner_obj.getString("thumbnail");
+//                url_id = inner_obj.getString("videoId");
+//                title = inner_obj.getString("title");
+//                url_id_list.add(url_id);
+//                title_list.add(title);
+//
+//                OtherYoutubeItem item = new OtherYoutubeItem();
+//                item.setThumbnail(thumbnail);
+//                item.setUrl_id(url_id);
+//                item.setTitle(title);
+//                boolean isDuplicated = false;
+//                for (int j = 0; j < other_list.size(); j++)
+//                {
+//                    if (other_list.get(j).getTitle().equals(video_name))
+//                    {
+//                        isDuplicated = true;
+//                        break;
+//                    }
+//                }
+//                if (!isDuplicated)
+//                {
+//                    if (!item.getTitle().contains(video_name))
+//                    {
+//                        other_list.add(item);
+//                    }
+//                }
+//            }
+//            youtube_count = jsonObject.getString("TotalCount");
+//        }
+//        catch (JSONException e)
+//        {
+//            e.printStackTrace();
+//        }
+//
+//        adapter = new OtherYoutubeAdapter(YoutubeActivity.this, other_list, itemClickListener);
+//        adapter.setOnItemClickListener(((view, pos) -> {
+//            String youtube_url_id = other_list.get(pos).getUrl_id();
+//            String thumbnail = other_list.get(pos).getThumbnail();
+//            String title = other_list.get(pos).getTitle();
+//            player_1.addYouTubePlayerListener(new AbstractYouTubePlayerListener()
+//            {
+//                @Override
+//                public void onReady(@NotNull YouTubePlayer youTubePlayer)
+//                {
+//                    youTubePlayer.loadVideo(youtube_url_id, 0);
+//                    youTubePlayer.pause();
+//                }
+//            });
+//            Intent intent = getIntent();
+//            intent.putExtra("youtube_name", title);
+//            finish();
+//            startActivity(intent);
+//        }));
+//        other_video_recyclerview.setAdapter(adapter);
+//    }
 
     private void init()
     {

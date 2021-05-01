@@ -28,11 +28,13 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:fontFamily="@font/jalnan"
             android:gravity="start"
+            android:text="행복주택공급"
             android:textColor="@color/gray"
-            android:autoSizeTextType="none"
-            app:autoSizePresetSizes="@array/autosize_text_sizes"/>
+            android:autoSizeTextType="none"/>
 
         <TextView
             android:id="@+id/bottom_result_subject"
@@ -43,6 +45,7 @@
             app:layout_constraintVertical_bias=".8"
             app:layout_constraintHorizontal_bias=".1"
             android:fontFamily="@font/nanum_barun_gothic_bold"
+            android:text="#전국 #다자녀 #다문화"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

@@ -13,9 +13,12 @@ import android.provider.Settings;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.psj.welfare.R;
@@ -28,7 +31,18 @@ public class ThemeChooseActivity extends AppCompatActivity
     private Button[] mButton = new Button[14];
     private ArrayList<Integer> mDataList;
 
+    Button btnJob, btnYoung, btnLiving, btnChild, btnPregnancy, btnCultural, btnCompany, btnHomeless, btnOld, btnDisorder, btnMulticultural, btnLaw, btnMedical, btnEtc;
+
     public final String TAG = "SearchFragment";
+
+    private EditText search_edittext;
+
+    Toolbar search_toolbar;
+
+    TextView recommend_search_textview, recent_search_history_textview;
+
+    TextView main_job_title, main_student_title, main_living_title, main_pregnancy_title, main_child_title, main_cultural_title,
+            main_company_title, main_homeless_title, main_old_title, main_disorder_title, main_multicultural_title, main_law_title;
 
     Button main_job, main_student, main_living, main_pregnancy, main_child, main_cultural, main_company, main_homeless, main_old, main_disorder,
             main_multicultural, main_law, main_medical, main_etc;
@@ -47,22 +61,24 @@ public class ThemeChooseActivity extends AppCompatActivity
         setStatusBarGradiant(ThemeChooseActivity.this);
         setContentView(R.layout.activity_theme_choose);
 
+        search_edittext = findViewById(R.id.search_edittext);
+
         mDataList = new ArrayList<>();
 
-        mButton[0] = findViewById(R.id.btnJob);
-        mButton[1] = findViewById(R.id.btnYoung);
-        mButton[2] = findViewById(R.id.btnLiving);
-        mButton[3] = findViewById(R.id.btnChild);
-        mButton[4] = findViewById(R.id.btnPregnancy);
-        mButton[5] = findViewById(R.id.btnCultural);
-        mButton[6] = findViewById(R.id.btnCompany);
-        mButton[7] = findViewById(R.id.btnHomeless);
-        mButton[8] = findViewById(R.id.btnOld);
-        mButton[9] = findViewById(R.id.btnDisorder);
-        mButton[10] = findViewById(R.id.btnMulticultural);
-        mButton[11] = findViewById(R.id.btnLaw);
-        mButton[12] = findViewById(R.id.btnMedical);
-        mButton[13] = findViewById(R.id.btnEtc);
+        mButton[0] = (Button) findViewById(R.id.btnJob);
+        mButton[1] = (Button) findViewById(R.id.btnYoung);
+        mButton[2] = (Button) findViewById(R.id.btnLiving);
+        mButton[3] = (Button) findViewById(R.id.btnChild);
+        mButton[4] = (Button) findViewById(R.id.btnPregnancy);
+        mButton[5] = (Button) findViewById(R.id.btnCultural);
+        mButton[6] = (Button) findViewById(R.id.btnCompany);
+        mButton[7] = (Button) findViewById(R.id.btnHomeless);
+        mButton[8] = (Button) findViewById(R.id.btnOld);
+        mButton[9] = (Button) findViewById(R.id.btnDisorder);
+        mButton[10] = (Button) findViewById(R.id.btnMulticultural);
+        mButton[11] = (Button) findViewById(R.id.btnLaw);
+        mButton[12] = (Button) findViewById(R.id.btnMedical);
+        mButton[13] = (Button) findViewById(R.id.btnEtc);
 
         main_job = findViewById(R.id.btnJob);
         main_student = findViewById(R.id.btnYoung);

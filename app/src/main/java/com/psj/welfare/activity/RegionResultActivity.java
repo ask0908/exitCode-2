@@ -59,19 +59,16 @@ public class RegionResultActivity extends AppCompatActivity
 {
     public final String TAG = this.getClass().getSimpleName();
 
-    /* 'OO 지원' 선택하는 상단 리사이클러뷰 */
     private RecyclerView up_recycler;
     private SelectedCategoryAdapter up_adapter;
     private SelectedCategoryAdapter.ItemClickListener up_itemClickListener;
     List<CategorySearchResultItem> keyword_list;
 
-    /* 상단 리사이클러뷰에서 선택한 값에 따라 내용물이 바뀌는 하단 리사이클러뷰 */
     private RecyclerView bottom_recycler;
     private CategorySearchResultAdapter bottom_adapter;
     private CategorySearchResultAdapter.ItemClickListener bottom_itemClickListener;
     List<CategorySearchBottomResultItem> item_list;
 
-    /* 글자 수 변경에 사용하는 리스트 */
     List<CategorySearchBottomResultItem> other_list;
 
     // 혜택 결과를 출력할 텍스트뷰

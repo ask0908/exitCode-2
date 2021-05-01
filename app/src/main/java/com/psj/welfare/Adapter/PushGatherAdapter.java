@@ -57,16 +57,7 @@ public class PushGatherAdapter extends RecyclerView.Adapter<PushGatherAdapter.Pu
     {
         PushGatherItem item = lists.get(position);
         holder.push_gather_title.setText(item.getPush_gather_title());
-        String welf_name;
-        if (item.getWelf_name().contains(";; "))
-        {
-            welf_name = item.getWelf_name().replace(";; ", ", ");
-            holder.push_gather_desc.setText(welf_name);
-        }
-        else
-        {
-            holder.push_gather_desc.setText(item.getWelf_name());
-        }
+        holder.push_gather_desc.setText(item.getWelf_name());
         holder.push_gather_date.setText(item.getPush_gather_date());
 
         ZonedDateTime seoulDateTime = null;

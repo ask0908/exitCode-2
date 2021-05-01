@@ -55,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:text="아이디는최대10자만"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="15sp" />
             <!-- 커스텀 RatingBar -->
             <com.hedgehog.ratingbar.RatingBar
@@ -101,7 +101,7 @@
         android:lineSpacingExtra="6sp"
         android:paddingEnd="10dp"
         android:text="리뷰 본문"
-        android:textColor="@color/gray"
+        android:textColor="@color/grey"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

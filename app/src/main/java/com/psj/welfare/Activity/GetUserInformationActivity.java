@@ -119,6 +119,7 @@ public class GetUserInformationActivity extends AppCompatActivity
             {
                 checkUserInformation();
                 String nickname = app_pref.getString("user_nickname", "");
+                // TODO : 나이 받아와서 DatePicker에 붙여넣어야 한다
                 gender = app_pref.getString("user_gender", "");
                 String area = app_pref.getString("user_area", "");
                 // editText에 set
@@ -488,6 +489,7 @@ public class GetUserInformationActivity extends AppCompatActivity
         Log.e(TAG, "유저 성별 : " + gender);
         Log.e(TAG, "유저 지역 : " + user_area);
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        // TODO : 나이를 20210228 형태로 받도록 UI를 수정하고 값도 바꿔야 한다
         Call<String> call = apiInterface.registerUserInfo(server_token, nickname_edittext.getText().toString(), result_date, gender, user_area);
         call.enqueue(new Callback<String>()
         {

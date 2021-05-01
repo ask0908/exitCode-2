@@ -17,7 +17,6 @@ import com.psj.welfare.data.CategorySearchResultItem;
 import java.util.Collections;
 import java.util.List;
 
-/* 상단 리사이클러뷰에 쓸 어댑터 */
 public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCategoryAdapter.SelectedCategoryViewHolder>
 {
     private final String TAG = "SelectedCategoryAdapter";
@@ -61,6 +60,8 @@ public class SelectedCategoryAdapter extends RecyclerView.Adapter<SelectedCatego
     @Override
     public void onBindViewHolder(@NonNull SelectedCategoryAdapter.SelectedCategoryViewHolder holder, int position)
     {
+        CategorySearchResultItem item = list.get(position);
+
         List<String> item_list = Collections.singletonList(list.get(position).getWelf_category());
         StringBuilder listToString = new StringBuilder();
         for (String str : item_list)

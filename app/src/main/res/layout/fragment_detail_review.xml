@@ -1,0 +1,634 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:hedgehog="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DetailReviewFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorMainWhite">
+
+            <!-- 별점 카드뷰 -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/star_cardview"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginVertical="20dp"
+                android:gravity="center"
+                android:visibility="visible"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="6dp"
+                app:layout_constraintBottom_toTopOf="@+id/review_cardview"
+                app:layout_constraintHeight_percent=".48"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent=".87">
+
+
+                <!-- 리뷰들의 총 평점, 신청 난이도, 혜택 만족도 있는 레이아웃 -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <!--평점 상단-->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:background="@drawable/bottom_only_border"
+                        app:layout_constraintHeight_percent=".35"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <!--평점 상단 좌측 별점-->
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/star_layout"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintHeight_percent=".9"
+                            app:layout_constraintHorizontal_bias=".07"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.5"
+                            app:layout_constraintWidth_percent=".33">
+
+                            <TextView
+                                android:id="@+id/review_average_textview"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/nanum_barun_gothic_bold"
+                                android:gravity="center"
+                                android:text="0.0"
+                                android:textColor="@color/grey"
+                                android:textSize="30sp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintVertical_bias=".23" />
+
+                            <TextView
+                                android:id="@+id/review_total_textview"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/nanum_barun_gothic_bold"
+                                android:gravity="center"
+                                android:text="(52)"
+                                android:textColor="@color/grey"
+                                android:textSize="13sp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintVertical_bias=".55" />
+
+                            <com.hedgehog.ratingbar.RatingBar
+                                android:id="@+id/star_average"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/review_total_textview"
+                                app:starImageHeight="18dp"
+                                app:starImageWidth="20dp"
+                                hedgehog:clickable="false"
+                                hedgehog:halfstart="true"
+                                hedgehog:starCount="5"
+                                hedgehog:starEmpty="@drawable/ic_star_empty"
+                                hedgehog:starFill="@drawable/ic_star_fill"
+                                hedgehog:starHalf="@drawable/star_half2" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <View
+                            android:id="@+id/review_top_bottom_divider"
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="#dcdcdc"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintLeft_toRightOf="@+id/star_layout"
+                            app:layout_constraintRight_toLeftOf="@+id/review_chart_layout"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+
+                        <!--평점 상단 우측 각 별점 수-->
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/review_chart_layout"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintHeight_percent=".9"
+                            app:layout_constraintHorizontal_bias=".935"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.5"
+                            app:layout_constraintWidth_percent=".55">
+
+                            <org.eazegraph.lib.charts.BarChart
+                                android:id="@+id/review_chart"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:egBarWidth="17dp"
+                                app:egFixedBarWidth="true"
+                                app:egIndicatorLineColor="#FF7088"
+                                app:egLegendHeight="30dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintHeight_percent=".9"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintWidth_percent=".85" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <!--신청 난이도, 만족도 레이아웃-->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintHeight_percent=".65"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent">
+
+                        <!--빈 레이아웃-->
+                        <LinearLayout
+                            android:id="@+id/level_top_empty_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:orientation="horizontal"
+                            app:layout_constraintBottom_toTopOf="@+id/level_text_layout"
+                            app:layout_constraintHeight_percent=".08"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <!--신청 난이도 텍스트 레이아웃-->
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/level_text_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            app:layout_constraintBottom_toTopOf="@+id/level_progressbar_layout"
+                            app:layout_constraintHeight_percent=".18"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/level_top_empty_layout"
+                            app:layout_constraintVertical_bias="0">
+
+                            <ImageView
+                                android:id="@+id/level_imageview"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:adjustViewBounds="true"
+                                android:background="@drawable/round_quadrangle"
+                                android:backgroundTint="@color/color_text_pink"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintHeight_percent="0.28"
+                                app:layout_constraintHorizontal_bias="0.08"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintWidth_percent=".034" />
+
+                            <TextView
+                                android:id="@+id/level_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="신청 난이도"
+                                android:textColor="@color/color_text_pink"
+                                android:textStyle="bold"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintHorizontal_bias=".17"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <!--신청 난이도 프로그래스바-->
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/level_progressbar_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            app:layout_constraintBottom_toTopOf="@+id/satisfaction_text_layout"
+                            app:layout_constraintHeight_percent=".24"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/level_text_layout"
+                            app:layout_constraintVertical_bias="0">
+
+                            <!--신청 난이도 쉬워요 레이아웃-->
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/easy_text_layout"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintRight_toLeftOf="@+id/level_progressbar"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintWidth_percent=".27">
+
+                                <TextView
+                                    android:id="@+id/easy_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="쉬워요"
+                                    android:textStyle="bold"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintHorizontal_bias=".58"
+                                    app:layout_constraintLeft_toLeftOf="parent"
+                                    app:layout_constraintRight_toRightOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintVertical_bias=".25" />
+
+                                <TextView
+                                    android:id="@+id/easy_percent"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="(50%)"
+                                    android:textColor="@color/gray"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintHorizontal_bias=".6"
+                                    app:layout_constraintLeft_toLeftOf="parent"
+                                    app:layout_constraintRight_toRightOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintVertical_bias=".88" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <ProgressBar
+                                android:id="@+id/level_progressbar"
+                                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".40"
+                                android:max="100"
+                                android:progressDrawable="@drawable/progress_color"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintLeft_toRightOf="@+id/easy_text_layout"
+                                app:layout_constraintRight_toLeftOf="@+id/difficulty_text_layout"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintWidth_percent=".46" />
+
+                            <!--신청 난이도 어려워요 레이아웃-->
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/difficulty_text_layout"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintLeft_toRightOf="@+id/level_progressbar"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintWidth_percent=".27">
+
+                                <TextView
+                                    android:id="@+id/difficulty_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="어려워요"
+                                    android:textStyle="bold"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintHorizontal_bias=".35"
+                                    app:layout_constraintLeft_toLeftOf="parent"
+                                    app:layout_constraintRight_toRightOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintVertical_bias=".25" />
+
+                                <TextView
+                                    android:id="@+id/difficulty_percent"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="(50%)"
+                                    android:textColor="@color/gray"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintHorizontal_bias=".45"
+                                    app:layout_constraintLeft_toLeftOf="parent"
+                                    app:layout_constraintRight_toRightOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintVertical_bias=".88" />
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <!--혜택 만족도 텍스트 레이아웃-->
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/satisfaction_text_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            app:layout_constraintBottom_toTopOf="@+id/satisfaction_progressbar_layout"
+                            app:layout_constraintHeight_percent=".18"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/level_progressbar_layout"
+                            app:layout_constraintVertical_bias="0">
+
+                            <ImageView
+                                android:id="@+id/satisfaction_imageview"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:adjustViewBounds="true"
+                                android:background="@drawable/round_quadrangle"
+                                android:backgroundTint="@color/color_text_pink"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintHeight_percent="0.28"
+                                app:layout_constraintHorizontal_bias="0.08"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintWidth_percent=".034" />
+
+                            <TextView
+                                android:id="@+id/satisfaction_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="혜택 만족도"
+                                android:textColor="@color/color_text_pink"
+                                android:textStyle="bold"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintHorizontal_bias=".17"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <!--혜택 만족도 프로그래스바-->
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/satisfaction_progressbar_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            app:layout_constraintBottom_toTopOf="@+id/level_bottom_empty_layout"
+                            app:layout_constraintHeight_percent=".24"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/satisfaction_text_layout"
+                            app:layout_constraintVertical_bias="0">
+
+                            <!--신청 난이도 쉬워요 레이아웃-->
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/useful_text_layout"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintRight_toLeftOf="@+id/satisfaction_progressbar"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintWidth_percent=".27">
+
+                                <TextView
+                                    android:id="@+id/useful_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="도움 돼요"
+                                    android:textStyle="bold"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintHorizontal_bias=".74"
+                                    app:layout_constraintLeft_toLeftOf="parent"
+                                    app:layout_constraintRight_toRightOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintVertical_bias=".25" />
+
+                                <TextView
+                                    android:id="@+id/useful_percent"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="(50%)"
+                                    android:textColor="@color/gray"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintHorizontal_bias=".65"
+                                    app:layout_constraintLeft_toLeftOf="parent"
+                                    app:layout_constraintRight_toRightOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintVertical_bias=".88" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <ProgressBar
+                                android:id="@+id/satisfaction_progressbar"
+                                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".40"
+                                android:max="100"
+                                android:progressDrawable="@drawable/progress_color"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintLeft_toRightOf="@+id/useful_text_layout"
+                                app:layout_constraintRight_toLeftOf="@+id/unuseful_text_layout"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintWidth_percent=".46" />
+
+                            <!--신청 난이도 어려워요 레이아웃-->
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/unuseful_text_layout"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintLeft_toRightOf="@+id/satisfaction_progressbar"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintWidth_percent=".27">
+
+                                <TextView
+                                    android:id="@+id/unuseful_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="도움 안 돼요"
+                                    android:textStyle="bold"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintHorizontal_bias=".4"
+                                    app:layout_constraintLeft_toLeftOf="parent"
+                                    app:layout_constraintRight_toRightOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintVertical_bias=".25" />
+
+                                <TextView
+                                    android:id="@+id/unuseful_percent"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="(50%)"
+                                    android:textColor="@color/gray"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintHorizontal_bias=".4"
+                                    app:layout_constraintLeft_toLeftOf="parent"
+                                    app:layout_constraintRight_toRightOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintVertical_bias=".88" />
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <!--빈 레이아웃-->
+                        <LinearLayout
+                            android:id="@+id/level_bottom_empty_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:orientation="horizontal"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintHeight_percent=".08"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/satisfaction_progressbar_layout" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+
+            <!-- 사용자 리뷰 카드뷰 -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/review_cardview"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="25dp"
+                android:gravity="center"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="6dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/star_cardview"
+                app:layout_constraintWidth_percent=".87">
+
+                <!-- 사용자 리뷰 있는 레이아웃 -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/review_constraint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <!--사용자 리뷰 텍스트 레이아웃-->
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/review_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bottom_only_border">
+
+                            <TextView
+                                android:id="@+id/review_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:textStyle="bold"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintHorizontal_bias=".1"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <Button
+                                android:id="@+id/btn_review_write"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:background="@drawable/radius_smallround_pink_button"
+                                android:text="리뷰작성"
+                                android:textColor="@color/white"
+                                android:textStyle="bold"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintHeight_percent="0.5"
+                                app:layout_constraintHorizontal_bias=".93"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintWidth_percent=".23" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/review_recycler"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:scrollbarFadeDuration="0"
+                            android:scrollbarSize="5dp"
+                            android:scrollbarThumbVertical="@android:color/darker_gray"
+                            android:scrollbars="vertical"
+                            android:visibility="visible"/>
+
+                        <!--리뷰가 없습니다 레이아웃-->
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/nothing_review_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="visible">
+                            <TextView
+                                android:id="@+id/nothing_review"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:clickable="true"
+                                android:gravity="center"
+                                android:text="아직 작성된 리뷰가 없습니다"
+                                android:textStyle="bold"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <!--모든 리뷰 보기 텍스트 레이아웃-->
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/look_allreview_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="visible">
+                            <TextView
+                                android:id="@+id/look_allreview"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:clickable="true"
+                                android:gravity="center"
+                                android:text="모든 리뷰 보기"
+                                android:textColor="@color/color_text_pink"
+                                android:textStyle="bold"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintHorizontal_bias=".1"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</FrameLayout>

@@ -678,7 +678,10 @@ public class MainTabLayoutActivity extends AppCompatActivity
             Bundle bundle = new Bundle();
             bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "앱 종료");
             analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+
+            moveTaskToBack(true);
             finish();
+            android.os.Process.killProcess(android.os.Process.myPid());
         }
     }
 

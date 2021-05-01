@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TutorialWelcome"
+    android:background="#FFFFFF">
+
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/present"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.08"
+        app:layout_constraintWidth_percent="0.6"
+        app:layout_constraintHeight_percent=".34"/>
+
+    <TextView
+        android:id="@+id/TextWelcome"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:text="환영해요!"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/TextExplain"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintVertical_bias="0.6"
+        app:layout_constraintWidth_percent=".55"
+        app:layout_constraintHeight_percent=".08"
+        android:autoSizeTextType="none"
+        app:autoSizePresetSizes="@array/autosize_text_sizes"/>
+
+    <TextView
+        android:id="@+id/TextExplain"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:text="당신이 놓치고 있는 혜택을 찾아드릴게요 \n 혜택을 한 번 알아볼래요?"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TextWelcome"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintVertical_bias="0.13"
+        app:layout_constraintWidth_percent=".8"
+        app:layout_constraintHeight_percent=".1"
+        android:autoSizeTextType="none"
+        app:autoSizePresetSizes="@array/autosize_text_sizes"/>
+
+    <Button
+        android:id="@+id/BtnTutorial"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/radius_smallround_pink_border"
+        android:text="알아보기"
+        android:textSize="26sp"
+        android:textColor="#FF7088"
+        android:textStyle="bold"
+        android:layout_marginBottom="15dp"
+        app:layout_constraintBottom_toTopOf="@+id/BtnMain"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintWidth_percent="0.8"
+        app:layout_constraintHeight_percent=".082"
+        android:autoSizeMaxTextSize="10dp"/>
+
+    <TextView
+        android:id="@+id/BtnMain"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clickable="true"
+        android:gravity="center"
+        android:text="메인으로 가기"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintVertical_bias="0.92"
+        app:layout_constraintWidth_percent="0.4"
+        app:layout_constraintHeight_percent=".047"
+        android:autoSizeTextType="none"
+        app:autoSizePresetSizes="@array/autosize_text_sizes"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

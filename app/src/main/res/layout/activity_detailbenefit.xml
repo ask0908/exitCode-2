@@ -79,8 +79,6 @@
                 android:id="@+id/name_of_benefit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="13dp"
-                android:paddingEnd="13dp"
                 android:fontFamily="@font/jalnan"
                 android:textSize="25sp"
                 android:textColor="@color/colorMainWhite"
@@ -286,7 +284,7 @@
                     <!-- 리뷰 평점 및 별점, 그래프, 신청 난이도, 혜택 만족도, 작성된 리뷰들을 확인할
                      수 있는 레이아웃-->
                     <androidx.constraintlayout.widget.ConstraintLayout
-                        android:visibility="gone"
+                        android:visibility="visible"
                         android:id="@+id/all_review_scene"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -337,7 +335,7 @@
                                         android:gravity="center"
                                         android:layout_gravity="center"
                                         android:fontFamily="@font/nanum_barun_gothic_bold"
-                                        android:textColor="@color/gray"
+                                        android:textColor="@color/grey"
                                         android:textSize="30sp"
                                         android:text="0.0"
                                         app:layout_constraintEnd_toEndOf="parent"
@@ -444,7 +442,7 @@
                                             android:layout_gravity="right"
                                             android:fontFamily="@font/nanum_barun_gothic_bold"
                                             android:text="쉬워요  "
-                                            android:textColor="@color/gray" />
+                                            android:textColor="@color/grey" />
                                         <TextView
                                             android:id="@+id/percent_easy"
                                             android:layout_width="wrap_content"
@@ -473,7 +471,7 @@
                                             android:layout_height="wrap_content"
                                             android:fontFamily="@font/nanum_barun_gothic_bold"
                                             android:text="  어려워요"
-                                            android:textColor="@color/gray" />
+                                            android:textColor="@color/grey" />
                                         <TextView
                                             android:id="@+id/percent_difficult"
                                             android:layout_width="wrap_content"
@@ -536,7 +534,7 @@
                                                 android:layout_gravity="right"
                                                 android:fontFamily="@font/nanum_barun_gothic_bold"
                                                 android:text="도움돼요  "
-                                                android:textColor="@color/gray" />
+                                                android:textColor="@color/grey" />
 
                                             <TextView
                                                 android:id="@+id/percent_helpful"
@@ -566,7 +564,7 @@
                                                 android:layout_height="wrap_content"
                                                 android:fontFamily="@font/nanum_barun_gothic_bold"
                                                 android:text="  도움안돼요"
-                                                android:textColor="@color/gray" />
+                                                android:textColor="@color/grey" />
                                             <TextView
                                                 android:id="@+id/percent_nothelpful"
                                                 android:layout_width="wrap_content"
@@ -621,7 +619,7 @@
                                         android:layout_marginStart="10dp"
                                         android:layout_weight=".65"
                                         android:fontFamily="@font/nanum_barun_gothic_bold"
-                                        android:textColor="@color/gray"
+                                        android:textColor="@color/grey"
                                         android:textSize="16sp"
                                         app:layout_constraintTop_toBottomOf="@+id/review_data_layout" />
 
@@ -677,7 +675,7 @@
                                         android:fontFamily="@font/jalnan"
                                         android:layout_margin="20dp"
                                         android:text="아직 작성된 리뷰가 없습니다"
-                                        android:textColor="@color/gray"
+                                        android:textColor="@color/grey"
                                         android:textSize="17sp"
                                         android:gravity="center"
                                         app:layout_constraintEnd_toEndOf="parent"
