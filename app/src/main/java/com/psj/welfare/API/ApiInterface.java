@@ -17,158 +17,6 @@ import retrofit2.http.Query;
  * 언제 어떤 걸 호출하고 어떤 걸 요청하는가? */
 public interface ApiInterface
 {
-    // ===================================================================================================
-    // Legacy method
-
-    /**
-     * LoginActivity에서 구글 로그인 시 로그인할 때 어떤 플랫폼으로 로그인하는지 등의 정보를 서버로 보내 저장하는 메서드
-     * 카톡 회원탈퇴 처리 후 테스트 결과 정상 작동 확인
-     *
-     * @param userPlatform - GOOGLE 문자열을 서버로 보낸다
-     * @param userEmail    - 구글 로그인할 때 사용하는 이메일
-     * @param userName     - 유저 이름
-     * @param userToken    - 구글 로그인 시 발급되는 토큰
-     * @return - 구글 로그인 성공 여부
-     */
-    @FormUrlEncoded
-    @POST("/backend/android/and_register.php")
-    Call<String> googleUser(
-            @Field("userPlatform") String userPlatform,
-            @Field("userEmail") String userEmail,
-            @Field("userName") String userName,
-            @Field("userToken") String userToken
-    );
-
-    /**
-     * 구글 로그인 후 로그아웃 시 다시 로그인을 시도하는 메서드
-     * 서버로 유저 이메일, 구글 계정 토큰을 보내 일치하면 로그인시킴. 현재 쓰이지 않음
-     *
-     * @param userEmail - 유저 이메일
-     * @param userToken - 구글 계정 토큰
-     * @return - 구글 로그인을 통한 재로그인 성공 여부
-     */
-    @FormUrlEncoded
-    @POST("/backend/android/and_login.php")
-    Call<String> ReUser(
-            @Field("userEmail") String userEmail,
-            @Field("userToken") String userToken
-    );
-
-    /**
-     * 서버에 저장된 토큰, 이메일과 클라이언트가 가진 토큰, 이메일이 일치하는지 확인하는 메서드
-     * 앱 자체 회원가입 기능이 없어 현재 사용되지 않음
-     *
-     * @param userEmail - 유저 이메일
-     * @param userToken - 유저가 가진 토큰
-     * @return
-     */
-    @FormUrlEncoded
-    @POST("/backend/android/and_token_check.php")
-    Call<String> tokenCheck(
-            @Field("userEmail") String userEmail,
-            @Field("localToken") String userToken
-    );
-
-    /**
-     * 서버에서 1번 문제와 이미지, 버튼에 넣을 텍스트들을 가져오는 메서드
-     * Compatibility_FirstActivity에서 사용, 현재 문제와 선택지가 나오지 않음
-     *
-     * @param problemIndex : 문제 번호, 1번째 테스트에서 가져올 거니까 1을 넣어야 한다
-     * @return JSON 형태의 문자열 꼴로 리턴값을 받는다
-     */
-    @FormUrlEncoded
-    @POST("/backend/android/and_snack_contents.php")
-    Call<String> getFirstProblem(
-            @Field("problemIndex") String problemIndex
-    );
-
-    /**
-     * 서버에서 2번 문제와 이미지, 버튼에 넣을 텍스트들을 가져오는 메서드
-     * Compatibility_SecondActivity에서 사용
-     *
-     * @param problemIndex : 문제 번호, 2번째 테스트에서 가져올 거니까 2를 넣어야 한다
-     * @return JSON 형태의 문자열로 리턴값을 받는다
-     */
-    @FormUrlEncoded
-    @POST("/backend/android/and_snack_contents.php")
-    Call<String> getSecondProblem(
-            @Field("problemIndex") String problemIndex
-    );
-
-    /**
-     * 서버에서 3번 문제와 이미지, 버튼에 넣을 텍스트들을 가져오는 메서드
-     * Compatibility_ThirdActivity에서 사용
-     *
-     * @param problemIndex : 문제 번호, 3번째 테스트에서 가져올 거니까 3를 넣어야 한다
-     * @return JSON 형태의 문자열로 리턴값을 받는다
-     */
-    @FormUrlEncoded
-    @POST("/backend/android/and_snack_contents.php")
-    Call<String> getThirdProblem(
-            @Field("problemIndex") String problemIndex
-    );
-
-    /**
-     * 서버에서 4번 문제와 이미지, 버튼에 넣을 텍스트들을 가져오는 메서드
-     * Compatibility_FourthActivity에서 사용, 현재 문제와 선택지가 나오지 않음
-     *
-     * @param problemIndex : 문제 번호, 4번째 테스트에서 가져올 거니까 4를 넣어야 한다
-     * @return JSON 형태의 문자열로 리턴값을 받는다
-     */
-    @FormUrlEncoded
-    @POST("/backend/android/and_snack_contents.php")
-    Call<String> getFourthProblem(
-            @Field("problemIndex") String problemIndex
-    );
-
-    /**
-     * 테스트 결과 화면에 뿌릴 텍스트들을 서버에서 가져오는 메서드. 유저가 진행한 결과 출력된 나라 이름을 서버로 넘겨, 그 나라에 해당하는 이미지 / 문자열들을
-     * 가져와 뷰에 부려준다
-     * Compatibility_ResultActivity에서 사용
-     *
-     * @param resultCountry - 유저의 mbti 테스트 결과 나온 나라 이름
-     * @return JSON 형태의 문자열로 리턴값을 받고 파싱해서 사용한다
-     */
-    @FormUrlEncoded
-    @POST("/backend/android/and_snack_result.php")
-    Call<String> getFirstResult(
-            @Field("resultCountry") String resultCountry
-    );
-
-    /**
-     * 질문지 클릭 시 서버로 키워드 2개와 유저 이메일 주소를 보내는 메서드
-     * PushQuestionActivity에서 사용, 현재 서버로 전송되지 않음
-     *
-     * @param keyword_1 - 1번째 키워드
-     * @param keyword_2 - 2번째 키워드
-     * @param email     - 유저 이메일
-     * @return
-     */
-    @FormUrlEncoded
-    @POST("/backend/php/common/benefit_info_register.php")
-    Call<String> pushQuestion(
-            @Field("keyword_1") String keyword_1,
-            @Field("keyword_2") String keyword_2,
-            @Field("email") String email
-    );
-
-    /**
-     * 푸시를 눌렀을 때 서버로 유저 이메일을 보내는 메서드
-     * 유저 이메일, 북마크한 정책명을 서버로 보내고, 서버한테는 저장됐는지 안됐는지 확인할 수 있는 텍스트를 받는다
-     * DetailBenefitActivity에서 사용
-     *
-     * @param email     - 유저 이메일
-     * @param welf_name - 정책명
-     * @return - 저장됐는지 여부를 알리는 텍스트를 리턴받는다. 클라에선 이 값을 받아 성공 / 실패 여부를 확인한다
-     */
-    @FormUrlEncoded
-    @POST("/backend/android/and_bookmark.php")
-    Call<String> getBookmark(
-            @Field("email") String email,
-            @Field("welf_name") String welf_name
-    );
-    // ===================================================================================================
-
     /* ↓ 리뷰 관련 메서드 */
     // ===================================================================================================
 
@@ -346,7 +194,7 @@ public interface ApiInterface
     );
 
     /**
-     * 사용자가 알림을 받으면 수신 상태값을 변경하는 기능
+     * 사용자가 알림을 수신받을 경우 수신 상태값 변경하는 메서드
      * PushGaterFragment에서 사용
      *
      * @param login_token - 로그인 시 서버에서 생성되는 토큰
@@ -356,7 +204,7 @@ public interface ApiInterface
     @FormUrlEncoded
     @POST("https://www.hyemo.com/push")
     Call<String> changePushStatus(
-            @Field("login_token") String login_token,
+            @Field("LoginToken") String login_token,
             @Field("type") String type
     );
 
@@ -897,7 +745,112 @@ public interface ApiInterface
             @Query("gender") String gender,
             @Query("local") String local,
             @Query("type") String type,
-            @Query("LoginToken") String token
+            @Query("logintoken") String token
+    );
+
+    /* ↓ 람다로 바뀐 후 새로 추가된 검색 메서드
+    * TestSearchFragment(바꾸고 있는 검색 화면)에서 사용한다 */
+    // ===================================================================================================
+
+    /**
+     * 검색어와 일치하는 내용의 혜택을 조회하는 메서드
+     * @param keyword - 검색어 정보(유저가 입력한 검색어) ※ 필수값
+     * @param page - 페이지(1, 2, 3, ...) ※ 필수값
+     * @param token - 서버에서 받은 토큰
+     * @param sessionId - 쉐어드에 저장된 세션 id
+     * @param category - 검색어 필터링 값(값이 여럿일 경우 '-'로 구분한다 : 건강-교육-근로)
+     * @param local - 유저 거주 지역(서울-경기-강원 등)
+     * @param age - 유저 나이대(20, 30)
+     * @param provideType -
+     * @param type - "search" 고정 ※ 필수값
+     * @return - {
+     *     "statusCode": 200,
+     *     "message": [
+     *         {
+     *             "welf_id": 938,
+     *             "welf_name": "학기 중 토ㆍ일ㆍ공휴일 아동급식 지원",
+     *             "welf_tag": "학생 - 아동/청소년 ",
+     *             "welf_count": 0,
+     *             "welf_local": "충남",
+     *             "welf_thema": "기타"
+     *         },
+     *         ...이런 식으로 한 번에 10개가 온다
+     *     ],
+     *     "TotalCount": 22,
+     *     "TotalPage": 3
+     * }
+     */
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/search")
+    Call<String> renewalKeywordSearch(
+            @Query("keyword") String keyword,
+            @Query("page") String page,
+            @Query("logintoken") String token,
+            @Query("sessionid") String sessionId,
+            @Query("category") String category,
+            @Query("local") String local,
+            @Query("age") String age,
+            @Query("provide_type") String provideType,
+            @Query("type") String type
+    );
+
+    /**
+     * 비회원이 각 테마별 전체 혜택들을 볼 수 있는 메서드
+     * @param page - 요청하는 페이지 값
+     * @param theme - 더 보고자 하는 혜택 테마 이름(start, all, 건강, 교육, 근로 등)
+     *              - start : 각 테마별 10개씩 리턴하고(welf_10) 전체 혜택 리스트 중 10개 리턴(all_10)
+     *              - all : 전체 혜택 리스트
+     * @param gender - 미리보기에서 선택한 성별
+     * @param age - 미리보기에서 선택한 나이
+     * @param local - 미리보기에서 선택한 지역
+     * @return - {
+     *     "statusCode": 200,
+     *     "message": [
+     *         {
+     *             "welf_id": 533,
+     *             "welf_name": "긴급복지 지원",
+     *             "welf_tag": "임신/출산 - 환자 - 저소득층",
+     *             "welf_count": 0
+     *         },...이런 식으로 10개가 한 덩어리로 옴
+     *     ],
+     *     "total_page": 4,
+     *     "total_num": 34
+     * }
+     */
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/welf-more")
+    Call<String> moreViewWelfareNotLogin(
+            @Query("page") String page,
+            @Query("theme") String theme,
+            @Query("gender") String gender,
+            @Query("age") String age,
+            @Query("local") String local
+    );
+
+    /**
+     * 회원이 각 테마별 전체 혜택들을 볼 수 있는 기능
+     * @param token - 서버에서 받은 토큰
+     * @param session - 쉐어드에 저장된 세션 id
+     * @param page - 요청하는 페이지 값
+     * @param theme - 더 보고자 하는 혜택 테마 이름
+     * @return - {
+     *     "statusCode": 200,
+     *     "message": [
+     *         {
+     *             "welf_id": 551,
+     *             "welf_name": "성폭력 피해자 지원",
+     *             "welf_tag": "여성 -환자",
+     *             "welf_count": 0
+     *         },...이런 식으로 10개가 올 것. 예시에선 7개만 옴
+     *     ],
+     *     "total_page": 1,
+     *     "total_num": 7
+     * }
+     */
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/welf-more")
+    Call<String> moreViewWelfareLogin(
+            @Header("logintoken") String token,
+            @Header("sessionid") String session,
+            @Query("page") String page,
+            @Query("theme") String theme
     );
 
 }

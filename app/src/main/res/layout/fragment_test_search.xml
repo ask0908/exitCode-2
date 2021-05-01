@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".test.TestSearchFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0"
+            app:layout_constraintWidth_percent="1"
+            app:layout_constraintHeight_percent=".145"
+            android:background="@drawable/gradation_background">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintWidth_percent="1"
+                app:layout_constraintHeight_percent=".45"
+                app:layout_constraintVertical_bias=".2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:fontFamily="@font/jalnan"
+                android:text="어떤 혜택을 찾으세요?"
+                android:textColor="@color/colorMainWhite"
+                app:autoSizePresetSizes="@array/autosize_text_sizes"
+                android:layout_gravity="center"
+                android:gravity="center"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="1"
+            app:layout_constraintHeight_percent=".9"
+            app:layout_constraintVertical_bias="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@drawable/radius_25">
+
+            <EditText
+                android:id="@+id/search_name_edittext"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintWidth_percent=".8"
+                app:layout_constraintHeight_percent=".075"
+                app:layout_constraintVertical_bias=".04"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@drawable/renewal_search_edittext"
+                android:drawableEnd="@drawable/edittext_end_pink"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:hint="검색어를 입력해주세요"
+                android:imeOptions="actionSearch"
+                android:inputType="text"/>
+
+            <!-- 이 밑에 뷰페이저가 들어간다
+            뷰페이저 인디케이터가 위에 있고 그 밑에 뷰페이저가 있는 형태로 만든다 -->
+            <me.relex.circleindicator.CircleIndicator
+                android:id="@+id/top_indicator"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:ci_orientation="horizontal"
+                app:ci_gravity="center"
+                app:ci_drawable="@drawable/search_viewpager_selected"
+                app:ci_drawable_unselected="@drawable/search_viewpager_unselected"
+                app:layout_constraintVertical_bias=".16"
+                app:layout_constraintWidth_percent="1"
+                app:layout_constraintHeight_percent=".05"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <!-- 지역별 혜택, 주제별 혜택, 나이대별 혜택 프래그먼트 순으로 보여줄 뷰페이저 -->
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/search_default_viewpager"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/top_indicator"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

@@ -11,7 +11,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/*  */
 public class MainRepository
 {
     private static final String TAG = MainRepository.class.getSimpleName();
@@ -31,7 +30,6 @@ public class MainRepository
                     @Override
                     public void onResponse(Call<String> call, Response<String> response)
                     {
-                        Log.e(TAG, "레포지토리 안에서 확인 : " + response.body());
                         data.setValue(response.body());
                     }
 

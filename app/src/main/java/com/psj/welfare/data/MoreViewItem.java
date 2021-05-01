@@ -1,20 +1,22 @@
 package com.psj.welfare.data;
 
-public class MainThreeDataItem
+/* TestMoreViewActivity(더보기 리스트 화면)의 리사이클러뷰에 쓸 아이템 */
+public class MoreViewItem
 {
     private String welf_id;
     private String welf_name;
     private String welf_tag;
-    private String welf_field;
     private String welf_count;
 
-    public MainThreeDataItem()
+    private String welf_thema;
+
+    public MoreViewItem(String welf_thema)
     {
+        this.welf_thema = welf_thema;
     }
 
-    public MainThreeDataItem(String welf_field)
+    public MoreViewItem()
     {
-        this.welf_field = welf_field;
     }
 
     public String getWelf_id()
@@ -47,16 +49,6 @@ public class MainThreeDataItem
         this.welf_tag = welf_tag;
     }
 
-    public String getWelf_field()
-    {
-        return welf_field;
-    }
-
-    public void setWelf_field(String welf_field)
-    {
-        this.welf_field = welf_field;
-    }
-
     public String getWelf_count()
     {
         return welf_count;
@@ -65,5 +57,15 @@ public class MainThreeDataItem
     public void setWelf_count(String welf_count)
     {
         this.welf_count = welf_count;
+    }
+
+    public String getWelf_thema()
+    {
+        return welf_thema;
+    }
+
+    public void setWelf_thema(String welf_thema)
+    {
+        this.welf_thema = welf_thema;
     }
 }

@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.psj.welfare.R;
-import com.psj.welfare.activity.YoutubeActivity;
 import com.psj.welfare.adapter.MainDownAdapter;
 import com.psj.welfare.adapter.MainHorizontalYoutubeAdapter;
 import com.psj.welfare.data.HorizontalYoutubeItem;
@@ -40,9 +39,10 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+/* 구현 완료 시 MainFragment로 옮긴다 */
 public class TestFragment extends Fragment
 {
-    public static final String TAG = "TestFragment";
+    public static final String TAG = TestFragment.class.getSimpleName();
 
     // 20대, 강원, 여성
     TextView selected_interest_textview;
@@ -88,7 +88,7 @@ public class TestFragment extends Fragment
 
     private FirebaseAnalytics analytics;
 
-    /* MVVM 테스트 */
+    /* MVVM 적용 */
     MainViewModel mainViewModel;
 
     // 새 서버에서 가져온 유튜브 데이터를 저장할 변수
@@ -129,6 +129,8 @@ public class TestFragment extends Fragment
 
         down_recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        keyword_list = new ArrayList<>();
+        down_list = new ArrayList<>();
         youtube_hashmap = new HashMap<>();
         youtube_list = new ArrayList<>();
         other_list = new ArrayList<>();
@@ -146,6 +148,8 @@ public class TestFragment extends Fragment
             }
         }
 
+        showWelfareAndYoutubeNotLogin();
+
         // view 100+ -> view 0으로 변경
         // 편집하기 각각 왼쪽, 오른쪽 간격 수정
 
@@ -154,7 +158,10 @@ public class TestFragment extends Fragment
             analytics = FirebaseAnalytics.getInstance(getActivity());
         }
 
-        showWelfareAndYoutubeNotLogin();
+        more_see_textview.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), TestMoreViewActivity.class);
+            startActivity(intent);
+        });
 
     }
 
@@ -166,10 +173,16 @@ public class TestFragment extends Fragment
         final Observer<String> mainObserver = new Observer<String>()
         {
             @Override
-            public void onChanged(String s)
+            public void onChanged(String str)
             {
-                Log.e(TAG, "s : " + s);
-                responseParse(s);
+                if (str != null)
+                {
+                    responseParse(str);
+                }
+                else
+                {
+                    Log.e(TAG, "str(결과값)이 null입니다");
+                }
             }
         };
         mainViewModel.getAllData().observe(getActivity(), mainObserver);
@@ -177,9 +190,6 @@ public class TestFragment extends Fragment
 
     private void responseParse(String result)
     {
-        keyword_list = new ArrayList<>();
-        down_list = new ArrayList<>();
-
         try
         {
             JSONObject jsonObject = new JSONObject(result);
@@ -311,6 +321,15 @@ public class TestFragment extends Fragment
             keyword_list.add(0, new MainThreeDataItem("전체"));
         }
 
+        downAdapter = new MainDownAdapter(getActivity(), other_list, downClickListener);
+        downAdapter.setOnItemClickListener((view, pos) ->
+        {
+            String name = other_list.get(pos).getWelf_name();
+            String field = other_list.get(pos).getWelf_field();
+            Log.e(TAG, "처음 화면 들어와서 선택한 혜택 아이템 이름 : " + name + ", 필드 : " + field);
+        });
+        down_recycler.setAdapter(downAdapter);
+
         // 상단 리사이클러뷰에 붙일 어댑터 초기화
         upAdapter = new MainCategoryAdapter(getActivity(), keyword_list, up_clickListener);
         upAdapter.setOnItemClickListener(((view, pos) ->
@@ -325,6 +344,7 @@ public class TestFragment extends Fragment
                 {
                     String name = down_list.get(pos1).getWelf_name();
                     String field = down_list.get(pos1).getWelf_field();
+                    Log.e(TAG, "전체 필터 재클릭 후 선택한 혜택 아이템 이름 : " + name + ", 필드 : " + field);
                 });
                 down_recycler.setAdapter(downAdapter);
             }
@@ -354,6 +374,7 @@ public class TestFragment extends Fragment
                 {
                     String name = other_list.get(pos1).getWelf_name();
                     String field = other_list.get(pos1).getWelf_field();
+                    Log.e(TAG, "전체 이외 필터 클릭 후 선택한 혜택 아이템 이름 : " + name + ", 필드 : " + field);
                 });
                 down_recycler.setAdapter(downAdapter);
             }
@@ -368,20 +389,20 @@ public class TestFragment extends Fragment
             public void onItemClick(View v, int pos)
             {
                 /* 수정 중이라 주석 처리 */
-                HorizontalYoutubeItem item = new HorizontalYoutubeItem();
-                item.setYoutube_id(youtube_id);
-                item.setYoutube_name(youtube_title);
-                item.setYoutube_thumbnail(youtube_thumbnail);
-                item.setYoutube_videoId(youtube_videoId);
-                Intent intent = new Intent(getActivity(), YoutubeActivity.class);
-                String youtube_name = youtube_list.get(pos).getYoutube_name();
+//                HorizontalYoutubeItem item = new HorizontalYoutubeItem();
+//                item.setYoutube_id(youtube_id);
+//                item.setYoutube_name(youtube_title);
+//                item.setYoutube_thumbnail(youtube_thumbnail);
+//                item.setYoutube_videoId(youtube_videoId);
+//                Intent intent = new Intent(getActivity(), YoutubeActivity.class);
+//                String youtube_name = youtube_list.get(pos).getYoutube_name();
                 Log.e(TAG, "선택한 유튜브 영상 : " + youtube_list.get(pos).getYoutube_name());
-                intent.putExtra("youtube_information", item);
-                intent.putExtra("youtube_hashmap", youtube_hashmap);
-                Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "유튜브 화면으로 이동");
-                analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-                startActivity(intent);
+//                intent.putExtra("youtube_information", item);
+//                intent.putExtra("youtube_hashmap", youtube_hashmap);
+//                Bundle bundle = new Bundle();
+//                bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "유튜브 화면으로 이동");
+//                analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+//                startActivity(intent);
             }
         });
         youtube_video_recyclerview.setAdapter(youtubeAdapter);

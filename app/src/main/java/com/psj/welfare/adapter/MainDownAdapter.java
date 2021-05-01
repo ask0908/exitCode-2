@@ -1,6 +1,7 @@
 package com.psj.welfare.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,7 @@ import java.util.List;
 
 public class MainDownAdapter extends RecyclerView.Adapter<MainDownAdapter.MainDownViewHolder>
 {
-    private static final String TAG = "MainDownAdapter";
+    private static final String TAG = MainDownAdapter.class.getSimpleName();
 
     private Context context;
     private List<MainThreeDataItem> list;
@@ -52,17 +53,24 @@ public class MainDownAdapter extends RecyclerView.Adapter<MainDownAdapter.MainDo
     @Override
     public void onBindViewHolder(@NonNull MainDownAdapter.MainDownViewHolder holder, int position)
     {
-        MainThreeDataItem item = list.get(position);
-        holder.bottom_result_name.setText(item.getWelf_name());
-        if (item.getWelf_tag().contains("-"))
+        if (!list.isEmpty())
         {
-            String before = item.getWelf_tag().replace(" ", "");
-            String str = "#" + before;
-            String s = str.replace("-", " #");
-            String s1 = s.replace(" -", " #");
-            String s2 = s1.replace("- ", " #");
-            String s3 = s2.replace(" - ", " #");
-            holder.bottom_result_subject.setText(s3);
+            MainThreeDataItem item = list.get(position);
+            holder.bottom_result_name.setText(item.getWelf_name());
+            if (item.getWelf_tag().contains("-"))
+            {
+                String before = item.getWelf_tag().replace(" ", "");
+                String str = "#" + before;
+                String s = str.replace("-", " #");
+                String s1 = s.replace(" -", " #");
+                String s2 = s1.replace("- ", " #");
+                String s3 = s2.replace(" - ", " #");
+                holder.bottom_result_subject.setText(s3);
+            }
+        }
+        else
+        {
+            Log.e(TAG, "메인에서 쓰는 리스트에 값이 없습니다");
         }
     }
 
