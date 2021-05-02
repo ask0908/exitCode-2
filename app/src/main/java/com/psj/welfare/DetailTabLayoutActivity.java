@@ -348,6 +348,7 @@ public class DetailTabLayoutActivity extends AppCompatActivity {
     //상세페이지 내용 데이터 서버로부터 받아오기
     void LoadBenefitDetail() {
 
+        Log.e(TAG, "LoadBenefitDetail() 호출");
         //서버로부터 데이터를 받아오는데 걸리는 시간동연 보여줄 프로그래스 바
         final ProgressDialog dialog = new ProgressDialog(this);
         dialog.setMax(100);
@@ -358,7 +359,7 @@ public class DetailTabLayoutActivity extends AppCompatActivity {
 
         String URL = "https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/"; //연결하고자 하는 서버의 url, 반드시 /로 끝나야 함
         ApiInterfaceTest apiInterfaceTest = ApiClientTest.ApiClient(URL).create(ApiInterfaceTest.class); //레트로핏 인스턴스로 인터페이스 객체 구현
-        Call<String> call = apiInterfaceTest.BenefitDetail(token, SessionId, "detail", "631"); //인터페이스에서 사용할 메소드 선언
+        Call<String> call = apiInterfaceTest.BenefitDetail(token, SessionId, "detail", welf_id); //인터페이스에서 사용할 메소드 선언
         call.enqueue(new Callback<String>() { //enqueue로 비동기 통신 실행, 통신 완료 후 이벤트 처리 위한 callback 리스너 등록
             @Override
             public void onResponse(Call<String> call, retrofit2.Response<String> response) { //onResponse 통신 성공시 callback
@@ -426,6 +427,10 @@ public class DetailTabLayoutActivity extends AppCompatActivity {
                     e.printStackTrace();
 //                    Log.e("e",e.toString());
                 }
+
+                Log.e(TAG, "isBookmark : " + isBookmark);
+                Log.e(TAG, "message : " + message);
+                Log.e(TAG, "TotalCount : " + TotalCount);
 
                 if(isBookmark.equals("true")) { //북마크 했다면
                     bookmark_btn.setBackgroundResource(R.drawable.bookmark_ok);

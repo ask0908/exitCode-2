@@ -149,5 +149,4 @@ dependencies {
 
     // 뷰페이저 인디케이터 라이브러리
     implementation 'me.relex:circleindicator:2.1.6'
-
 }

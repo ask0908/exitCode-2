@@ -1,8 +1,11 @@
 package com.psj.welfare.test;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +20,13 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.psj.welfare.AppDatabase;
+import com.psj.welfare.CategoryDao;
+import com.psj.welfare.CategoryData;
+import com.psj.welfare.DetailTabLayoutActivity;
 import com.psj.welfare.R;
 import com.psj.welfare.adapter.MainDownAdapter;
 import com.psj.welfare.adapter.MainHorizontalYoutubeAdapter;
@@ -44,6 +52,13 @@ public class TestFragment extends Fragment
 {
     public static final String TAG = TestFragment.class.getSimpleName();
 
+    //로그인 여부를 확인하기 위해 사용하는 쉐어드
+    SharedPreferences app_pref;
+    String age = null; //미리보기 나이
+    String gender = null; //미리보기 성별
+    String local = null; //미리보기 지역
+    String benefit = null; //미리보기 관심사 선택시 데이터
+
     // 20대, 강원, 여성
     TextView selected_interest_textview;
     // 더보기(화면 이동)
@@ -59,8 +74,7 @@ public class TestFragment extends Fragment
     List<MainThreeDataItem> keyword_list;
     MainThreeDataItem all_item;
 
-    // 상단 리사이클러뷰에서 선택한 값에 따라 내용물이 바뀌는 "하단 리사이클러뷰"
-    // 3개만 보여준다
+    // 상단 리사이클러뷰에서 선택한 값에 따라 내용물이 바뀌는 "하단 리사이클러뷰", 3개만 보여준다
     RecyclerView down_recycler;
     MainDownAdapter downAdapter;
     MainDownAdapter.ItemClickListener downClickListener;
@@ -78,6 +92,8 @@ public class TestFragment extends Fragment
     String sqlite_token;
 
     HashMap<String, String> youtube_hashmap;
+
+    ValueHandler handler = new ValueHandler(); //타이틀을 사용하기 위한 핸들러
 
     int count_int;
 
@@ -163,10 +179,84 @@ public class TestFragment extends Fragment
             startActivity(intent);
         });
 
+        //selected_interest_textview(제목) 값 넣기
+        settitle();
+
+    }
+
+    //selected_interest_textview(제목) 값 넣기
+    //room데이터 이용은 메인 쓰레드에서 하면 안된다
+    void settitle(){
+        new Thread(() -> {
+            try{
+                //Room을 쓰기위해 데이터베이스 객체 만들기
+                AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(), AppDatabase.class, "Firstcategory")
+                        .fallbackToDestructiveMigration()
+                        .build();
+
+                //DB에 쿼리를 던지기 위해 선언
+                CategoryDao categoryDao = database.getcategoryDao();
+
+                List<CategoryData> alldata = categoryDao.findAll();
+                for (CategoryData data : alldata) {
+                    age = data.age;
+                    gender = data.gender;
+                    local = data.home;
+                }
+//                Log.e("age",alldata.get(0).age);
+                benefit = age + ", " + local + ", " + gender;
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+
+            //로그인 했는지 여부 확인하기위한 쉐어드
+            app_pref = getActivity().getSharedPreferences(getString(R.string.shared_name), 0);
+            boolean being_logout = app_pref.getBoolean("logout",true); //로그인 했는지 여부 확인하기
+            String user_nickname = app_pref.getString("user_nickname",""); //닉네임 받아오기
+
+            Message message = handler.obtainMessage();
+            Bundle bundle = new Bundle();
+            bundle.putString("age", age);
+            bundle.putString("benefit", benefit);
+            bundle.putBoolean("being_logout",being_logout);
+            bundle.putString("user_nickname", user_nickname);
+            message.setData(bundle);
+            //sendMessage가 되면 이 handler가 해당되는 핸들러객체가(ValueHandler) 자동으로 호출된다.
+            handler.sendMessage(message);
+
+
+        }).start();
+    }
+
+    //핸들러구현한 객체(핸들러역할), 스레드에서 저장한 타이틀 값을 사용하기 위한 핸들러
+    class ValueHandler extends Handler
+    {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            Bundle bundle = msg.getData();
+            String age = bundle.getString("age");
+            String benefit = bundle.getString("benefit");
+            String user_nickname = bundle.getString("user_nickname");
+            boolean being_logout = bundle.getBoolean("being_logout");
+
+            if(!being_logout){ //로그인 했다면
+                selected_interest_textview.setText(user_nickname + "님");
+                edit_interest_btn.setVisibility(View.GONE);
+            } else if(age != null){ //미리보기 관심사를 선택했다면
+                selected_interest_textview.setText(benefit);
+                edit_interest_btn.setVisibility(View.VISIBLE);
+                edit_interest_btn.setText("관심사 수정");
+            } else {
+                selected_interest_textview.setText("혜택모아");
+                edit_interest_btn.setVisibility(View.VISIBLE);
+                edit_interest_btn.setText("나에게 맞는 혜택 찾기");
+            }
+        }
     }
 
     /* MVVM 디자인 패턴으로 바꾼 후 추가한 메서드
-    * MVVM에 맞게 Observer와 뷰모델을 사용해 서버에서 결과값을 가져온 다음 파싱해 뷰에 붙인다 */
+     * MVVM에 맞게 Observer와 뷰모델을 사용해 서버에서 결과값을 가져온 다음 파싱해 뷰에 붙인다 */
     private void showWelfareAndYoutubeNotLogin()
     {
         mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
@@ -231,12 +321,14 @@ public class TestFragment extends Fragment
 
                     // 상단 리사이클러뷰에 넣을 테마(welf_field)를 저장할 객체 생성
                     MainThreeDataItem item = new MainThreeDataItem();
+                    item.setWelf_id(welfare_id);
                     item.setWelf_name(welfare_name);
                     item.setWelf_field(welfare_field);
                     item.setWelf_tag(welfare_tag);
 
                     // 하단 리사이클러뷰에 넣을 값들
                     MainCategoryBottomItem bottomItem = new MainCategoryBottomItem();
+                    bottomItem.setWelf_id(welfare_id);
                     bottomItem.setWelf_name(welfare_name);
                     bottomItem.setWelf_field(welfare_field);
                     bottomItem.setWelf_tag(welfare_tag);
@@ -257,15 +349,6 @@ public class TestFragment extends Fragment
         {
             youtube_hashmap.put(youtube_list.get(i).getYoutube_name(), youtube_list.get(i).getYoutube_videoId());
         }
-
-        /* 여기에 하단 리사이클러뷰 선언을 해야 처음 메인에 들어왔을 때도 혜택들이 보인다 */
-        downAdapter = new MainDownAdapter(getActivity(), down_list, downClickListener);
-        downAdapter.setOnItemClickListener((view1, pos1) ->
-        {
-            String name = down_list.get(pos1).getWelf_name();
-            String field = down_list.get(pos1).getWelf_field();
-        });
-        down_recycler.setAdapter(downAdapter);
 
         /* 상단 리사이클러뷰에 들어갈 테마(교육, 공부 등)의 중복처리 로직 시작 */
         // ArrayList 안의 데이터를 중복처리하기 위해 먼저 StringBuilder에 넣는다
@@ -289,7 +372,6 @@ public class TestFragment extends Fragment
         }
 
         // ";;"가 섞인 문자열을 구분자로 각각 split
-        String[] arr = stringBuilder.toString().split(";;");
         String[] nameArr = welfareNameBuilder.toString().split(";;");
         String[] fieldArr = welfareFieldBuilder.toString().split(";;");
         String[] tagArr = welfareTagBuilder.toString().split(";;");
@@ -324,9 +406,10 @@ public class TestFragment extends Fragment
         downAdapter = new MainDownAdapter(getActivity(), other_list, downClickListener);
         downAdapter.setOnItemClickListener((view, pos) ->
         {
-            String name = other_list.get(pos).getWelf_name();
-            String field = other_list.get(pos).getWelf_field();
-            Log.e(TAG, "처음 화면 들어와서 선택한 혜택 아이템 이름 : " + name + ", 필드 : " + field);
+            Intent intent = new Intent(getActivity(), DetailTabLayoutActivity.class);
+            intent.putExtra("welf_id", welfare_id);
+            intent.putExtra("being_id",true);
+            startActivity(intent);
         });
         down_recycler.setAdapter(downAdapter);
 
@@ -342,9 +425,10 @@ public class TestFragment extends Fragment
                 downAdapter = new MainDownAdapter(getActivity(), down_list, downClickListener);
                 downAdapter.setOnItemClickListener((view1, pos1) ->
                 {
-                    String name = down_list.get(pos1).getWelf_name();
-                    String field = down_list.get(pos1).getWelf_field();
-                    Log.e(TAG, "전체 필터 재클릭 후 선택한 혜택 아이템 이름 : " + name + ", 필드 : " + field);
+                    Intent intent = new Intent(getActivity(), DetailTabLayoutActivity.class);
+                    intent.putExtra("welf_id",welfare_id);
+                    intent.putExtra("being_id",true);
+                    startActivity(intent);
                 });
                 down_recycler.setAdapter(downAdapter);
             }
@@ -372,9 +456,10 @@ public class TestFragment extends Fragment
                 downAdapter = new MainDownAdapter(getActivity(), other_list, downClickListener);
                 downAdapter.setOnItemClickListener((view1, pos1) ->
                 {
-                    String name = other_list.get(pos1).getWelf_name();
-                    String field = other_list.get(pos1).getWelf_field();
-                    Log.e(TAG, "전체 이외 필터 클릭 후 선택한 혜택 아이템 이름 : " + name + ", 필드 : " + field);
+                    Intent intent = new Intent(getActivity(), DetailTabLayoutActivity.class);
+                    intent.putExtra("welf_id",welfare_id);
+                    intent.putExtra("being_id",true);
+                    startActivity(intent);
                 });
                 down_recycler.setAdapter(downAdapter);
             }
