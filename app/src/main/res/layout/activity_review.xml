@@ -65,7 +65,7 @@
             android:fontFamily="@font/nanum_barun_gothic_bold"
             android:gravity="center_horizontal"
             android:text="혜택에 대한 점수를 매겨주세요"
-            android:textColor="@color/grey"
+            android:textColor="@color/gray"
             android:textSize="16sp" />
 
         <RatingBar
@@ -94,7 +94,7 @@
             android:fontFamily="@font/nanum_barun_gothic_bold"
             android:gravity="center_horizontal"
             android:text="신청과정에 대해 평가해주세요"
-            android:textColor="@color/grey"
+            android:textColor="@color/gray"
             android:textSize="16sp"/>
 
         <RadioGroup
@@ -116,7 +116,7 @@
             <RadioButton
                 android:id="@+id/easy_radiobutton"
                 android:layout_width="0dp"
-                android:layout_height="28dp"
+                android:layout_height="36dp"
                 android:layout_weight=".40"
                 android:background="@drawable/radius_pink_border"
                 android:button="@null"
@@ -140,7 +140,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:gravity="center"
                 android:text="어려워요"
-                android:textColor="@color/grey" />
+                android:textColor="@color/gray" />
 
         </RadioGroup>
 
@@ -158,7 +158,7 @@
             android:fontFamily="@font/nanum_barun_gothic_bold"
             android:gravity="center_horizontal"
             android:text="만족도에 대해 평가해주세요"
-            android:textColor="@color/grey"
+            android:textColor="@color/gray"
             android:textSize="16sp" />
 
         <RadioGroup
@@ -204,7 +204,7 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:gravity="center"
                 android:text="도움이 안 됐어요"
-                android:textColor="@color/grey" />
+                android:textColor="@color/gray" />
 
         </RadioGroup>
 
@@ -222,7 +222,7 @@
             android:fontFamily="@font/nanum_barun_gothic_bold"
             android:gravity="center"
             android:text="혜택에 대한 의견을 남겨주세요"
-            android:textColor="@color/grey"
+            android:textColor="@color/gray"
             android:textSize="16sp" />
 
         <EditText

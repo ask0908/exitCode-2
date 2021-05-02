@@ -109,7 +109,7 @@ public class YoutubeActivity extends AppCompatActivity
         }
 
         /* 인텐트에서 데이터가 담긴 객체를 꺼내 YoutubeActivity의 객체에 매핑
-         * 여기서 가져온 영상은 바로 재생시킬 수 있도록 하고, 밑의 리사이클러뷰에는 재생중인 영상을 제외한 다른 영상들을 보여준다 */
+        * 여기서 가져온 영상은 바로 재생시킬 수 있도록 하고, 밑의 리사이클러뷰에는 재생중인 영상을 제외한 다른 영상들을 보여준다 */
         if (getIntent().hasExtra("youtube_information"))
         {
             intent = getIntent();

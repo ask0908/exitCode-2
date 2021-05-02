@@ -69,6 +69,7 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class DetailBenefitActivity extends AppCompatActivity
 {
@@ -135,6 +136,8 @@ public class DetailBenefitActivity extends AppCompatActivity
 
     List<ReviewItem> list;
 
+    Retrofit retrofit;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -161,7 +164,15 @@ public class DetailBenefitActivity extends AppCompatActivity
         {
             Intent intent = getIntent();
             push_welf_name = intent.getStringExtra("name");
-            name_of_benefit.setText(push_welf_name);
+            if (push_welf_name.contains(";; "))
+            {
+                push_welf_name = push_welf_name.replace(";; ", ", ");
+                name_of_benefit.setText(push_welf_name);
+            }
+            else
+            {
+                name_of_benefit.setText(push_welf_name);
+            }
             editor.putString("detail_benefit_name", push_welf_name);
             editor.apply();
         }
@@ -231,7 +242,7 @@ public class DetailBenefitActivity extends AppCompatActivity
                 if (sharedPreferences.getBoolean("logout", false) || sharedPreferences.getString("user_nickname", "").equals(""))
                 {
                     AlertDialog.Builder builder = new AlertDialog.Builder(DetailBenefitActivity.this);
-                    builder.setMessage("리뷰를 작성하시려면\n먼저 로그인이 필요해요.\n로그인 하시겠어요?")
+                    builder.setMessage("리뷰를 작성하시려면 먼저 로그인이 필요해요.\n로그인 하시겠어요?")
                             .setPositiveButton("예", new DialogInterface.OnClickListener()
                             {
                                 @Override
@@ -273,7 +284,6 @@ public class DetailBenefitActivity extends AppCompatActivity
                         intent.putExtra("id", welf_id);
                         startActivityForResult(intent, 1);
                     }
-
                 }
             }
         });
@@ -353,10 +363,16 @@ public class DetailBenefitActivity extends AppCompatActivity
 
     void getWelfareInformation()
     {
+        // 메서드는 호출되는 것 확인
         String token = sharedPreferences.getString("token", "");
+        Log.e(TAG, "token : " + token);
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         sharedPreferences = getSharedPreferences("app_pref", 0);
         String session = sharedPreferences.getString("sessionId", "");
+        Log.e(TAG, "session : " + session);
+        Log.e(TAG, "push_welf_local : " + push_welf_local);
+        Log.e(TAG, "push_welf_name : " + push_welf_name);
+        // 여기서 이상하다
         Call<String> call = apiInterface.getWelfareInformation(token, session, "detail", push_welf_local, push_welf_name);
         call.enqueue(new Callback<String>()
         {
@@ -415,6 +431,7 @@ public class DetailBenefitActivity extends AppCompatActivity
 
     private void jsonParsing(String result)
     {
+        Log.e(TAG, "jsonParsing() 안의 result : " + result);
         try
         {
             JSONObject jsonObject = new JSONObject(result);
@@ -537,7 +554,7 @@ public class DetailBenefitActivity extends AppCompatActivity
                 myTextView[i].setTypeface(face);
                 myTextView[i].setText(target_list.get(i));
                 myTextView[i].setTextSize(15);
-                myTextView[i].setTextColor(ContextCompat.getColor(DetailBenefitActivity.this, R.color.grey));
+                myTextView[i].setTextColor(ContextCompat.getColor(DetailBenefitActivity.this, R.color.gray));
                 myTextView[i].setPadding(0, 0, 20, 10);
                 target_layout.addView(myTextView[i]);
             }

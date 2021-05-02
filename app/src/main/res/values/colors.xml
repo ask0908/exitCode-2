@@ -5,10 +5,6 @@
     <color name="colorPrimaryDark">#EE2F43</color>
     <color name="colorAccent">#D81B60</color>
 
-
-    <color name="white">#ffffff</color>
-    <color name="middle_gray">#CECECE</color>
-    <color name="gray">#707070</color>
     <color name="detail_gradation_color">#f697a0</color>
     <color name="app_top_color">#FFF0FE</color>
     <color name="colorMainBlue">#54A4FF</color>
@@ -28,13 +24,11 @@
     <color name="red_background_forward">#f7f93a</color>
     <color name="main_text_color">#E47D92</color>
     <color name="main_background_color">#FEF2F4</color>
-    <color name="grey">#707070</color>
-    <color name="light_grey">#E0E0E0</color>
+    <color name="gray">#707070</color>
+    <color name="light_gray">#E0E0E0</color>
+    <color name="middle_gray">#CECECE</color>
     <color name="layout_background_start_gradation">#FF7088</color>
     <color name="layout_background_end_gradation">#F2B69D</color>
-    <color name="layout_background_middle_gradation">#F4A999</color>
     <color name="keyword_unselected_color">#E76881</color> <!-- 키워드 화면에서 선택 안 된 버튼에 입힐 색 -->
-    <color name="color_text_pink">#FF5B7F</color> <!-- 키워드 화면에서 선택 안 된 버튼에 입힐 색 -->
-
 
 </resources>

@@ -22,8 +22,7 @@
         android:paddingBottom="8sp"
         android:text="전체"
         android:textColor="@color/layout_background_start_gradation"
-        android:textSize="15sp"
-        android:clickable="true"/>
+        android:textSize="15sp"/>
 
     <View
         android:id="@+id/interest_bottom_view"

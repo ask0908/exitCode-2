@@ -109,7 +109,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         analytics = FirebaseAnalytics.getInstance(this);
 
         app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
-
         // 스플래시 화면에서 받은 FCM 토큰
         token = app_pref.getString("fcm_token", "");
 
@@ -338,6 +337,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         login_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         sendUserTypeAndPlatform();
                         login_intent.putExtra("user_token", server_token);
+                        login_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(login_intent);
                         finish();
                     }
@@ -354,6 +354,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         intent.putExtra("email", result.getKakaoAccount().getEmail());
                         sendUserTypeAndPlatform();
                         intent.putExtra("user_token", server_token);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                         finish();
                     }

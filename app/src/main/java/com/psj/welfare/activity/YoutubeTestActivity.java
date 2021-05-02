@@ -215,7 +215,7 @@ public class YoutubeTestActivity extends YouTubeBaseActivity
 
                 OtherYoutubeItem item = new OtherYoutubeItem();
                 item.setThumbnail(thumbnail);
-                item.setUrl_id(url_id);
+                item.setVideo_id(url_id);
                 item.setTitle(title);
                 boolean isDuplicated = false;
                 for (int j = 0; j < other_list.size(); j++)
@@ -243,7 +243,7 @@ public class YoutubeTestActivity extends YouTubeBaseActivity
 
         adapter = new OtherYoutubeAdapter(YoutubeTestActivity.this, other_list, itemClickListener);
         adapter.setOnItemClickListener(((view, pos) -> {
-            String youtube_url_id = other_list.get(pos).getUrl_id();
+            String youtube_url_id = other_list.get(pos).getVideo_id();
             String thumbnail = other_list.get(pos).getThumbnail();
             String title = other_list.get(pos).getTitle();
             Log.e(TAG, "youtube_url_id = " + youtube_url_id + ", 썸네일 = " + thumbnail + " 제목 = " + title);

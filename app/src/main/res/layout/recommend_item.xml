@@ -50,7 +50,7 @@
                 android:lineSpacingExtra="6sp"
                 android:paddingStart="30dp"
                 android:paddingEnd="30dp"
-                android:textColor="@color/grey"
+                android:textColor="@color/gray"
                 android:autoSizeTextType="uniform"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHeight_percent=".155"

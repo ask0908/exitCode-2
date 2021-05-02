@@ -122,8 +122,11 @@ public class PushGatherFragment extends Fragment
             }
         }
 
+        // 로그인 여부를 확인하고 로그아웃돼 있다면 푸시 알림을 보여주지 않는다. 로그인한 경우에만 보여준다
+        app_pref = getActivity().getSharedPreferences("app_pref", 0);
+
         /* 서버에 저장된 푸시 데이터들을 가져오는 메서드 */
-        getPushData();
+//        getPushData();
 
         boolean isLogin = app_pref.getBoolean("logout", false);
         Log.e(TAG, "로그아웃 상태 : " + isLogin);

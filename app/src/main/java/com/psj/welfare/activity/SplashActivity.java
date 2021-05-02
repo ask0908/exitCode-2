@@ -5,9 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -21,27 +18,18 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-import com.psj.welfare.AppDatabase;
-import com.psj.welfare.CategoryDao;
-import com.psj.welfare.CategoryData;
 import com.psj.welfare.R;
-import com.psj.welfare.TutorialWelcome;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -59,8 +47,6 @@ public class SplashActivity extends AppCompatActivity
     public Intent intent;
 
     boolean isPushClicked = false;
-
-    String age = ""; //room데이터가 있는지 확인하기 위해 임시로 데이터를 담는 변수
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -86,47 +72,14 @@ public class SplashActivity extends AppCompatActivity
                     return;
                 }
                 token = task.getResult().getToken();
-                Log.e(TAG, "FCM token = " + token);
                 editor.putString("fcm_token", token);
                 editor.apply();
             }
         });
 
-        //room데이터가 있는지 확인
-        beingRoomData();
-
         userLog();
 
         onNewIntent(intent);
-
-        //카카오 로그인시 필요한 해시키
-        getHashKey();
-
-
-    }
-
-    void beingRoomData(){
-        Thread thread = new Thread(){
-            public void run(){
-                try{
-                    //Room을 쓰기위해 데이터베이스 객체 만들기
-                    AppDatabase database = Room.databaseBuilder(SplashActivity.this, AppDatabase.class, "Firstcategory")
-                            .fallbackToDestructiveMigration()
-                            .build();
-
-                    //DB에 쿼리를 던지기 위해 선언
-                    CategoryDao categoryDao = database.getcategoryDao();
-
-                    List<CategoryData> alldata = categoryDao.findAll();
-                    for (CategoryData data : alldata) {
-                        age = data.age;
-                    }
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-            }
-        };
-        thread.start();
     }
 
     @Override
@@ -155,12 +108,7 @@ public class SplashActivity extends AppCompatActivity
         @Override
         public void run()
         {
-            if(age.equals("")){ //room데이터 값이 없다면
-                startActivity(new Intent(SplashActivity.this, TutorialWelcome.class));
-            } else { //room데이터 값이 있다면
-                startActivity(new Intent(SplashActivity.this, MainTabLayoutActivity.class));
-            }
-
+            startActivity(new Intent(SplashActivity.this, MainTabLayoutActivity.class));
             SplashActivity.this.finish();
         }
     }
@@ -187,17 +135,9 @@ public class SplashActivity extends AppCompatActivity
             }
             else
             {
-
-                if(age.equals(null)){ //room데이터 값이 없다면
-                    Intent intent = new Intent(SplashActivity.this, TutorialWelcome.class);
-                    intent.putExtra("push", 100);
-                    startActivity(intent);
-                } else { //room데이터 값이 있다면
-                    Intent intent = new Intent(SplashActivity.this, MainTabLayoutActivity.class);
-                    intent.putExtra("push", 100);
-                    startActivity(intent);
-                }
-
+                Intent intent = new Intent(SplashActivity.this, MainTabLayoutActivity.class);
+                intent.putExtra("push", 100);
+                startActivity(intent);
                 SplashActivity.this.finish();
             }
         }
@@ -291,37 +231,6 @@ public class SplashActivity extends AppCompatActivity
         window.setStatusBarColor(activity.getResources().getColor(android.R.color.transparent));
         window.setNavigationBarColor(activity.getResources().getColor(android.R.color.transparent));
         window.setBackgroundDrawable(background);
-    }
-
-
-    //카카오 로그인시 필요한 해시키
-    private void getHashKey()
-    {
-        PackageInfo packageInfo = null;
-        try
-        {
-            packageInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
-        }
-        catch (PackageManager.NameNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-        if (packageInfo == null)
-            Log.e("KeyHash", "KeyHash:null");
-
-        for (Signature signature : packageInfo.signatures)
-        {
-            try
-            {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-//                Log.e("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-            }
-            catch (NoSuchAlgorithmException e)
-            {
-                Log.e("KeyHash", "Unable to get MessageDigest. signature=" + signature, e);
-            }
-        }
     }
 
 }

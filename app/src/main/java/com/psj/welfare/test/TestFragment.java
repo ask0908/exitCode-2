@@ -1,11 +1,8 @@
 package com.psj.welfare.test;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,26 +13,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.psj.welfare.AppDatabase;
-import com.psj.welfare.CategoryDao;
-import com.psj.welfare.CategoryData;
-import com.psj.welfare.DetailTabLayoutActivity;
 import com.psj.welfare.R;
-import com.psj.welfare.activity.YoutubeActivity;
-import com.psj.welfare.adapter.MainCategoryAdapter;
 import com.psj.welfare.adapter.MainDownAdapter;
 import com.psj.welfare.adapter.MainHorizontalYoutubeAdapter;
-import com.psj.welfare.api.ApiClient;
-import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.data.HorizontalYoutubeItem;
 import com.psj.welfare.data.MainCategoryBottomItem;
 import com.psj.welfare.data.MainThreeDataItem;
 import com.psj.welfare.util.DBOpenHelper;
+import com.psj.welfare.viewmodel.MainViewModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,21 +39,10 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-/* 테스트 완료 후 MainFragment에 xml과 같이 복붙해야 한다 */
+/* 구현 완료 시 MainFragment로 옮긴다 */
 public class TestFragment extends Fragment
 {
-    public static final String TAG = "TestFragment";
-
-    //로그인 여부를 확인하기 위해 사용하는 쉐어드
-    SharedPreferences app_pref;
-    String age = null; //미리보기 나이
-    String gender = null; //미리보기 성별
-    String local = null; //미리보기 지역
-    String benefit = null; //미리보기 관심사 선택시 데이터
+    public static final String TAG = TestFragment.class.getSimpleName();
 
     // 20대, 강원, 여성
     TextView selected_interest_textview;
@@ -79,7 +59,8 @@ public class TestFragment extends Fragment
     List<MainThreeDataItem> keyword_list;
     MainThreeDataItem all_item;
 
-    // 상단 리사이클러뷰에서 선택한 관심 주제에 따라 내용물을 바꿀 하단 리사이클러뷰, 3개만 보여준다
+    // 상단 리사이클러뷰에서 선택한 값에 따라 내용물이 바뀌는 "하단 리사이클러뷰"
+    // 3개만 보여준다
     RecyclerView down_recycler;
     MainDownAdapter downAdapter;
     MainDownAdapter.ItemClickListener downClickListener;
@@ -98,8 +79,6 @@ public class TestFragment extends Fragment
 
     HashMap<String, String> youtube_hashmap;
 
-    ValueHandler handler = new ValueHandler(); //타이틀을 사용하기 위한 핸들러
-
     int count_int;
 
     boolean loggedOut = false;
@@ -109,8 +88,11 @@ public class TestFragment extends Fragment
 
     private FirebaseAnalytics analytics;
 
+    /* MVVM 적용 */
+    MainViewModel mainViewModel;
+
     // 새 서버에서 가져온 유튜브 데이터를 저장할 변수
-    String youtube_id, youtube_title, youtube_thumbnail, youtube_videoId;;
+    String youtube_id, youtube_title, youtube_thumbnail, youtube_videoId;
     // 새 서버에서 가져온 혜택 데이터를 저장할 변수. 메인 화면의 3개 아이템을 보여주는 리사이클러뷰에 이 변수에 담긴 값들을 set한다
     String welfare_id, welfare_name, welfare_tag, welfare_field;
 
@@ -147,6 +129,8 @@ public class TestFragment extends Fragment
 
         down_recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        keyword_list = new ArrayList<>();
+        down_list = new ArrayList<>();
         youtube_hashmap = new HashMap<>();
         youtube_list = new ArrayList<>();
         other_list = new ArrayList<>();
@@ -158,11 +142,13 @@ public class TestFragment extends Fragment
         Cursor cursor = helper.selectColumns();
         if (cursor != null)
         {
-            while(cursor.moveToNext())
+            while (cursor.moveToNext())
             {
                 sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
             }
         }
+
+        showWelfareAndYoutubeNotLogin();
 
         // view 100+ -> view 0으로 변경
         // 편집하기 각각 왼쪽, 오른쪽 간격 수정
@@ -172,120 +158,38 @@ public class TestFragment extends Fragment
             analytics = FirebaseAnalytics.getInstance(getActivity());
         }
 
-        showWelfareAndYoutubeNotLogin();
+        more_see_textview.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), TestMoreViewActivity.class);
+            startActivity(intent);
+        });
 
-//        more_see_textview.setOnClickListener(v -> Toast.makeText(getActivity(), "더보기 클릭", Toast.LENGTH_SHORT).show());
-
-        //selected_interest_textview(제목) 값 넣기
-        settitle();
     }
 
-    //selected_interest_textview(제목) 값 넣기
-    //room데이터 이용은 메인 쓰레드에서 하면 안된다
-    void settitle(){
-
-        new Thread(() -> {
-            try{
-                //Room을 쓰기위해 데이터베이스 객체 만들기
-                AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(), AppDatabase.class, "Firstcategory")
-                        .fallbackToDestructiveMigration()
-                        .build();
-
-                //DB에 쿼리를 던지기 위해 선언
-                CategoryDao categoryDao = database.getcategoryDao();
-
-                List<CategoryData> alldata = categoryDao.findAll();
-                for (CategoryData data : alldata) {
-                    age = data.age;
-                    gender = data.gender;
-                    local = data.home;
-                }
-//                Log.e("age",alldata.get(0).age);
-                benefit = age + ", " + local + ", " + gender;
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-
-            //로그인 했는지 여부 확인하기위한 쉐어드
-            app_pref = getActivity().getSharedPreferences(getString(R.string.shared_name), 0);
-            Boolean being_logout = app_pref.getBoolean("logout",false); //로그인 했는지 여부 확인하기
-            String user_nickname = app_pref.getString("user_nickname",""); //닉네임 받아오기
-
-            Message message = handler.obtainMessage();
-            Bundle bundle = new Bundle();
-            bundle.putString("age", age);
-            bundle.putString("benefit", benefit);
-            bundle.putBoolean("being_logout",being_logout);
-            bundle.putString("user_nickname", user_nickname);
-            message.setData(bundle);
-            //sendMessage가 되면 이 handler가 해당되는 핸들러객체가(ValueHandler) 자동으로 호출된다.
-            handler.sendMessage(message);
-
-
-        }).start();
-    }
-
-
-    //핸들러구현한 객체(핸들러역할), 스레드에서 저장한 타이틀 값을 사용하기 위한 핸들러
-    class ValueHandler extends Handler{
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            Bundle bundle = msg.getData();
-            String age = bundle.getString("age");
-            String benefit = bundle.getString("benefit");
-            String user_nickname = bundle.getString("user_nickname");
-            boolean being_logout = bundle.getBoolean("being_logout");
-
-            if(!being_logout){ //로그인 했다면
-                selected_interest_textview.setText(user_nickname + "님");
-                edit_interest_btn.setVisibility(View.GONE);
-            } else if(age != null){ //미리보기 관심사를 선택했다면
-                selected_interest_textview.setText(benefit);
-                edit_interest_btn.setVisibility(View.VISIBLE);
-                edit_interest_btn.setText("관심사 수정");
-            } else {
-                selected_interest_textview.setText("혜택모아");
-                edit_interest_btn.setVisibility(View.VISIBLE);
-                edit_interest_btn.setText("나에게 맞는 혜택 찾기");
-            }
-        }
-    }
-
-
-    void showWelfareAndYoutubeNotLogin()
+    /* MVVM 디자인 패턴으로 바꾼 후 추가한 메서드
+    * MVVM에 맞게 Observer와 뷰모델을 사용해 서버에서 결과값을 가져온 다음 파싱해 뷰에 붙인다 */
+    private void showWelfareAndYoutubeNotLogin()
     {
-        ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
-        Call<String> call = apiInterface.showWelfareAndYoutubeNotLogin("total_main");
-        call.enqueue(new Callback<String>()
+        mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
+        final Observer<String> mainObserver = new Observer<String>()
         {
             @Override
-            public void onResponse(Call<String> call, Response<String> response)
+            public void onChanged(String str)
             {
-                if (response.isSuccessful() && response.body() != null)
+                if (str != null)
                 {
-                    String result = response.body();
-                    responseParse(result);
+                    responseParse(str);
                 }
                 else
                 {
-                    Log.e(TAG, "비로그인일 시 데이터 가져오기 실패 : " + response.body());
+                    Log.e(TAG, "str(결과값)이 null입니다");
                 }
             }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t)
-            {
-                Log.e(TAG, "비로그인일 시 데이터 가져오기 에러 : " + t.getMessage());
-            }
-        });
+        };
+        mainViewModel.getAllData().observe(getActivity(), mainObserver);
     }
 
     private void responseParse(String result)
     {
-        keyword_list = new ArrayList<>();
-        down_list = new ArrayList<>();
-
         try
         {
             JSONObject jsonObject = new JSONObject(result);
@@ -309,14 +213,11 @@ public class TestFragment extends Fragment
                     item.setYoutube_name(youtube_title);
                     item.setYoutube_thumbnail(youtube_thumbnail);
                     item.setYoutube_videoId(youtube_videoId);
-
                     youtube_list.add(item);
                 }
 
                 /* 메인에 보여줄 3개 혜택 데이터 */
-
                 JSONArray welf_datas = inner_json.getJSONArray("welf_data");
-
                 for (int j = 0; j < welf_datas.length(); j++)
                 {
                     JSONObject data = welf_datas.getJSONObject(j);
@@ -330,7 +231,6 @@ public class TestFragment extends Fragment
 
                     // 상단 리사이클러뷰에 넣을 테마(welf_field)를 저장할 객체 생성
                     MainThreeDataItem item = new MainThreeDataItem();
-                    item.setWelf_id(welfare_id);
                     item.setWelf_name(welfare_name);
                     item.setWelf_field(welfare_field);
                     item.setWelf_tag(welfare_tag);
@@ -362,13 +262,8 @@ public class TestFragment extends Fragment
         downAdapter = new MainDownAdapter(getActivity(), down_list, downClickListener);
         downAdapter.setOnItemClickListener((view1, pos1) ->
         {
-            //Welf_id 값을 받아온다
-            String welf_id = down_list.get(pos1).getWelf_id();
-            //상세보기 화면으로 넘어가기
-            Intent intent = new Intent(getActivity(), DetailTabLayoutActivity.class);
-            intent.putExtra("welf_id",welf_id);
-            intent.putExtra("being_id",true);
-            startActivity(intent);
+            String name = down_list.get(pos1).getWelf_name();
+            String field = down_list.get(pos1).getWelf_field();
         });
         down_recycler.setAdapter(downAdapter);
 
@@ -419,11 +314,6 @@ public class TestFragment extends Fragment
             other_list.add(all_item);
         }
 
-        for (int i = 0; i < keyword_list.size(); i++)
-        {
-//            Log.e(TAG, "태그 확인 : " + keyword_list.get(i).getWelf_tag());
-        }
-
         // 아래 처리를 하지 않으면 이 액티비티로 들어올 때마다 전체 카테고리 개수가 1개씩 증가한다
         // keyword_list 크기가 0일 경우 아래에서 에러가 발생한다
         if (!keyword_list.get(0).getWelf_field().equals("전체") && !keyword_list.contains("전체"))
@@ -431,20 +321,12 @@ public class TestFragment extends Fragment
             keyword_list.add(0, new MainThreeDataItem("전체"));
         }
 
-        /* 새로 추가한 코드(처음 메인에 들어왔을 때 아이템 클릭했을 시) */
         downAdapter = new MainDownAdapter(getActivity(), other_list, downClickListener);
         downAdapter.setOnItemClickListener((view, pos) ->
         {
-
-            //Welf_id 값을 받아온다
-            String welf_id = down_list.get(pos).getWelf_id();
-            //상세보기 화면으로 넘어가기
-            Intent intent = new Intent(getActivity(), DetailTabLayoutActivity.class);
-            intent.putExtra("welf_id",welf_id);
-            intent.putExtra("being_id",true);
-            startActivity(intent);
-
-//            Log.e(TAG, "처음 화면 들어와서 선택한 혜택 아이템 이름 : " + name + ", 필드 : " + field);
+            String name = other_list.get(pos).getWelf_name();
+            String field = other_list.get(pos).getWelf_field();
+            Log.e(TAG, "처음 화면 들어와서 선택한 혜택 아이템 이름 : " + name + ", 필드 : " + field);
         });
         down_recycler.setAdapter(downAdapter);
 
@@ -460,18 +342,9 @@ public class TestFragment extends Fragment
                 downAdapter = new MainDownAdapter(getActivity(), down_list, downClickListener);
                 downAdapter.setOnItemClickListener((view1, pos1) ->
                 {
-                    //Welf_id 값을 받아온다
-                    String welf_id = down_list.get(pos).getWelf_id();
-                    String welf_name = down_list.get(pos).getWelf_name();
-                    String welf_tag = down_list.get(pos).getWelf_tag();
-                    Log.e(TAG, "전체 필터를 눌렀을 때 id : " + welf_id + ", 이름 : " + welf_name + ", 태그 : " + welf_tag);
-                    /* 상세보기 화면으로 넘어가기 */
-//                    Intent intent = new Intent(getActivity(), DetailTabLayoutActivity.class);
-//                    intent.putExtra("welf_id",welf_id);
-//                    intent.putExtra("being_id",true);
-//                    startActivity(intent);
-
-//                    Log.e(TAG, "전체 필터 재클릭 후 선택한 혜택 아이템 이름 : " + name + ", 필드 : " + field);
+                    String name = down_list.get(pos1).getWelf_name();
+                    String field = down_list.get(pos1).getWelf_field();
+                    Log.e(TAG, "전체 필터 재클릭 후 선택한 혜택 아이템 이름 : " + name + ", 필드 : " + field);
                 });
                 down_recycler.setAdapter(downAdapter);
             }
@@ -491,9 +364,6 @@ public class TestFragment extends Fragment
                         item.setWelf_field(keyword_list.get(pos).getWelf_field());
                         item.setWelf_name(down_list.get(i).getWelf_name());
                         item.setWelf_tag(down_list.get(i).getWelf_tag());
-
-                        // 아이템 클릭 시 해당 아이템의 상세보기로 이동하지 않아서 추가한 코드 (아닐 시 삭제)
-//                        item.setWelf_id(down_list.get(i).getWelf_id());
                         other_list.add(item);
                     }
                 }
@@ -502,16 +372,9 @@ public class TestFragment extends Fragment
                 downAdapter = new MainDownAdapter(getActivity(), other_list, downClickListener);
                 downAdapter.setOnItemClickListener((view1, pos1) ->
                 {
-                    //Welf_id 값을 받아온다
-                    String welf_id = down_list.get(pos).getWelf_id();
-                    String welf_name = down_list.get(pos).getWelf_name();
-                    String welf_tag = down_list.get(pos).getWelf_tag();
-                    Log.e(TAG, "전체 이외의 필터를 눌렀을 때 id : " + welf_id + ", 이름 : " + welf_name + ", 태그 : " + welf_tag);
-                    /* 상세보기 화면으로 넘어가기 */
-//                    Intent intent = new Intent(getActivity(), DetailTabLayoutActivity.class);
-//                    intent.putExtra("welf_id",welf_id);
-//                    intent.putExtra("being_id",true);
-//                    startActivity(intent);
+                    String name = other_list.get(pos1).getWelf_name();
+                    String field = other_list.get(pos1).getWelf_field();
+                    Log.e(TAG, "전체 이외 필터 클릭 후 선택한 혜택 아이템 이름 : " + name + ", 필드 : " + field);
                 });
                 down_recycler.setAdapter(downAdapter);
             }
@@ -525,27 +388,25 @@ public class TestFragment extends Fragment
             @Override
             public void onItemClick(View v, int pos)
             {
-                HorizontalYoutubeItem item = new HorizontalYoutubeItem();
-                item.setYoutube_id(youtube_id);
-                item.setYoutube_name(youtube_title);
-                item.setYoutube_thumbnail(youtube_thumbnail);
-                item.setYoutube_videoId(youtube_videoId);
-                Intent intent = new Intent(getActivity(), YoutubeActivity.class);
-                String youtube_name = youtube_list.get(pos).getYoutube_name();
+                /* 수정 중이라 주석 처리 */
+//                HorizontalYoutubeItem item = new HorizontalYoutubeItem();
+//                item.setYoutube_id(youtube_id);
+//                item.setYoutube_name(youtube_title);
+//                item.setYoutube_thumbnail(youtube_thumbnail);
+//                item.setYoutube_videoId(youtube_videoId);
+//                Intent intent = new Intent(getActivity(), YoutubeActivity.class);
+//                String youtube_name = youtube_list.get(pos).getYoutube_name();
                 Log.e(TAG, "선택한 유튜브 영상 : " + youtube_list.get(pos).getYoutube_name());
-                intent.putExtra("youtube_information", item);
-                intent.putExtra("youtube_hashmap", youtube_hashmap);
-                Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "유튜브 화면으로 이동");
-                analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-                startActivity(intent);
+//                intent.putExtra("youtube_information", item);
+//                intent.putExtra("youtube_hashmap", youtube_hashmap);
+//                Bundle bundle = new Bundle();
+//                bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "유튜브 화면으로 이동");
+//                analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+//                startActivity(intent);
             }
         });
         youtube_video_recyclerview.setAdapter(youtubeAdapter);
 
     }
-
-
-
 
 }

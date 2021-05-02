@@ -59,10 +59,6 @@ public class MainHorizontalYoutubeAdapter extends RecyclerView.Adapter<MainHoriz
                 .into(holder.test_youtube_image);
         holder.test_youtube_image.setClipToOutline(true);
         holder.test_youtube_title.setText(item.getYoutube_name());
-
-        if((list.size()-1) == position){
-            holder.test_allview_youtube_layout.setVisibility(View.VISIBLE);
-        }
     }
 
     @Override
@@ -73,12 +69,10 @@ public class MainHorizontalYoutubeAdapter extends RecyclerView.Adapter<MainHoriz
 
     public class MainHorizontalYoutubeViewHolder extends RecyclerView.ViewHolder
     {
-        CardView horizontal_youtube_layout; //유튜브 레이아웃
-        ImageView test_youtube_image; //유튜브 이미지
-        TextView test_youtube_title; //유튜브 제목
-        ItemClickListener itemClickListener; //유튜브 클릭 리스너
-
-        CardView test_allview_youtube_layout; //유튜브 더보기 버튼
+        CardView horizontal_youtube_layout;
+        ImageView test_youtube_image;
+        TextView test_youtube_title;
+        ItemClickListener itemClickListener;
 
         public MainHorizontalYoutubeViewHolder(@NonNull View view, ItemClickListener itemClickListener)
         {
@@ -88,24 +82,14 @@ public class MainHorizontalYoutubeAdapter extends RecyclerView.Adapter<MainHoriz
             test_youtube_image = view.findViewById(R.id.test_youtube_image);
             test_youtube_title = view.findViewById(R.id.test_youtube_title);
 
-            test_allview_youtube_layout = view.findViewById(R.id.test_allview_youtube_layout);
-
-            this.itemClickListener = itemClickListener; //클릭리스터 인터페이스(프래그먼트에서 사용하기 위함)
-            int pos = getAdapterPosition(); //선택한 유튜브의 포지션 값 저장
-            //유튜브 아이템 클릭
+            this.itemClickListener = itemClickListener;
             horizontal_youtube_layout.setOnClickListener(v -> {
+                int pos = getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION && itemClickListener != null)
                 {
                     itemClickListener.onItemClick(v, pos);
                 }
             });
-
-            //유튜브 더보기 아이템 클릭
-            test_allview_youtube_layout.setOnClickListener(v -> {
-//                Intent intent = new Intent(context, YoutubeActivity.class);
-//                context.startActivity(intent);
-            });
-
         }
     }
 
