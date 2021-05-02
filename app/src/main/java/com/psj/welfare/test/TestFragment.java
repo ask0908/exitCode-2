@@ -211,7 +211,7 @@ public class TestFragment extends Fragment
 
             //로그인 했는지 여부 확인하기위한 쉐어드
             app_pref = getActivity().getSharedPreferences(getString(R.string.shared_name), 0);
-            Boolean being_logout = app_pref.getBoolean("logout",false); //로그인 했는지 여부 확인하기
+            boolean being_logout = app_pref.getBoolean("logout",true); //로그인 했는지 여부 확인하기
             String user_nickname = app_pref.getString("user_nickname",""); //닉네임 받아오기
 
             Message message = handler.obtainMessage();
