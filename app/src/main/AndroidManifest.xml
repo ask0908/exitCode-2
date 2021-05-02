@@ -23,6 +23,12 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
+        <activity android:name=".DetailReviewAllLook"/>
+        <activity android:name=".DetailReviewWrite" />
+        <activity android:name=".TutorialResult" />
+        <activity android:name=".TutorialCategory" />
+        <activity android:name=".TutorialWelcome" />
+        <activity android:name=".DetailTabLayoutActivity"/>
         <activity android:name=".test.TestMoreViewActivity"></activity>
         <activity android:name=".test.TestSearchResultActivity" />
         <activity android:name=".activity.YoutubeTestActivity" />

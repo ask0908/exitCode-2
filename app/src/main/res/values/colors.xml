@@ -5,6 +5,7 @@
     <color name="colorPrimaryDark">#EE2F43</color>
     <color name="colorAccent">#D81B60</color>
 
+    <color name="white">#FFFFFF</color>
     <color name="detail_gradation_color">#f697a0</color>
     <color name="app_top_color">#FFF0FE</color>
     <color name="colorMainBlue">#54A4FF</color>
@@ -30,5 +31,6 @@
     <color name="layout_background_start_gradation">#FF7088</color>
     <color name="layout_background_end_gradation">#F2B69D</color>
     <color name="keyword_unselected_color">#E76881</color> <!-- 키워드 화면에서 선택 안 된 버튼에 입힐 색 -->
+    <color name="color_text_pink">#FF5B7F</color> <!-- 키워드 화면에서 선택 안 된 버튼에 입힐 색 -->
 
 </resources>

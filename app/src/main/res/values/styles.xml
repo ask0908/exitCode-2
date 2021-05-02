@@ -50,6 +50,16 @@
         <item name="android:textColor">@color/colorBlack</item>
     </style>
 
+    <!-- Tutorial Category의 지역 설정 NumberPicker 테마 -->
+    <style name="TutorialHomeNumberpickerTheme" parent="Theme.AppCompat.Light">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="fontFamily">@font/jalnan</item>
+        <!--        <item name="controlBackground">@drawable/radius_grey_border</item>-->
+        <item name="colorControlNormal">@android:color/transparent</item>
+        <item name="android:textColorPrimary">@color/gray</item>
+    </style>
+
     <!-- GetUserInformationActivity의 NumberPicker 테마 -->
     <style name="DefaultNumberPickerTheme" parent="Theme.AppCompat.Light">
         <item name="colorAccent">@color/colorBlack</item>
