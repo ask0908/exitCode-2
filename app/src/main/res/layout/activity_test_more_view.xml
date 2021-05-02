@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".test.TestMoreViewActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0"
+            app:layout_constraintWidth_percent="1"
+            app:layout_constraintHeight_percent=".145"
+            android:background="@drawable/gradation_background">
+
+            <TextView
+                android:id="@+id/more_view_result_count"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintWidth_percent="1"
+                app:layout_constraintHeight_percent=".45"
+                app:layout_constraintVertical_bias=".2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:fontFamily="@font/jalnan"
+                android:textColor="@color/colorMainWhite"
+                app:autoSizePresetSizes="@array/autosize_text_sizes"
+                android:layout_gravity="center"
+                android:gravity="center"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="1"
+            app:layout_constraintHeight_percent=".9"
+            app:layout_constraintVertical_bias="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@drawable/radius_25">
+
+            <!-- 전체, 건강, 교육 등 카테고리들을 보여줄 상단 리사이클러뷰 -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/more_view_top_recyclerview"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scrollbars="none"
+                android:paddingStart="20dp"
+                app:layout_constraintWidth_percent="1"
+                app:layout_constraintHeight_percent=".1"
+                app:layout_constraintVertical_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:orientation="horizontal"
+                tools:listitem="@layout/test_up_item"/>
+
+            <!-- 상단 리사이클러뷰에서 선택한 카테고리에 따라 다른 내용들을 보여줄 리사이클러뷰
+             페이징 적용해서 10개 이상 올 경우 10개를 한 덩어리로 해서 보여줘야 한다 -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/more_view_bottom_recyclerview"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:overScrollMode="never"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                app:layout_constraintWidth_percent="1"
+                app:layout_constraintHeight_percent=".9"
+                app:layout_constraintVertical_bias="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/more_view_top_recyclerview"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:orientation="vertical"
+                tools:listitem="@layout/test_down_item"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

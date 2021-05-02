@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TestSearchFragment의 editText 오른쪽 돋보기 이미지 크기 조절 -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item
+        android:drawable="@drawable/search_pink"
+        android:width="25dp"
+        android:height="25dp"
+        />
+</layer-list >

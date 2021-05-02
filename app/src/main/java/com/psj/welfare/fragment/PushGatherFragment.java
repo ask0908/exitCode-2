@@ -2,6 +2,7 @@ package com.psj.welfare.fragment;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -24,6 +27,8 @@ import com.psj.welfare.adapter.PushGatherAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.data.PushGatherItem;
+import com.psj.welfare.util.DBOpenHelper;
+import com.psj.welfare.viewmodel.PushViewModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,9 +36,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -64,6 +67,13 @@ public class PushGatherFragment extends Fragment
     // 푸시 알림이 없을 때 띄울 텍스트뷰
     TextView nothing_noti;
 
+    String sqlite_token;
+
+    DBOpenHelper helper;
+
+    /* MVVM */
+    PushViewModel pushViewModel;
+
     public PushGatherFragment()
     {
     }
@@ -93,15 +103,42 @@ public class PushGatherFragment extends Fragment
     {
         super.onViewCreated(view, savedInstanceState);
 
-        activity_list = new ArrayList<>();
-
-        /* 서버에 저장된 푸시 데이터들을 가져오는 메서드 */
-        getPushData();
-
         push_layout_recycler = view.findViewById(R.id.push_layout_recycler);
         push_layout_recycler.setHasFixedSize(true);
         push_layout_recycler.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         push_layout_recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        activity_list = new ArrayList<>();
+        helper = new DBOpenHelper(getActivity());
+        helper.openDatabase();
+        helper.create();
+
+        Cursor cursor = helper.selectColumns();
+        if (cursor != null)
+        {
+            while(cursor.moveToNext())
+            {
+                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+            }
+        }
+
+        /* 서버에 저장된 푸시 데이터들을 가져오는 메서드 */
+        getPushData();
+
+        boolean isLogin = app_pref.getBoolean("logout", false);
+        Log.e(TAG, "로그아웃 상태 : " + isLogin);
+        if (isLogin)
+        {
+            push_layout_recycler.setVisibility(View.GONE);
+            nothing_noti.setText("도착한 혜택 알림이 없어요");
+            nothing_noti.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            nothing_noti.setVisibility(View.GONE);
+            push_layout_recycler.setVisibility(View.VISIBLE);
+            getPushData();
+        }
 
         /* 왼쪽으로 아이템을 밀어서 푸시 알림을 삭제할 수 있게 하는 콜백, 빠르게 하면 안되고 어느 정도 뜸 들여서 해야 삭제가 정상적으로 이뤄진다 */
         ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT)
@@ -115,15 +152,28 @@ public class PushGatherFragment extends Fragment
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
             {
+                List<PushGatherItem> list = adapter.getList();
                 final int position = viewHolder.getAdapterPosition();
-                switch (direction)
+                if (direction == ItemTouchHelper.LEFT)
                 {
-                    case ItemTouchHelper.LEFT :
-                        activity_list.remove(position);
-                        adapter.notifyItemRemoved(position);
-                        // 왼쪽으로 밀어서 푸시 알림 삭제
-                        removePush(pushId);
-                        break;
+                    for (int i = 0; i < activity_list.size(); i++)
+                    {
+                        if (activity_list.get(i).getPushId().equals(list.get(position).getPushId()))
+                        {
+                            String erase_target_id = activity_list.get(i).getPushId();
+                            removePush(erase_target_id);
+                            activity_list.remove(position);
+                            adapter.notifyItemRemoved(position);
+                            push_layout_recycler.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                            /* 삭제하면 다시 서버에서 푸시 데이터를 받아와본다
+                            * -> 삭제한 이후의 값을 받아오지 못한다 */
+//                            getPushData();
+                            /**/
+//                            adapter.deleteFromList(position);
+//                            push_layout_recycler.setLayoutManager(new WrapContentLinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+                        }
+                    }
                 }
             }
         };
@@ -134,20 +184,34 @@ public class PushGatherFragment extends Fragment
 
     }
 
+    /* 서버에서 푸시 데이터들을 가져오는 메서드 */
+    private void getPushData()
+    {
+        pushViewModel = new ViewModelProvider(getActivity()).get(PushViewModel.class);
+        final Observer<String> pushObserver = new Observer<String>()
+        {
+            @Override
+            public void onChanged(String str)
+            {
+                if (str != null)
+                {
+                    Log.e(TAG, "서버에서 받은 푸시 목록 : " + str);
+                    messageParsing(str);
+                }
+                else
+                {
+                    Log.e(TAG, "str이 null입니다");
+                }
+            }
+        };
+        pushViewModel.getPushDatas().observe(getActivity(), pushObserver);
+    }
+
     /* 푸시 알림 받으면 수신 상태값을 변경하는 메서드 */
     void changePushStatus()
     {
-        app_pref = Objects.requireNonNull(getActivity()).getSharedPreferences("app_pref", 0);
-        if (app_pref.getString("token", "").equals(""))
-        {
-            token = null;
-        }
-        else
-        {
-            token = app_pref.getString("token", "");
-        }
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.changePushStatus(token, "customizedRecv");
+        Call<String> call = apiInterface.changePushStatus(sqlite_token, "customizedRecv");
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -156,6 +220,7 @@ public class PushGatherFragment extends Fragment
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
+                    Log.e(TAG, "푸시 알림 받은 후 수신 상태값 확인 : " + result);
                 }
                 else
                 {
@@ -167,34 +232,6 @@ public class PushGatherFragment extends Fragment
             public void onFailure(Call<String> call, Throwable t)
             {
                 Log.e(TAG, "에러 : " + t.getMessage());
-            }
-        });
-    }
-
-    /* 서버에서 푸시 데이터들을 가져오는 메서드 */
-    void getPushData()
-    {
-        app_pref = getActivity().getSharedPreferences("app_pref", 0);
-        String token = app_pref.getString("token", "");
-        String session = app_pref.getString("sessionId", "");
-        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.getPushData(token, session, "pushList");
-        call.enqueue(new Callback<String>()
-        {
-            @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
-            {
-                if (response.isSuccessful() && response.body() != null)
-                {
-                    messageParsing(response.body());
-                    changePushStatus();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
-            {
-                Log.e("getPushData()", "에러 = " + t.getMessage());
             }
         });
     }
@@ -283,12 +320,8 @@ public class PushGatherFragment extends Fragment
         {
             session = app_pref.getString("sessionId", "");
         }
-        if (!app_pref.getString("token", "").equals(""))
-        {
-            token = app_pref.getString("token", "");
-        }
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.checkUserWatchedPush(session, token, pushId, "pushRecv");
+        Call<String> call = apiInterface.checkUserWatchedPush(session, sqlite_token, pushId, "pushRecv");
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -296,7 +329,7 @@ public class PushGatherFragment extends Fragment
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    //
+                    Log.e(TAG, "알림 클릭 후 수신 알림값 변경 확인 : " + response.body());
                 }
                 else
                 {
@@ -317,9 +350,8 @@ public class PushGatherFragment extends Fragment
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         app_pref = getActivity().getSharedPreferences("app_pref", 0);
-        String token = app_pref.getString("token", "");
         String session = app_pref.getString("sessionId", "");
-        Call<String> call = apiInterface.removePush(session, token, pushId, "delete");
+        Call<String> call = apiInterface.removePush(session, sqlite_token, pushId, "delete");
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -329,6 +361,7 @@ public class PushGatherFragment extends Fragment
                 {
                     String result = response.body();
                     toastParse(result);
+                    Log.e(TAG, "알림 삭제 결과 : " + result);
                 }
                 else
                 {
@@ -344,6 +377,7 @@ public class PushGatherFragment extends Fragment
         });
     }
 
+    /* 알림 삭제 결과에 따라 토스트를 띄우는 메서드 */
     private void toastParse(String result)
     {
         try
@@ -360,20 +394,9 @@ public class PushGatherFragment extends Fragment
         {
             Toast.makeText(getActivity(), "알림 삭제가 완료되었습니다", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    /* API 사용 후 결과를 확인할 때 사용하는 메서드, 여기서 쓰진 않고 retrofit 객체화 시 client 객체를 설정해 사용한다 */
-    private HttpLoggingInterceptor httpLoggingInterceptor()
-    {
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger()
+        else
         {
-            @Override
-            public void log(String message)
-            {
-                Log.e("인터셉터 내용 : ", message);
-            }
-        });
-
-        return interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            Toast.makeText(getActivity(), "에러가 발생했습니다. 잠시 후 다시 시도해 주세요", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".test.TestSearchResultActivity">
+
+    <!-- 툴바 안에 editText를 넣어서 이전 화면에서 검색한 키워드를 가져와 보여준다
+     여기서 다시 검색하면 화면을 이동하지 않고 밑의 리사이클러뷰 데이터만 바꿔준다 -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/search_result_toolbar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent=".09"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/search_result_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:drawableEnd="@drawable/edittext_end_pink"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/renewal_search_edittext"/>
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- 총 검색 개수(15개), 필터 버튼을 가로로 넣을 레이아웃 -->
+    <LinearLayout
+        android:id="@+id/result_filter_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent=".08"
+        android:weightSum="1"
+        android:background="@drawable/layout_border"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_result_toolbar"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:id="@+id/total_search_result"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".75"
+            android:fontFamily="@font/jalnan"
+            android:text="15개"
+            android:layout_gravity="center"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight=".25"
+            android:background="@drawable/layout_border"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:weightSum="1"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/search_filter"
+                android:layout_weight=".5"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight=".5"
+                android:fontFamily="@font/jalnan"
+                android:text="필터"
+                android:gravity="center"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- 검색결과를 페이징해서 보여줄 리사이클러뷰 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/search_result_recyclerview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent=".82"
+        app:layout_constraintVertical_bias="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/result_filter_layout"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

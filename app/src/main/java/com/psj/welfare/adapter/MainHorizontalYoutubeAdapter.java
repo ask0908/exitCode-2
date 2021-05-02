@@ -41,6 +41,12 @@ public class MainHorizontalYoutubeAdapter extends RecyclerView.Adapter<MainHoriz
     public MainHorizontalYoutubeAdapter.MainHorizontalYoutubeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         View view = LayoutInflater.from(context).inflate(R.layout.test_youtube_item, parent, false);
+
+        ViewGroup.LayoutParams params = view.getLayoutParams();
+        params.width = (int) (parent.getWidth() * 0.39);
+        params.height = (int) (parent.getHeight() * 0.78);
+        view.setLayoutParams(params);
+
         return new MainHorizontalYoutubeViewHolder(view, itemClickListener);
     }
 

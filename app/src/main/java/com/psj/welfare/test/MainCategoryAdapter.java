@@ -13,13 +13,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.psj.welfare.R;
 import com.psj.welfare.data.MainThreeDataItem;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainCategoryAdapter extends RecyclerView.Adapter<MainCategoryAdapter.TestUpViewHolder>
 {
     private Context context;
-    private List<MainThreeDataItem> list = new ArrayList<>();
+    private List<MainThreeDataItem> list;
     private ItemClickListener itemClickListener;
 
     private int selected_position = 0;
