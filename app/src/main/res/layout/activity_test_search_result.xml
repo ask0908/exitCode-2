@@ -1,103 +1,232 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".test.TestSearchResultActivity">
 
-    <!-- 툴바 안에 editText를 넣어서 이전 화면에서 검색한 키워드를 가져와 보여준다
-     여기서 다시 검색하면 화면을 이동하지 않고 밑의 리사이클러뷰 데이터만 바꿔준다 -->
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/search_result_toolbar"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintWidth_percent="1"
-        app:layout_constraintHeight_percent=".09"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/search_result_edittext"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:drawableEnd="@drawable/edittext_end_pink"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:layout_margin="10dp"
-            android:background="@drawable/renewal_search_edittext"/>
+            android:layout_height="match_parent">
 
-    </androidx.appcompat.widget.Toolbar>
-
-    <!-- 총 검색 개수(15개), 필터 버튼을 가로로 넣을 레이아웃 -->
-    <LinearLayout
-        android:id="@+id/result_filter_layout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        app:layout_constraintWidth_percent="1"
-        app:layout_constraintHeight_percent=".08"
-        android:weightSum="1"
-        android:background="@drawable/layout_border"
-        app:layout_constraintVertical_bias="0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_result_toolbar"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <TextView
-            android:id="@+id/total_search_result"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".75"
-            android:fontFamily="@font/jalnan"
-            android:text="15개"
-            android:layout_gravity="center"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"/>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight=".25"
-            android:background="@drawable/layout_border"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:weightSum="1"
-            android:orientation="horizontal">
-
-            <ImageView
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/search_top_layout"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginTop="5dp"
-                android:src="@drawable/search_filter"
-                android:layout_weight=".5"/>
+                android:layout_height="0dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0"
+                app:layout_constraintWidth_percent="1"
+                app:layout_constraintHeight_percent=".15"
+                android:background="@drawable/gradation_background">
 
-            <TextView
+                <EditText
+                    android:id="@+id/search_result_edittext"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintWidth_percent=".85"
+                    app:layout_constraintHeight_percent=".4"
+                    app:layout_constraintVertical_bias=".2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:drawableEnd="@drawable/edittext_end_pink"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:layout_margin="10dp"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:background="@drawable/renewal_search_edittext"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight=".5"
-                android:fontFamily="@font/jalnan"
-                android:text="필터"
-                android:gravity="center"/>
+                android:layout_height="0dp"
+                app:layout_constraintWidth_percent="1"
+                app:layout_constraintHeight_percent=".902"
+                app:layout_constraintVertical_bias="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@drawable/radius_25">
 
-        </LinearLayout>
+                <!-- 오른쪽에서 나오게 할 드로어 레이아웃 -->
+                <com.google.android.material.navigation.NavigationView
+                    android:id="@+id/search_result_drawer"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintWidth_percent=".5"
+                    app:layout_constraintHorizontal_bias="1"
+                    tools:openDrawer="end"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
 
-    </LinearLayout>
+                    <!-- 드로어 레이아웃 안에 세로로 접고 펼 수 있는 리사이클러뷰를 둬서 필터 4종을 구현한다 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:weightSum="1"
+                        android:orientation="vertical">
 
-    <!-- 검색결과를 페이징해서 보여줄 리사이클러뷰 -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/search_result_recyclerview"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintWidth_percent="1"
-        app:layout_constraintHeight_percent=".82"
-        app:layout_constraintVertical_bias="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/result_filter_layout"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight=".1"
+                            android:weightSum="1"
+                            android:orientation="horizontal">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                            <TextView
+                                android:id="@+id/filter_textview"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight=".6"
+                                android:text="필터"
+                                android:paddingStart="20dp"
+                                android:paddingTop="30dp"
+                                android:gravity="center_vertical"/>
+
+                            <ImageView
+                                android:id="@+id/filter_close"
+                                android:layout_width="0dp"
+                                android:layout_height="30dp"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginStart="60dp"
+                                android:layout_weight=".4"
+                                android:src="@drawable/filter_close"/>
+
+                        </LinearLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/expanderRecyclerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight=".83"
+                            android:layout_gravity="right"
+                            android:orientation="vertical"/>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight=".001"/>
+
+                        <Button
+                            android:id="@+id/filter_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight=".075"
+                            android:layout_marginTop="12dp"
+                            android:layout_marginBottom="12dp"
+                            android:layout_marginStart="14dp"
+                            android:layout_marginEnd="14dp"
+                            android:fontFamily="@font/jalnan"
+                            android:background="@drawable/btn_keyword_selected"
+                            android:text="필터 적용"
+                            android:textColor="@color/colorMainWhite"/>
+
+                    </LinearLayout>
+
+                </com.google.android.material.navigation.NavigationView>
+
+                <!-- 총 검색 개수(15개), 필터 버튼을 가로로 넣을 레이아웃 -->
+                <LinearLayout
+                    android:id="@+id/result_filter_layout"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintWidth_percent=".9"
+                    app:layout_constraintHeight_percent=".08"
+                    android:weightSum="1"
+                    app:layout_constraintVertical_bias=".02"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                    <TextView
+                        android:id="@+id/total_search_result"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".7"
+                        android:fontFamily="@font/jalnan"
+                        android:layout_gravity="center"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"/>
+
+                    <!-- 필터 이미지와 글자를 보여주는 가로 리니어 레이아웃 -->
+                    <LinearLayout
+                        android:id="@+id/search_result_filter"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        android:background="@drawable/search_pink_radius"
+                        android:layout_weight=".3"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:weightSum="1"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:src="@drawable/search_filter_pink"
+                            android:layout_weight=".5"/>
+
+                        <TextView
+                            android:id="@+id/filter_layout_text"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight=".5"
+                            android:fontFamily="@font/jalnan"
+                            android:text="필터"
+                            android:textColor="@color/layout_background_start_gradation"
+                            android:gravity="start|center"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- 검색결과를 페이징해서 보여줄 리사이클러뷰 -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/search_result_recyclerview"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:orientation="vertical"
+                    app:layout_constraintWidth_percent="1"
+                    app:layout_constraintHeight_percent=".888"
+                    app:layout_constraintVertical_bias="1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/result_filter_layout"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+                <ProgressBar
+                    android:id="@+id/progressbar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/search_result_recyclerview"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </FrameLayout>
+
+</androidx.drawerlayout.widget.DrawerLayout>
