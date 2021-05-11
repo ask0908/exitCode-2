@@ -2,7 +2,6 @@ package com.psj.welfare.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,42 +24,36 @@ public class ExpandableRecyclerViewAdapter extends RecyclerView.Adapter<Expandab
     public static ArrayList<String> nameList;
     public static ArrayList<String> ageList;
     public static ArrayList<String> localList;
+    public static ArrayList<String> categoryList;
     public static ArrayList<String> provideTypeList;
+    ArrayList<String> list;
     ArrayList<Integer> counter = new ArrayList<>();
     ArrayList<ArrayList> itemNameList;  // 필터 항목들이 들어있는 리스트
     Context context;
 
     public ExpandableRecyclerViewAdapter(Context context,
-                                         ArrayList<String> nameList,
+                                         ArrayList<String> nameList,    // 필터들이 들어있는 리스트
+                                         ArrayList<String> categoryList,
                                          ArrayList<String> ageList,
                                          ArrayList<String> localList,
                                          ArrayList<String> provideTypeList,
-                                         ArrayList<ArrayList> itemNameList)
+                                         ArrayList<ArrayList> itemNameList,
+                                         ArrayList<String> list)
     {
-        this.nameList = nameList;
-        this.ageList = ageList;
-        this.localList = localList;
         this.context = context;
-        this.provideTypeList = provideTypeList;
-        this.itemNameList = itemNameList;
+        ExpandableRecyclerViewAdapter.nameList = nameList;
+        ExpandableRecyclerViewAdapter.categoryList = categoryList;
+        ExpandableRecyclerViewAdapter.ageList = ageList;
+        ExpandableRecyclerViewAdapter.localList = localList;
+        ExpandableRecyclerViewAdapter.provideTypeList = provideTypeList;
+        this.itemNameList = itemNameList;   // 선택여부에 상관없이 모든 카테고리 필터들의 값이 들어있는 리스트
+        this.list = list;
 
         for (int i = 0; i < nameList.size(); i++)
         {
             counter.add(0);
         }
     }
-
-//    public ExpandableRecyclerViewAdapter(Context context, ArrayList<String> nameList, ArrayList<ArrayList> itemNameList)
-//    {
-//        this.nameList = nameList;
-//        this.itemNameList = itemNameList;
-//        this.context = context;
-//
-//        for (int i = 0; i < nameList.size(); i++)
-//        {
-//            counter.add(0);
-//        }
-//    }
 
     public class ViewHolder extends RecyclerView.ViewHolder
     {
@@ -95,13 +88,8 @@ public class ExpandableRecyclerViewAdapter extends RecyclerView.Adapter<Expandab
     public void onBindViewHolder(final ViewHolder holder, @SuppressLint("RecyclerView") final int position)
     {
         holder.name.setText(nameList.get(position));
-        InnerRecyclerViewAdapter itemInnerRecyclerView = new InnerRecyclerViewAdapter(itemNameList.get(position));
-        Log.e(TAG, "itemNameList.get(position) : " + itemNameList.get(position));
-        Log.e(TAG, "nameList.get(position) : " + nameList.get(position));
-        Log.e(TAG, "provideTypeList.get(position) : " + provideTypeList.get(position));
-        Log.e(TAG, "localList.get(position) : " + localList.get(position));
-        Log.e(TAG, "ageList.get(position) : " + ageList.get(position));
-//        holder.cardRecyclerView.setLayoutManager(new GridLayoutManager(context, 2));
+        // 필터들이 들어있는 리스트
+        InnerRecyclerViewAdapter itemInnerRecyclerView = new InnerRecyclerViewAdapter(itemNameList.get(position), list);
         holder.cardRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         // 확장 리사이클러뷰를 접고 펼치는 로직
         holder.dropBtn.setOnClickListener(v -> {

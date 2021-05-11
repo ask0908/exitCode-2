@@ -32,6 +32,7 @@ import com.psj.welfare.R;
 import com.psj.welfare.adapter.ExpandableRecyclerViewAdapter;
 import com.psj.welfare.adapter.InnerRecyclerViewAdapter;
 import com.psj.welfare.adapter.RenewalSearchResultAdapter;
+import com.psj.welfare.custom.RecyclerViewEmptySupport;
 import com.psj.welfare.data.SearchResultItem;
 import com.psj.welfare.viewmodel.SearchViewModel;
 
@@ -40,6 +41,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /* 매니페스트에서 android:windowSoftInputMode="adjustNothing" 속성 추가해 editText 때문에 UI가 뭉개지지 않게 함 */
@@ -50,7 +52,10 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
     SearchViewModel searchViewModel;
     EditText search_result_edittext;
     TextView total_search_result;
-    RecyclerView search_result_recyclerview;
+    RecyclerViewEmptySupport search_result_recyclerview;
+    // 필터 검색 결과 없을 때 사용할 텍스트뷰
+    TextView search_result_empty_textview;
+    ImageView search_result_no_image;
     RenewalSearchResultAdapter adapter;
     List<SearchResultItem> list;
     RenewalSearchResultAdapter.onItemClickListener itemClickListener;
@@ -92,7 +97,19 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
     ArrayList<String> provideTypeList = new ArrayList<>();
     // 나이대를 담을 ArrayList
     ArrayList<String> ageList = new ArrayList<>();
+    // 선택한 체크박스 값들을 모두 담을 리스트
     ArrayList<String> childList = new ArrayList<>();
+
+    // 가로로 선택한 필터들을 보여줄 때 사용할 리사이클러뷰
+    RecyclerView selected_filter_recyclerview;
+    SearchResultHorizontalAdapter filter_adapter;
+    SearchResultHorizontalAdapter.ItemClickListener filter_clickListener;
+    List<String> mCategoryList;
+    List<String> mLocalList;
+    List<String> mProvideTypeList;
+    List<String> mAgeList;
+    List<String> allList;
+    List<String> item;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -105,20 +122,47 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
         total_search_result = findViewById(R.id.total_search_result);
         search_result_edittext = findViewById(R.id.search_result_edittext);
         search_result_recyclerview = findViewById(R.id.search_result_recyclerview);
+        search_result_empty_textview = findViewById(R.id.search_result_empty_textview);
+        search_result_no_image = findViewById(R.id.search_result_no_image);
+        search_result_empty_textview.setVisibility(View.GONE);
         search_result_filter = findViewById(R.id.search_result_filter);
+        selected_filter_recyclerview = findViewById(R.id.selected_filter_recyclerview);
+
         search_result_recyclerview.setLayoutManager(new LinearLayoutManager(this));
+
+        // 선택한 필터들을 보여주는 리사이클러뷰는 가로 모양이다
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.HORIZONTAL);
+        selected_filter_recyclerview.setLayoutManager(llm);
+
+        allList = new ArrayList<>();
         list = new ArrayList<>();
+        mCategoryList = new ArrayList<>();
+        mLocalList = new ArrayList<>();
+        mProvideTypeList = new ArrayList<>();
+        mAgeList = new ArrayList<>();
+        item = new ArrayList<>();
+
+        // 검색어 담긴 변수 널 체크
+        if (getIntent().hasExtra("keyword"))
+        {
+            Intent intent = getIntent();
+            keyword = intent.getStringExtra("keyword");
+            search_result_edittext.setText(keyword);
+            firstCalledSearchMethod(String.valueOf(integer_page));
+        }
 
         search_result_drawer.setVisibility(View.INVISIBLE);
         filter_button = findViewById(R.id.filter_button);
         filter_textview = findViewById(R.id.filter_textview);
         filter_layout_text = findViewById(R.id.filter_layout_text);
         filter_close = findViewById(R.id.filter_close);
-        // 버튼 글자 크기 조절
+        // 뷰 크기, 글자 크기 조절
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getRealSize(size);
 
+        search_result_empty_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);  // 검색 결과 없을 때 보여주는 텍스트뷰
         filter_layout_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
         total_search_result.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 23);
         filter_button.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 21);
@@ -130,9 +174,86 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
 
         // 필터 적용 버튼
         filter_button.setOnClickListener(v -> {
+            list.clear();
+            allList.clear();
+            mCategoryList.clear();
+            mLocalList.clear();
+            mAgeList.clear();
+            mProvideTypeList.clear();
             // 필터 적용 버튼을 누르면 선택한 필터에 해당하는 조건들로 검색한다
             // 먼저 버튼을 누르면 선택한 값들을 가져와야 한다. 선택한 필터는 '혜택 총 n개' 밑에 예전 관심사 리스트처럼 보여줘야 한다
-            Log.e(TAG, "선택한 체크박스 값 가져오는지 확인 : " + InnerRecyclerViewAdapter.categoryList);
+            String gainedValues = InnerRecyclerViewAdapter.getAllValues();
+            String[] arr = gainedValues.split("zz");
+            Log.e(TAG, "arr : " + Arrays.toString(arr));
+            Log.e(TAG, "arr[0] : " + arr[0]);   // 카테고리
+            Log.e(TAG, "arr[1] : " + arr[1]);   // 지역
+            Log.e(TAG, "arr[2] : " + arr[2]);   // 나이대
+            Log.e(TAG, "arr[3] : " + arr[3]);   // 지원 형태
+
+            // 필터에서 선택한 값들을 토대로 서버에 다시 쿼리
+            renewalKeywordSearch("1", arr[0], arr[1], arr[2], arr[3]);
+
+            // null로 인한 에러를 막기 위한 null 처리
+            if (arr[0] != null)
+            {
+                allList.add(arr[0]);
+            }
+            if (arr[1] != null)
+            {
+                allList.add(arr[1]);
+            }
+            if (arr[2] != null)
+            {
+                allList.add(arr[2]);
+            }
+            if (arr[3] != null)
+            {
+                allList.add(arr[3]);
+            }
+
+            // 선택한 필터들을 리사이클러뷰에 보여준다
+            filter_adapter = new SearchResultHorizontalAdapter(this, allList, filter_clickListener);
+            // 어댑터에서 처리가 끝난 리스트를 받아서 그 값들을 액티비티의 리스트에 옮겨 담는다
+            item = filter_adapter.getList();
+            // 클릭 리스너 추가 -> 필터를 선택할 때마다 선택한 값들이 삭제되고 남아있는 값들로 다시 서버에 쿼리해야 한다
+            filter_adapter.setOnItemClickListener(pos ->
+            {
+                // 각 리스트를 반복하면서 리스트 안의 값이 선택한 값과 일치하는 경우에만 클릭 리스너를 호출해야 한다
+                String name;
+                name = item.get(pos);
+                Log.e(TAG, "가로 필터 리사이클러뷰에서 선택한 필터 : " + name);
+                Log.e(TAG, "어댑터에서 remove 처리 이후일 것으로 생각되는 부분 : " + item);
+                // 리스트 크기가 0일 경우를 대비한 예외처리
+//                if (item.size() != 0)
+//                {
+//                    // 선택한 필터의 이름 가져오기 성공
+//                    name = item.get(pos);
+//                    Log.e(TAG, "가로 필터 리사이클러뷰에서 선택한 필터 : " + name);
+//                    // 필터 선택 시 리스트에서 해당 필터명을 지우고 이 리스트로 다시 서버에 요청해야 한다
+////                    item.remove(name);
+////                    item = filter_adapter.getList();
+//                    Log.e(TAG, "어댑터에서 remove 처리 이후일 것으로 생각되는 부분 : " + item);
+//                    // item 리스트를 반복하면서 안의 값을 체크한다
+//                    // 안의 값이 각 리스트 안에 들어있는 값과 일치할 경우 그 리스트를 clear()하고 일치하는 값을 넣어 리스트를 새로고침한다
+//                    if (item.size() > 0)
+//                    {
+//                        /**/
+////                            allList.clear();
+////                            allList = item;
+////                            filter_adapter = new SearchResultHorizontalAdapter(TestSearchResultActivity.this, allList, filter_clickListener);
+//                    }
+//                }
+            });
+
+            selected_filter_recyclerview.setAdapter(filter_adapter);
+
+            search_result_drawer.setVisibility(View.GONE);
+
+            allList.clear();
+            mCategoryList.clear();
+            mLocalList.clear();
+            mAgeList.clear();
+            mProvideTypeList.clear();
         });
 
         // 페이징 처리 위해 어댑터 초기화, 적용하는 코드 위치 변경
@@ -142,15 +263,6 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
         // 확장 / 축소 리사이클러뷰
         expanderRecyclerView = findViewById(R.id.expanderRecyclerView);
         initiateExpander();
-
-        // 검색어 담긴 변수 널 체크
-        if (getIntent().hasExtra("keyword"))
-        {
-            Intent intent = getIntent();
-            keyword = intent.getStringExtra("keyword");
-            search_result_edittext.setText(keyword);
-            firstCalledSearchMethod(String.valueOf(integer_page));
-        }
 
         // 리사이클러뷰 페이징 처리
         search_result_recyclerview.addOnScrollListener(new RecyclerView.OnScrollListener()
@@ -190,7 +302,7 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
                             integer_page++;
                             progressbar.setVisibility(View.VISIBLE);
                             current_page = String.valueOf(integer_page);
-                            renewalKeywordSearch(current_page);
+                            renewalKeywordSearch(current_page, null, null, null, null);
                         }
                     }
                     else
@@ -236,11 +348,11 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
         categoryList.add("사업");
         categoryList.add("주거");
         categoryList.add("환경");
+        childList.addAll(categoryList);
 
         childListHolder.add(categoryList);
 
         // 지역
-        childList = new ArrayList<>();
         localList.add("서울");
         localList.add("경기");
         localList.add("인천");
@@ -252,11 +364,11 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
         localList.add("전북");
         localList.add("전남");
         localList.add("제주");
+        childList.addAll(localList);
 
         childListHolder.add(localList);
 
         // 지원 형태
-        childList = new ArrayList<>();
         provideTypeList.add("현금 지원");
         provideTypeList.add("물품 지원");
         provideTypeList.add("서비스 지원");
@@ -271,47 +383,25 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
         provideTypeList.add("일자리 지원");
         provideTypeList.add("융자 지원");
         provideTypeList.add("면제 지원");
+        childList.addAll(provideTypeList);
 
         childListHolder.add(provideTypeList);
 
         // 나이대
-        childList = new ArrayList<>();
         ageList.add("10대");
         ageList.add("20대");
         ageList.add("30대");
         ageList.add("40대");
         ageList.add("50대");
         ageList.add("60대 이상");
+        childList.addAll(ageList);
 
         childListHolder.add(ageList);
 
-        // 여기서 인자로 넘기는 리스트 개수를 좀 더 늘려서 란 별로 선택한 걸 볼 수 있도록 한다?
-        /* 기존에 작동하던 코드 잠깐 주석 처리 */
-//        ExpandableRecyclerViewAdapter expandableCategoryRecyclerViewAdapter =
-//                new ExpandableRecyclerViewAdapter(getApplicationContext(), parentList, childListHolder);
-
-        for (int i = 0; i < parentList.size(); i++)
-        {
-            Log.e(TAG, "parentList 안의 값들 : " + parentList.get(i));
-        }
-        for (int i = 0; i < ageList.size(); i++)
-        {
-            Log.e(TAG, "ageList 안의 값들 : " + ageList.get(i));
-        }
-        for (int i = 0; i < localList.size(); i++)
-        {
-            Log.e(TAG, "localList 안의 값들 : " + localList.get(i));
-        }
-        for (int i = 0; i < provideTypeList.size(); i++)
-        {
-            Log.e(TAG, "provideTypeList 안의 값들 : " + provideTypeList.get(i));
-        }
-
-//        ExpandableRecyclerViewAdapter expandableCategoryRecyclerViewAdapter =
-//                new ExpandableRecyclerViewAdapter(TestSearchResultActivity.this, parentList, childListHolder);
-
+        // 값이 담긴 리스트들을 어댑터 생성자에 넣어 초기화
+        // 어댑터 안에서 값이 들어오는지 확인
         ExpandableRecyclerViewAdapter expandableCategoryRecyclerViewAdapter =
-                new ExpandableRecyclerViewAdapter(TestSearchResultActivity.this, parentList, ageList, localList, provideTypeList, childListHolder);
+                new ExpandableRecyclerViewAdapter(TestSearchResultActivity.this, parentList, categoryList, ageList, localList, provideTypeList, childListHolder, childList);
 
         expanderRecyclerView.setLayoutManager(new LinearLayoutManager(TestSearchResultActivity.this));
 
@@ -372,7 +462,7 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
                 {
                     if (str != null)
                     {
-                        Log.e(TAG, "검색 결과 : " + str);
+//                        Log.e(TAG, "검색 결과 : " + str);
                         responseParsing(str);
                         dialog.dismiss();
                     }
@@ -390,10 +480,11 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
         }
     }
 
-    public void renewalKeywordSearch(String page)
+    public void renewalKeywordSearch(String page, String category, String local, String age, String provideType)
     {
         if (keyword != null && !keyword.equals(""))
         {
+//            Log.e(TAG, "검색할 키워드 : " + keyword);
             searchViewModel = new ViewModelProvider(this).get(SearchViewModel.class);
             final Observer<String> searchObserver = new Observer<String>()
             {
@@ -414,7 +505,7 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
 
             // 키워드 검색만 했을 경우에 사용한다
             // 넣어야 할 인자 : keyword, page, category, local, age, provideType
-            searchViewModel.renewalSearchKeyword(keyword, page, null, null, null, null)
+            searchViewModel.renewalSearchKeyword(keyword, page, category, local, age, provideType)
                     .observe(this, searchObserver);
         }
     }
@@ -457,8 +548,19 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
         }
 
         // 검색 결과가 있다면 개수를 보여주고
-        if (adapter.getItemCount() != 0)
+        if (adapter.getItemCount() > 0)
         {
+            search_result_recyclerview.setVisibility(View.VISIBLE);
+            search_result_empty_textview.setVisibility(View.GONE);
+            search_result_no_image.setVisibility(View.GONE);
+            total_search_result.setText("혜택 총 " + total_result_count + "개");
+        }
+        else if (adapter.getItemCount() == 0)
+        {
+            search_result_recyclerview.setVisibility(View.GONE);
+            search_result_empty_textview.setVisibility(View.VISIBLE);
+            search_result_no_image.setVisibility(View.VISIBLE);
+            search_result_recyclerview.setEmptyView(search_result_empty_textview);
             total_search_result.setText("혜택 총 " + total_result_count + "개");
         }
         // 검색 결과가 없다면 공백으로 둬서 다이얼로그만 보여준다
@@ -477,7 +579,7 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
             String count = list.get(pos).getWelf_count();
             String local = list.get(pos).getWelf_local();
             String thema = list.get(pos).getWelf_thema();
-            Log.e(TAG, "선택한 아이템의 이름 : " + name + ", 태그 : " + tag + ", 조회수 : " + count + ", 지역 : " + local + ", 테마 : " + thema);
+//            Log.e(TAG, "선택한 아이템의 이름 : " + name + ", 태그 : " + tag + ", 조회수 : " + count + ", 지역 : " + local + ", 테마 : " + thema);
         });
 
     }
@@ -503,12 +605,5 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
             //
         }
         return false;
-    }
-
-    @Override
-    protected void onPause()
-    {
-        super.onPause();
-        InnerRecyclerViewAdapter.categoryList.clear();
     }
 }
