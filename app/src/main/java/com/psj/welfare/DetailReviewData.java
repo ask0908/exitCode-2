@@ -2,8 +2,8 @@ package com.psj.welfare;
 
 public class DetailReviewData {
 
-    private String review_id; //리뷰 아이디값
-    private String login_id; //로그인 아이디값
+    private int review_id; //리뷰 아이디값
+    private int login_id; //로그인 아이디값
     private String nickName; //닉네임
     private String content; // 내용
     private float star_count; //별점
@@ -14,7 +14,7 @@ public class DetailReviewData {
     public DetailReviewData() {
     }
 
-    public DetailReviewData(String review_id, String login_id, String nickName, String content, float star_count, String difficulty_level, String satisfaction, String create_date) {
+    public DetailReviewData(int review_id, int login_id, String nickName, String content, float star_count, String difficulty_level, String satisfaction, String create_date) {
         this.review_id = review_id;
         this.login_id = login_id;
         this.nickName = nickName;
@@ -25,19 +25,19 @@ public class DetailReviewData {
         this.create_date = create_date;
     }
 
-    public String getReview_id() {
+    public int getReview_id() {
         return review_id;
     }
 
-    public void setReview_id(String review_id) {
+    public void setReview_id(int review_id) {
         this.review_id = review_id;
     }
 
-    public String getLogin_id() {
+    public int getLogin_id() {
         return login_id;
     }
 
-    public void setLogin_id(String login_id) {
+    public void setLogin_id(int login_id) {
         this.login_id = login_id;
     }
 
