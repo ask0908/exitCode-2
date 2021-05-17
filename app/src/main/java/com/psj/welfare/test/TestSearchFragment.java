@@ -2,7 +2,10 @@ package com.psj.welfare.test;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +36,7 @@ public class TestSearchFragment extends Fragment
     ViewPager search_default_viewpager;
     TestSearchViewpagerAdapter adapter;
     EditText search_name_edittext;
+    TextView search_fragment_top_textview;
 
     // 구글 애널리틱스
     private FirebaseAnalytics analytics;
@@ -56,6 +60,7 @@ public class TestSearchFragment extends Fragment
         search_name_edittext = view.findViewById(R.id.search_name_edittext);
         indicator = view.findViewById(R.id.top_indicator);
         search_default_viewpager = view.findViewById(R.id.search_default_viewpager);
+        search_fragment_top_textview = view.findViewById(R.id.search_fragment_top_textview);
 
         return view;
     }
@@ -69,6 +74,12 @@ public class TestSearchFragment extends Fragment
         {
             analytics = FirebaseAnalytics.getInstance(getActivity());
         }
+
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getRealSize(size);
+
+        search_fragment_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 14);
 
         // 뷰페이저 어댑터 초기화 후 뷰페이저 안에 프래그먼트들 추가
         adapter = new TestSearchViewpagerAdapter(getActivity().getSupportFragmentManager());

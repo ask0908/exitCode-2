@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 /* 리사이클러뷰에 리뷰 데이터가 없으면 작성된 리뷰가 없다고 띄울 때 사용하기 위한 클래스, xml에서 리사이클러뷰 대신 이 클래스의 경로를 입력해 사용한다
-* DetailBenefitActivity에서 사용 */
+* DetailBenefitActivity, TestSearchResultActivity에서 사용 */
 public class RecyclerViewEmptySupport extends RecyclerView
 {
     private View emptyImageView;

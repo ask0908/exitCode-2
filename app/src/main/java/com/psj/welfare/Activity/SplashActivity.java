@@ -53,14 +53,13 @@ public class SplashActivity extends AppCompatActivity
     private final String TAG = this.getClass().getSimpleName();
     SharedPreferences sharedPreferences;
 
-    String token, sessionId, encode_str;
-    String intentAction = null;
+    String token, sessionId;
 
     public Intent intent;
 
     boolean isPushClicked = false;
 
-    String age = ""; //room데이터가 있는지 확인하기 위해 임시로 데이터를 담는 변수
+    String age = ""; // room데이터가 있는지 확인하기 위해 임시로 데이터를 담는 변수
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -102,13 +101,16 @@ public class SplashActivity extends AppCompatActivity
         //카카오 로그인시 필요한 해시키
         getHashKey();
 
-
     }
 
-    void beingRoomData(){
-        Thread thread = new Thread(){
-            public void run(){
-                try{
+    void beingRoomData()
+    {
+        Thread thread = new Thread()
+        {
+            public void run()
+            {
+                try
+                {
                     //Room을 쓰기위해 데이터베이스 객체 만들기
                     AppDatabase database = Room.databaseBuilder(SplashActivity.this, AppDatabase.class, "Firstcategory")
                             .fallbackToDestructiveMigration()
@@ -118,10 +120,13 @@ public class SplashActivity extends AppCompatActivity
                     CategoryDao categoryDao = database.getcategoryDao();
 
                     List<CategoryData> alldata = categoryDao.findAll();
-                    for (CategoryData data : alldata) {
+                    for (CategoryData data : alldata)
+                    {
                         age = data.age;
                     }
-                }catch(Exception e){
+                }
+                catch (Exception e)
+                {
                     e.printStackTrace();
                 }
             }
@@ -155,9 +160,13 @@ public class SplashActivity extends AppCompatActivity
         @Override
         public void run()
         {
-            if(age.equals("")){ //room데이터 값이 없다면
-                startActivity(new Intent(SplashActivity.this, TutorialWelcome.class));
-            } else { //room데이터 값이 있다면
+            if (age.equals(""))
+            { //room데이터 값이 없다면
+//                startActivity(new Intent(SplashActivity.this, TutorialWelcome.class));
+                startActivity(new Intent(SplashActivity.this, MainTabLayoutActivity.class));
+            }
+            else
+            { //room데이터 값이 있다면
                 startActivity(new Intent(SplashActivity.this, MainTabLayoutActivity.class));
             }
 
@@ -188,11 +197,14 @@ public class SplashActivity extends AppCompatActivity
             else
             {
 
-                if(age.equals(null)){ //room데이터 값이 없다면
+                if (age.equals(null))
+                { //room데이터 값이 없다면
                     Intent intent = new Intent(SplashActivity.this, TutorialWelcome.class);
                     intent.putExtra("push", 100);
                     startActivity(intent);
-                } else { //room데이터 값이 있다면
+                }
+                else
+                { //room데이터 값이 있다면
                     Intent intent = new Intent(SplashActivity.this, MainTabLayoutActivity.class);
                     intent.putExtra("push", 100);
                     startActivity(intent);
@@ -293,7 +305,6 @@ public class SplashActivity extends AppCompatActivity
         window.setBackgroundDrawable(background);
     }
 
-
     //카카오 로그인시 필요한 해시키
     private void getHashKey()
     {
@@ -307,7 +318,9 @@ public class SplashActivity extends AppCompatActivity
             e.printStackTrace();
         }
         if (packageInfo == null)
+        {
             Log.e("KeyHash", "KeyHash:null");
+        }
 
         for (Signature signature : packageInfo.signatures)
         {

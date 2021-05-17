@@ -23,6 +23,7 @@
             android:background="@drawable/gradation_background">
 
             <TextView
+                android:id="@+id/search_fragment_top_textview"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 app:layout_constraintWidth_percent="1"
@@ -35,7 +36,6 @@
                 android:fontFamily="@font/jalnan"
                 android:text="어떤 혜택을 찾으세요?"
                 android:textColor="@color/colorMainWhite"
-                app:autoSizePresetSizes="@array/autosize_text_sizes"
                 android:layout_gravity="center"
                 android:gravity="center"/>
 

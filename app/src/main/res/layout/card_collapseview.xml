@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/select_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true">
@@ -9,7 +10,6 @@
         android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@android:color/darker_gray"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -24,16 +24,19 @@
                 android:id="@+id/linearLayoutHolder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
                 android:orientation="horizontal"
                 android:padding="20dp">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:visibility="gone"
+                    android:background="@drawable/ic_product" />
 
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"
                     android:orientation="vertical">
 
@@ -41,17 +44,25 @@
                         android:id="@+id/categoryTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="ㄱ, ㄴ, ㄷ"
-                        android:textSize="20sp"
-                        android:textColor="@android:color/white"/>
+                        android:text="Fruits &amp; Vegetables"
+                        android:textSize="16sp" />
 
-                    <ImageView
+                    <TextView
+                        android:id="@+id/categoryDescription"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:layout_below="@id/categoryTitle"
+                        android:textSize="12sp" />
+
+                    <ImageButton
                         android:id="@+id/categoryExpandBtn"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
                         android:background="#FFF"
-                        android:src="@drawable/circle_plus" />
+                        android:src="@drawable/ic_arrow_down" />
 
                 </RelativeLayout>
 
@@ -63,10 +74,12 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/linearLayoutHolder"
                 android:background="#f6f6f6"
-                android:visibility="gone"/>
+                android:visibility="gone">
 
+            </androidx.recyclerview.widget.RecyclerView>
         </RelativeLayout>
 
     </androidx.cardview.widget.CardView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

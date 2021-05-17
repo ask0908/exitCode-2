@@ -9,6 +9,8 @@ public class SearchResultItem
     private String welf_local;
     private String welf_thema;
 
+    private boolean isSelected;
+
     public SearchResultItem()
     {
     }
@@ -71,5 +73,15 @@ public class SearchResultItem
     public void setWelf_thema(String welf_thema)
     {
         this.welf_thema = welf_thema;
+    }
+
+    public boolean getSelected()
+    {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected)
+    {
+        isSelected = selected;
     }
 }

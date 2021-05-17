@@ -29,8 +29,9 @@
         <activity android:name=".TutorialCategory" />
         <activity android:name=".TutorialWelcome" />
         <activity android:name=".DetailTabLayoutActivity"/>
-        <activity android:name=".test.TestMoreViewActivity"></activity>
-        <activity android:name=".test.TestSearchResultActivity" />
+        <activity android:name=".test.TestMoreViewActivity"/>
+        <activity android:name=".test.TestSearchResultActivity"
+            android:windowSoftInputMode="adjustNothing"/>
         <activity android:name=".activity.YoutubeTestActivity" />
         <activity android:name=".activity.RegionResultActivity" />
         <activity android:name=".test.TestActivity" />
@@ -70,7 +71,8 @@
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_app_key" />
 
-        <activity android:name=".activity.MainTabLayoutActivity">
+        <activity android:name=".activity.MainTabLayoutActivity"
+            android:windowSoftInputMode="adjustNothing">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
