@@ -59,8 +59,9 @@ public class DetailReviewFragment extends Fragment {
 
     String message, TotalCount, isBookmark, ReviewState; //액티비티에서 받아온 파싱 전 데이터
     String welf_id, welf_name; //혜택 id값, 혜택명
-    String review_id, login_id, nickName, content, star_count, difficulty_level, satisfaction, create_date; //welf_data 데이터 파싱한 데이터
+    String  nickName, content, difficulty_level, satisfaction, create_date; //welf_data 데이터 파싱한 데이터
     String star, one_point, two_point, three_point, four_point, five_point, easyPercent, helpPercent; //ReviewState 데이터 파싱한 데이터
+    int review_id,login_id,star_count;
 
     public DetailReviewFragment() {
     }
@@ -240,11 +241,11 @@ public class DetailReviewFragment extends Fragment {
             for (int i = 0; i < jsonArray_welf_data.length(); i++) {
                 JSONObject jsonObject = jsonArray_welf_data.getJSONObject(i);
 
-                review_id = jsonObject.getString("review_id"); //리뷰 id
-                login_id = jsonObject.getString("login_id"); //유저 id
+                review_id = jsonObject.getInt("review_id"); //리뷰 id
+                login_id = jsonObject.getInt("login_id"); //유저 id
                 nickName = jsonObject.getString("nickName"); //닉네임
                 content = jsonObject.getString("content"); //내용
-                star_count = jsonObject.getString("star_count"); //별점
+                star_count = jsonObject.getInt("star_count"); //별점
                 difficulty_level = jsonObject.getString("difficulty_level"); //난이도 평가
                 satisfaction = jsonObject.getString("satisfaction"); //만족도 평가
                 create_date = jsonObject.getString("create_date"); //리뷰 작성 날짜
@@ -254,7 +255,7 @@ public class DetailReviewFragment extends Fragment {
                 reviewData.setLogin_id(login_id);
                 reviewData.setNickName(nickName);
                 reviewData.setContent(content);
-                float star = Float.parseFloat(star_count);
+                float star = (float)star_count;
                 reviewData.setStar_count(star);
                 reviewData.setDifficulty_level(difficulty_level);
                 reviewData.setSatisfaction(satisfaction);
