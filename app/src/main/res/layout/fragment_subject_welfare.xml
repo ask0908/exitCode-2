@@ -4,16 +4,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/renewal_layout_gray_border"
     tools:context=".fragment.SubjectWelfareFragment">
 
     <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="SubjectWelfareFragment"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/subject_title"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent=".43"
+        app:layout_constraintHeight_percent=".07"
+        app:layout_constraintVertical_bias=".07"
+        app:layout_constraintHorizontal_bias=".22"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:fontFamily="@font/jalnan"
+        android:text="주제별 혜택"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/subject_recyclerview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingStart="35dp"
+        android:paddingEnd="35dp"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/subject_title"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:listitem="@layout/welfare_category_item"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

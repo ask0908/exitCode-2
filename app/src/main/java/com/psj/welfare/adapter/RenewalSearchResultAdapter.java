@@ -117,7 +117,6 @@ public class RenewalSearchResultAdapter extends RecyclerView.Adapter<RenewalSear
                 if (pos != RecyclerView.NO_POSITION && itemClickListener != null)
                 {
                     itemClickListener.onItemClick(pos);
-//                    notifyDataSetChanged();
                 }
             });
         }

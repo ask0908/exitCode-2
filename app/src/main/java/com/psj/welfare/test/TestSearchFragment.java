@@ -92,8 +92,17 @@ public class TestSearchFragment extends Fragment
         AgeGroupWelfareFragment ageGroupWelfareFragment = new AgeGroupWelfareFragment();
         adapter.addItem(ageGroupWelfareFragment);
 
-        // 뷰페이저에서 보여줄 프래그먼트 개수는 3개다
+        // 뷰페이저에서 보여줄 프래그먼트 개수는 3개
         search_default_viewpager.setOffscreenPageLimit(3);
+        // 뷰페이저 아이템 사이의 마진 설정
+        search_default_viewpager.setClipToPadding(false);
+        int dpValue = 10;
+        float d = getResources().getDisplayMetrics().density;
+        /**/
+        search_default_viewpager.setPadding(120, 0, 120, 0);
+        search_default_viewpager.setPageMargin(55);
+        /**/
+//        search_default_viewpager.setPageMargin((int) getResources().getDisplayMetrics().density / 24);
         // 뷰페이저에 프래그먼트들이 들어간 어댑터 set
         search_default_viewpager.setAdapter(adapter);
 

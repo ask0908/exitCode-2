@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -55,6 +56,59 @@ public class ExpandableRecyclerViewAdapter extends RecyclerView.Adapter<Expandab
         }
     }
 
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+    {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_collapseview, parent, false);
+        ExpandableRecyclerViewAdapter.ViewHolder vh = new ExpandableRecyclerViewAdapter.ViewHolder(v);
+        return vh;
+    }
+
+    @Override
+    public void onBindViewHolder(final ViewHolder holder, @SuppressLint("RecyclerView") final int position)
+    {
+        holder.name.setText(nameList.get(position));
+        // 필터들이 들어있는 리스트
+        InnerRecyclerViewAdapter itemInnerRecyclerView = new InnerRecyclerViewAdapter(itemNameList.get(position), list);
+        holder.cardRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        // 확장 리사이클러뷰를 접고 펼치는 로직
+        holder.dropBtn.setOnClickListener(v -> {
+            if (counter.get(position) % 2 == 0)
+            {
+                holder.cardRecyclerView.setVisibility(View.VISIBLE);
+                holder.dropBtn.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_arrow_up));
+            }
+            else
+            {
+                holder.cardRecyclerView.setVisibility(View.GONE);
+                holder.dropBtn.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_arrow_down));
+            }
+            counter.set(position, counter.get(position) + 1);
+        });
+
+        holder.select_layout.setOnClickListener(view ->
+        {
+            if (counter.get(position) % 2 == 0)
+            {
+                holder.cardRecyclerView.setVisibility(View.VISIBLE);
+                holder.dropBtn.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_arrow_up));
+            }
+            else
+            {
+                holder.cardRecyclerView.setVisibility(View.GONE);
+                holder.dropBtn.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_arrow_down));
+            }
+            counter.set(position, counter.get(position) + 1);
+        });
+        holder.cardRecyclerView.setAdapter(itemInnerRecyclerView);
+    }
+
+    @Override
+    public int getItemCount()
+    {
+        return nameList.size();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder
     {
         TextView name;
@@ -73,58 +127,5 @@ public class ExpandableRecyclerViewAdapter extends RecyclerView.Adapter<Expandab
             cardView = view.findViewById(R.id.cardView);
         }
     }
-
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-    {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_collapseview, parent, false);
-
-        ExpandableRecyclerViewAdapter.ViewHolder vh = new ExpandableRecyclerViewAdapter.ViewHolder(v);
-
-        return vh;
-    }
-
-    @Override
-    public void onBindViewHolder(final ViewHolder holder, @SuppressLint("RecyclerView") final int position)
-    {
-        holder.name.setText(nameList.get(position));
-        // 필터들이 들어있는 리스트
-        InnerRecyclerViewAdapter itemInnerRecyclerView = new InnerRecyclerViewAdapter(itemNameList.get(position), list);
-        holder.cardRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-        // 확장 리사이클러뷰를 접고 펼치는 로직
-        holder.dropBtn.setOnClickListener(v -> {
-            if (counter.get(position) % 2 == 0)
-            {
-                holder.cardRecyclerView.setVisibility(View.VISIBLE);
-            }
-            else
-            {
-                holder.cardRecyclerView.setVisibility(View.GONE);
-            }
-            counter.set(position, counter.get(position) + 1);
-        });
-
-        // 확장 리사이클러뷰를 접고 펼치는 로직
-        holder.select_layout.setOnClickListener(view ->
-        {
-            if (counter.get(position) % 2 == 0)
-            {
-                holder.cardRecyclerView.setVisibility(View.VISIBLE);
-            }
-            else
-            {
-                holder.cardRecyclerView.setVisibility(View.GONE);
-            }
-            counter.set(position, counter.get(position) + 1);
-        });
-        holder.cardRecyclerView.setAdapter(itemInnerRecyclerView);
-    }
-
-    @Override
-    public int getItemCount()
-    {
-        return nameList.size();
-    }
-
 
 }

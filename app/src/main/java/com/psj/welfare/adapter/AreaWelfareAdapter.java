@@ -1,9 +1,13 @@
 package com.psj.welfare.adapter;
 
 import android.content.Context;
+import android.graphics.Point;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -43,8 +47,8 @@ public class AreaWelfareAdapter extends RecyclerView.Adapter<AreaWelfareAdapter.
     @Override
     public void onBindViewHolder(@NonNull AreaWelfareAdapter.AreaWelfareViewHolder holder, int position)
     {
-        final AreaWelfare item = new AreaWelfare();
-        holder.search_category_button.setText("# 건강");
+        final AreaWelfare item = list.get(position);
+        holder.search_category_button.setText(item.getLocal_name());
     }
 
     @Override
@@ -55,16 +59,30 @@ public class AreaWelfareAdapter extends RecyclerView.Adapter<AreaWelfareAdapter.
 
     public class AreaWelfareViewHolder extends RecyclerView.ViewHolder
     {
+        LinearLayout search_category_item_layout;
         TextView search_category_button;
         onItemClickListener itemClickListener;
 
         public AreaWelfareViewHolder(@NonNull View view, onItemClickListener itemClickListener)
         {
             super(view);
-
+            search_category_item_layout = view.findViewById(R.id.search_category_item_layout);
             search_category_button = view.findViewById(R.id.search_category_button);
+
+            WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+            Display display = wm.getDefaultDisplay();
+            Point size = new Point();
+            display.getRealSize(size);
+
+            /* 아이템 레이아웃의 가로 세로 길이를 화면 길이에 맞게 동적으로 조절한다 */
+            ViewGroup.LayoutParams params_star = search_category_item_layout.getLayoutParams();
+//            params_star.width = (size.x / 7) * 6;
+//            params_star.height = (size.y / 14);
+//            search_category_item_layout.setLayoutParams(params_star);
+
             this.itemClickListener = itemClickListener;
-            search_category_button.setOnClickListener(v -> {
+            search_category_button.setOnClickListener(v ->
+            {
                 int pos = getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION && itemClickListener != null)
                 {

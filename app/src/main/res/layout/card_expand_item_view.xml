@@ -8,6 +8,10 @@
         android:id="@+id/itemCheckbox"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="텍스트"/>
+        android:drawableStart="@drawable/search_result_checkbox"
+        android:background="@android:color/transparent"
+        android:drawablePadding="10dp"
+        android:text="@string/app_name"
+        android:button="@null"/>
 
 </LinearLayout>

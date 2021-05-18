@@ -8,6 +8,8 @@ public class SearchResultItem
     private String welf_count;
     private String welf_local;
     private String welf_thema;
+    private String welf_category;
+    private String welf_age;
 
     private boolean isSelected;
 
@@ -83,5 +85,25 @@ public class SearchResultItem
     public void setSelected(boolean selected)
     {
         isSelected = selected;
+    }
+
+    public String getWelf_category()
+    {
+        return welf_category;
+    }
+
+    public void setWelf_category(String welf_category)
+    {
+        this.welf_category = welf_category;
+    }
+
+    public String getWelf_age()
+    {
+        return welf_age;
+    }
+
+    public void setWelf_age(String welf_age)
+    {
+        this.welf_age = welf_age;
     }
 }
