@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data class="TestMyPageFragment">
+        <variable
+            name="testMyPage"
+            type="com.psj.welfare.test.TestMyPageFragment" />
+    </data>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/mypage_parent_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".test.TestMyPageFragment">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/mypage_top_layout"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0"
+                app:layout_constraintWidth_percent="1"
+                app:layout_constraintHeight_percent=".145"
+                android:background="@drawable/gradation_background">
+
+                <TextView
+                    android:id="@+id/search_fragment_top_textview"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintWidth_percent="1"
+                    app:layout_constraintHeight_percent=".45"
+                    app:layout_constraintVertical_bias=".2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:fontFamily="@font/jalnan"
+                    android:text="마이페이지"
+                    android:textColor="@color/colorMainWhite"
+                    android:layout_gravity="center"
+                    android:paddingStart="20dp"
+                    android:gravity="start"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- 좌우가 곡선으로 아래로 휘어진 흰색 레이아웃 부분 -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/mypage_white_layout"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintWidth_percent="1"
+                app:layout_constraintHeight_percent=".9"
+                app:layout_constraintVertical_bias="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@drawable/radius_25">
+
+                <!-- 로그인 시 닉네임과 닉네임 수정 버튼, 북마크 혜택, 최근 본 혜택, 작성한 리뷰를 보여줄
+                레이아웃. 비로그인 시 보이지 않아야 함 -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/three_menu_container"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintWidth_percent="1"
+                    app:layout_constraintHeight_percent=".32"
+                    app:layout_constraintVertical_bias="0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                    <!-- 로그인 시 닉네임이 들어갈 텍스트뷰 -->
+                    <TextView
+                        android:id="@+id/mypage_my_id"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".5"
+                        app:layout_constraintHeight_percent=".1"
+                        app:layout_constraintVertical_bias=".15"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:fontFamily="@font/jalnan"
+                        android:gravity="center"/>
+
+                    <ImageView
+                        android:id="@+id/nickname_edit_image"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".1"
+                        app:layout_constraintHeight_percent=".1"
+                        app:layout_constraintVertical_bias=".14"
+                        app:layout_constraintHorizontal_bias=".83"
+                        android:src="@drawable/nickname_edit"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                    <!-- 가로 리니어 레이아웃 안에 세로 리니어 레이아웃 3개를 넣어서 북마크, 최근 본 혜택, 작성한
+                    리뷰 버튼들을 보여준다 -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/three_menu_layout"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent="1"
+                        app:layout_constraintHeight_percent=".6"
+                        app:layout_constraintVertical_bias=".8"
+                        android:orientation="horizontal"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <!-- 북마크 혜택 -->
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/bookmark_welfare_layout"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            app:layout_constraintWidth_percent=".22"
+                            app:layout_constraintHeight_percent=".8"
+                            app:layout_constraintHorizontal_bias=".2"
+                            app:layout_constraintVertical_bias=".55"
+                            android:gravity="center"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:id="@+id/bookmark_image"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                app:layout_constraintWidth_percent=".7"
+                                app:layout_constraintHeight_percent=".6"
+                                app:layout_constraintVertical_bias="0"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                android:src="@drawable/mypage_bookmark"/>
+
+                            <TextView
+                                android:id="@+id/bookmark_textview"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/bookmark_image"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                android:fontFamily="@font/jalnan"
+                                android:gravity="center"
+                                android:text="북마크 혜택"/>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <!-- 최근 본 혜택 -->
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/recent_welfare_layout"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            app:layout_constraintWidth_percent=".22"
+                            app:layout_constraintHeight_percent=".8"
+                            app:layout_constraintHorizontal_bias=".5"
+                            app:layout_constraintVertical_bias=".55"
+                            android:gravity="center"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:weightSum="1"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:id="@+id/recent_welfare_image"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                app:layout_constraintWidth_percent=".7"
+                                app:layout_constraintHeight_percent=".6"
+                                app:layout_constraintVertical_bias="0"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                android:src="@drawable/mypage_recent"/>
+
+                            <TextView
+                                android:id="@+id/recent_welfare_textview"
+                                android:layout_width="wrap_content"
+                                android:layout_height="0dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/recent_welfare_image"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                android:fontFamily="@font/jalnan"
+                                android:gravity="center"
+                                android:text="최근 본 혜택"/>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <!-- 작성한 리뷰 -->
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/written_review_layout"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            app:layout_constraintWidth_percent=".22"
+                            app:layout_constraintHeight_percent=".8"
+                            app:layout_constraintHorizontal_bias=".8"
+                            app:layout_constraintVertical_bias=".55"
+                            android:gravity="center"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:weightSum="1"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:id="@+id/written_review_image"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                app:layout_constraintWidth_percent=".7"
+                                app:layout_constraintHeight_percent=".6"
+                                app:layout_constraintVertical_bias="0"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                android:src="@drawable/mypage_review"/>
+
+                            <TextView
+                                android:id="@+id/written_review_textview"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/written_review_image"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                android:gravity="center"
+                                android:fontFamily="@font/jalnan"
+                                android:text="작성한 리뷰"/>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <View
+                        android:id="@+id/mypage_divider_view"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent="1"
+                        app:layout_constraintHeight_percent=".09"
+                        app:layout_constraintVertical_bias="0"
+                        android:background="@color/colorGray_L"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/three_menu_container"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- 관심사 수정, 푸시 알림 설정 등 버튼들과 체크박스가 들어갈 레이아웃 -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/mypage_bottom_layout"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintWidth_percent="1"
+                    app:layout_constraintHeight_percent=".68"
+                    app:layout_constraintVertical_bias="1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                    <TextView
+                        android:id="@+id/edit_interest_textview"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        app:layout_constraintWidth_percent=".8"
+                        app:layout_constraintHeight_percent=".06"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintVertical_bias=".04"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:fontFamily="@font/jalnan"
+                        android:text="관심사 수정" />
+
+                    <LinearLayout
+                        android:id="@+id/mypage_push_layout"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:weightSum="1"
+                        app:layout_constraintWidth_percent="1"
+                        app:layout_constraintHeight_percent=".06"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintVertical_bias=".155"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/push_setting_text"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".3"
+                            android:fontFamily="@font/jalnan"
+                            android:text="푸시 알림 설정"
+                            android:textColor="@color/gray"/>
+
+                        <Switch
+                            android:id="@+id/mypage_noti_switch"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".7"
+                            app:layout_constraintWidth_percent=".15"
+                            app:layout_constraintHeight_percent=".06"
+                            app:layout_constraintHorizontal_bias="1"
+                            app:layout_constraintVertical_bias=".15"
+                            android:paddingEnd="8dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:clickable="false"
+                            android:theme="@style/switch_font"
+                            android:fontFamily="@font/jalnan"
+                            android:textColor="@color/gray"/>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/check_notice_textview"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        app:layout_constraintWidth_percent=".8"
+                        app:layout_constraintHeight_percent=".06"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintVertical_bias=".27"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:fontFamily="@font/jalnan"
+                        android:text="공지사항 확인" />
+
+                    <TextView
+                        android:id="@+id/check_term_textview"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        app:layout_constraintWidth_percent=".8"
+                        app:layout_constraintHeight_percent=".06"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintVertical_bias=".38"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:fontFamily="@font/jalnan"
+                        android:text="이용약관 확인" />
+
+                    <TextView
+                        android:id="@+id/check_privacy_textview"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        app:layout_constraintWidth_percent=".8"
+                        app:layout_constraintHeight_percent=".06"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintVertical_bias=".49"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:fontFamily="@font/jalnan"
+                        android:text="개인정보 처리방침 확인" />
+
+                    <TextView
+                        android:id="@+id/app_version_textview"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        app:layout_constraintWidth_percent=".8"
+                        app:layout_constraintHeight_percent=".06"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintVertical_bias=".60"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:fontFamily="@font/jalnan"
+                        android:text="버전 2.0.0" />
+
+                    <TextView
+                        android:id="@+id/mypage_logout_textview"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        app:layout_constraintWidth_percent=".8"
+                        app:layout_constraintHeight_percent=".06"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintVertical_bias=".705"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:fontFamily="@font/jalnan"
+                        android:text="로그아웃" />
+
+                    <TextView
+                        android:id="@+id/mypage_withdraw_textview"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        app:layout_constraintWidth_percent=".8"
+                        app:layout_constraintHeight_percent=".06"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintVertical_bias=".815"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:fontFamily="@font/jalnan"
+                        android:text="탈퇴하기" />
+
+                    <!-- 비로그인 시에만 보여야 하는 레이아웃
+                    로그인 시에는 GONE으로 바꾼다 -->
+                    <LinearLayout
+                        android:id="@+id/mypage_login_layout"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:weightSum="1"
+                        app:layout_constraintWidth_percent="1"
+                        app:layout_constraintHeight_percent=".16"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintVertical_bias=".98"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <TextView
+                            android:id="@+id/mypage_login_textview"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight=".3"
+                            android:gravity="center"
+                            app:layout_constraintWidth_percent=".8"
+                            app:layout_constraintHeight_percent=".06"
+                            app:layout_constraintHorizontal_bias=".5"
+                            app:layout_constraintVertical_bias=".92"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:text="로그인하고 더 많은 기능을 만나보세요" />
+
+                        <View
+                            android:id="@+id/mypage_bottom_divider"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight=".1"/>
+
+                        <Button
+                            android:id="@+id/mypage_login_button"
+                            android:layout_width="230dp"
+                            android:layout_height="0dp"
+                            android:layout_weight=".6"
+                            android:background="@drawable/btn_keyword_selected"
+                            android:fontFamily="@font/jalnan"
+                            android:text="로그인하러 가기"
+                            android:textColor="@color/colorMainWhite"/>
+
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </FrameLayout>
+</layout>

@@ -27,6 +27,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro', 'proguard-gson.pro'
         }
     }
+    dataBinding {
+        enabled = true
+    }
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }

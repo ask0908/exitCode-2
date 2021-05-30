@@ -1,7 +1,6 @@
 package com.psj.welfare.viewmodel;
 
 import android.app.Application;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -10,7 +9,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
-import com.psj.welfare.util.DBOpenHelper;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -20,11 +18,6 @@ public class MoreViewModel extends AndroidViewModel
 {
     private final String TAG = MoreViewModel.class.getSimpleName();
     private ApiInterface apiInterface;
-    private MutableLiveData<String> moreLiveData;
-    private SharedPreferences sharedPreferences;
-    String sqlite_token;
-
-    DBOpenHelper helper;
 
     public MoreViewModel(@NonNull Application application)
     {

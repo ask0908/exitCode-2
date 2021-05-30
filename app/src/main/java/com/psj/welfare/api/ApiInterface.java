@@ -1,5 +1,7 @@
 package com.psj.welfare.api;
 
+import androidx.annotation.Nullable;
+
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -650,7 +652,7 @@ public interface ApiInterface
     );
 
     /* ↓ 람다로 바뀐 후 새로 추가된 메서드
-    * TestFragment(바꾸고 있는 메인 화면)에서 사용한다 */
+    * TestFragment(바꾸고 있는 메인 화면)에서 사용하는 로그인/비로그인 시 혜택 보여주는 메서드 */
     // ===================================================================================================
 
     /**
@@ -851,6 +853,39 @@ public interface ApiInterface
             @Header("sessionid") String session,
             @Query("page") String page,
             @Query("theme") String theme
+    );
+
+    /* 마이페이지에서 사용하는 메서드 */
+
+    /**
+     * 닉네임 변경 메서드
+     * @param token - 로그인 시 서버에서 받는 토큰
+     * @param nickname - 변경하려는 닉네임
+     * @param type - check : 중복 검사 / save : 중복되지 않은(유효한) 닉네임을 DB에 저장시켜라 / show_name : 사용자의 닉네임 요청
+     * @return -
+     * 1. 사용자의 닉네임을 요청
+     * {
+     *     "statusCode": 200,
+     *     "message": "팀노바_대균"
+     * }
+     *
+     * 2. 닉네임 중복 검사
+     * {
+     *     "statusCode": 200,
+     *     "message": "사용 가능한 닉네임 입니다."
+     * }
+     *
+     * 3. 유효한 닉네임을 최종적으로 DB에 저장
+     * {
+     *     "statusCode": 200,
+     *     "message": "닉네임 변경 완료"
+     * }
+     */
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/change-name")
+    Call<String> editNickname(
+            @Header("logintoken") String token,
+            @Nullable @Query("new_name") String nickname,
+            @Query("type") String type
     );
 
 }

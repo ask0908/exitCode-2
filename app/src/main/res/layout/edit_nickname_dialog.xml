@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable
+            name="editNicknameDialog"
+            type="com.psj.welfare.custom.CustomEditNicknameDialog" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <TextView
+            android:id="@+id/edit_nickname_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nanum_barun_gothic_bold"
+            android:text="닉네임을 변경해 주세요"
+            android:textSize="25sp"
+            android:gravity="center_vertical"
+            android:layout_marginTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@color/layout_background_start_gradation"/>
+
+        <View
+            android:id="@+id/dialog_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="15dp"
+            android:background="@color/colorGray_B"/>
+
+        <!-- 닉네임 입력부, 입력 내용 삭제하는 이미지뷰, 중복확인 버튼이 가로로 있는 레이아웃 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/edit_nickname_layout"
+            android:layout_width="340dp"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/renewal_search_edittext"
+            android:gravity="center_horizontal">
+
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:id="@+id/edit_nickname_edittext_layout"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="0dp"-->
+<!--                app:layout_constraintWidth_percent=".6"-->
+<!--                app:layout_constraintHorizontal_bias="0"-->
+<!--                android:paddingStart="14dp"-->
+<!--                android:paddingEnd="14dp"-->
+<!--                android:paddingBottom="10dp"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent">-->
+
+<!--                <com.google.android.material.textfield.TextInputEditText-->
+<!--                    android:id="@+id/edit_nickname_edittext"-->
+<!--                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:background="@null"-->
+<!--                    android:hint="닉네임을 입력해 주세요"/>-->
+
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
+
+            <EditText
+                android:id="@+id/edit_nickname_edittext"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintWidth_percent=".6"
+                app:layout_constraintHorizontal_bias="0"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@null"
+                android:hint="닉네임을 입력해주세요"/>
+
+            <ImageView
+                android:id="@+id/nickname_erase"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintWidth_percent=".1"
+                app:layout_constraintHeight_percent=".6"
+                app:layout_constraintHorizontal_bias=".7"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:src="@drawable/edit_nickname_erase"/>
+
+            <Button
+                android:id="@+id/duplicate_check_btn"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintWidth_percent=".2"
+                app:layout_constraintHeight_percent=".7"
+                app:layout_constraintHorizontal_bias=".94"
+                android:text="중복확인"
+                android:textColor="@color/colorMainWhite"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@drawable/btn_keyword_selected"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="35dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:text="문자/숫자만 가능 (2~10자리)"/>
+
+        <TextView
+            android:id="@+id/good_or_bad_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="35dp"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            android:gravity="center_vertical"
+            android:text="사용할 수 있는 닉네임입니다! :)"/>
+
+        <LinearLayout
+            android:id="@+id/edit_nickname_button_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:layout_gravity="end">
+
+            <Button
+                android:id="@+id/edit_nickname_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="취소"
+                android:textSize="15sp"
+                android:layout_weight="1"
+                android:scaleType="center"
+                android:background="#D8D8D8" />
+
+            <Button
+                android:id="@+id/edit_nickname_ok"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="닉네임 변경"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:clickable="false"
+                android:textColor="#FFFFFF"
+                android:layout_weight="1"
+                android:scaleType="center"
+                android:background="#FF7088"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

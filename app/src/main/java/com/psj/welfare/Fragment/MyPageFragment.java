@@ -231,7 +231,7 @@ public class MyPageFragment extends Fragment
         // 여기 뿐 아니라 onResume()에도 같은 처리를 해야 한다. 왜냐면 화면을 이동해서 설정값을 바꾸고 백버튼을 누르면 마이페이지로 돌아오는데, 이 때 호출되는 onResume()에서
         // 알림 설정값을 체크해야 스위치의 on/off가 바뀌고 유저는 실시간으로 설정값이 반영되는 걸 확인할 수 있다
         boolean isAllowed = areNotificationsEnabled();
-        if (isAllowed == true)
+        if (isAllowed)
         {
             push_noti_switch.setChecked(true);
             putPushSetting(true);
