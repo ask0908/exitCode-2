@@ -28,6 +28,7 @@ import com.psj.welfare.CategoryDao;
 import com.psj.welfare.CategoryData;
 import com.psj.welfare.DetailTabLayoutActivity;
 import com.psj.welfare.R;
+import com.psj.welfare.activity.YoutubeActivity;
 import com.psj.welfare.adapter.MainDownAdapter;
 import com.psj.welfare.adapter.MainHorizontalYoutubeAdapter;
 import com.psj.welfare.data.HorizontalYoutubeItem;
@@ -326,6 +327,11 @@ public class TestFragment extends Fragment
                     item.setWelf_field(welfare_field);
                     item.setWelf_tag(welfare_tag);
 
+//                    Log.e(TAG,"welfare_id : " + welfare_id);
+//                    Log.e(TAG,"welfare_name : " + welfare_name);
+//                    Log.e(TAG,"welfare_tag : " + welfare_tag);
+//                    Log.e(TAG,"welfare_field : " + welfare_field);
+
                     // 하단 리사이클러뷰에 넣을 값들
                     MainCategoryBottomItem bottomItem = new MainCategoryBottomItem();
                     bottomItem.setWelf_id(welfare_id);
@@ -358,18 +364,25 @@ public class TestFragment extends Fragment
         StringBuilder welfareTagBuilder = new StringBuilder();
 
         /* 상단 리사이클러뷰에 쓰는 리스트의 크기만큼 반복해서 'OO 지원' 사이사이에 ';;'을 붙인다 */
+
         for (int i = 0; i < keyword_list.size(); i++)
         {
             stringBuilder.append(keyword_list.get(i).getWelf_field()).append(";;");
             welfareTagBuilder.append(keyword_list.get(i).getWelf_tag()).append(";;");
         }
 
+//        Log.e(TAG,"getWelf_field" + stringBuilder.toString());
+//        Log.e(TAG,"getWelf_tag" + welfareTagBuilder.toString());
+
         /* 하단 리사이클러뷰에 쓰는 리스트 크기만큼 반복해 혜택명 사이에 ';;'을 붙인다 */
+
         for (int i = 0; i < down_list.size(); i++)
         {
             welfareNameBuilder.append(down_list.get(i).getWelf_name()).append(";;");
             welfareFieldBuilder.append(down_list.get(i).getWelf_field()).append(";;");
         }
+
+//        Log.e(TAG,"stringBuilder" + stringBuilder.toString());
 
         // ";;"가 섞인 문자열을 구분자로 각각 split
         String[] nameArr = welfareNameBuilder.toString().split(";;");
@@ -394,6 +407,10 @@ public class TestFragment extends Fragment
             all_item.setWelf_tag(tagArr[i]);
             keyword_list.add(item);
             other_list.add(all_item);
+
+//            Log.e(TAG,"nameArr : " + nameArr[i]);
+//            Log.e(TAG,"tagArr : " + tagArr[i]);
+//            Log.e(TAG,"-------------------------");
         }
 
         // 아래 처리를 하지 않으면 이 액티비티로 들어올 때마다 전체 카테고리 개수가 1개씩 증가한다
@@ -467,27 +484,48 @@ public class TestFragment extends Fragment
 
         up_recycler.setAdapter(upAdapter);
 
+
         youtubeAdapter = new MainHorizontalYoutubeAdapter(getActivity(), youtube_list, youtubeClickListener);
         youtubeAdapter.setOnItemClickListener(new MainHorizontalYoutubeAdapter.ItemClickListener()
         {
+            //유튜브 썸네일 클릭 이벤트
             @Override
             public void onItemClick(View v, int pos)
             {
                 /* 수정 중이라 주석 처리 */
-//                HorizontalYoutubeItem item = new HorizontalYoutubeItem();
+                HorizontalYoutubeItem item = new HorizontalYoutubeItem();
+
+
+
+                item.setYoutube_id(youtube_list.get(pos).getYoutube_id());
+                item.setYoutube_name(youtube_list.get(pos).getYoutube_name());
+                item.setYoutube_thumbnail(youtube_list.get(pos).getYoutube_thumbnail());
+                item.setYoutube_videoId(youtube_list.get(pos).getYoutube_videoId());
 //                item.setYoutube_id(youtube_id);
 //                item.setYoutube_name(youtube_title);
 //                item.setYoutube_thumbnail(youtube_thumbnail);
 //                item.setYoutube_videoId(youtube_videoId);
-//                Intent intent = new Intent(getActivity(), YoutubeActivity.class);
+                Intent intent = new Intent(getActivity(), YoutubeActivity.class);
 //                String youtube_name = youtube_list.get(pos).getYoutube_name();
-                Log.e(TAG, "선택한 유튜브 영상 : " + youtube_list.get(pos).getYoutube_name());
-//                intent.putExtra("youtube_information", item);
-//                intent.putExtra("youtube_hashmap", youtube_hashmap);
-//                Bundle bundle = new Bundle();
-//                bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "유튜브 화면으로 이동");
-//                analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-//                startActivity(intent);
+//                Log.e(TAG, "선택한 유튜브 영상 : " + youtube_list.get(pos).getYoutube_name());
+                intent.putExtra("youtube_information", item);
+                intent.putExtra("youtube_hashmap", youtube_hashmap);
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "유튜브 화면으로 이동");
+                analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+                startActivity(intent);
+
+            }
+
+            //유튜브 더보기 버튼 클릭 이벤트
+            @Override
+            public void moreviewItemClick(View v, int pos)
+            {
+                Intent intent = new Intent(getActivity(), YoutubeActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "유튜브 더보기 화면으로 이동");
+                analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+                startActivity(intent);
             }
         });
         youtube_video_recyclerview.setAdapter(youtubeAdapter);

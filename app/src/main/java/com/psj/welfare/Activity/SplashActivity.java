@@ -14,8 +14,10 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -59,6 +61,8 @@ public class SplashActivity extends AppCompatActivity
 
     boolean isPushClicked = false;
 
+    boolean being_preview = false; //미리보기 했는지
+
     String age = ""; // room데이터가 있는지 확인하기 위해 임시로 데이터를 담는 변수
 
     @Override
@@ -74,6 +78,11 @@ public class SplashActivity extends AppCompatActivity
         sharedPreferences = getSharedPreferences("app_pref", 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
+        //미리보기 했는지 여부
+        SharedPreferences shared = getSharedPreferences("welf_preview",MODE_PRIVATE);
+        being_preview = shared.getBoolean("being_preview",false);
+//        Log.e("being_preview",String.valueOf(being_preview));
+
         FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>()
         {
             @Override
@@ -85,7 +94,7 @@ public class SplashActivity extends AppCompatActivity
                     return;
                 }
                 token = task.getResult().getToken();
-                Log.e(TAG, "FCM token = " + token);
+//                Log.e(TAG, "FCM token = " + token);
                 editor.putString("fcm_token", token);
                 editor.apply();
             }
@@ -94,13 +103,7 @@ public class SplashActivity extends AppCompatActivity
         //room데이터가 있는지 확인
         beingRoomData();
 
-        userLog();
-
         onNewIntent(intent);
-
-        //카카오 로그인시 필요한 해시키
-        getHashKey();
-
     }
 
     void beingRoomData()
@@ -137,43 +140,75 @@ public class SplashActivity extends AppCompatActivity
     @Override
     protected void onNewIntent(Intent intent)
     {
-        if (intent != null && intent.getExtras() != null)
+        boolean isConnected = isNetworkConnected(SplashActivity.this); //인터넷이 월활하지 않을 때
+        if (!isConnected) //인터넷이 연결이 안됐다면
         {
-            String aaa = intent.getExtras().getString("push_clicked");
-            if (aaa == null)
+            AlertDialog.Builder TutorialDialog = new AlertDialog.Builder(SplashActivity.this);
+            View dialogview = getLayoutInflater().inflate(R.layout.custom_inconnected_internet_dialog,null); //다이얼로그의 xml뷰 담기
+            Button BtnOk = dialogview.findViewById(R.id.BtnOk); //취소 버튼
+
+            TutorialDialog.setView(dialogview); //alertdialog에 view 넣기
+            final AlertDialog alertDialog = TutorialDialog.create(); //다이얼로그 객체로 만들기
+            alertDialog.show(); //다이얼로그 보여주기
+
+            //취소 버튼
+            BtnOk.setOnClickListener(v->{
+                alertDialog.dismiss(); //다이얼로그 사라지기
+                finishAndRemoveTask(); // 액티비티 종료 + 태스크 리스트에서 지우기
+            });
+        } else { //인터넷이 연결 됐을 때만 작동하기
+
+            //토큰값 가져오기
+            userLog();
+
+            //카카오 로그인시 필요한 해시키
+            getHashKey();
+
+            if (intent != null && intent.getExtras() != null) //푸시 알림 눌러 실행시켰을 때
             {
-                isPushClicked = true;
-                Handler handler = new Handler();
-                handler.postDelayed(new SplashHandler(), 1000);
+                String aaa = intent.getExtras().getString("push_clicked");
+                if (aaa == null)
+                {
+                    isPushClicked = true;
+                    Handler handler = new Handler();
+                    handler.postDelayed(new SplashHandler(), 1000);
+                }
             }
-        }
-        else
-        {
-            Handler handler = new Handler();
-            handler.postDelayed(new NormalHandler(), 1000);
+            else
+            {
+                //일반적으로 앱을 실행시켰을 때
+                Handler handler = new Handler();
+                handler.postDelayed(new NormalHandler(), 1000);
+            }
         }
         super.onNewIntent(intent);
     }
 
+    //일반적으로 앱을 실행시켰을 때
     private class NormalHandler implements Runnable
     {
         @Override
         public void run()
         {
-            if (age.equals(""))
-            { //room데이터 값이 없다면
-//                startActivity(new Intent(SplashActivity.this, TutorialWelcome.class));
+            if (!age.equals(""))
+            { //room데이터 값이 있다면
+                startActivity(new Intent(SplashActivity.this, MainTabLayoutActivity.class));
+//                startActivity(new Intent(SplashActivity.this, MainTabLayoutActivity.class));
+            }
+            else if (being_preview)
+            { //미리보기를 취소했거나 화면을 한번이라도 들어갔다면
                 startActivity(new Intent(SplashActivity.this, MainTabLayoutActivity.class));
             }
             else
-            { //room데이터 값이 있다면
-                startActivity(new Intent(SplashActivity.this, MainTabLayoutActivity.class));
+            { //room데이터 값이 없다면
+                startActivity(new Intent(SplashActivity.this, TutorialWelcome.class));
             }
 
             SplashActivity.this.finish();
         }
     }
 
+    //푸시알림으로 앱을 실행시켰을 때
     private class SplashHandler implements Runnable
     {
         @Override

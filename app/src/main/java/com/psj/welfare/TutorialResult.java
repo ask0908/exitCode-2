@@ -1,5 +1,6 @@
 package com.psj.welfare;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -99,6 +100,13 @@ public class TutorialResult extends AppCompatActivity {
     //혜택 데이터 가져오기
     //room데이터 이용은 메인 쓰레드에서 하면 안된다
     public void LodingBenefit() {
+
+        final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setMax(100);
+        dialog.setMessage("잠시만 기다려 주세요...");
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.show();
+
         new Thread(() -> { //Room은 메인 스레드에서 실행시키면 오류가 난다
             //Room을 쓰기위해 데이터베이스 객체 만들기
             AppDatabase database = Room.databaseBuilder(TutorialResult.this, AppDatabase.class, "Firstcategory")
@@ -165,6 +173,8 @@ public class TutorialResult extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+
+                    dialog.dismiss();
                 }
 
                 @Override

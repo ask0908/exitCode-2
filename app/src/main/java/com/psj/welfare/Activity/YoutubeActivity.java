@@ -378,12 +378,12 @@ public class YoutubeActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onBackPressed()
-    {
-        super.onBackPressed();
-        userLog("유튜브 화면에서 뒤로가기 눌러 메인으로 이동");
-    }
+//    @Override
+//    public void onBackPressed()
+//    {
+//        super.onBackPressed();
+//        userLog("유튜브 화면에서 뒤로가기 눌러 메인으로 이동");
+//    }
 
     void userLog(String user_action)
     {
