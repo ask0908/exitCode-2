@@ -648,7 +648,6 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
             String local = list.get(pos).getWelf_local();
             String thema = list.get(pos).getWelf_thema();
             Log.e(TAG, "선택한 아이템의 이름 : " + name + ", 태그 : " + tag + ", 조회수 : " + count + ", 지역 : " + local + ", 테마 : " + thema);
-            Intent intent = new Intent(this, )
         });
 
         search_result_recyclerview.setAdapter(adapter);
