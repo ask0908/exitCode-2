@@ -66,6 +66,16 @@ public class MainDownAdapter extends RecyclerView.Adapter<MainDownAdapter.MainDo
                 String s2 = s1.replace("- ", " #");
                 String s3 = s2.replace(" - ", " #");
                 holder.bottom_result_subject.setText(s3);
+//                Log.e("before1 : ",before);
+//                Log.e("tag1 : ",item.getWelf_tag());
+            }
+            else if (!item.getWelf_tag().equals(""))
+            {
+                String before = item.getWelf_tag().replace(" ","");
+                String else_str = "#" + before;
+                holder.bottom_result_subject.setText(else_str);
+//                Log.e("before2 : ",before);
+//                Log.e("tag2 : ",item.getWelf_tag());
             }
         }
         else

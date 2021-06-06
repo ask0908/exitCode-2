@@ -1,6 +1,7 @@
 package com.psj.welfare;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -16,6 +17,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.room.Room;
+
+import com.psj.welfare.activity.MainTabLayoutActivity;
 
 public class TutorialCategory extends AppCompatActivity {
 
@@ -159,9 +162,16 @@ public class TutorialCategory extends AppCompatActivity {
 
         //뒤로 가기 버튼
         BtnBack.setOnClickListener(v->{
-            Intent intent = new Intent(TutorialCategory.this, TutorialWelcome.class); //CategoryWelcome페이지로 가기
+            Intent intent = new Intent(TutorialCategory.this, MainTabLayoutActivity.class); //CategoryWelcome페이지로 가기
+
+            //미리보기 했는지
+            SharedPreferences shared = getSharedPreferences("welf_preview",MODE_PRIVATE);
+            SharedPreferences.Editor editor = shared.edit();
+            editor.putBoolean("being_preview",true); //미리보기 건너뛰기를 했거나 미리보기 화면에 들어갔다면
+            editor.apply();
+
             startActivity(intent);
-            Toast.makeText(TutorialCategory.this,"카테고리 선택이 취소 되었습니다",Toast.LENGTH_SHORT).show();
+            Toast.makeText(TutorialCategory.this,"미리보기를 취소 했습니다",Toast.LENGTH_SHORT).show();
             alertDialog.dismiss(); //다이얼로그 사라지기
             finish();
         });

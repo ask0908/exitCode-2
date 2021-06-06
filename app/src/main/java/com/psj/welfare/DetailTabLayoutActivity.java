@@ -298,7 +298,7 @@ public class DetailTabLayoutActivity extends AppCompatActivity {
     private void being_intent() {
         welf_id = ""; //혜택 아이디 값
         Intent intent = getIntent();
-        being_id = intent.getBooleanExtra("being_id", false); //혜택 데이터가 있는지
+        being_id = intent.getBooleanExtra("being_id", false); //혜택 데이터가 있는지, 없는 경우 서버에서 데이터 안받아 오도록
         if (being_id) {
             welf_id = intent.getStringExtra("welf_id");
             review_write = intent.getBooleanExtra("review_write", false); //리뷰 작성 했는지
@@ -348,7 +348,7 @@ public class DetailTabLayoutActivity extends AppCompatActivity {
     //상세페이지 내용 데이터 서버로부터 받아오기
     void LoadBenefitDetail() {
 
-        Log.e(TAG, "LoadBenefitDetail() 호출");
+//        Log.e(TAG, "LoadBenefitDetail() 호출");
         //서버로부터 데이터를 받아오는데 걸리는 시간동연 보여줄 프로그래스 바
         final ProgressDialog dialog = new ProgressDialog(this);
         dialog.setMax(100);

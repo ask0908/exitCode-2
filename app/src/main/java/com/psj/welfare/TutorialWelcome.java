@@ -1,18 +1,23 @@
 package com.psj.welfare;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Display;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.psj.welfare.activity.MainTabLayoutActivity;
 
 public class TutorialWelcome extends AppCompatActivity {
+
+    private FirebaseAnalytics analytics; //firebase 애널리틱스
 
     private Button BtnTutorial; //튜토리얼 하기 버튼
     private TextView BtnMain; //메인으로 가기 버튼
@@ -22,6 +27,8 @@ public class TutorialWelcome extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial_welcome);
 
+        analytics = FirebaseAnalytics.getInstance(this); //firebase 애널리틱스
+
         BtnTutorial = findViewById(R.id.BtnTutorial); //튜토리얼 하기 버튼
         BtnMain = findViewById(R.id.BtnMain); //메인으로 가기 버튼
 
@@ -30,6 +37,10 @@ public class TutorialWelcome extends AppCompatActivity {
 
         //튜토리얼 액티비티로 이동
         BtnTutorial.setOnClickListener(v -> {
+            Bundle bundle = new Bundle(); //firebase 애널리틱스
+            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "미리보기 액티비티 이동"); //firebase 애널리틱스
+            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle); //firebase 애널리틱스
+
             Intent intent = new Intent(TutorialWelcome.this, TutorialCategory.class);
             startActivity(intent);
             finish();
@@ -37,7 +48,15 @@ public class TutorialWelcome extends AppCompatActivity {
 
         //메인으로 이동
         BtnMain.setOnClickListener(v -> {
+            Toast.makeText(TutorialWelcome.this,"미리보기 건너뛰기",Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(TutorialWelcome.this, MainTabLayoutActivity.class);
+
+            //미리보기 했는지
+            SharedPreferences shared = getSharedPreferences("welf_preview",MODE_PRIVATE);
+            SharedPreferences.Editor editor = shared.edit();
+            editor.putBoolean("being_preview",true); //미리보기 건너뛰기를 했거나 미리보기 화면에 들어갔다면
+            editor.apply();
+
             startActivity(intent);
             finish();
         });
