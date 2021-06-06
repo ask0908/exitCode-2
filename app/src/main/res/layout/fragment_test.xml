@@ -8,212 +8,213 @@
     android:background="@color/white"
     tools:context=".test.TestFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/MainTop"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHeight_percent=".115"
-        android:background="@drawable/renewal_gradation_background">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHeight_percent=".5"
-            app:layout_constraintVertical_bias=".1">
-
-            <TextView
-                android:id="@+id/back_btn"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHeight_percent="0.75"
-                app:layout_constraintWidth_percent="0.23"
-                app:layout_constraintHorizontal_bias="0.05"
-                app:layout_constraintVertical_bias="0.8"
-                android:backgroundTint="@color/white"
-                android:text="혜택모아"
-                android:textColor="@color/white"
-                android:autoSizeTextType="uniform"
-                android:textStyle="bold"/>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHeight_percent=".37"
-            android:background="@drawable/radius_25">
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/MainBanner"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/MainTop" />
-
-
-
-
-<!--    <TextView-->
-<!--        android:id="@+id/selected_interest_textview"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="0dp"-->
-<!--        app:layout_constraintWidth_percent=".6"-->
-<!--        app:layout_constraintHeight_percent=".066"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintVertical_bias=".05"-->
-<!--        app:layout_constraintHorizontal_bias=".14"-->
-<!--        android:fontFa mily="@font/jalnan"-->
-<!--        android:text="혜택모아"-->
-<!--        android:textColor="@color/colorMainWhite"-->
-<!--        app:autoSizePresetSizes="@array/autosize_text_sizes"/>-->
-
-<!--    <Button-->
-<!--        android:id="@+id/edit_interest_btn"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="0dp"-->
-<!--        app:layout_constraintWidth_percent=".38"-->
-<!--        app:layout_constraintHeight_percent=".055"-->
-<!--        app:layout_constraintHorizontal_bias=".93"-->
-<!--        app:layout_constraintVertical_bias=".053"-->
-<!--        android:paddingStart="10dp"-->
-<!--        android:paddingEnd="10dp"-->
-<!--        android:background="@drawable/btn_transparent"-->
-<!--        android:fontFamily="@font/nanum_barun_gothic_bold"-->
-<!--        android:text="나에게 맞는 혜택 찾기"-->
-<!--        android:textStyle="bold"-->
-<!--        android:textColor="@color/colorMainWhite"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"/>-->
-
 <!--    <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--        android:id="@+id/middle_white_layout"-->
-<!--        android:layout_width="0dp"-->
+<!--        android:id="@+id/MainTop"-->
+<!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="0dp"-->
-<!--        app:layout_constraintWidth_percent="1"-->
-<!--        app:layout_constraintHeight_percent=".85"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
 <!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintVertical_bias="1"-->
-<!--        android:background="@drawable/radius_25">-->
+<!--        app:layout_constraintLeft_toLeftOf="parent"-->
+<!--        app:layout_constraintRight_toRightOf="parent"-->
+<!--        app:layout_constraintHeight_percent=".115"-->
+<!--        android:background="@drawable/renewal_gradation_background">-->
 
-<!--        &lt;!&ndash; 전체, 건강, 교육, 교통 등 관심 주제가 들어갈 가로 리사이클러뷰 &ndash;&gt;-->
-<!--        <androidx.recyclerview.widget.RecyclerView-->
-<!--            android:id="@+id/interest_subject_recyclerview"-->
-<!--            android:layout_width="0dp"-->
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:layout_width="match_parent"-->
 <!--            android:layout_height="0dp"-->
-<!--            android:scrollbars="none"-->
-<!--            android:paddingStart="20dp"-->
-<!--            app:layout_constraintWidth_percent="1"-->
-<!--            app:layout_constraintHeight_percent=".1"-->
-<!--            app:layout_constraintVertical_bias="0"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
 <!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintLeft_toLeftOf="parent"-->
+<!--            app:layout_constraintRight_toRightOf="parent"-->
 <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"-->
-<!--            android:orientation="horizontal"-->
-<!--            tools:listitem="@layout/test_up_item"/>-->
+<!--            app:layout_constraintHeight_percent=".5"-->
+<!--            app:layout_constraintVertical_bias=".1">-->
 
-<!--        &lt;!&ndash; 3개만 보여줄 리사이클러뷰. 스크롤되지 않아야 한다 &ndash;&gt;-->
-<!--        <androidx.recyclerview.widget.RecyclerView-->
-<!--            android:id="@+id/interest_result_recyclerview"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="0dp"-->
-<!--            android:scrollbars="none"-->
-<!--            android:overScrollMode="never"-->
-<!--            android:paddingStart="24dp"-->
-<!--            android:paddingEnd="24dp"-->
-<!--            app:layout_constraintWidth_percent="1"-->
-<!--            app:layout_constraintHeight_percent=".53"-->
-<!--            app:layout_constraintVertical_bias=".181"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            android:orientation="vertical"-->
-<!--            tools:listitem="@layout/test_down_item"/>-->
+<!--            <TextView-->
+<!--                android:id="@+id/back_btn"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="0dp"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintLeft_toLeftOf="parent"-->
+<!--                app:layout_constraintRight_toRightOf="parent"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintHeight_percent="0.75"-->
+<!--                app:layout_constraintWidth_percent="0.23"-->
+<!--                app:layout_constraintHorizontal_bias="0.05"-->
+<!--                app:layout_constraintVertical_bias="0.8"-->
+<!--                android:backgroundTint="@color/white"-->
+<!--                android:text="혜택모아"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:autoSizeTextType="uniform"-->
+<!--                android:textStyle="bold" />-->
 
-<!--        <TextView-->
-<!--            android:id="@+id/more_see_textview"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="0dp"-->
-<!--            app:layout_constraintWidth_percent=".3"-->
-<!--            app:layout_constraintHeight_percent=".032"-->
-<!--            app:layout_constraintVertical_bias=".628"-->
-<!--            app:layout_constraintHorizontal_bias="1"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            android:fontFamily="@font/nanum_barun_gothic_bold"-->
-<!--            android:text="+ 더보기"-->
-<!--            android:autoSizeTextType="none"-->
-<!--            app:autoSizePresetSizes="@array/autosize_text_sizes"-->
-<!--            android:textColor="@color/gray"-->
-<!--            android:gravity="center"/>-->
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
-<!--        <TextView-->
-<!--            android:id="@+id/youtube_text"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="0dp"-->
-<!--            app:layout_constraintWidth_percent="1"-->
-<!--            app:layout_constraintHeight_percent=".05"-->
-<!--            app:layout_constraintVertical_bias=".70"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            android:fontFamily="@font/jalnan"-->
-<!--            android:text="유튜버들의 혜택 리뷰"-->
-<!--            android:autoSizeTextType="none"-->
-<!--            app:autoSizePresetSizes="@array/autosize_text_sizes"-->
-<!--            android:paddingStart="16dp"-->
-<!--            android:paddingEnd="16dp"/>-->
 
-<!--        <androidx.recyclerview.widget.RecyclerView-->
-<!--            android:id="@+id/youtube_video_recyclerview"-->
-<!--            android:layout_width="0dp"-->
+
+
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:layout_width="match_parent"-->
 <!--            android:layout_height="0dp"-->
-<!--            app:layout_constraintWidth_percent="1"-->
-<!--            app:layout_constraintHeight_percent=".265"-->
-<!--            app:layout_constraintVertical_bias="1"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintLeft_toLeftOf="parent"-->
+<!--            app:layout_constraintRight_toRightOf="parent"-->
 <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constrainedHeight="true"-->
-<!--            android:scrollbars="none"-->
-<!--            android:orientation="horizontal"-->
-<!--            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"-->
-<!--            tools:listitem="@layout/test_youtube_item"/>-->
+<!--            app:layout_constraintHeight_percent=".37"-->
+<!--            android:background="@drawable/radius_25">-->
+
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
 <!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:id="@+id/MainBanner"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/MainTop"-->
+<!--        tools:listitem="@layout/banner_item"/>-->
+
+
+
+
+    <TextView
+        android:id="@+id/selected_interest_textview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent=".6"
+        app:layout_constraintHeight_percent=".066"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias=".05"
+        app:layout_constraintHorizontal_bias=".14"
+        android:fontFamily="@font/jalnan"
+        android:text="혜택모아"
+        android:textColor="@color/colorMainWhite"
+        app:autoSizePresetSizes="@array/autosize_text_sizes"/>
+
+    <Button
+        android:id="@+id/edit_interest_btn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent=".38"
+        app:layout_constraintHeight_percent=".055"
+        app:layout_constraintHorizontal_bias=".93"
+        app:layout_constraintVertical_bias=".053"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:background="@drawable/btn_transparent"
+        android:fontFamily="@font/nanum_barun_gothic_bold"
+        android:text="나에게 맞는 혜택 찾기"
+        android:textStyle="bold"
+        android:textColor="@color/colorMainWhite"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/middle_white_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent=".85"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="1"
+        android:background="@drawable/radius_25">
+
+        <!-- 전체, 건강, 교육, 교통 등 관심 주제가 들어갈 가로 리사이클러뷰 -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/interest_subject_recyclerview"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scrollbars="none"
+            android:paddingStart="20dp"
+            app:layout_constraintWidth_percent="1"
+            app:layout_constraintHeight_percent=".1"
+            app:layout_constraintVertical_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:orientation="horizontal"
+            tools:listitem="@layout/test_up_item"/>
+
+        <!-- 3개만 보여줄 리사이클러뷰. 스크롤되지 않아야 한다 -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/interest_result_recyclerview"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scrollbars="none"
+            android:overScrollMode="never"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            app:layout_constraintWidth_percent="1"
+            app:layout_constraintHeight_percent=".53"
+            app:layout_constraintVertical_bias=".181"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:orientation="vertical"
+            tools:listitem="@layout/test_down_item"/>
+
+        <TextView
+            android:id="@+id/more_see_textview"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent=".3"
+            app:layout_constraintHeight_percent=".032"
+            app:layout_constraintVertical_bias=".628"
+            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:fontFamily="@font/nanum_barun_gothic_bold"
+            android:text="+ 더보기"
+            android:autoSizeTextType="none"
+            app:autoSizePresetSizes="@array/autosize_text_sizes"
+            android:textColor="@color/gray"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/youtube_text"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="1"
+            app:layout_constraintHeight_percent=".05"
+            app:layout_constraintVertical_bias=".70"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:fontFamily="@font/jalnan"
+            android:text="유튜버들의 혜택 리뷰"
+            android:autoSizeTextType="none"
+            app:autoSizePresetSizes="@array/autosize_text_sizes"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/youtube_video_recyclerview"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="1"
+            app:layout_constraintHeight_percent=".265"
+            app:layout_constraintVertical_bias="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constrainedHeight="true"
+            android:scrollbars="none"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/test_youtube_item"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
