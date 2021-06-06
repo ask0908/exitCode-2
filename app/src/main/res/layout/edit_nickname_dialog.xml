@@ -7,8 +7,10 @@
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edit_nickname_dialog_radius"
+        android:backgroundTint="@color/colorMainWhite"
         android:orientation="vertical"
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -40,32 +42,10 @@
             android:orientation="horizontal"
             android:layout_gravity="center"
             android:layout_marginTop="50dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:background="@drawable/renewal_search_edittext"
             android:gravity="center_horizontal">
-
-<!--            <com.google.android.material.textfield.TextInputLayout-->
-<!--                android:id="@+id/edit_nickname_edittext_layout"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="0dp"-->
-<!--                app:layout_constraintWidth_percent=".6"-->
-<!--                app:layout_constraintHorizontal_bias="0"-->
-<!--                android:paddingStart="14dp"-->
-<!--                android:paddingEnd="14dp"-->
-<!--                android:paddingBottom="10dp"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="parent"-->
-<!--                app:layout_constraintBottom_toBottomOf="parent">-->
-
-<!--                <com.google.android.material.textfield.TextInputEditText-->
-<!--                    android:id="@+id/edit_nickname_edittext"-->
-<!--                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    android:background="@null"-->
-<!--                    android:hint="닉네임을 입력해 주세요"/>-->
-
-<!--            </com.google.android.material.textfield.TextInputLayout>-->
 
             <EditText
                 android:id="@+id/edit_nickname_edittext"
@@ -75,6 +55,7 @@
                 app:layout_constraintHorizontal_bias="0"
                 android:paddingStart="14dp"
                 android:paddingEnd="14dp"
+                android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -113,22 +94,13 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
+            android:id="@+id/good_or_bad_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="35dp"
             android:layout_marginTop="10dp"
             android:gravity="center_vertical"
             android:text="문자/숫자만 가능 (2~10자리)"/>
-
-        <TextView
-            android:id="@+id/good_or_bad_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="35dp"
-            android:layout_marginTop="10dp"
-            android:visibility="gone"
-            android:gravity="center_vertical"
-            android:text="사용할 수 있는 닉네임입니다! :)"/>
 
         <LinearLayout
             android:id="@+id/edit_nickname_button_layout"
@@ -141,26 +113,25 @@
 
             <Button
                 android:id="@+id/edit_nickname_cancel"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="취소"
                 android:textSize="15sp"
                 android:layout_weight="1"
-                android:scaleType="center"
-                android:background="#D8D8D8" />
+                android:background="@drawable/edit_nickname_cancel_radius" />
 
             <Button
                 android:id="@+id/edit_nickname_ok"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="닉네임 변경"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 android:clickable="false"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/colorMainWhite"
                 android:layout_weight="1"
                 android:scaleType="center"
-                android:background="#FF7088"/>
+                android:background="@drawable/edit_nickname_ok_radius"/>
 
         </LinearLayout>
 

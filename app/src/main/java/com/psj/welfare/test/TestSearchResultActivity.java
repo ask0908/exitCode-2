@@ -35,6 +35,7 @@ import com.psj.welfare.R;
 import com.psj.welfare.adapter.ExpandableRecyclerViewAdapter;
 import com.psj.welfare.adapter.InnerRecyclerViewAdapter;
 import com.psj.welfare.adapter.RenewalSearchResultAdapter;
+import com.psj.welfare.adapter.SearchResultHorizontalAdapter;
 import com.psj.welfare.custom.RecyclerViewEmptySupport;
 import com.psj.welfare.data.SearchResultItem;
 import com.psj.welfare.viewmodel.SearchViewModel;
@@ -300,74 +301,6 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
                                 .subscribe(s -> total_search_result.setText(s));
                     }
                 }
-//                Log.e(TAG, "어댑터에서 remove 처리 이후일 것으로 생각되는 부분 : " + item);
-//                Log.e(TAG, "클릭했을 때 arr : " + Arrays.toString(arr)); // arr 값은 가져와진다
-//                // arr[0] ~ arr[3]까지 들어있는 값들에 있는 '-'을 모두 split()으로 없앤다
-//                String[] after_arr = InnerRecyclerViewAdapter.getAllValues().split("zz");
-//                Log.e(TAG, "after_arr[0] : " + after_arr[0]);
-//                Log.e(TAG, "after_arr[1] : " + after_arr[1]);
-//                Log.e(TAG, "after_arr[2] : " + after_arr[2]);
-//                Log.e(TAG, "after_arr[3] : " + after_arr[3]);
-//
-//                ArrayList<String> resultList = new ArrayList<>(Arrays.asList(after_arr));
-//                Log.e(TAG, "resultList : " + resultList);
-//                String result = TextUtils.join("bb", resultList);
-//                Log.e(TAG, "join 결과 : " + result);
-//
-//                // result를 split해서 리스트에 넣는다
-//                String[] splitStr = result.split("bb");
-//                List<String> list = new ArrayList<>(Arrays.asList(splitStr));
-//                Log.e(TAG, "list : " + list);
-//                Log.e(TAG, "list 크기 : " + list.size());
-//                Log.e(TAG, "list 0번 인덱스 : " + list.get(0));
-//
-//                String[] first_arr = new String[0];
-//                if (!list.get(0).equals("null"))
-//                {
-//                    first_arr = list.get(0).split("-");
-//                }
-//                Log.e(TAG, "first_arr : " + Arrays.toString(first_arr));
-////                Log.e(TAG, "first_arr[0] : " + first_arr[0]); // "교육-건강" 중 교육만 나오는 것 확인
-//                /* String[]의 크기만큼 돌면서 일치하는 게 있다면 String[]에서 지워야 한다. String[] -> ArrayList로 치환 */
-//                ArrayList<String> arrList = new ArrayList<>(Arrays.asList(first_arr));
-//                for (int i = 0; i < arrList.size(); i++)
-//                {
-//                    Log.d(TAG, "String[] -> ArrayList 바꾼 후 안에 있는 값 : " + arrList.get(i));
-//                    // 선택한 아이템과 일치하는 이름이 있을 경우 ArrayList에서 삭제
-//                    if (arrList.get(i).equals(name))
-//                    {
-////                        Log.d(TAG, "arrList.get(i).equals(name) 결과값 : " + arrList.get(i).equals(name));
-//                        arrList.remove(name);
-//                    }
-//                }
-//                /* 삭제가 끝나면 리스트 요소들의 오른쪽에 다시 '-'를 붙인다 */
-//                String arrayJoinResult = TextUtils.join("-", arrList);
-//                Log.d(TAG, "삭제된 아이템을 지운 리스트의 요소 사이에 -를 붙인 결과 : " + arrayJoinResult);
-//
-//                /* '-'가 붙은 String을 List에 넣는다(테스트) */
-////                ArrayList<String> finalList = new ArrayList<>();
-////                finalList.add(arrayJoinResult);
-////                Log.d(TAG, "finalList : " + finalList); // [건강-근로-기타-금융-문화] 형태로 출력
-//
-//                /* 삭제가 끝나면 남은 리스트를 다시 String[]로 만든다 */
-////                String[] array = new String[arrList.size()];
-////                int array_size = 0;
-////                for (String tmp : arrList)
-////                {
-////                    array[array_size++] = tmp;
-////                }
-////                Log.d(TAG, "array : " + Arrays.toString(array));
-//
-//                /* 액티비티로 값들을 보내기 전에 각 카테고리 필터별 값들을 담을 리스트 */
-//                ArrayList<String> categoryList = new ArrayList<>();
-//                ArrayList<String> localList = new ArrayList<>();
-//                ArrayList<String> provideTypeList = new ArrayList<>();
-//                ArrayList<String> ageList = new ArrayList<>();
-//                ArrayList<String> toActivityList = new ArrayList<>();
-//
-//                /* 각 리스트에 값 삽입 */
-//                categoryList.add(arrayJoinResult);
-//                Log.d(TAG, "'-' 붙이는 처리 끝난 값들을 필터 카테고리 리스트에 넣은 결과 : " + categoryList);
             });
 
             selected_filter_recyclerview.setAdapter(filter_adapter);
@@ -407,17 +340,7 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
                 {
                     if (llm.getItemCount() == 0)
                     {
-                        /* 검색 결과가 0이면 다이얼로그로 검색 결과가 없다고 알려준 후, 확인을 눌러 이전 화면으로 돌아가도록 유도한다 */
-//                        AlertDialog.Builder builder = new AlertDialog.Builder(TestSearchResultActivity.this);
-//                        builder.setMessage("요청하신 검색어에 대한 결과가 없습니다\n다른 검색어를 입력해 주세요")
-//                                .setPositiveButton("확인", new DialogInterface.OnClickListener()
-//                                {
-//                                    @Override
-//                                    public void onClick(DialogInterface dialog, int which)
-//                                    {
-//                                        dialog.dismiss();
-//                                    }
-//                                }).setCancelable(false).show();
+                        //
                     }
                     else
                     {
@@ -725,6 +648,7 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
             String local = list.get(pos).getWelf_local();
             String thema = list.get(pos).getWelf_thema();
             Log.e(TAG, "선택한 아이템의 이름 : " + name + ", 태그 : " + tag + ", 조회수 : " + count + ", 지역 : " + local + ", 테마 : " + thema);
+            Intent intent = new Intent(this, )
         });
 
         search_result_recyclerview.setAdapter(adapter);

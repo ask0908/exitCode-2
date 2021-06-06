@@ -9,10 +9,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +32,13 @@ import com.kakao.auth.Session;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.psj.welfare.R;
+import com.psj.welfare.ScreenSize;
+import com.psj.welfare.activity.BookmarkCheckActivity;
 import com.psj.welfare.activity.LoginActivity;
+import com.psj.welfare.activity.PersonalInformationActivity;
 import com.psj.welfare.activity.SplashActivity;
+import com.psj.welfare.activity.TermsAndConditionsActivity;
+import com.psj.welfare.activity.WrittenReviewCheckActivity;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.CustomEditNicknameDialog;
@@ -63,6 +70,7 @@ public class TestMyPageFragment extends Fragment
 
     DBOpenHelper helper;
     String sqlite_token, message;
+    String receivedNickname = "";
 
     // 구글 애널리틱스
     private FirebaseAnalytics analytics;
@@ -104,58 +112,45 @@ public class TestMyPageFragment extends Fragment
         helper.openDatabase();
         helper.create();
 
+        // 텍스트뷰들 크기 조절
+        ScreenSize screen = new ScreenSize();
+        Point size = screen.getScreenSize(getActivity());
+        binding.searchFragmentTopTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 14);
+        binding.mypageMyId.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 20);
+
+        binding.bookmarkTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 27);
+        binding.recentWelfareTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 27);
+        binding.writtenReviewTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 27);
+
+        binding.editInterestTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+        binding.pushSettingText.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+        binding.checkNoticeTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+        binding.checkTermTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+        binding.checkPrivacyTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+        binding.appVersionTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+        binding.mypageLogoutTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+        binding.mypageWithdrawTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+
+        binding.mypageLoginButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 21);
+
         checkMyNickname("show_name");
 
         /* 쉐어드에서 로그인 상태값을 가져와 로그인, 비로그인일 경우 보이는 UI를 각각 다르게 해야 한다 */
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        // 비로그인, 로그인 상태에 따라 다른 뷰를 보여주는 처리부
         isLogout = sharedPreferences.getBoolean("logout", false);
         if (isLogout)
         {
-            // 비로그인 상태
-            binding.mypageMyId.setVisibility(View.GONE);
-            binding.nicknameEditImage.setVisibility(View.GONE);
-            binding.threeMenuLayout.setVisibility(View.GONE);
-            binding.mypageDividerView.setVisibility(View.GONE);
-            binding.editInterestTextview.setVisibility(View.GONE);
-            binding.mypageLogoutTextview.setVisibility(View.GONE);
-            binding.mypageWithdrawTextview.setVisibility(View.GONE);
-            binding.mypageLoginLayout.setVisibility(View.VISIBLE);
-            // 밑에 있는 관심사 수정, 푸시 알림 설정이 있는 레이아웃의 top 체인을 곡선 있는 흰색 레이아웃의 bottom에 연결한다
-            ConstraintLayout constraintLayout = binding.mypageBottomLayout;
-            ConstraintSet constraintSet = new ConstraintSet();
-            constraintSet.clone(constraintLayout);
-            constraintSet.connect(R.id.mypage_bottom_layout,    // startId : 어떤 뷰의 체인을 바꿀 것인가?
-                    ConstraintSet.TOP,                          // startSide : 그 뷰의 어디를 연결할 것인가?
-                    R.id.mypage_white_layout,                   // endId : 어디에 체인을 걸 것인가?
-                    ConstraintSet.BOTTOM,                       // endSide : 그 뷰의 어디에 1번 인자로 받은 뷰를 연결할 것인가?
-                    0);                                  // margin : 제한할 여백(양수여야 함)
-            constraintSet.applyTo(constraintLayout);
-            // verticalBias를 0으로 만들어서 맨 위로 올라가도록 한다
-            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.mypageBottomLayout.getLayoutParams();
-            params.verticalBias = 0f;
-            binding.mypageBottomLayout.setLayoutParams(params);
+            notLoginView();
         }
         else
         {
-            // 로그인 상태
-            binding.mypageMyId.setVisibility(View.VISIBLE);
-            binding.nicknameEditImage.setVisibility(View.VISIBLE);
-            binding.threeMenuLayout.setVisibility(View.VISIBLE);
-            binding.mypageDividerView.setVisibility(View.VISIBLE);
-            binding.mypageLoginLayout.setVisibility(View.GONE);
-            // 밑에 있는 관심사 수정, 푸시 알림 설정이 있는 레이아웃의 top 체인을 곡선 있는 흰색 레이아웃의 bottom에 연결한다
-            ConstraintLayout constraintLayout = binding.mypageBottomLayout;
-            ConstraintSet constraintSet = new ConstraintSet();
-            constraintSet.clone(constraintLayout);
-            constraintSet.connect(R.id.mypage_bottom_layout,    // startId : 어떤 뷰의 체인을 바꿀 것인가?
-                    ConstraintSet.TOP,                          // startSide : 그 뷰의 어디를 연결할 것인가?
-                    R.id.three_menu_container,                  // endId : 어디에 체인을 걸 것인가?
-                    ConstraintSet.BOTTOM,                       // endSide : 그 뷰의 어디에 1번 인자로 받은 뷰를 연결할 것인가?
-                    0);                                  // margin : 두 레이아웃의 위아래 간격 마진(양수여야 함)
-            constraintSet.applyTo(constraintLayout);
+            loginView();
         }
 
+        // 기기 설정값에 따라 스위치의 T/F 값을 바꿔 보여주는 처리부
         boolean isAllowed = areNotificationsEnabled();
         if (isAllowed)
         {
@@ -176,7 +171,7 @@ public class TestMyPageFragment extends Fragment
         // 닉네임 수정 이미지
         binding.nicknameEditImage.setOnClickListener(v ->
         {
-            // 커스텀 다이얼로그를 호출해서 닉네임 변경
+            /* 커스텀 다이얼로그를 호출해서 닉네임 변경 */
             CustomEditNicknameDialog dialog = new CustomEditNicknameDialog(getActivity());
             dialog.setDialogListener(new MyDialogListener()
             {
@@ -191,17 +186,16 @@ public class TestMyPageFragment extends Fragment
                 public void onPositiveClicked(String edited_str)
                 {
                     Log.e(TAG, "다이얼로그에서 가져온 문자열 : " + edited_str);
+                    receivedNickname = edited_str;
                     changeNickname(edited_str, "save");
-                    Observable.just(edited_str)
-                            .subscribeOn(Schedulers.io())
-                            .subscribe(data -> binding.mypageMyId.setText(edited_str));
                 }
             });
             dialog.showDialog();
         });
 
         // 로그인
-        binding.mypageLoginButton.setOnClickListener(v -> {
+        binding.mypageLoginButton.setOnClickListener(v ->
+        {
             sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
             SharedPreferences.Editor editor2 = sharedPreferences.edit();
             editor2.putBoolean("logout", true);
@@ -213,7 +207,8 @@ public class TestMyPageFragment extends Fragment
         });
 
         // 로그아웃
-        binding.mypageLogoutTextview.setOnClickListener(v -> {
+        binding.mypageLogoutTextview.setOnClickListener(v ->
+        {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage("로그아웃 하시겠어요?")
                     .setPositiveButton("예", new DialogInterface.OnClickListener()
@@ -258,13 +253,94 @@ public class TestMyPageFragment extends Fragment
         });
 
         // 푸시 알림 설정하러 기기의 설정 화면으로 이동
-        binding.mypagePushLayout.setOnClickListener(v -> {
+        binding.mypagePushLayout.setOnClickListener(v ->
+        {
             Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, getContext().getPackageName());
             intent.putExtra(Settings.EXTRA_CHANNEL_ID, "ch_push");
             startActivity(intent);
         });
+
+        // 이용약관 확인
+        binding.checkTermTextview.setOnClickListener(v ->
+        {
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "이용약관 클릭");
+            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+            Intent intent = new Intent(getActivity(), TermsAndConditionsActivity.class);
+            startActivity(intent);
+        });
+
+        // 개인정보 처리방침
+        binding.checkPrivacyTextview.setOnClickListener(v ->
+        {
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "개인정보 처리방침 클릭");
+            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+            Intent intent = new Intent(getActivity(), PersonalInformationActivity.class);
+            startActivity(intent);
+        });
+
+        // 북마크 혜택
+        binding.bookmarkWelfareLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), BookmarkCheckActivity.class);
+            startActivity(intent);
+        });
+
+        // 작성한 리뷰
+        binding.writtenReviewLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), WrittenReviewCheckActivity.class);
+            startActivity(intent);
+        });
+    }
+
+    // 비로그인 상태일 때 보여주는 화면
+    void notLoginView()
+    {
+        binding.mypageMyId.setVisibility(View.GONE);
+        binding.nicknameEditImage.setVisibility(View.GONE);
+        binding.threeMenuLayout.setVisibility(View.GONE);
+        binding.mypageDividerView.setVisibility(View.GONE);
+        binding.editInterestTextview.setVisibility(View.GONE);
+        binding.mypageLogoutTextview.setVisibility(View.GONE);
+        binding.mypageWithdrawTextview.setVisibility(View.GONE);
+        binding.mypageLoginLayout.setVisibility(View.VISIBLE);
+        // 밑에 있는 관심사 수정, 푸시 알림 설정이 있는 레이아웃의 top 체인을 곡선 있는 흰색 레이아웃의 bottom에 연결한다
+        ConstraintLayout constraintLayout = binding.mypageBottomLayout;
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(constraintLayout);
+        constraintSet.connect(R.id.mypage_bottom_layout,    // startId : 어떤 뷰의 체인을 바꿀 것인가?
+                ConstraintSet.TOP,                          // startSide : 그 뷰의 어디를 연결할 것인가?
+                R.id.mypage_white_layout,                   // endId : 어디에 체인을 걸 것인가?
+                ConstraintSet.BOTTOM,                       // endSide : 그 뷰의 어디에 1번 인자로 받은 뷰를 연결할 것인가?
+                0);                                  // margin : 제한할 여백(양수여야 함)
+        constraintSet.applyTo(constraintLayout);
+        // verticalBias를 0으로 만들어서 맨 위로 올라가도록 한다
+        ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.mypageBottomLayout.getLayoutParams();
+        params.verticalBias = 0f;
+        binding.mypageBottomLayout.setLayoutParams(params);
+    }
+
+    // 로그인 상태일 때 보여주는 화면
+    void loginView()
+    {
+        // 로그인 상태
+        binding.mypageMyId.setVisibility(View.VISIBLE);
+        binding.nicknameEditImage.setVisibility(View.VISIBLE);
+        binding.threeMenuContainer.setVisibility(View.VISIBLE);
+        binding.mypageDividerView.setVisibility(View.VISIBLE);
+        binding.mypageLoginLayout.setVisibility(View.GONE);
+        // 밑에 있는 관심사 수정, 푸시 알림 설정이 있는 레이아웃의 top 체인을 곡선 있는 흰색 레이아웃의 bottom에 연결한다
+        ConstraintLayout constraintLayout = binding.mypageBottomLayout;
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(constraintLayout);
+        constraintSet.connect(R.id.mypage_bottom_layout,    // startId : 어떤 뷰의 체인을 바꿀 것인가?
+                ConstraintSet.TOP,                          // startSide : 그 뷰의 어디를 연결할 것인가?
+                R.id.three_menu_container,                  // endId : 어디에 체인을 걸 것인가?
+                ConstraintSet.TOP,                       // endSide : 그 뷰의 어디에 1번 인자로 받은 뷰를 연결할 것인가?
+                0);                                  // margin : 두 레이아웃의 위아래 간격 마진(양수여야 함)
+        constraintSet.applyTo(constraintLayout);
     }
 
     // 내 닉네임 가져와서 보여주는 메서드
@@ -327,6 +403,7 @@ public class TestMyPageFragment extends Fragment
                 {
                     String result = response.body();
                     Log.e(TAG, "닉네임 변경 결과 : " + result);
+                    parseResult(result);
                 }
                 else
                 {
@@ -340,42 +417,9 @@ public class TestMyPageFragment extends Fragment
                 Log.e(TAG, "닉네임 변경 에러 : " + t.getMessage());
             }
         });
-//        Cursor cursor = helper.selectColumns();
-//        if (cursor != null)
-//        {
-//            while (cursor.moveToNext())
-//            {
-//                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-//            }
-//        }
-//        ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
-//        Call<String> call = apiInterface.editNickname(sqlite_token, nickname, type);
-//        Log.e(TAG, "token : " + sqlite_token + ", 변경할 닉네임 : " + nickname);
-//        call.enqueue(new Callback<String>()
-//        {
-//            @Override
-//            public void onResponse(Call<String> call, Response<String> response)
-//            {
-//                if (response.isSuccessful() && response.body() != null)
-//                {
-//                    String result = response.body();
-//                    Log.e(TAG, "닉네임 변경 결과 : " + result);
-//                }
-//                else
-//                {
-//                    Log.e(TAG, "닉네임 변경 실패 : " + response.body());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<String> call, Throwable t)
-//            {
-//                Log.e(TAG, "닉네임 변경 에러 : " + t.getMessage());
-//            }
-//        });
     }
 
-    // 가져온 내 닉네임을 텍스트뷰에 set하는 메서드(rxjava 사용)
+    // 가져온 내 닉네임을 텍스트뷰에 set하는 메서드
     @SuppressLint("CheckResult")
     private void parseResult(String result)
     {
@@ -388,9 +432,18 @@ public class TestMyPageFragment extends Fragment
         {
             e.printStackTrace();
         }
-        Observable.just(message)
-                .subscribeOn(Schedulers.io())
-                .subscribe(s -> binding.mypageMyId.setText(message));
+
+        if (message.equals("계정 정보가 존재하지 않습니다.") || message.equals("data is empty"))
+        {
+            notLoginView();
+        }
+        else
+        {
+            loginView();
+            Observable.just(receivedNickname)
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(data -> binding.mypageMyId.setText(receivedNickname));
+        }
     }
 
     // 사용자 로그
@@ -529,22 +582,15 @@ public class TestMyPageFragment extends Fragment
     {
         super.onResume();
         boolean isAllowed = areNotificationsEnabled();
-        if (sharedPreferences.getBoolean("logout", false))
+        if (isAllowed)
         {
-            binding.mypageNotiSwitch.setChecked(false);
+            binding.mypageNotiSwitch.setChecked(true);
+            putPushSetting(true);
         }
         else
         {
-            if (isAllowed)
-            {
-                binding.mypageNotiSwitch.setChecked(true);
-                putPushSetting(true);
-            }
-            else
-            {
-                binding.mypageNotiSwitch.setChecked(false);
-                putPushSetting(false);
-            }
+            binding.mypageNotiSwitch.setChecked(false);
+            putPushSetting(false);
         }
     }
 }

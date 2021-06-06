@@ -32,10 +32,8 @@ import com.kakao.auth.Session;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.psj.welfare.R;
-import com.psj.welfare.activity.ChoiceKeywordActivity;
 import com.psj.welfare.activity.GetUserInformationActivity;
 import com.psj.welfare.activity.LoginActivity;
-import com.psj.welfare.activity.MyInfoUpdateActivity;
 import com.psj.welfare.activity.PersonalInformationActivity;
 import com.psj.welfare.activity.SplashActivity;
 import com.psj.welfare.activity.TermsAndConditionsActivity;
@@ -206,9 +204,9 @@ public class MyPageFragment extends Fragment
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "키워드 정보 수정 화면으로 이동");
                 analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-                Intent intent = new Intent(getActivity(), ChoiceKeywordActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), ChoiceKeywordActivity.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                startActivity(intent);
             }
         });
         keyword_imageview.setOnClickListener(new OnSingleClickListener()
@@ -219,9 +217,9 @@ public class MyPageFragment extends Fragment
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "키워드 정보 수정 화면으로 이동");
                 analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-                Intent intent = new Intent(getActivity(), ChoiceKeywordActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), ChoiceKeywordActivity.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                startActivity(intent);
             }
         });
 
@@ -231,7 +229,7 @@ public class MyPageFragment extends Fragment
         // 여기 뿐 아니라 onResume()에도 같은 처리를 해야 한다. 왜냐면 화면을 이동해서 설정값을 바꾸고 백버튼을 누르면 마이페이지로 돌아오는데, 이 때 호출되는 onResume()에서
         // 알림 설정값을 체크해야 스위치의 on/off가 바뀌고 유저는 실시간으로 설정값이 반영되는 걸 확인할 수 있다
         boolean isAllowed = areNotificationsEnabled();
-        if (isAllowed)
+        if (isAllowed == true)
         {
             push_noti_switch.setChecked(true);
             putPushSetting(true);
@@ -373,8 +371,8 @@ public class MyPageFragment extends Fragment
             @Override
             public void onSingleClick(View v)
             {
-                Intent intent = new Intent(getActivity(), MyInfoUpdateActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), MyInfoUpdateActivity.class);
+//                startActivity(intent);
             }
         });
 
@@ -396,6 +394,7 @@ public class MyPageFragment extends Fragment
         else
         {
             kakao_name.setVisibility(View.VISIBLE);
+            kakao_name.setText("nickname908");
             kakao_profile_image.setVisibility(View.VISIBLE);
             mypage_login_btn.setText("로그아웃");
             user_layout.setVisibility(View.VISIBLE);

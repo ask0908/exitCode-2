@@ -5,26 +5,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/gradation_background"
     tools:context=".activity.TermsAndConditionsActivity">
 
-    <TextView
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/terms_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="이용약관"
-        android:fontFamily="@font/jalnan"
-        android:gravity="center"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="5dp"
-        android:padding="10dp"
-        android:textColor="@android:color/white"
-        android:textSize="20sp"/>
+        android:layout_height="?attr/actionBarSize">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="이용약관"
+            android:fontFamily="@font/jalnan"
+            android:layout_marginLeft="5dp"
+            android:padding="10dp"
+            android:textColor="@color/colorBlack"
+            android:textSize="20sp"/>
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent=".09"
+        app:layout_constraintVertical_bias="0"
+        android:background="@color/colorGray_L"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/terms_toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/radius_25">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -1698,8 +1712,7 @@
                 android:textStyle="bold" />
 
         </LinearLayout>
+
     </ScrollView>
-
-
 
 </LinearLayout>

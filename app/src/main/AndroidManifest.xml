@@ -5,7 +5,6 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
@@ -23,18 +22,21 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
-        <activity android:name=".DetailReviewAllLook"/>
+        <activity android:name=".activity.BookmarkEditActivity"/>
+        <activity android:name=".activity.WrittenReviewCheckActivity" />
+        <activity android:name=".activity.BookmarkCheckActivity" />
+        <activity android:name=".DetailReviewAllLook" />
         <activity android:name=".DetailReviewWrite" />
         <activity android:name=".TutorialResult" />
         <activity android:name=".TutorialCategory" />
         <activity android:name=".TutorialWelcome" />
-        <activity android:name=".DetailTabLayoutActivity"/>
-        <activity android:name=".test.TestMoreViewActivity"/>
-        <activity android:name=".test.TestSearchResultActivity"
-            android:windowSoftInputMode="adjustNothing"/>
+        <activity android:name=".DetailTabLayoutActivity" />
+        <activity android:name=".test.TestMoreViewActivity" />
+        <activity
+            android:name=".test.TestSearchResultActivity"
+            android:windowSoftInputMode="adjustNothing" />
         <activity android:name=".activity.YoutubeTestActivity" />
         <activity android:name=".activity.RegionResultActivity" />
-        <activity android:name=".test.TestActivity" />
         <activity android:name=".activity.RegionChooseActivity" />
         <activity android:name=".activity.ThemeChooseActivity" />
         <activity android:name=".activity.TermsAndConditionsActivity" />
@@ -47,16 +49,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.ChoiceKeywordActivity" />
         <activity android:name=".activity.SearchResultActivity" />
         <activity android:name=".activity.YoutubeActivity" />
         <activity
             android:name=".activity.ReviewUpdateActivity"
             android:theme="@style/ReviewTheme" />
         <activity android:name=".activity.GetUserInformationActivity" />
-        <activity
-            android:name=".activity.MyInfoUpdateActivity"
-            android:theme="@style/ToolbarTheme" />
         <activity android:name=".activity.MapSearchActivity" />
         <activity android:name=".activity.MapDetailActivity" />
         <activity
@@ -71,7 +69,8 @@
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_app_key" />
 
-        <activity android:name=".activity.MainTabLayoutActivity"
+        <activity
+            android:name=".activity.MainTabLayoutActivity"
             android:windowSoftInputMode="adjustNothing">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

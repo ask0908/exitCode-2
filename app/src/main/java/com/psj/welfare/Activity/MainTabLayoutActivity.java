@@ -716,7 +716,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
     public void setStatusBarGradiant(Activity activity)
     {
         Window window = activity.getWindow();
-        Drawable background = activity.getResources().getDrawable(R.drawable.gradation_background);
+        Drawable background = activity.getResources().getDrawable(R.drawable.renewal_gradation_background);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(activity.getResources().getColor(android.R.color.transparent));
         window.setBackgroundDrawable(background);

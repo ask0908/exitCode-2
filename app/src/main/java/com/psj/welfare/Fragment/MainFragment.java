@@ -31,7 +31,6 @@ import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.kakao.usermgmt.callback.UnLinkResponseCallback;
 import com.psj.welfare.R;
-import com.psj.welfare.activity.ChoiceKeywordActivity;
 import com.psj.welfare.activity.DetailBenefitActivity;
 import com.psj.welfare.activity.LoginActivity;
 import com.psj.welfare.activity.RegionChooseActivity;
@@ -271,8 +270,8 @@ public class MainFragment extends Fragment
         {
             if (sharedPreferences.getString("interest", "") == null)
             {
-                Intent intent = new Intent(getActivity(), ChoiceKeywordActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), ChoiceKeywordActivity.class);
+//                startActivity(intent);
             }
             else
             {

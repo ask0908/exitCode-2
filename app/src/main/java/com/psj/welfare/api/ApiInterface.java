@@ -856,7 +856,7 @@ public interface ApiInterface
     );
 
     /* 마이페이지에서 사용하는 메서드 */
-
+    // ===================================================================================================
     /**
      * 닉네임 변경 메서드
      * @param token - 로그인 시 서버에서 받는 토큰
@@ -886,6 +886,102 @@ public interface ApiInterface
             @Header("logintoken") String token,
             @Nullable @Query("new_name") String nickname,
             @Query("type") String type
+    );
+
+    /**
+     * 내가 작성한 리뷰를 확인하는 기능
+     * WrittenReviewCheckActivity에서 사용
+     * @param token - 로그인 시 서버에서 받는 토큰
+     * @param page - 요청하는 페이지 값(1p당 10개 청크)
+     * @return -
+     * - 작성한 리뷰가 있는 경우 -
+     *
+     * {
+     *     "statusCode": 200,
+     *     "message": [
+     *         {
+     *             "welf_name": "저소득층 자산형성 지원(희망, 내일키움통장 사업)",
+     *             "writer": "user124",
+     *             "content": "test",
+     *             "star_count": 3,
+     *             "difficulty_level": "쉬워요",
+     *             "satisfaction": "도움 돼요",
+     *             "create_date": "2021-04-30 22:29:04",
+     *             "welf_id": 570
+     *         },...x5
+     *     ],
+     *     "total": 5,
+     *     "totalPage": 1
+     * }
+     *
+     * - 작성한 리뷰가 없는 경우 -
+     *
+     * {
+     *     "statusCode": 200,
+     *     "message": [],
+     *     "total": 0,
+     *     "totalPage": 0
+     * }
+     */
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/my_review")
+    Call<String> checkMyReview(
+            @Header("logintoken") String token,
+            @Query("page") String page
+    );
+
+    /* 북마크 관련 메서드 */
+    // ===================================================================================================
+    /**
+     * 북마크 목록을 확인하는 메서드
+     * @param token - 로그인 시 서버에서 받는 토큰
+     * @param type - "show" 고정(북마크 데이터를 가져오는 거니까)
+     * @param page - 요청하는 페이지 값
+     * @return - {
+     *     "statusCode": 200,
+     *     "message": [
+     *         {
+     *             "id": 529,
+     *             "welf_name": "수의사 연수교육 지원",
+     *             "tag": "농축수산인"
+     *         },
+     *         {
+     *             "id": 975,
+     *             "welf_name": "성인문해교육 지원",
+     *             "tag": ""
+     *         }, ... 이런 식으로 10개가 온다
+     *     ],
+     *     "total": 10,
+     *     "total_page": 1
+     * }
+     */
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/mypage-bookmark")
+    Call<String> getBookmark(
+            @Header("logintoken") String token,
+            @Query("type") String type,
+            @Query("page") String page
+    );
+
+    /**
+     * 북마크 데이터를 삭제하는 메서드
+     * @param token - 로그인 시 서버에서 받는 토큰
+     * @param type - "delete" 고정(북마크 데이터를 삭제하는 거니까)
+     * @param page - 요청하는 페이지 값
+     * @param id - 삭제하려는 북마크 데이터의 id값 (id 간 구분자는 "-")
+     * @return -
+     * 200: 삭제되었습니다.
+     * 200: 북마크 조회 완료
+     * 200: 이미 삭제된 북마크 입니다.
+     * 500: 존재하지 않는 북마크 입니다.
+     * 400: 계정 정보가 존재하지 않습니다.
+     * 404: data is empty
+     * 500: Failed to connect to MySQL.
+     */
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/mypage-bookmark")
+    Call<String> deleteBookmark(
+            @Header("logintoken") String token,
+            @Query("type") String type,
+            @Nullable @Query("page") String page,   // 1p에 있는 북마크를 삭제할 때 굳이 페이지를 넣을 필요 없음
+            @Query("id") String id
     );
 
 }

@@ -32,5 +32,6 @@
     <color name="layout_background_end_gradation">#F2B69D</color>
     <color name="keyword_unselected_color">#E76881</color> <!-- 키워드 화면에서 선택 안 된 버튼에 입힐 색 -->
     <color name="color_text_pink">#FF5B7F</color> <!-- 키워드 화면에서 선택 안 된 버튼에 입힐 색 -->
+    <color name="bookmark_recyclerview_item">#FBD6E1</color>
 
 </resources>
