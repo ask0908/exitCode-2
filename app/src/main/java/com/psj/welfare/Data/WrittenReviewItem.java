@@ -8,6 +8,7 @@ public class WrittenReviewItem
     private String content;
     private String create_date;
     private float star_count;
+    private int review_id;
 
     public String getWelf_name()
     {
@@ -67,5 +68,15 @@ public class WrittenReviewItem
     public void setStar_count(float star_count)
     {
         this.star_count = star_count;
+    }
+
+    public int getReview_id()
+    {
+        return review_id;
+    }
+
+    public void setReview_id(int review_id)
+    {
+        this.review_id = review_id;
     }
 }

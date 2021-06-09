@@ -3,6 +3,7 @@ package com.psj.welfare.adapter;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Point;
 import android.util.Log;
 import android.util.TypedValue;
@@ -22,7 +23,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.psj.welfare.DetailReviewWrite;
 import com.psj.welfare.R;
+import com.psj.welfare.custom.MyReviewListener;
 import com.psj.welfare.data.WrittenReviewItem;
+import com.psj.welfare.util.DBOpenHelper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,8 +39,17 @@ public class WrittenReviewAdapter extends RecyclerView.Adapter<WrittenReviewAdap
     private Context context;
     private List<WrittenReviewItem> list;
     private OnItemClickListener itemClickListener;
+    private MyReviewListener myReviewListener;
+//    private OnDeleteListener deleteListener;
 
     String result_date, welf_id, welf_name;
+    DBOpenHelper helper;
+    String sqlite_token;
+
+    public void setOnReviewListener(MyReviewListener myReviewListener)
+    {
+        this.myReviewListener = myReviewListener;
+    }
 
     public void setOnItemClickListener(OnItemClickListener itemClickListener)
     {
@@ -49,6 +61,18 @@ public class WrittenReviewAdapter extends RecyclerView.Adapter<WrittenReviewAdap
         this.context = context;
         this.list = list;
         this.itemClickListener = itemClickListener;
+        helper = new DBOpenHelper(context);
+        helper.openDatabase();
+        helper.create();
+
+        Cursor cursor = helper.selectColumns();
+        if (cursor != null)
+        {
+            while (cursor.moveToNext())
+            {
+                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+            }
+        }
     }
 
     @NonNull
@@ -106,25 +130,28 @@ public class WrittenReviewAdapter extends RecyclerView.Adapter<WrittenReviewAdap
                 {
                     switch (item.getItemId())
                     {
-                        case R.id.written_menu_edit:
+                        case R.id.written_menu_edit:    // 수정 클릭
                             Intent intent = new Intent(context, DetailReviewWrite.class);
-                            intent.putExtra("welf_id", list.get(position).getWelf_id());
+                            intent.putExtra("welfId", list.get(position).getWelf_id());
                             intent.putExtra("welf_name", list.get(position).getWelf_name());
-                            Log.e(TAG, "선택한 혜택의 welf_id : " + list.get(position).getWelf_id() + ", welf_name : " + list.get(position).getWelf_name());
+                            intent.putExtra("review_id", list.get(position).getReview_id());
+                            intent.putExtra("review_edit", 100);
+                            Log.e(TAG, "수정할 혜택의 welf_id : " + list.get(position).getWelf_id() + ", welf_name : " + list.get(position).getWelf_name());
                             context.startActivity(intent);
+                            notifyDataSetChanged();
                             break;
 
-                        case R.id.written_menu_delete:
+                        case R.id.written_menu_delete:  // 삭제 클릭
                             AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                            builder.setMessage("삭제하신 리뷰는 되돌릴 수 없어요.\n정말 리뷰를 삭제하시겠어요?")
+                            builder.setMessage("삭제하신 리뷰는 복구할 수 없어요.\n정말 리뷰를 삭제하시겠어요?")
                                     .setPositiveButton("예", (dialog, which) ->
                                     {
-                                        Toast.makeText(context, "리뷰를 삭제했습니다", Toast.LENGTH_SHORT).show();
-                                        dialog.dismiss();
+                                        // 리뷰 삭제 메서드 호출
+                                        myReviewListener.deleteReview(true, list.get(position).getReview_id());
                                     })
                                     .setNegativeButton("아니오", ((dialog, which) ->
                                     {
-                                        Toast.makeText(context, "리뷰 삭제 취소", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(context, "리뷰 삭제를 취소했어요", Toast.LENGTH_SHORT).show();
                                         dialog.dismiss();
                                     }))
                                     .show();

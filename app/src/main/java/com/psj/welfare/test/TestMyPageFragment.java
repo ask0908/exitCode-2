@@ -34,6 +34,7 @@ import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
 import com.psj.welfare.activity.BookmarkCheckActivity;
+import com.psj.welfare.activity.ChooseFirstInterestActivity;
 import com.psj.welfare.activity.LoginActivity;
 import com.psj.welfare.activity.PersonalInformationActivity;
 import com.psj.welfare.activity.SplashActivity;
@@ -293,6 +294,13 @@ public class TestMyPageFragment extends Fragment
             Intent intent = new Intent(getActivity(), WrittenReviewCheckActivity.class);
             startActivity(intent);
         });
+
+        // 관심사 선택
+        binding.editInterestTextview.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), ChooseFirstInterestActivity.class);
+            startActivity(intent);
+        });
+
     }
 
     // 비로그인 상태일 때 보여주는 화면

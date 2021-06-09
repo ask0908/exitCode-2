@@ -2,6 +2,7 @@ package com.psj.welfare;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Editable;
@@ -27,13 +28,20 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.util.DBOpenHelper;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DetailReviewWrite extends AppCompatActivity {
+
+    private final String TAG = this.getClass().getSimpleName();
 
     ImageButton back_btn; //뒤로 가기 버튼
     TextView BenefitTitle, score_textview, please_tab_textview, level_textview, satisfaction_textview, your_opinion_textview; //혜택명, 별점 주기 타이틀, 탭해서 별점주기, 과정 평가, 만족도 평가, 의견 남겨주세요
@@ -46,19 +54,38 @@ public class DetailReviewWrite extends AppCompatActivity {
     TextView text_length, text_length_textview; //의견란 현재 글자수, 의견란 최대 글자수
 
     boolean being_id; //혜택 id값이 존재 하는지
-    String welf_id=null, welf_name=null, level_value=null, satisfaction_value=null; //혜택 id값, 혜택명, 난이도, 만족도
+    String welf_id, welf_name, level_value, satisfaction_value; //혜택 id값, 혜택명, 난이도, 만족도
 
     boolean being_logout; //로그인 했는지 여부 확인하기
-    String SessionId = null; //세션 값
-    String token = null; //토큰 값
+    String SessionId; //세션 값
+    String token; //토큰 값
+
+    String result_code;
+    DBOpenHelper helper;
+    String sqlite_token;
+
+    int checkStatus = 0;
+    int written_review_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_review_write);
 
-
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        helper = new DBOpenHelper(this);
+        helper.openDatabase();
+        helper.create();
+
+        Cursor cursor = helper.selectColumns();
+        if (cursor != null)
+        {
+            while (cursor.moveToNext())
+            {
+                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+            }
+        }
 
         //로그인 했는지 여부 확인
         being_loging();
@@ -71,8 +98,6 @@ public class DetailReviewWrite extends AppCompatActivity {
 
         //버튼 및 텍스트의 사이즈를 동적으로 맞춤
         SetSize();
-
-        BenefitTitle.setText(welf_name);
 
         //이전 화면으로 가기
         back_btn.setOnClickListener(v -> {
@@ -156,17 +181,105 @@ public class DetailReviewWrite extends AppCompatActivity {
 
         //리뷰 등록 버튼 누름
         btnRegister.setOnClickListener(v -> {
-            if (level_value == null) { //난이도 평가를 안했다면
-                Toast.makeText(this, "신청 과정을 평가해 주세요", Toast.LENGTH_SHORT).show();
-            } else if (satisfaction_value == null) { //만족도 평가를 안했다면
-                Toast.makeText(this, "만족도를 평가해 주세요", Toast.LENGTH_SHORT).show();
-            } else if (review_content_edit.getText().toString().length() == 0) { //의견란이 공백이라면
-                Toast.makeText(this, "의견을 입력해 주세요", Toast.LENGTH_SHORT).show();
-            } else {
-                //의견 서버에 업로드 하기
-                UploadOpinion();
+            if (checkStatus == 100)
+            {
+                editReview();
+            }
+            else
+            {
+                if (level_value.equals("")) { //난이도 평가를 안했다면
+                    Toast.makeText(this, "신청 과정을 평가해 주세요", Toast.LENGTH_SHORT).show();
+                } else if (satisfaction_value.equals("")) { //만족도 평가를 안했다면
+                    Toast.makeText(this, "만족도를 평가해 주세요", Toast.LENGTH_SHORT).show();
+                } else if (review_content_edit.getText().toString().length() == 0) { //의견란이 공백이라면
+                    Toast.makeText(this, "의견을 입력해 주세요", Toast.LENGTH_SHORT).show();
+                } else {
+                    //의견 서버에 업로드 하기
+                    UploadOpinion();
+                }
             }
         });
+    }   // onCreate() end
+
+    // 리뷰 수정 메서드
+    private void editReview()
+    {
+        String star_count = String.valueOf(review_star.getRating());
+        String send_id = String.valueOf(written_review_id);
+        ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
+        Log.e(TAG, "star_count : " + star_count + ", level_value : " + level_value + ", 만족도 : " + satisfaction_value + ", 리뷰의 idx : " + send_id +
+                ", 입력한 내용 : " + review_content_edit.getText().toString() + ", 토큰 : " + sqlite_token);
+        JSONObject jsonObject = new JSONObject();
+        try
+        {
+            jsonObject.put("id", send_id);
+            jsonObject.put("content", review_content_edit.getText().toString());
+            jsonObject.put("star_count", star_count);
+            jsonObject.put("difficulty_level", level_value);
+            jsonObject.put("satisfaction", satisfaction_value);
+
+            Log.e(TAG, "수정 api로 보낼 JSON 만들어진 것 테스트 : " + jsonObject.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        Call<String> call = apiInterface.editReview(token, jsonObject.toString());
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    try
+                    {
+                        JSONObject inner_json = new JSONObject(response.body());
+                        Log.e(TAG, "리뷰 수정 성공 : " + inner_json.toString());
+                        editReviewResultParsing(inner_json.toString());
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+//                    String result = response.body();
+//                    editReviewResultParsing(result);
+//                    Log.e(TAG, "리뷰 수정 성공 : " + result);
+                }
+                else
+                {
+                    Log.e(TAG, "리뷰 수정 에러 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "리뷰 수정 에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    // 리뷰 수정 후 서버에서 넘어온 결과값 파싱
+    private void editReviewResultParsing(String result)
+    {
+        try
+        {
+            JSONObject jsonObject = new JSONObject(result);
+            result_code = jsonObject.getString("statusCode");
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
+        // 리뷰 수정 성공했으면 토스트 띄우고 화면 종료
+        if (result_code.equals("200"))
+        {
+            Toast.makeText(this, "리뷰 수정이 완료됐습니다", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
     }
 
     //로그인 했는지 여부 확인
@@ -174,8 +287,6 @@ public class DetailReviewWrite extends AppCompatActivity {
         //로그인 했는지 여부 확인하기위한 쉐어드
         SharedPreferences app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
         being_logout = app_pref.getBoolean("logout", false); //로그인 했는지 여부 확인하기
-        SessionId = null;
-        token = null;
 
         if (!being_logout) { //로그인 했다면
             SessionId = app_pref.getString("sessionId", ""); //세션값 받아오기
@@ -330,13 +441,24 @@ public class DetailReviewWrite extends AppCompatActivity {
 
     //인텐트로 받아온 welf_id값
     private void being_intent() {
-        welf_id = ""; //혜택 아이디 값
         Intent intent = getIntent();
-        being_id = intent.getBooleanExtra("being_id", false); //혜택 데이터가 있는지
-        if (being_id) {
+        if (getIntent().hasExtra("review_edit"))
+        {
+            checkStatus = intent.getIntExtra("review_edit", -1);
+            written_review_id = intent.getIntExtra("review_id", -1); //혜택id
+            String welf_name = intent.getStringExtra("welf_name");
+            BenefitTitle.setText(welf_name);
+            Log.e(TAG, "checkStatus : " + checkStatus + ", 내가 작성한 리뷰 id : " + written_review_id + ", 내가 작성한 리뷰의 혜택명 : " + welf_name);
+        }
+        else
+        {
+            being_id = intent.getBooleanExtra("being_id", false); //혜택 데이터가 있는지
             welf_id = intent.getStringExtra("welf_id"); //혜택id
             welf_name = intent.getStringExtra("welf_name"); //혜택명
+            BenefitTitle.setText(welf_name);
+            Log.e(TAG, "checkStatus = " + checkStatus + ", welf_id : " + welf_id);
         }
+        /* if (being_id) 부분 때문에 혜택이름과 id를 받아오지 못해서 삭제했습니다 */
     }
 
     @Override

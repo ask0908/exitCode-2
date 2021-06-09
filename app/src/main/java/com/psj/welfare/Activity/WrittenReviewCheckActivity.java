@@ -3,6 +3,8 @@ package com.psj.welfare.activity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
@@ -21,11 +24,16 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.psj.welfare.DetailTabLayoutActivity;
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
 import com.psj.welfare.adapter.WrittenReviewAdapter;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.custom.MyReviewListener;
 import com.psj.welfare.custom.RecyclerViewEmptySupport;
 import com.psj.welfare.data.WrittenReviewItem;
+import com.psj.welfare.util.DBOpenHelper;
 import com.psj.welfare.viewmodel.MyPageViewModel;
 
 import org.json.JSONArray;
@@ -37,6 +45,9 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class WrittenReviewCheckActivity extends AppCompatActivity
 {
@@ -58,10 +69,14 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
 
     // 리사이클러뷰에서 보여줄 내용
     String welf_name, writer, content, create_date;
-    int welf_id;
+    int welf_id, review_id;
     String star_count;
     // 페이징에 필요한 내용
     String total, totalPage;
+
+    DBOpenHelper helper;
+    String sqlite_token;
+    String message, status;
 
     private Parcelable recyclerViewState;
 
@@ -71,6 +86,19 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setStatusBarGradiant(this);
         setContentView(R.layout.activity_written_review_check);
+
+        helper = new DBOpenHelper(this);
+        helper.openDatabase();
+        helper.create();
+
+        Cursor cursor = helper.selectColumns();
+        if (cursor != null)
+        {
+            while (cursor.moveToNext())
+            {
+                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+            }
+        }
 
         written_review_recyclerview = findViewById(R.id.written_review_recyclerview);
         written_review_recyclerview.setLayoutManager(new LinearLayoutManager(this));
@@ -136,6 +164,7 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
                 star_count = inner_json.getString("star_count");
                 create_date = inner_json.getString("create_date");
                 welf_id = inner_json.getInt("welf_id");
+                review_id = inner_json.getInt("review_id");
 
                 WrittenReviewItem item = new WrittenReviewItem();
                 item.setWelf_name(welf_name);
@@ -144,6 +173,7 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
                 item.setStar_count(Float.parseFloat(star_count));
                 item.setCreate_date(create_date);
                 item.setWelf_id(welf_id);
+                item.setReview_id(review_id);
                 list.add(item);
             }
         }
@@ -178,19 +208,96 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
             written_review_recyclerview.setEmptyView(written_review_empty_textview);
         }
 
+        adapter.setOnReviewListener(new MyReviewListener()
+        {
+            @Override
+            public void deleteReview(boolean isRemoved, int id)
+            {
+                if (isRemoved)
+                {
+                    removeReview(id);
+                }
+            }
+        });
+
         adapter.setOnItemClickListener(pos ->
         {
             String name = list.get(pos).getWelf_name();
             String writer = list.get(pos).getWriter();
             String date = list.get(pos).getCreate_date();
             int welfId = list.get(pos).getWelf_id();
+            int reviewId = list.get(pos).getReview_id();
             float star_counts = list.get(pos).getStar_count();
-            Log.e(TAG, "이름 : " + name + ", 작성자 : " + writer + ", 작성일 : " + date + ", welf_id : " + welfId + ", 평점 : " + star_counts);
+            Log.e(TAG, "이름 : " + name + ", 작성자 : " + writer + ", 작성일 : " + date + ", welf_id : " + welfId + ", 평점 : " + star_counts
+                    + ", 리뷰의 idx : " + reviewId);
+            Intent intent = new Intent(this, DetailTabLayoutActivity.class);
+            intent.putExtra("welf_id", String.valueOf(welfId));
+            intent.putExtra("review_id", String.valueOf(reviewId));
+            intent.putExtra("welf_name", name);
+            startActivity(intent);
         });
 
         written_review_recyclerview.setAdapter(adapter);
         written_review_progressbar.setVisibility(View.GONE);
 
+    }
+
+    private void removeReview(int review_id)
+    {
+        ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
+
+        JSONObject jsonObject = new JSONObject();
+        try
+        {
+            jsonObject.put("id", review_id);
+            jsonObject.put("is_remove", "true");
+
+            Log.e(TAG, "삭제 api로 보낼 JSON 만들어진 것 테스트 : " + jsonObject.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
+        Call<String> call = apiInterface.deleteReview(sqlite_token, jsonObject.toString());
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    removeResponseParse(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "리뷰 삭제 에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    private void removeResponseParse(String result)
+    {
+        try
+        {
+            JSONObject result_object = new JSONObject(result);
+            status = result_object.getString("statusCode");
+            message = result_object.getString("message");
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
+        if (status.equals("200"))
+        {
+            Toast.makeText(this, "리뷰가 성공적으로 삭제됐어요", Toast.LENGTH_SHORT).show();
+            getMyReview(page);
+            adapter.notifyDataSetChanged();
+        }
     }
 
     public void setStatusBarGradiant(Activity activity)
@@ -202,4 +309,10 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
         window.setBackgroundDrawable(background);
     }
 
+    @Override
+    protected void onRestart()
+    {
+        super.onRestart();
+        getMyReview(page);
+    }
 }

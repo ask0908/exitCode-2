@@ -77,4 +77,5 @@ public class RecyclerViewEmptySupport extends RecyclerView
     {
         super(context, attrs, defStyleAttr);
     }
+
 }

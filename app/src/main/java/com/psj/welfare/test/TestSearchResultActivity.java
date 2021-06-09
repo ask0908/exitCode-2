@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.navigation.NavigationView;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
+import com.psj.welfare.DetailTabLayoutActivity;
 import com.psj.welfare.R;
 import com.psj.welfare.adapter.ExpandableRecyclerViewAdapter;
 import com.psj.welfare.adapter.InnerRecyclerViewAdapter;
@@ -617,14 +618,13 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
             search_result_recyclerview.setVisibility(View.VISIBLE);
             search_result_empty_textview.setVisibility(View.GONE);
             search_result_no_image.setVisibility(View.GONE);
-            // TODO : 아래의 텍스트 바뀌는 부분을 반응형으로 바꾼다
             total_search_result.setText("혜택 총 " + adapter.getItemCount() + "개");
         }
         else if (adapter.getItemCount() == 0)
         {
             search_result_recyclerview.setVisibility(View.GONE);
             search_result_empty_textview.setVisibility(View.VISIBLE);
-            search_result_no_image.setVisibility(View.VISIBLE);
+//            search_result_no_image.setVisibility(View.VISIBLE);
             search_result_recyclerview.setEmptyView(search_result_empty_textview);
             total_search_result.setText("혜택 총 " + total_result_count + "개");
         }
@@ -647,7 +647,13 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
             String count = list.get(pos).getWelf_count();
             String local = list.get(pos).getWelf_local();
             String thema = list.get(pos).getWelf_thema();
-            Log.e(TAG, "선택한 아이템의 이름 : " + name + ", 태그 : " + tag + ", 조회수 : " + count + ", 지역 : " + local + ", 테마 : " + thema);
+            String id = list.get(pos).getWelf_id();
+            Log.e(TAG, "선택한 아이템의 이름 : " + name + ", 태그 : " + tag + ", 조회수 : " + count + ", 지역 : " + local + ", 테마 : " + thema + ", id : " + id);
+            Intent intent = new Intent(this, DetailTabLayoutActivity.class);
+            intent.putExtra("welf_id", id);
+            intent.putExtra("welf_name", name);
+            Log.e(TAG, "id : " + id + ", name : " + name);
+            startActivity(intent);
         });
 
         search_result_recyclerview.setAdapter(adapter);

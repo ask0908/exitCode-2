@@ -5,9 +5,11 @@ import androidx.annotation.Nullable;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -315,60 +317,6 @@ public interface ApiInterface
             @Field("age") String age,
             @Field("gender") String gender,
             @Field("city") String city
-    );
-
-    /**
-     * 사용자가 관심있는 관심사를 수정하는 기능
-     * ChoiceKeywordActivity에서 사용됨
-     *
-     * @param login_token - 로그인 시 서버에서 생성되는 토큰
-     * @param type        - 요청 타입(interest 고정)
-     * @param interest    - 사용자의 관심사 정보(10대,가출,검정고시,통신비,자퇴,...)
-     * @return - {
-     * "Status":"200",
-     * "Message":"사용자 관심사 등록이 완료되었습니다."
-     * }
-     */
-    @FormUrlEncoded
-    @PUT("https://www.hyemo.com/user")
-    Call<String> registerUserInterest(
-            @Header("SessionId") String sessionId,
-            @Header("Action") String action,
-            @Field("login_token") String login_token,
-            @Field("type") String type,
-            @Field("interest") String interest
-    );
-
-    /**
-     * 사용자 관심사 조회, 유저의 관심사를 가져오는 메서드
-     *
-     * @param token - 로그인 시 서버에서 받는 토큰
-     * @param type  - "interest" 고정
-     * @return - {"Status":"200","Message":"장학생|직업훈련|학자금|취업|대출|장려금"}
-     */
-    @GET("https://www.hyemo.com/user")
-    Call<String> checkKeyword(
-            @Query("login_token") String token,
-            @Query("type") String type
-    );
-
-    /**
-     * 모든 관심사 리스트 조회, 서버에 저장된 모든 관심사 리스트를 조회하는 메서드다
-     *
-     * @param type - "all" 고정
-     * @return -
-     * "Status":"200",
-     * "Message":[
-     * {
-     * "10대,남자":"10대,가출,검정고시,통신비,자퇴,퇴학,중학생,고등학생,소년소녀가정,조손가정,한부모가족,가정위탁"
-     * },
-     * {
-     * "10대,여자":"10대,가출,검정고시,통신비,자퇴,퇴학,중학생,고등학생,소년소녀가정,조손가정,한부모가족,가정위탁,성범죄"
-     * }
-     */
-    @GET("https://www.hyemo.com/user")
-    Call<String> getAllInterest(
-            @Query("type") String type
     );
 
     /**
@@ -929,6 +877,39 @@ public interface ApiInterface
             @Query("page") String page
     );
 
+    /**
+     * 리뷰 수정 람다 메서드
+     * @param token - 로그인 시 서버에서 받는 토큰
+     * @param edit_review - 서버로 넘기는 JSON 데이터를 String으로 변경한 것
+     * @return -
+     * {
+     *      "statusCode": 200,
+     *      "message":"리뷰 수정이 완료되었습니다."
+     * }
+     */
+    @PUT("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/review")
+    Call<String> editReview(
+            @Header("logintoken") String token,
+            @Body String edit_review
+    );
+
+    /**
+     * 리뷰 삭제 람다 메서드
+     * delete를 사용할 경우 body를 사용할 수 없기 때문에 @HTTP를 써서 body를 넘겨야 한다
+     * @param token - 로그인 시 서버에서 받는 토큰
+     * @param remove_review - 서버로 넘기는 JSON 데이터를 String으로 변경한 것
+     * @return -
+     * {
+     *     "statusCode": 200,
+     *     "message": "리뷰 삭제가 완료되었습니다."
+     * }
+     */
+    @HTTP(method = "DELETE", path = "https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/review", hasBody = true)
+    Call<String> deleteReview(
+            @Header("logintoken") String token,
+            @Body String remove_review
+    );
+
     /* 북마크 관련 메서드 */
     // ===================================================================================================
     /**
@@ -982,6 +963,31 @@ public interface ApiInterface
             @Query("type") String type,
             @Nullable @Query("page") String page,   // 1p에 있는 북마크를 삭제할 때 굳이 페이지를 넣을 필요 없음
             @Query("id") String id
+    );
+
+    /* 관심사 선택, 수정 메서드 */
+    // ===================================================================================================
+
+    /**
+     * 유저의 관심사를 추가하는 기능
+     * @param token - 로그인 시 서버에서 받는 토큰
+     * @param age - 나이대(10대 미만-10대-20대)
+     * @param local - 지역(서울-경기-인천)
+     * @param family - 가구 형태(다문화-다자녀-소년소녀 가장)
+     * @param category - 카테고리(군인/보훈대상자-농축수산인-장애인)
+     * @return -
+     * {
+     *     "statusCode": 200,
+     *     "message": "관심사 등록이 완료됐습니다."
+     * }
+     */
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/put-interest")
+    Call<String> saveMyInterest(
+            @Header("logintoken") String token,
+            @Query("age") String age,
+            @Query("local") String local,
+            @Query("family") String family,
+            @Query("category") String category
     );
 
 }

@@ -46,7 +46,8 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 
-public class DetailTabLayoutActivity extends AppCompatActivity {
+public class DetailTabLayoutActivity extends AppCompatActivity
+{
 
     public final String TAG = this.getClass().getSimpleName();
     String benefit_image_url = "http://3.34.64.143/images/reviews/조제분유.jpg";//공유하기에 보낼 임시 이미지
@@ -59,17 +60,17 @@ public class DetailTabLayoutActivity extends AppCompatActivity {
     ImageButton back_btn, bookmark_btn,share_btn; //이전 화면으로 가기 버튼, 북마크, 공유하기
 
     ProgressBar Detail_progressbar; //혜택 데이터 가져오기 전까지 보여줄 프로그래스 바
-    JSONArray message = null;
-    String TotalCount = null;
-    String isBookmark = null;
-    JSONArray ReviewState = null;
+    JSONArray message;
+    String TotalCount;
+    String isBookmark;
+    JSONArray ReviewState;
 
     Bundle detail_bundle = new Bundle(); //액티비티에서 프래그먼트로 보낼 혜택 상세 데이터
     String welf_name; //혜택 명
     String welf_id; //혜택 아이디 값
     boolean being_logout; //로그인 했는지 여부 확인하기
-    String SessionId = null; //세션 값
-    String token = null; //토큰 값
+    String SessionId; //세션 값
+    String token; //토큰 값
     boolean being_id; //혜택 아이디가 있는지
     boolean review_write; //리뷰 작성 했는지
 
@@ -191,24 +192,6 @@ public class DetailTabLayoutActivity extends AppCompatActivity {
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.show();
         dialog.dismiss();
-//        moreViewModel = new ViewModelProvider(this).get(MoreViewModel.class);
-//        final Observer<String> moreViewObserver = new Observer<String>()
-//        {
-//            @Override
-//            public void onChanged(String str)
-//            {
-//                if (str != null)
-//                {
-//                    Log.e(TAG, "비로그인 상태에서 더보기 눌러 데이터 가져온 결과 : " + str);
-//                    messageParsing(str);
-//                    dialog.dismiss();
-//                }
-//                else
-//                {
-//                    Log.e(TAG, "비로그인 상태에서 str이 null입니다");
-//                }
-//            }
-//        };
     }
 
     //상단 상태표시줄 화면 ui에 맞게 그라데이션 넣기
@@ -220,8 +203,6 @@ public class DetailTabLayoutActivity extends AppCompatActivity {
         window.setStatusBarColor(activity.getResources().getColor(android.R.color.transparent));
         window.setBackgroundDrawable(background);
     }
-
-
 
     //혜택 공유하기
     private void ShareBenefit(){
@@ -284,8 +265,8 @@ public class DetailTabLayoutActivity extends AppCompatActivity {
         //로그인 했는지 여부 확인하기위한 쉐어드
         SharedPreferences app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
         being_logout = app_pref.getBoolean("logout", false); //로그인 했는지 여부 확인하기
-        SessionId = null;
-        token = null;
+        SessionId = "";
+        token = "";
 
         if (!being_logout) { //로그인 했다면
             SessionId = app_pref.getString("sessionId", ""); //세션값 받아오기
@@ -293,18 +274,16 @@ public class DetailTabLayoutActivity extends AppCompatActivity {
         }
     }
 
-
     //인텐트로 받아온 welf_id값
     private void being_intent() {
         welf_id = ""; //혜택 아이디 값
         Intent intent = getIntent();
         being_id = intent.getBooleanExtra("being_id", false); //혜택 데이터가 있는지, 없는 경우 서버에서 데이터 안받아 오도록
-        if (being_id) {
-            welf_id = intent.getStringExtra("welf_id");
-            review_write = intent.getBooleanExtra("review_write", false); //리뷰 작성 했는지
-        }
+        /* if (being_id) 부분 때문에 검색 -> 상세보기 화면으로 갈 수 없어서 삭제했습니다 */
+        welf_id = intent.getStringExtra("welf_id");
+        Log.e(TAG, "welf_id : " + welf_id);
+        review_write = intent.getBooleanExtra("review_write", false); //리뷰 작성 했는지
     }
-
 
     //북마크 하기
     private void SetBookmark() {
@@ -359,91 +338,108 @@ public class DetailTabLayoutActivity extends AppCompatActivity {
 
         String URL = "https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/"; //연결하고자 하는 서버의 url, 반드시 /로 끝나야 함
         ApiInterfaceTest apiInterfaceTest = ApiClientTest.ApiClient(URL).create(ApiInterfaceTest.class); //레트로핏 인스턴스로 인터페이스 객체 구현
+        Log.e(TAG, "token : " + token + ", 세션 : " + SessionId + ", welf_id : " + welf_id);
         Call<String> call = apiInterfaceTest.BenefitDetail(token, SessionId, "detail", welf_id); //인터페이스에서 사용할 메소드 선언
         call.enqueue(new Callback<String>() { //enqueue로 비동기 통신 실행, 통신 완료 후 이벤트 처리 위한 callback 리스너 등록
             @Override
             public void onResponse(Call<String> call, retrofit2.Response<String> response) { //onResponse 통신 성공시 callback
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    Log.e(TAG, "상세보기에서 데이터 가져오기 성공 : " + response.body());
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body());
 
-                try {
-                    JSONObject jsonObject = new JSONObject(response.body());
+                        message = jsonObject.getJSONArray("message"); //혜택 상세 데이터
+                        TotalCount = jsonObject.getString("TotalCount"); //리뷰 갯수
+                        isBookmark = jsonObject.getString("isBookmark"); //북마크 여부
 
-                    message = jsonObject.getJSONArray("message"); //혜택 상세 데이터
-                    TotalCount = jsonObject.getString("TotalCount"); //리뷰 갯수
-                    isBookmark = jsonObject.getString("isBookmark"); //북마크 여부
-
-                    ReviewState = null;
-                    //리뷰가 0이 아닐 때 리뷰 데이터를 받아온다
-                    if (!TotalCount.equals("0")) {
-                        ReviewState = jsonObject.getJSONArray("ReviewSate"); //리뷰데이터
+                        ReviewState = null;
+                        //리뷰가 0이 아닐 때 리뷰 데이터를 받아온다
+                        if (!TotalCount.equals("0")) {
+                            ReviewState = jsonObject.getJSONArray("ReviewSate"); //리뷰데이터
 //                        Log.e("ReviewState",ReviewState.toString());
-                        detail_bundle.putString("ReviewState", String.valueOf(ReviewState)); //bundle안에 리뷰 데이터 담기
-                    }
+                            detail_bundle.putString("ReviewState", String.valueOf(ReviewState)); //bundle안에 리뷰 데이터 담기
+                        }
 
-                    JSONArray jsonArray_message = jsonObject.getJSONArray("message");
-                    JSONObject jsonObject_message = jsonArray_message.getJSONObject(0);
+                        JSONArray jsonArray_message = jsonObject.getJSONArray("message");
+                        JSONObject jsonObject_message = jsonArray_message.getJSONObject(0);
 
-                    JSONArray jsonArray_welf_data = jsonObject_message.getJSONArray("welf_data");
-                    JSONObject jsonObject_welf_name = jsonArray_welf_data.getJSONObject(0);
-                    welf_name = jsonObject_welf_name.getString("welf_name");
-                    BenefitTitle.setText(welf_name);
+                        JSONArray jsonArray_welf_data = jsonObject_message.getJSONArray("welf_data");
+                        JSONObject jsonObject_welf_name = jsonArray_welf_data.getJSONObject(0);
+                        welf_name = jsonObject_welf_name.getString("welf_name");
+                        BenefitTitle.setText(welf_name);
 
 
-                    detail_bundle.putString("message", String.valueOf(message)); //bundle안에 혜택 상세 데이터 담기
-                    detail_bundle.putString("TotalCount", TotalCount); //bundle안에 리뷰 갯수 담기
-                    detail_bundle.putString("isBookmark", isBookmark); //bundle안에 북마크 여부 담기
-                    detail_bundle.putString("welf_id",welf_id); //bundle안에 혜택id 담기
-                    detail_bundle.putString("welf_name",welf_name); //bundle안에 혜택명 담기
+                        detail_bundle.putString("message", String.valueOf(message)); //bundle안에 혜택 상세 데이터 담기
+                        detail_bundle.putString("TotalCount", TotalCount); //bundle안에 리뷰 갯수 담기
+                        detail_bundle.putString("isBookmark", isBookmark); //bundle안에 북마크 여부 담기
+                        detail_bundle.putString("welf_id",welf_id); //bundle안에 혜택id 담기
+                        detail_bundle.putString("welf_name",welf_name); //bundle안에 혜택명 담기
 
-                    ContentsFragment.setArguments(detail_bundle); //프래그먼트에 bundle데이터 담기
-                    ApplicationFragment.setArguments(detail_bundle); //프래그먼트에 bundle데이터 담기
-                    ReviewFragment.setArguments(detail_bundle); //프래그먼트에 bundle데이터 담기
+                        ContentsFragment.setArguments(detail_bundle); //프래그먼트에 bundle데이터 담기
+                        ApplicationFragment.setArguments(detail_bundle); //프래그먼트에 bundle데이터 담기
+                        ReviewFragment.setArguments(detail_bundle); //프래그먼트에 bundle데이터 담기
 
 
 
 //                    Detail_progressbar.setVisibility(View.GONE); //프로그래스바 그만 보여주기
 
 
-                    fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.add(R.id.detail_frame, ContentsFragment); //처음 액티비티로 들어올 때 내용 프래그먼트를 보여준다
+                        fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.add(R.id.detail_frame, ContentsFragment); //처음 액티비티로 들어올 때 내용 프래그먼트를 보여준다
 
-                    if (review_write){ //리뷰 작성 안했다면 내용 보여주고, 했다면 리뷰 바로 보여주기
-                        detail_review_button.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.main_text_color)); //리뷰 핑크색 글자
-                        detail_review_button.setBackgroundResource(R.drawable.radius_smallround_pink_border); //리뷰 핑크색 테두리 버튼
-                        //다른 버튼 글자 회색, 테두리 없음
-                        detail_application_button.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorGray_B)); //신청 회색 글자
-                        detail_application_button.setBackgroundResource(R.color.fui_transparent); //신청 테두리 없음
-                        detail_contents_button.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorGray_B)); //내용 회색 글자
-                        detail_contents_button.setBackgroundResource(R.color.fui_transparent); //내용 테두리 없음
+                        if (review_write){ //리뷰 작성 안했다면 내용 보여주고, 했다면 리뷰 바로 보여주기
+                            detail_review_button.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.main_text_color)); //리뷰 핑크색 글자
+                            detail_review_button.setBackgroundResource(R.drawable.radius_smallround_pink_border); //리뷰 핑크색 테두리 버튼
+                            //다른 버튼 글자 회색, 테두리 없음
+                            detail_application_button.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorGray_B)); //신청 회색 글자
+                            detail_application_button.setBackgroundResource(R.color.fui_transparent); //신청 테두리 없음
+                            detail_contents_button.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorGray_B)); //내용 회색 글자
+                            detail_contents_button.setBackgroundResource(R.color.fui_transparent); //내용 테두리 없음
 
-                        fragmentTransaction.replace(R.id.detail_frame, ReviewFragment); //리뷰 프래그먼트 연결
-                    }
+                            fragmentTransaction.replace(R.id.detail_frame, ReviewFragment); //리뷰 프래그먼트 연결
+                        }
 
-                    fragmentTransaction.commit(); //프래그먼트 적용
+                        fragmentTransaction.commit(); //프래그먼트 적용
 
 
 //                    Log.e("message",message.toString());
 //                    Log.e("response.body",response.body());
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
 //                    Log.e("e",e.toString());
+                    }
+
+                    Log.e(TAG, "isBookmark : " + isBookmark);
+                    Log.e(TAG, "message : " + message);
+                    Log.e(TAG, "TotalCount : " + TotalCount);
+
+                    if (isBookmark != null)
+                    {
+                        if(isBookmark.equals("true")) { //북마크 했다면
+                            bookmark_btn.setBackgroundResource(R.drawable.bookmark_ok);
+                        } else if (isBookmark.equals("false")) { //북마크 안했다면
+                            bookmark_btn.setBackgroundResource(R.drawable.bookmark_no);
+                        }
+                    }
+//                if(isBookmark.equals("true")) { //북마크 했다면
+//                    bookmark_btn.setBackgroundResource(R.drawable.bookmark_ok);
+//                } else if (isBookmark.equals("false")) { //북마크 안했다면
+//                    bookmark_btn.setBackgroundResource(R.drawable.bookmark_no);
+//                }
+
+
+                    dialog.dismiss();
                 }
-
-                Log.e(TAG, "isBookmark : " + isBookmark);
-                Log.e(TAG, "message : " + message);
-                Log.e(TAG, "TotalCount : " + TotalCount);
-
-                if(isBookmark.equals("true")) { //북마크 했다면
-                    bookmark_btn.setBackgroundResource(R.drawable.bookmark_ok);
-                } else if (isBookmark.equals("false")) { //북마크 안했다면
-                    bookmark_btn.setBackgroundResource(R.drawable.bookmark_no);
+                else
+                {
+                    Log.e(TAG, "상세보기에서 데이터 가져오기 실패 : " + response.body());
                 }
-
-
-                dialog.dismiss();
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
+                Log.e(TAG, "상세보기에서 데이터 가져오기 에러 : " + t.getMessage());
             }
         });
 
