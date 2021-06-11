@@ -51,4 +51,38 @@ public interface ApiInterfaceTest {
     );
 
 
+    //유튜브 영상 선택한 경우 데이터 받기(로그인x)
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/youtube-more")
+    Call<String> YoutubeSelect(
+            @Query("type") String type,
+            @Query("page") String page,
+            @Query("id") String id
+    );
+
+    //유튜브 영상 선택한 경우 데이터 받기(로그인o)
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/youtube-more")
+    Call<String> YoutubeSelect_beingid(
+            @Header("logintoken") String LoginToken,
+            @Header("sessionid") String sessionid,
+            @Query("type") String type,
+            @Query("page") String page,
+            @Query("id") String id
+    );
+
+
+    //유튜브 영상 선택하지 않은 경우 데이터 받기(로그인x)
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/youtube-more")
+    Call<String> YoutubeNonSelect(
+            @Query("type") String type,
+            @Query("page") String page
+    );
+
+    //유튜브 영상 선택하지 않은 경우 데이터 받기(로그인o)
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/youtube-more")
+    Call<String> YoutubeNonSelect_beingid(
+            @Header("logintoken") String LoginToken,
+            @Header("sessionid") String sessionid,
+            @Query("type") String type,
+            @Query("page") String page
+    );
 }

@@ -714,6 +714,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
         return false;
     }
 
+    //상태표시줄 색상변경
     public void setStatusBarGradiant(Activity activity)
     {
         Window window = activity.getWindow();

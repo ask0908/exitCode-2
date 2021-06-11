@@ -22,7 +22,7 @@ public class MainDownAdapter extends RecyclerView.Adapter<MainDownAdapter.MainDo
 
     private Context context;
     private List<MainThreeDataItem> list;
-    private ItemClickListener itemClickListener;
+    private ItemClickListener itemClickListener = null;
 
     public MainDownAdapter(Context context, List<MainThreeDataItem> list, ItemClickListener itemClickListener)
     {
@@ -57,15 +57,14 @@ public class MainDownAdapter extends RecyclerView.Adapter<MainDownAdapter.MainDo
         {
             MainThreeDataItem item = list.get(position);
             holder.bottom_result_name.setText(item.getWelf_name());
+            holder.bottom_result_views.setText("View" + item.getWelf_count());
             if (item.getWelf_tag().contains("-"))
             {
                 String before = item.getWelf_tag().replace(" ", "");
                 String str = "#" + before;
                 String s = str.replace("-", " #");
-                String s1 = s.replace(" -", " #");
-                String s2 = s1.replace("- ", " #");
-                String s3 = s2.replace(" - ", " #");
-                holder.bottom_result_subject.setText(s3);
+
+                holder.bottom_result_subject.setText(s);
 //                Log.e("before1 : ",before);
 //                Log.e("tag1 : ",item.getWelf_tag());
             }
@@ -108,11 +107,14 @@ public class MainDownAdapter extends RecyclerView.Adapter<MainDownAdapter.MainDo
             this.itemClickListener = itemClickListener;
             bottom_result_layout.setOnClickListener(v -> {
                 int pos = getAdapterPosition();
+
+                //itemClickListener 이 계속 null 나옴 -> 왜 null아니여야 하는가??
                 if (pos != RecyclerView.NO_POSITION && itemClickListener != null)
                 {
-                    itemClickListener.onMainThreeClick(v, pos);
+                    itemClickListener.onMainThreeClick(v,pos);
                     notifyDataSetChanged();
                 }
+
             });
         }
     }

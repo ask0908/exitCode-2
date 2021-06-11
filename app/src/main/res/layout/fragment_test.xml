@@ -1,220 +1,344 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_top_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
+    android:orientation="vertical"
+    android:weightSum="1"
     tools:context=".test.TestFragment">
 
-<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--        android:id="@+id/MainTop"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0dp"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintLeft_toLeftOf="parent"-->
-<!--        app:layout_constraintRight_toRightOf="parent"-->
-<!--        app:layout_constraintHeight_percent=".115"-->
-<!--        android:background="@drawable/renewal_gradation_background">-->
-
-<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="0dp"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            app:layout_constraintLeft_toLeftOf="parent"-->
-<!--            app:layout_constraintRight_toRightOf="parent"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintHeight_percent=".5"-->
-<!--            app:layout_constraintVertical_bias=".1">-->
-
-<!--            <TextView-->
-<!--                android:id="@+id/back_btn"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="0dp"-->
-<!--                app:layout_constraintTop_toTopOf="parent"-->
-<!--                app:layout_constraintLeft_toLeftOf="parent"-->
-<!--                app:layout_constraintRight_toRightOf="parent"-->
-<!--                app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                app:layout_constraintHeight_percent="0.75"-->
-<!--                app:layout_constraintWidth_percent="0.23"-->
-<!--                app:layout_constraintHorizontal_bias="0.05"-->
-<!--                app:layout_constraintVertical_bias="0.8"-->
-<!--                android:backgroundTint="@color/white"-->
-<!--                android:text="혜택모아"-->
-<!--                android:textColor="@color/white"-->
-<!--                android:autoSizeTextType="uniform"-->
-<!--                android:textStyle="bold" />-->
-
-<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
-
-
-
-
-<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="0dp"-->
-<!--            app:layout_constraintLeft_toLeftOf="parent"-->
-<!--            app:layout_constraintRight_toRightOf="parent"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintHeight_percent=".37"-->
-<!--            android:background="@drawable/radius_25">-->
-
-<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
-
-<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
-
-<!--    <androidx.recyclerview.widget.RecyclerView-->
-<!--        android:id="@+id/MainBanner"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0dp"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/MainTop"-->
-<!--        tools:listitem="@layout/banner_item"/>-->
-
-
-
-
-    <TextView
-        android:id="@+id/selected_interest_textview"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintWidth_percent=".6"
-        app:layout_constraintHeight_percent=".066"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias=".05"
-        app:layout_constraintHorizontal_bias=".14"
-        android:fontFamily="@font/jalnan"
-        android:text="혜택모아"
-        android:textColor="@color/colorMainWhite"
-        app:autoSizePresetSizes="@array/autosize_text_sizes"/>
-
-    <Button
-        android:id="@+id/edit_interest_btn"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintWidth_percent=".38"
-        app:layout_constraintHeight_percent=".055"
-        app:layout_constraintHorizontal_bias=".93"
-        app:layout_constraintVertical_bias=".053"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:background="@drawable/btn_transparent"
-        android:fontFamily="@font/nanum_barun_gothic_bold"
-        android:text="나에게 맞는 혜택 찾기"
-        android:textStyle="bold"
-        android:textColor="@color/colorMainWhite"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/middle_white_layout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintWidth_percent="1"
-        app:layout_constraintHeight_percent=".85"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="1"
-        android:background="@drawable/radius_25">
+        android:id="@+id/MainTop"
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:background="@drawable/renewal_gradation_background"
+        app:layout_constraintHeight_percent=".13"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <!-- 전체, 건강, 교육, 교통 등 관심 주제가 들어갈 가로 리사이클러뷰 -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/interest_subject_recyclerview"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:scrollbars="none"
-            android:paddingStart="20dp"
-            app:layout_constraintWidth_percent="1"
-            app:layout_constraintHeight_percent=".1"
-            app:layout_constraintVertical_bias="0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            android:orientation="horizontal"
-            tools:listitem="@layout/test_up_item"/>
+            app:layout_constraintHeight_percent=".5"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias=".1">
 
-        <!-- 3개만 보여줄 리사이클러뷰. 스크롤되지 않아야 한다 -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/interest_result_recyclerview"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:scrollbars="none"
-            android:overScrollMode="never"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp"
-            app:layout_constraintWidth_percent="1"
-            app:layout_constraintHeight_percent=".53"
-            app:layout_constraintVertical_bias=".181"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:orientation="vertical"
-            tools:listitem="@layout/test_down_item"/>
+            <TextView
+                android:id="@+id/back_btn"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:autoSizeTextType="uniform"
+                android:backgroundTint="@color/white"
+                android:text="혜택모아"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHeight_percent="0.75"
+                app:layout_constraintHorizontal_bias="0.05"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.8"
+                app:layout_constraintWidth_percent="0.23" />
 
-        <TextView
-            android:id="@+id/more_see_textview"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintWidth_percent=".3"
-            app:layout_constraintHeight_percent=".032"
-            app:layout_constraintVertical_bias=".628"
-            app:layout_constraintHorizontal_bias="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:fontFamily="@font/nanum_barun_gothic_bold"
-            android:text="+ 더보기"
-            android:autoSizeTextType="none"
-            app:autoSizePresetSizes="@array/autosize_text_sizes"
-            android:textColor="@color/gray"
-            android:gravity="center"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <TextView
-            android:id="@+id/youtube_text"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintWidth_percent="1"
-            app:layout_constraintHeight_percent=".05"
-            app:layout_constraintVertical_bias=".70"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:fontFamily="@font/jalnan"
-            android:text="유튜버들의 혜택 리뷰"
-            android:autoSizeTextType="none"
-            app:autoSizePresetSizes="@array/autosize_text_sizes"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/youtube_video_recyclerview"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintWidth_percent="1"
-            app:layout_constraintHeight_percent=".265"
-            app:layout_constraintVertical_bias="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:background="@drawable/radius_25"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constrainedHeight="true"
-            android:scrollbars="none"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/test_youtube_item"/>
+            app:layout_constraintHeight_percent=".37"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/main_scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/MainTop">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/scrollview_innerlayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/MainBannerViewpager2"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="40dp"
+                    android:paddingVertical="10dp"
+                    android:scrollbars="none"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:listitem="@layout/banner_item" />
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:paddingVertical="20dp"
+                    android:id="@+id/welfdata_total_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/MainBannerViewpager2"
+                    app:layout_constraintBottom_toTopOf="@+id/youtube_title_layout">
+
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/notlogin_card"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:visibility="gone"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="8dp"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_margin="15dp"
+                        app:layout_constraintWidth_percent=".83">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <TextView
+                                android:id="@+id/notlogin_text"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:autoSizeTextType="uniform"
+                                android:gravity="center"
+                                android:text="당신이 놓치고 있는혜택을 찾아드릴게요.\n혜택을 한 번 알아볼까요?"
+                                app:layout_constraintBottom_toTopOf="@+id/notlogin_button"
+                                app:layout_constraintHeight_percent="0.3"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintWidth_percent="0.9"
+                                android:textStyle="bold"/>
+
+                            <Button
+                                android:id="@+id/notlogin_button"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:background="@drawable/radius_smallround_pink_button"
+                                android:text="나에게 맞는 혜택 찾기"
+                                android:textColor="#FFFFFF"
+                                android:textStyle="bold"
+                                app:layout_constraintHeight_percent=".27"
+                                app:layout_constraintWidth_percent=".65"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/notlogin_text" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
+
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/welfdata_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="400dp"
+                        android:visibility="visible"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/Welfdata_title_layout"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="10dp"
+                            android:orientation="vertical"
+                            app:layout_constraintHeight_percent="0.18"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintWidth_percent=".925">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/Welfdata_first_layout"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                app:layout_constraintHeight_percent=".45"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintTop_toTopOf="parent">
+
+                                <ImageView
+                                    android:id="@+id/Welfdata_title_image"
+                                    android:layout_width="0dp"
+                                    android:layout_height="0dp"
+                                    android:background="@drawable/round_quadrangle"
+                                    android:backgroundTint="@color/colorPink"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintHeight_percent=".9 "
+                                    app:layout_constraintHorizontal_bias="0.05"
+                                    app:layout_constraintLeft_toLeftOf="parent"
+                                    app:layout_constraintRight_toRightOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintWidth_percent=".015" />
+
+                                <TextView
+                                    android:id="@+id/Welfdata_first_title"
+                                    android:layout_width="0dp"
+                                    android:layout_height="0dp"
+                                    android:autoSizeTextType="uniform"
+                                    android:text="20대, 서울, 여성"
+                                    android:textStyle="bold"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintHeight_percent="1"
+                                    app:layout_constraintHorizontal_bias=".2"
+                                    app:layout_constraintLeft_toRightOf="@+id/Welfdata_title_image"
+                                    app:layout_constraintRight_toRightOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintWidth_percent=".8" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                            <TextView
+                                android:id="@+id/Welfdata_second_title"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:autoSizeTextType="uniform"
+                                android:text="맞춤 혜택"
+                                android:textStyle="bold"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintHeight_percent="0.45"
+                                app:layout_constraintHorizontal_bias="0.5"
+                                app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/Welfdata_first_layout"
+                                app:layout_constraintWidth_percent="0.8" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/MainWelfdata"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:orientation="vertical"
+                            android:overScrollMode="never"
+                            android:paddingStart="24dp"
+                            android:paddingEnd="24dp"
+                            android:scrollbars="none"
+                            app:layout_constraintHeight_percent=".75"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/Welfdata_title_layout"
+                            app:layout_constraintVertical_bias=".1"
+                            app:layout_constraintWidth_percent="1"
+                            tools:listitem="@layout/test_down_item" />
+
+
+                        <TextView
+                            android:id="@+id/more_see_textview"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:autoSizeTextType="none"
+                            android:fontFamily="@font/nanum_barun_gothic_bold"
+                            android:gravity="center"
+                            android:text="+ 더보기"
+                            android:textColor="@color/gray"
+                            app:autoSizePresetSizes="@array/autosize_text_sizes"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintHeight_percent=".05"
+                            app:layout_constraintHorizontal_bias=".92"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/MainWelfdata"
+                            app:layout_constraintVertical_bias=".02"
+                            app:layout_constraintWidth_percent=".2" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/youtube_title_layout"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="1dp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/welfdata_total_layout"
+                    app:layout_constraintWidth_percent=".925">
+
+                    <ImageView
+                        android:id="@+id/youtube_title_image"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="@drawable/round_quadrangle"
+                        android:backgroundTint="@color/colorPink"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintHeight_percent=".9 "
+                        app:layout_constraintHorizontal_bias="0.05"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintWidth_percent=".015" />
+
+                    <TextView
+                        android:id="@+id/youtube_title"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:autoSizeTextType="uniform"
+                        android:text="유튜버들의 혜택 리뷰"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintHeight_percent=".9"
+                        app:layout_constraintHorizontal_bias=".2"
+                        app:layout_constraintLeft_toRightOf="@+id/youtube_title_image"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintWidth_percent=".8" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/youtube_video_recyclerview"
+                    android:layout_width="0dp"
+                    android:layout_height="200dp"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    android:scrollbars="none"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constrainedHeight="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHeight_percent=".28"
+                    app:layout_constraintTop_toBottomOf="@+id/youtube_title_layout"
+                    app:layout_constraintVertical_bias="1"
+                    tools:listitem="@layout/test_youtube_item" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

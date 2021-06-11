@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.psj.welfare.fragment.MainFragment;
+import com.psj.welfare.test.TestFragment;
 import com.psj.welfare.test.TestMyPageFragment;
 import com.psj.welfare.test.TestPushGatherFragment;
 import com.psj.welfare.test.TestSearchFragment;
@@ -26,8 +26,8 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter
     {
         super(fm);
         mContext = context;
-        list.add(new MainFragment());
-//        list.add(new TestFragment());
+//        list.add(new MainFragment());
+        list.add(new TestFragment());
 //        list.add(new SearchFragment());
         list.add(new TestSearchFragment());
         list.add(new TestPushGatherFragment());

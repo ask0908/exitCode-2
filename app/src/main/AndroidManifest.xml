@@ -54,6 +54,7 @@
         </activity>
         <activity android:name=".activity.SearchResultActivity" />
         <activity android:name=".activity.YoutubeActivity" />
+        <activity android:name=".activity.YoutubeMoreActivity" />
         <activity
             android:name=".activity.ReviewUpdateActivity"
             android:theme="@style/ReviewTheme" />

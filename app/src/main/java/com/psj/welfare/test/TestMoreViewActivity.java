@@ -97,7 +97,7 @@ public class TestMoreViewActivity extends AppCompatActivity
 
         Log.e(TAG, "액티비티에서 가져온 토큰 : " + sqlite_token + ", 세션 : " + sessionId);
         isLogin = sharedPreferences.getBoolean("logout", false);
-        Log.e(TAG, "더보기 눌렀을 때 로그인 상태 : " + isLogin);
+        Log.e(TAG, "더보기 눌렀을 때 로그아웃 상태 : " + isLogin);
 
         moreViewWelfareNotLogin();
 //        if (isLogin)

@@ -59,6 +59,7 @@
             android:textColor="@color/gray"
             android:text="텍스트"/>
 
+
     </LinearLayout>
 
 </LinearLayout>
