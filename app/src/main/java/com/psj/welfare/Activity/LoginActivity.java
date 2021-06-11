@@ -51,7 +51,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/* 카카오, 구글 로그인 진행하는 액티비티 */
+/* 카카오 로그인 진행하는 액티비티 */
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener
 {
     public final String TAG = this.getClass().getSimpleName();

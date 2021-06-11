@@ -33,5 +33,7 @@
     <color name="keyword_unselected_color">#E76881</color> <!-- 키워드 화면에서 선택 안 된 버튼에 입힐 색 -->
     <color name="color_text_pink">#FF5B7F</color> <!-- 키워드 화면에서 선택 안 된 버튼에 입힐 색 -->
     <color name="bookmark_recyclerview_item">#FBD6E1</color>
+    <color name="recommend_tag_background">#F4F4F4</color>
+    <color name="recommend_tag_text_color">#707070</color>
 
 </resources>

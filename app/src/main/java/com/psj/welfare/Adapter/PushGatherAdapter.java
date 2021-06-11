@@ -69,7 +69,7 @@ public class PushGatherAdapter extends RecyclerView.Adapter<PushGatherAdapter.Pu
         }
         holder.push_gather_date.setText(item.getPush_gather_date());
 
-        ZonedDateTime seoulDateTime = null;
+        ZonedDateTime seoulDateTime;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
         {
             seoulDateTime = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
@@ -77,9 +77,9 @@ public class PushGatherAdapter extends RecyclerView.Adapter<PushGatherAdapter.Pu
             LocalDateTime currentDateTime = LocalDateTime.parse(seoulDateTime.format(formatter), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             LocalDateTime localDateTime = LocalDateTime.parse(item.getPush_gather_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-            Duration duration = null;
+            Duration duration;
             duration = Duration.between(localDateTime, currentDateTime);
-            long diffTime = 0;
+            long diffTime;
             diffTime = duration.toMillis() / 1000;
             if (diffTime < SEC)
             {
@@ -144,11 +144,6 @@ public class PushGatherAdapter extends RecyclerView.Adapter<PushGatherAdapter.Pu
     public interface ItemClickListener
     {
         void onItemClick(View view, int position);
-    }
-
-    public void deleteFromList(int pos)
-    {
-        lists.remove(pos);
     }
 
     public List<PushGatherItem> getList()

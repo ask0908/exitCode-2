@@ -369,12 +369,13 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
             }
         });
 
-    }
+        // 인텐트로 받은 추천 태그 검색
+        if (keyword.equals("노인") || keyword.equals("임신/출산") || keyword.equals("주거") || keyword.equals("청년") || keyword.equals("취업/창업") ||
+                keyword.equals("코로나") || keyword.equals("한부모"))
+        {
+            searchRecommendTag(keyword, String.valueOf(integer_page));
+        }
 
-    private String listElementSplit(String element)
-    {
-        String[] splitMiddleResult = element.replace("[", "").replace("]", "").split("-");
-        return Arrays.toString(splitMiddleResult);
     }
 
     /* 필터 내용 초기화 */
@@ -453,6 +454,38 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
         expanderRecyclerView.setLayoutManager(new LinearLayoutManager(TestSearchResultActivity.this));
 
         expanderRecyclerView.setAdapter(expandableCategoryRecyclerViewAdapter);
+    }
+
+    // 추천 태그 검색 메서드
+    private void searchRecommendTag(String keyword, String page)
+    {
+        final ProgressDialog dialog = new ProgressDialog(TestSearchResultActivity.this);
+        dialog.setMessage("잠시만 기다려 주세요...");
+        dialog.setCancelable(false);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.show();
+
+        searchViewModel = new ViewModelProvider(this).get(SearchViewModel.class);
+        final Observer<String> recommendSearchObserver = new Observer<String>()
+        {
+            @Override
+            public void onChanged(String str)
+            {
+                if (str != null)
+                {
+                    Log.e(TAG, "액티비티에서 받은 추천 태그 검색 결과 : " + str);
+                    responseParsing(str);
+                    dialog.dismiss();
+                }
+                else
+                {
+                    Log.e(TAG, "검색어가 null입니다");
+                }
+            }
+        };
+
+        searchViewModel.searchRecommendTag(keyword, page, "tag")
+                .observe(this, recommendSearchObserver);
     }
 
     // 검색 결과 화면에서 재검색했을 때 호출하는 메서드

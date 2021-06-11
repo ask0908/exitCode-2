@@ -3,8 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/push_gather_item_layout"
-    android:layout_marginBottom="10dp">
+    android:layout_marginBottom="15dp"
+    android:layout_marginTop="5dp"
+    android:id="@+id/push_gather_item_layout">
 
     <TextView
         android:id="@+id/push_gather_title"
@@ -14,10 +15,11 @@
         android:lineSpacingExtra="5sp"
         android:layout_marginStart="13dp"
         android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="혜택 제목 혜택 제목 혜택 제목 혜택 제목 "
         android:textSize="15sp"
+        android:text="이번 주 추천 알림 정보입니다"
         android:textStyle="bold"
         android:textColor="@color/colorBlack" />
 
@@ -25,9 +27,9 @@
         android:id="@+id/push_gather_date"
         android:layout_width="wrap_content"
         android:layout_height="24dp"
+        android:text="2일 전"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="1일 전"
         android:layout_marginEnd="15dp"
         android:layout_marginTop="10dp"/>
 
@@ -35,12 +37,12 @@
         android:id="@+id/push_gather_desc"
         android:layout_width="270dp"
         android:layout_height="wrap_content"
+        android:text="우수기업 탐방"
         android:layout_marginStart="13dp"
-        android:layout_marginBottom="15dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="18dp"
         android:fontFamily="@font/nanum_barun_gothic_bold"
         android:lineSpacingExtra="6sp"
-        android:text="혜택 내용 혜택 내용 혜택 내용 혜택 내용 혜택 내용 "
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

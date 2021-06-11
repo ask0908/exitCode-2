@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
 import com.psj.welfare.activity.DetailBenefitActivity;
+import com.psj.welfare.activity.LoginActivity;
 import com.psj.welfare.adapter.PushGatherAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
@@ -53,7 +54,7 @@ public class TestPushGatherFragment extends Fragment
     TextView push_top_textview, push_all_textview, push_latest_textview, push_recommend_textview, push_bell_textview;
     View push_all_bottom_view, push_latest_bottom_view, push_recommend_bottom_view;
     ImageView push_bell_image;
-    Button push_login_button;
+    Button push_login_button;   // 로그인 버튼
 
     RecyclerView push_recyclerview;
     PushGatherAdapter adapter;
@@ -69,9 +70,6 @@ public class TestPushGatherFragment extends Fragment
 
     // 알림 삭제 결과 확인용 변수
     String status, message;
-
-    // 푸시 알림이 없을 때 띄울 텍스트뷰
-    TextView nothing_noti;
 
     String sqlite_token;
 
@@ -102,9 +100,9 @@ public class TestPushGatherFragment extends Fragment
         Point size = screen.getScreenSize(getActivity());
 
         push_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 14);
-        push_all_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-        push_latest_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-        push_recommend_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+        push_all_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 19);
+        push_latest_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 19);
+        push_recommend_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 19);
 
         return view;
     }
@@ -150,6 +148,13 @@ public class TestPushGatherFragment extends Fragment
             push_recyclerview.setVisibility(View.VISIBLE);
             getPushData();
         }
+
+        // 비로그인 시 푸시 화면 넘어오면 보이는 로그인 버튼
+        push_login_button.setOnClickListener(v ->
+        {
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            startActivity(intent);
+        });
 
     }
 

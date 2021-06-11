@@ -44,7 +44,7 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
     ArrayList<String> category;
 
     ImageView second_interest_back_image;
-    TextView second_select_interest_textview, household_text, category_text;
+    TextView second_interest_top_textview, second_select_interest_textview, household_text, category_text;
 
     // 가구 형태
     Button interest_multiple_culture_button, interest_multi_child_button, interest_child_household_button, interest_adoptive_family_button,
@@ -99,6 +99,7 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
         ScreenSize screen = new ScreenSize();
         Point size = screen.getScreenSize(this);
 
+        second_interest_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
         second_select_interest_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 17);
         household_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
         category_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
@@ -122,6 +123,7 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
             }
             else
             {
+                /* 서버로 넘기기 위해 각 4개 리스트 요소 사이에 "-" 추가 */
                 // 나이
                 for (String str : age)
                 {
@@ -525,6 +527,8 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
     private void init()
     {
         second_interest_back_image = findViewById(R.id.second_interest_back_image);
+        second_interest_top_textview = findViewById(R.id.second_interest_top_textview);
+
         second_select_interest_textview = findViewById(R.id.second_select_interest_textview);
         household_text = findViewById(R.id.household_text);
         category_text = findViewById(R.id.category_text);

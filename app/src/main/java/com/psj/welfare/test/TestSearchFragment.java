@@ -18,28 +18,23 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.psj.welfare.R;
-import com.psj.welfare.fragment.AgeGroupWelfareFragment;
-import com.psj.welfare.fragment.AreaWelfareFragment;
-import com.psj.welfare.fragment.SubjectWelfareFragment;
-
-import me.relex.circleindicator.CircleIndicator;
 
 /* SearchFragment 바뀐 화면 테스트하는 곳
  * 구현 완료되면 SearchFragment로 옮긴다 */
 public class TestSearchFragment extends Fragment
 {
-    CircleIndicator indicator;
-    ViewPager search_default_viewpager;
-    TestSearchViewpagerAdapter adapter;
     EditText search_name_edittext;
     TextView search_fragment_top_textview;
 
     // 구글 애널리틱스
     private FirebaseAnalytics analytics;
+
+    TextView recommend_tag_textview;
+    // 추천 태그
+    TextView recommend_old, recommend_pregnancy, recommend_living, recommend_young_man, recommend_job, recommend_corona, recommend_single_parent;
 
     public TestSearchFragment()
     {
@@ -58,9 +53,16 @@ public class TestSearchFragment extends Fragment
         View view = inflater.inflate(R.layout.fragment_test_search, container, false);
 
         search_name_edittext = view.findViewById(R.id.search_name_edittext);
-        indicator = view.findViewById(R.id.top_indicator);
-        search_default_viewpager = view.findViewById(R.id.search_default_viewpager);
         search_fragment_top_textview = view.findViewById(R.id.search_fragment_top_textview);
+
+        recommend_tag_textview = view.findViewById(R.id.recommend_tag_textview);
+        recommend_old = view.findViewById(R.id.recommend_old);
+        recommend_pregnancy = view.findViewById(R.id.recommend_pregnancy);
+        recommend_living = view.findViewById(R.id.recommend_living);
+        recommend_young_man = view.findViewById(R.id.recommend_young_man);
+        recommend_job = view.findViewById(R.id.recommend_job);
+        recommend_corona = view.findViewById(R.id.recommend_corona);
+        recommend_single_parent = view.findViewById(R.id.recommend_single_parent);
 
         return view;
     }
@@ -80,37 +82,16 @@ public class TestSearchFragment extends Fragment
         display.getRealSize(size);
 
         search_fragment_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 14);
+        recommend_tag_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 17);
+        recommend_old.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+        recommend_pregnancy.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+        recommend_living.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+        recommend_young_man.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+        recommend_job.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+        recommend_corona.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+        recommend_single_parent.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
 
-        // 뷰페이저 어댑터 초기화 후 뷰페이저 안에 프래그먼트들 추가
-        adapter = new TestSearchViewpagerAdapter(getActivity().getSupportFragmentManager());
-        AreaWelfareFragment areaWelfareFragment = new AreaWelfareFragment();
-        adapter.addItem(areaWelfareFragment);
-
-        SubjectWelfareFragment subjectWelfareFragment = new SubjectWelfareFragment();
-        adapter.addItem(subjectWelfareFragment);
-
-        AgeGroupWelfareFragment ageGroupWelfareFragment = new AgeGroupWelfareFragment();
-        adapter.addItem(ageGroupWelfareFragment);
-
-        // 뷰페이저에서 보여줄 프래그먼트 개수는 3개
-        search_default_viewpager.setOffscreenPageLimit(3);
-        // 뷰페이저 아이템 사이의 마진 설정
-        search_default_viewpager.setClipToPadding(false);
-        int dpValue = 10;
-        float d = getResources().getDisplayMetrics().density;
-        /**/
-        search_default_viewpager.setPadding(120, 0, 120, 0);
-        search_default_viewpager.setPageMargin(55);
-        /**/
-//        search_default_viewpager.setPageMargin((int) getResources().getDisplayMetrics().density / 24);
-        // 뷰페이저에 프래그먼트들이 들어간 어댑터 set
-        search_default_viewpager.setAdapter(adapter);
-
-        // 인디케이터 점의 개수 = 프래그먼트 개수
-        indicator.createIndicators(3, 0);
-        // 뷰페이저에 인디케이터 set
-        indicator.setViewPager(search_default_viewpager);
-
+        // 검색창
         search_name_edittext.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
             @Override
@@ -128,6 +109,42 @@ public class TestSearchFragment extends Fragment
                 }
                 return false;
             }
+        });
+
+        /* 추천 태그별 클릭 이벤트 적용, performSearch()의 인자로 넘긴다 */
+        recommend_old.setOnClickListener(v ->
+        {
+            performSearch("노인");
+        });
+
+        recommend_pregnancy.setOnClickListener(v ->
+        {
+            performSearch("임신/출산");
+        });
+
+        recommend_living.setOnClickListener(v ->
+        {
+            performSearch("주거");
+        });
+
+        recommend_young_man.setOnClickListener(v ->
+        {
+            performSearch("청년");
+        });
+
+        recommend_job.setOnClickListener(v ->
+        {
+            performSearch("취업/창업");
+        });
+
+        recommend_corona.setOnClickListener(v ->
+        {
+            performSearch("코로나");
+        });
+
+        recommend_single_parent.setOnClickListener(v ->
+        {
+            performSearch("한부모");
         });
 
     }

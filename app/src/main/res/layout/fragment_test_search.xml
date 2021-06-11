@@ -33,7 +33,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:fontFamily="@font/jalnan"
                 android:text="어떤 혜택을 찾으세요?"
                 android:textColor="@color/colorMainWhite"
                 android:layout_gravity="center"
@@ -72,38 +71,146 @@
                 android:imeOptions="actionSearch"
                 android:inputType="text"/>
 
-            <!-- 이 밑에 뷰페이저가 들어간다
-            뷰페이저 인디케이터가 위에 있고 그 밑에 뷰페이저가 있는 형태로 만든다 -->
-            <me.relex.circleindicator.CircleIndicator
-                android:id="@+id/top_indicator"
+            <TextView
+                android:id="@+id/recommend_tag_textview"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:ci_orientation="horizontal"
-                app:ci_gravity="center"
-                app:ci_drawable="@drawable/search_viewpager_selected"
-                app:ci_drawable_unselected="@drawable/search_viewpager_unselected"
-                app:layout_constraintVertical_bias=".14"
                 app:layout_constraintWidth_percent="1"
                 app:layout_constraintHeight_percent=".05"
+                app:layout_constraintVertical_bias=".1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@+id/search_name_edittext"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:text="추천 태그"
+                android:textStyle="bold"
+                android:paddingStart="30dp"
+                android:paddingEnd="30dp"/>
 
-            <!-- 지역별 혜택, 주제별 혜택, 나이대별 혜택 프래그먼트 순으로 보여줄 뷰페이저 -->
-            <androidx.viewpager.widget.ViewPager
-                android:id="@+id/search_default_viewpager"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layout_constraintWidth_percent="1"
-                app:layout_constraintHeight_percent=".8"
-                app:layout_constraintVertical_bias=".3"
-                android:layout_marginStart="14dp"
-                android:layout_marginEnd="14dp"
+                app:layout_constraintHeight_percent=".6"
+                app:layout_constraintVertical_bias=".15"
+                android:orientation="vertical"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/top_indicator"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@+id/recommend_tag_textview"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/recommend_old"
+                        android:layout_width="90dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/recommend_tag_button"
+                        android:gravity="center"
+                        android:text="# 노인"
+                        android:textStyle="bold"
+                        android:textColor="@color/recommend_tag_text_color"/>
+                    
+                    <View
+                        android:layout_width="20dp"
+                        android:layout_height="1dp"/>
+
+                    <TextView
+                        android:id="@+id/recommend_pregnancy"
+                        android:layout_width="110dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/recommend_tag_button"
+                        android:gravity="center"
+                        android:text="# 임신/출산"
+                        android:textStyle="bold"
+                        android:textColor="@color/recommend_tag_text_color"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/recommend_living"
+                        android:layout_width="90dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/recommend_tag_button"
+                        android:gravity="center"
+                        android:text="# 주거"
+                        android:textStyle="bold"
+                        android:textColor="@color/recommend_tag_text_color"/>
+
+                    <View
+                        android:layout_width="18dp"
+                        android:layout_height="1dp"/>
+
+                    <TextView
+                        android:id="@+id/recommend_young_man"
+                        android:layout_width="80dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/recommend_tag_button"
+                        android:gravity="center"
+                        android:text="# 청년"
+                        android:textStyle="bold"
+                        android:textColor="@color/recommend_tag_text_color"/>
+
+                    <View
+                        android:layout_width="20dp"
+                        android:layout_height="1dp"/>
+
+                    <TextView
+                        android:id="@+id/recommend_job"
+                        android:layout_width="110dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/recommend_tag_button"
+                        android:gravity="center"
+                        android:text="# 취업/창업"
+                        android:textStyle="bold"
+                        android:textColor="@color/recommend_tag_text_color"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/recommend_corona"
+                        android:layout_width="100dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/recommend_tag_button"
+                        android:gravity="center"
+                        android:text="# 코로나"
+                        android:textStyle="bold"
+                        android:textColor="@color/recommend_tag_text_color"/>
+
+                    <View
+                        android:layout_width="6dp"
+                        android:layout_height="1dp"/>
+
+                    <TextView
+                        android:id="@+id/recommend_single_parent"
+                        android:layout_width="100dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/recommend_tag_button"
+                        android:gravity="center"
+                        android:text="# 한부모"
+                        android:textStyle="bold"
+                        android:textColor="@color/recommend_tag_text_color"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

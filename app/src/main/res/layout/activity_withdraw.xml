@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.WithdrawActivity">
+
+    <ImageView
+        android:id="@+id/withdraw_back_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/arrow_left_black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent=".04"
+        app:layout_constraintHorizontal_bias=".04"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias=".014"
+        app:layout_constraintWidth_percent=".1" />
+
+    <TextView
+        android:id="@+id/withdraw_top_textview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent=".05"
+        app:layout_constraintVertical_bias=".005"
+        app:layout_constraintStart_toEndOf="@id/withdraw_back_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="탈퇴하기"
+        android:gravity="center_vertical"
+        android:fontFamily="@font/jalnan"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/colorBlack"
+        android:textSize="20sp"/>
+
+    <View
+        android:id="@+id/withdraw_top_view"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent=".09"
+        app:layout_constraintVertical_bias=".02"
+        android:background="@color/colorGray_L"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/withdraw_back_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <TextView
+        android:id="@+id/withdraw_question_textview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent=".9"
+        app:layout_constraintHeight_percent=".05"
+        app:layout_constraintVertical_bias=".04"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/withdraw_top_view"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="계정을 삭제 하시나요?"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/withdraw_alert_textview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent=".9"
+        app:layout_constraintHeight_percent=".08"
+        app:layout_constraintVertical_bias=".178"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="계정을 삭제하면 관심사 선택, 맞춤 혜택, 알림, 리뷰\n등 모든 활동 정보가 삭제됩니다"/>
+
+    <TextView
+        android:id="@+id/select_reason_textview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent=".9"
+        app:layout_constraintHeight_percent=".05"
+        app:layout_constraintVertical_bias=".23"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/withdraw_top_view"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="계정을 삭제하는 이유를 알려주세요"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/withdraw_textview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/withdraw_textview"
+        android:drawableEnd="@drawable/spinner_down_arrow"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:text="선택해 주세요"
+        android:textSize="20sp"
+        android:textColor="@color/layout_background_start_gradation"
+        android:gravity="center_vertical"
+        app:layout_constraintWidth_percent=".9"
+        app:layout_constraintHeight_percent=".08"
+        app:layout_constraintVertical_bias=".36"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <EditText
+        android:id="@+id/reason_to_leave_edittext"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:background="@drawable/withdraw_gray_textview"
+        app:layout_constraintWidth_percent=".9"
+        app:layout_constraintHeight_percent=".08"
+        app:layout_constraintVertical_bias=".47"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:textSize="20sp"
+        android:textColorHint="@color/colorGray_B"
+        android:hint="탈퇴 사유를 알려주세요"/>
+
+    <!-- 스피너에서 '선택해 주세요' 이외의 값이 선택되면 활성화
+    기타 선택 시 회색으로 버튼 배경색을 바꾼다 -->
+    <Button
+        android:id="@+id/withdraw_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent=".07"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias=".94"
+        app:layout_constraintWidth_percent=".79"
+        android:background="@drawable/radius_smallround_pink_button"
+        android:text="회원 탈퇴 하기"
+        android:textColor="#FFFFFF"
+        android:textSize="26sp"
+        android:textStyle="bold"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

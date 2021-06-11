@@ -744,6 +744,20 @@ public interface ApiInterface
     );
 
     /**
+     * 추천 태그로 검색하는 메서드
+     * @param keyword - "추천 태그" 고정
+     * @param page - 요청하는 페이지 값(페이징 시 사용)
+     * @param type - "tag" 고정
+     * @return
+     */
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/search")
+    Call<String> searchRecommendTag(
+            @Query("keyword") String keyword,
+            @Query("page") String page,
+            @Query("type") String type
+    );
+
+    /**
      * 비회원이 각 테마별 전체 혜택들을 볼 수 있는 메서드
      * @param page - 요청하는 페이지 값
      * @param theme - 더 보고자 하는 혜택 테마 이름(start, all, 건강, 교육, 근로 등)
@@ -988,6 +1002,23 @@ public interface ApiInterface
             @Query("local") String local,
             @Query("family") String family,
             @Query("category") String category
+    );
+
+    /* 회원탈퇴 메서드 */
+    // ===================================================================================================
+
+    /**
+     * 회원탈퇴 메서드
+     * @param token - 로그인 시 서버에서 받는 토큰
+     * @param type - "leave" 고정
+     * @param reason - 탈퇴 사유
+     * @return
+     */
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/leave-member")
+    Call<String> leaveFromApp(
+            @Header("logintoken") String token,
+            @Query("type") String type,
+            @Query("reason") String reason
     );
 
 }

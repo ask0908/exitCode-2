@@ -39,6 +39,7 @@ import com.psj.welfare.activity.LoginActivity;
 import com.psj.welfare.activity.PersonalInformationActivity;
 import com.psj.welfare.activity.SplashActivity;
 import com.psj.welfare.activity.TermsAndConditionsActivity;
+import com.psj.welfare.activity.WithdrawActivity;
 import com.psj.welfare.activity.WrittenReviewCheckActivity;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
@@ -144,10 +145,12 @@ public class TestMyPageFragment extends Fragment
         isLogout = sharedPreferences.getBoolean("logout", false);
         if (isLogout)
         {
+            Log.e(TAG, "로그인하지 않음");
             notLoginView();
         }
         else
         {
+            Log.e(TAG, "로그인함");
             loginView();
         }
 
@@ -285,19 +288,38 @@ public class TestMyPageFragment extends Fragment
 
         // 북마크 혜택
         binding.bookmarkWelfareLayout.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "북마크 혜택 클릭");
+            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
             Intent intent = new Intent(getActivity(), BookmarkCheckActivity.class);
             startActivity(intent);
         });
 
         // 작성한 리뷰
         binding.writtenReviewLayout.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "작성한 리뷰 클릭");
+            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
             Intent intent = new Intent(getActivity(), WrittenReviewCheckActivity.class);
             startActivity(intent);
         });
 
         // 관심사 선택
         binding.editInterestTextview.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "관심사 선택 클릭");
+            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
             Intent intent = new Intent(getActivity(), ChooseFirstInterestActivity.class);
+            startActivity(intent);
+        });
+
+        // 탈퇴하기
+        binding.mypageWithdrawTextview.setOnClickListener(v ->
+        {
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "탈퇴하기 클릭");
+            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+            Intent intent = new Intent(getActivity(), WithdrawActivity.class);
             startActivity(intent);
         });
 
@@ -306,15 +328,16 @@ public class TestMyPageFragment extends Fragment
     // 비로그인 상태일 때 보여주는 화면
     void notLoginView()
     {
-        binding.mypageMyId.setVisibility(View.GONE);
-        binding.nicknameEditImage.setVisibility(View.GONE);
-        binding.threeMenuLayout.setVisibility(View.GONE);
-        binding.mypageDividerView.setVisibility(View.GONE);
-        binding.editInterestTextview.setVisibility(View.GONE);
-        binding.mypageLogoutTextview.setVisibility(View.GONE);
-        binding.mypageWithdrawTextview.setVisibility(View.GONE);
-        binding.mypageLoginLayout.setVisibility(View.VISIBLE);
-        // 밑에 있는 관심사 수정, 푸시 알림 설정이 있는 레이아웃의 top 체인을 곡선 있는 흰색 레이아웃의 bottom에 연결한다
+        binding.mypageMyId.setVisibility(View.GONE);                // 닉네임 보여주는 곳 가림
+        binding.nicknameEditImage.setVisibility(View.GONE);         // 닉네임 수정하는 펜 이미지 가림
+        binding.threeMenuLayout.setVisibility(View.GONE);           // 북마크 혜택, 작성한 리뷰 버튼 있는 레이아웃 가림
+        binding.mypageDividerView.setVisibility(View.GONE);         // 위 레이아웃 밑의 회색 구분선 가림
+        binding.editInterestTextview.setVisibility(View.GONE);      // 관심사 선택 가림
+        binding.mypageLogoutTextview.setVisibility(View.GONE);      // 로그아웃 가림
+        binding.mypageWithdrawTextview.setVisibility(View.GONE);    // 탈퇴하기 가림
+        binding.mypageLoginLayout.setVisibility(View.VISIBLE);      // 로그인하기 버튼과 그 위의 텍스트뷰 있는 레이아웃 보임
+
+        // 관심사 수정, 푸시 알림 설정 등이 있는 레이아웃의 top 체인을 곡선 있는 흰색 레이아웃의 bottom에 연결한다
         ConstraintLayout constraintLayout = binding.mypageBottomLayout;
         ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(constraintLayout);

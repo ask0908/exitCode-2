@@ -363,7 +363,7 @@
                 app:layout_constraintVertical_bias=".94"
                 app:layout_constraintWidth_percent=".79"
                 android:background="@drawable/radius_smallround_pink_button"
-                android:text="선택 완료"
+                android:text="저장하기"
                 android:textColor="#FFFFFF"
                 android:textSize="26sp"
                 android:textStyle="bold"/>

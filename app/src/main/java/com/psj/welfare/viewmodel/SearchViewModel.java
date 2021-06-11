@@ -78,4 +78,34 @@ public class SearchViewModel extends AndroidViewModel
         return data;
     }
 
+    // 추천 태그 검색 메서드
+    public MutableLiveData<String> searchRecommendTag(String keyword, String page, String type)
+    {
+        apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
+        final MutableLiveData<String> data = new MutableLiveData<>();
+        apiInterface.searchRecommendTag(keyword, page, type)
+                .enqueue(new Callback<String>()
+                {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response)
+                    {
+                        if (response.isSuccessful() && response.body() != null)
+                        {
+                            data.setValue(response.body());
+                        }
+                        else
+                        {
+                            Log.e(TAG, "추천 태그 검색 실패 : " + response.body());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t)
+                    {
+                        Log.e(TAG, "추천 태그 검색 에러 : " + t.getMessage());
+                    }
+                });
+        return data;
+    }
+
 }

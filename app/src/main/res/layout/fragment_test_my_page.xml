@@ -46,8 +46,8 @@
                     android:text="마이페이지"
                     android:textColor="@color/colorMainWhite"
                     android:layout_gravity="center"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
+                    android:paddingStart="30dp"
+                    android:paddingEnd="30dp"
                     android:gravity="center_vertical|bottom"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -460,7 +460,6 @@
                         android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:orientation="vertical"
-                        android:visibility="visible"
                         android:gravity="center"
                         android:weightSum="1"
                         app:layout_constraintWidth_percent="1"

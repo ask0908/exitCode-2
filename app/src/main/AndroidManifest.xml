@@ -22,7 +22,8 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
-        <activity android:name=".activity.ChooseSecondInterestActivity"></activity>
+        <activity android:name=".activity.WithdrawActivity"></activity>
+        <activity android:name=".activity.ChooseSecondInterestActivity" />
         <activity android:name=".activity.ChooseFirstInterestActivity" />
         <activity android:name=".activity.BookmarkEditActivity" />
         <activity android:name=".activity.WrittenReviewCheckActivity" />
