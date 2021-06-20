@@ -36,7 +36,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white"
-                android:fontFamily="@font/notosanscjkkr_bold"
+                android:fontFamily="@font/notosanskr_bold"
+                android:includeFontPadding="false"
                 android:text="혜택모아"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -44,7 +45,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.4"
+                app:layout_constraintVertical_bias="0.65"
                 tools:textSize="22dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -208,10 +209,13 @@
                                 app:layout_constraintWidth_percent="0.9">
 
                                 <TextView
+                                    app:autoSizePresetSizes="@array/autosize_text_sizes"
                                     android:id="@+id/Welfdata_first_title"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="@font/notosanscjkkr_bold"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    app:layout_constraintHeight_percent="0.4"
+                                    android:fontFamily="@font/notosanskr_bold"
+                                    android:includeFontPadding="false"
                                     android:text="20대, 서울, 여성"
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintLeft_toLeftOf="parent"
@@ -220,10 +224,13 @@
 
 
                                 <TextView
+                                    app:autoSizePresetSizes="@array/autosize_text_sizes"
                                     android:id="@+id/Welfdata_second_title"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="@font/notosanscjkkr_bold"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    app:layout_constraintHeight_percent="0.4"
+                                    android:fontFamily="@font/notosanskr_bold"
+                                    android:includeFontPadding="false"
                                     android:text="맞춤 혜택"
                                     app:layout_constraintLeft_toLeftOf="parent"
                                     app:layout_constraintTop_toBottomOf="@+id/Welfdata_first_title" />
@@ -254,12 +261,12 @@
                             android:id="@+id/more_see_textview"
                             android:layout_width="0dp"
                             android:layout_height="0dp"
-                            android:autoSizeTextType="none"
-                            android:fontFamily="@font/nanum_barun_gothic_bold"
+                            android:autoSizeTextType="uniform"
+                            android:fontFamily="@font/notosanskr_bold"
+                            android:includeFontPadding="false"
                             android:gravity="center"
                             android:text="+ 더보기"
                             android:textColor="@color/gray"
-                            app:autoSizePresetSizes="@array/autosize_text_sizes"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintHeight_percent=".05"
                             app:layout_constraintHorizontal_bias=".92"
@@ -277,7 +284,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/youtube_title_layout"
                     android:layout_width="0dp"
-                    android:layout_height="100dp"
+                    android:layout_height="50dp"
                     android:layout_marginTop="1dp"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
@@ -299,12 +306,14 @@
                         app:layout_constraintWidth_percent=".015" />
 
                     <TextView
-                        android:id="@+id/youtube_title"
+                        android:id="@+id/youtube_title_text"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:autoSizeTextType="uniform"
                         android:text="유튜버들의 혜택 리뷰"
+                        android:fontFamily="@font/notosanskr_bold"
+                        android:includeFontPadding="false"
                         android:textStyle="bold"
+                        android:gravity="center_vertical"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintHeight_percent=".9"
                         app:layout_constraintHorizontal_bias=".2"

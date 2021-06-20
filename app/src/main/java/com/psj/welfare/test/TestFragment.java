@@ -73,6 +73,7 @@ public class TestFragment extends Fragment
     private ConstraintLayout Welfdata_title_layout; //로그인시 닉네임 보여주는 레이아웃(ex 20대, 서울, 여성 맞춤 혜택)
     private CardView notlogin_card; //비로그인 + 미리보기 안했을 경우 나타나는 카드뷰
     private TextView title_text; //메인 텍스트 사이즈
+    private TextView youtube_title_text; //"유튜버들의 혜택 리뷰"
 
     //로그인 여부를 확인하기 위해 사용하는 쉐어드
     private SharedPreferences app_pref;
@@ -156,6 +157,7 @@ public class TestFragment extends Fragment
                              Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.fragment_test, container, false);
+        youtube_title_text = view.findViewById(R.id.youtube_title_text);
         title_text = view.findViewById(R.id.title_text);
         youtube_title_layout = view.findViewById(R.id.youtube_title_layout);
         MainTop = view.findViewById(R.id.MainTop);
@@ -333,15 +335,17 @@ public class TestFragment extends Fragment
         //뷰페이저 크기
         MainBannerViewpager2.getLayoutParams().height = (int) (size.y * 0.25);
         //닉네임 첫번째줄 텍스트
-        Welfdata_first_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.015));
+        Welfdata_first_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.025));
         //닉네임 두번째줄 텍스트
-        Welfdata_second_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.015));
+        Welfdata_second_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.025));
         //관심사 선택 카드뷰
         notlogin_card.getLayoutParams().height = (int) (size.y * 0.22);
         //맞춤 혜택 보여주기 레이아웃
         welfdata_layout.getLayoutParams().height = (int) (size.y * 0.47);
         //유튜버 혜택 리뷰 타이틀 레이아웃
         youtube_title_layout.getLayoutParams().height = (int) (size.y * 0.0415);
+        //유튜브 혜택 타이틀 텍스트
+        youtube_title_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.025));
         //유튜브 리사이클러뷰
         youtube_video_recyclerview.getLayoutParams().height = (int) (size.y * 0.3);
         //"나에게 맞는 혜택 찾기" 버튼 텍스트 크기

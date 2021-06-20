@@ -35,12 +35,13 @@
                     android:id="@+id/search_fragment_top_textview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintVertical_bias="0.06"
+                    app:layout_constraintVertical_bias="0.2"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:fontFamily="@font/notosanscjkkr_bold"
+                    android:fontFamily="@font/notosanskr_bold"
+                    android:includeFontPadding="false"
                     android:text="마이페이지"
                     tools:textSize="22dp"
                     android:textColor="@color/colorMainWhite"
@@ -91,7 +92,8 @@
                             android:id="@+id/mypage_my_id"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/notosanscjkkr_bold"
+                            android:fontFamily="@font/notosanskr_bold"
+                            android:includeFontPadding="false"
                             android:gravity="center"
                             tools:text="닉네임"
                             android:layout_gravity="center"
@@ -167,7 +169,8 @@
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/bookmark_image"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                android:fontFamily="@font/notosanscjkkr_bold"
+                                android:fontFamily="@font/notosanskr_bold"
+                                android:includeFontPadding="false"
                                 android:gravity="center"
                                 android:text="북마크 혜택"/>
 
@@ -257,7 +260,8 @@
                                 app:layout_constraintTop_toBottomOf="@+id/written_review_image"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 android:gravity="center"
-                                android:fontFamily="@font/notosanscjkkr_bold"
+                                android:fontFamily="@font/notosanskr_bold"
+                                android:includeFontPadding="false"
                                 android:text="작성한 리뷰"/>
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -302,7 +306,8 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:fontFamily="@font/notosanscjkkr_bold"
+                        android:fontFamily="@font/notosanskr_bold"
+                        android:includeFontPadding="false"
                         android:text="관심사 선택" />
 
                     <LinearLayout
@@ -323,7 +328,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight=".6"
-                            android:fontFamily="@font/notosanscjkkr_bold"
+                            android:fontFamily="@font/notosanskr_bold"
+                            android:includeFontPadding="false"
                             android:text="푸시 알림 설정"
                             android:textColor="@color/gray" />
 
@@ -374,7 +380,8 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:fontFamily="@font/notosanscjkkr_bold"
+                        android:fontFamily="@font/notosanskr_bold"
+                        android:includeFontPadding="false"
                         android:text="이용약관 확인" />
 
                     <TextView
@@ -387,7 +394,8 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:fontFamily="@font/notosanscjkkr_bold"
+                        android:fontFamily="@font/notosanskr_bold"
+                        android:includeFontPadding="false"
                         android:text="개인정보 처리방침 확인" />
 
                     <TextView
@@ -400,7 +408,8 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:fontFamily="@font/notosanscjkkr_bold"
+                        android:fontFamily="@font/notosanskr_bold"
+                        android:includeFontPadding="false"
                         android:text="버전 2.0.0" />
 
                     <TextView
@@ -413,7 +422,8 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:fontFamily="@font/notosanscjkkr_bold"
+                        android:fontFamily="@font/notosanskr_bold"
+                        android:includeFontPadding="false"
                         android:text="로그아웃" />
 
                     <TextView
@@ -426,7 +436,8 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:fontFamily="@font/notosanscjkkr_bold"
+                        android:fontFamily="@font/notosanskr_bold"
+                        android:includeFontPadding="false"
                         android:text="탈퇴하기" />
 
                     <!-- 비로그인 시에만 보여야 하는 레이아웃
@@ -461,7 +472,8 @@
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            android:fontFamily="@font/notosanscjkkr_medium"
+                            android:fontFamily="@font/notosanskr_medium"
+                            android:includeFontPadding="false"
                             android:text="로그인하고 더 많은 기능을 만나보세요" />
 
                         <View
@@ -476,7 +488,8 @@
                             android:layout_height="0dp"
                             android:layout_weight=".6"
                             android:background="@drawable/btn_keyword_selected"
-                            android:fontFamily="@font/notosanscjkkr_bold"
+                            android:fontFamily="@font/notosanskr_bold"
+                            android:includeFontPadding="false"
                             android:text="로그인하러 가기"
                             android:textColor="@color/colorMainWhite"/>
 

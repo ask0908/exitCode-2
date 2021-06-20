@@ -44,6 +44,8 @@
                 android:paddingEnd="10dp"
                 android:paddingBottom="6dp"
                 android:text="재난지원금"
+                android:fontFamily="@font/notosanskr_bold"
+                android:includeFontPadding="false"
                 app:autoSizePresetSizes="@array/autosize_text_sizes"/>
 
         </LinearLayout>
