@@ -55,7 +55,7 @@
                 android:gravity="center_vertical|bottom"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
-                android:text="북마크 혜택"
+                android:text="북마크"
                 android:textColor="@color/colorMainWhite"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

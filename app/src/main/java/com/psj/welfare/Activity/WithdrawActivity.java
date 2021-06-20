@@ -16,8 +16,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,11 +33,15 @@ import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
+import com.psj.welfare.custom.CustomWithdrawDialog;
+import com.psj.welfare.custom.MyWithdrawListener;
 import com.psj.welfare.util.DBOpenHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -51,7 +53,7 @@ public class WithdrawActivity extends AppCompatActivity
     private final String TAG = this.getClass().getSimpleName();
 
     ImageView withdraw_back_image;
-    TextView withdraw_top_textview, withdraw_question_textview, withdraw_alert_textview, select_reason_textview;
+    TextView withdraw_top_textview, withdraw_question_textview, withdraw_alert_textview, select_reason_textview, withdraw_textview;
     EditText reason_to_leave_edittext;
     Button withdraw_button;
 
@@ -87,14 +89,9 @@ public class WithdrawActivity extends AppCompatActivity
         withdraw_question_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 20);    // 계정을 삭제하시나요?
         withdraw_alert_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 23);       // 계정을 삭제하면 관심사 선택~삭제됩니다
         select_reason_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 20);        // 계정을 삭제하는 이유를 말해주세요
-//        withdraw_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 19);             // "선택해 주세요" 텍스트뷰
+        withdraw_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 19);             // "선택해 주세요" 텍스트뷰
         reason_to_leave_edittext.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 19);      // 탈퇴 사유 적는 editText
-        withdraw_button.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 20);
-
-        /* 탈퇴 사유 적는 editText의 width, height 수정 */
-        ViewGroup.LayoutParams reason_edittext_params = reason_to_leave_edittext.getLayoutParams();
-        reason_edittext_params.height = size.y / 13;
-        reason_to_leave_edittext.setLayoutParams(reason_edittext_params);
+        withdraw_button.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 16);               // 탈퇴 버튼
 
         /* 회원탈퇴 버튼의 width, height 수정 */
         ViewGroup.LayoutParams button_params = withdraw_button.getLayoutParams();
@@ -102,168 +99,122 @@ public class WithdrawActivity extends AppCompatActivity
         button_params.height = size.y / 15;
         withdraw_button.setLayoutParams(button_params);
 
-        RadioGroup radioGroup = findViewById(R.id.withdraw_radiogroup);    // 라디오 버튼 사용 위한 라디오 그룹
-        RadioButton first_reason = findViewById(R.id.first_reason);        // 나한테 맞는 혜택이 없어서
-        RadioButton second_reason = findViewById(R.id.second_reason);      // 보는 게 어려워서
-        RadioButton third_reason = findViewById(R.id.third_reason);        // 사용하기 불편해서
-        RadioButton fourth_reason = findViewById(R.id.fourth_reason);      // 기타
-
-        // 라디오 그룹 안의 라디오 버튼 체크 시 각 값들을 변수에 담아 api 인자로 넘긴다
-        // 기타를 선택할 경우 editText에 입력한 내용들을 api 인자로 넘긴다
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-        {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int id)
-            {
-                switch (id)
-                {
-                    case R.id.first_reason :
-                        reason_to_leave_edittext.setVisibility(View.GONE);
-                        withdraw_button.setBackground(ContextCompat.getDrawable(WithdrawActivity.this, R.drawable.radius_smallround_pink_button));
-                        withdraw_button.setEnabled(true);
-                        reason = first_reason.getText().toString();
-                        break;
-
-                    case R.id.second_reason :
-                        reason_to_leave_edittext.setVisibility(View.GONE);
-                        withdraw_button.setBackground(ContextCompat.getDrawable(WithdrawActivity.this, R.drawable.radius_smallround_pink_button));
-                        withdraw_button.setEnabled(true);
-                        reason = second_reason.getText().toString();
-                        break;
-
-                    case R.id.third_reason :
-                        reason_to_leave_edittext.setVisibility(View.GONE);
-                        withdraw_button.setBackground(ContextCompat.getDrawable(WithdrawActivity.this, R.drawable.radius_smallround_pink_button));
-                        withdraw_button.setEnabled(true);
-                        reason = third_reason.getText().toString();
-                        break;
-
-                    case R.id.fourth_reason :
-                        reason_to_leave_edittext.setVisibility(View.VISIBLE);
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-        });
-
         // 탈퇴 사유를 아직 선택하지 않은 경우
-//        if (withdraw_textview.getText().toString().equals(getString(R.string.withdraw_textview_default)))
-//        {
-//            reason_to_leave_edittext.setVisibility(View.GONE);
-//        }
-//        else
-//        {
-//            reason_to_leave_edittext.setVisibility(View.VISIBLE);
-//        }
+        if (withdraw_textview.getText().toString().equals(getString(R.string.withdraw_textview_default)))
+        {
+            reason_to_leave_edittext.setVisibility(View.GONE);
+        }
+        else
+        {
+            reason_to_leave_edittext.setVisibility(View.VISIBLE);
+        }
 
         // 탈퇴 사유 선택하는 텍스트뷰
-//        withdraw_textview.setOnClickListener(v ->
-//        {
-//            CustomWithdrawDialog dialog = new CustomWithdrawDialog(this);
-//            // 선택해 주세요 텍스트뷰 클릭 시 커스텀 다이얼로그 출력
-//            dialog.showDialog();
-//            // 커스텀 다이얼로그에서 어떤 라디오 버튼을 눌렀냐에 따라 각각 다른 값을 변수에 담아 회원탈퇴 api 매개변수로 넘김
-//            dialog.setOnWithdrawListener(new MyWithdrawListener()
-//            {
-//                @Override
-//                public void sendFirstValue(String value)
-//                {
-//                    /* NPE 방지를 위해 매개변수에 null 체크(1~4번 모두 동일) */
-//                    if (value != null)
-//                    {
-//                        if (!value.equals(""))
-//                        {
-//                            // 매개변수로 받은 문자열을 액티비티의 멤버 변수에 대입
-//                            reason = value;
-//                            Log.e(TAG, "1번 클릭 후 다이얼로그 -> 액티비티로 값 전달 확인 : " + reason);
-//                            // 4번을 선택한 경우에만 editText가 보여야 하기 때문에 아직 GONE으로 visibility 설정
-//                            // 그게 아니라도 각 버튼마다 아래 코드를 써줘야 기타 -> 1~3번 클릭 시 editText가 안 보이게 된다
-//                            reason_to_leave_edittext.setVisibility(View.GONE);
-//                            withdraw_button.setBackground(ContextCompat.getDrawable(WithdrawActivity.this, R.drawable.radius_smallround_pink_button));
-//                            withdraw_button.setEnabled(true);
-//                            // 콜백 메서드가 다이얼로그 -> 액티비티로 값 가져오는 작업을 끝내면 Rxjava로 텍스트뷰에 값 set
-//                            Observable.just(reason)
-//                                    .subscribeOn(Schedulers.io())
-//                                    .subscribe(data -> withdraw_textview.setText(reason));
-//                        }
-//                    }
-//                }
-//
-//                @Override
-//                public void sendSecondValue(String second_value)
-//                {
-//                    if (second_value != null)
-//                    {
-//                        if (!second_value.equals(""))
-//                        {
-//                            reason = second_value;
-//                            Log.e(TAG, "2번 클릭 후 다이얼로그 -> 액티비티로 값 전달 확인 : " + reason);
-//                            reason_to_leave_edittext.setVisibility(View.GONE);
-//                            withdraw_button.setBackground(ContextCompat.getDrawable(WithdrawActivity.this, R.drawable.radius_smallround_pink_button));
-//                            withdraw_button.setEnabled(true);
-//                            // 콜백 메서드가 다이얼로그 -> 액티비티로 값 가져오는 작업을 끝내면 Rxjava로 텍스트뷰에 값 set
-//                            Observable.just(reason)
-//                                    .subscribeOn(Schedulers.io())
-//                                    .subscribe(data -> withdraw_textview.setText(reason));
-//                        }
-//                    }
-//                }
-//
-//                @Override
-//                public void sendThirdValue(String third_value)
-//                {
-//                    if (third_value != null)
-//                    {
-//                        if (!third_value.equals(""))
-//                        {
-//                            reason = third_value;
-//                            Log.e(TAG, "3번 클릭 후 다이얼로그 -> 액티비티로 값 전달 확인 : " + reason);
-//                            reason_to_leave_edittext.setVisibility(View.GONE);
-//                            withdraw_button.setBackground(ContextCompat.getDrawable(WithdrawActivity.this, R.drawable.radius_smallround_pink_button));
-//                            withdraw_button.setEnabled(true);
-//                            // 콜백 메서드가 다이얼로그 -> 액티비티로 값 가져오는 작업을 끝내면 Rxjava로 텍스트뷰에 값 set
-//                            Observable.just(reason)
-//                                    .subscribeOn(Schedulers.io())
-//                                    .subscribe(data -> withdraw_textview.setText(reason));
-//                        }
-//                    }
-//                }
-//
-//                @Override
-//                public void sendFourthValue(String fourth_value)
-//                {
-//                    if (fourth_value != null)
-//                    {
-//                        if (!fourth_value.equals(""))
-//                        {
-//                            reason = fourth_value;
-//                            Log.e(TAG, "4번 클릭 후 다이얼로그 -> 액티비티로 값 전달 확인 : " + reason);
-//                            // 콜백 메서드가 다이얼로그 -> 액티비티로 값 가져오는 작업을 끝내면 Rxjava로 텍스트뷰에 값 set
-//                            Observable.just(reason)
-//                                    .subscribeOn(Schedulers.io())
-//                                    .subscribe(data -> withdraw_textview.setText(reason));
-//
-//                            // 기타를 눌렀을 경우 탈퇴 사유를 적을 수 있는 란을 visible로 바꾼다
-//                            if (reason.equals("기타"))
-//                            {
-//                                reason_to_leave_edittext.setVisibility(View.VISIBLE);
-//                                withdraw_button.setBackground(ContextCompat.getDrawable(WithdrawActivity.this, R.drawable.withdraw_non_activated));
-//                                withdraw_button.setEnabled(false);
-//                            }
-//                            else
-//                            {
-//                                reason_to_leave_edittext.setVisibility(View.GONE);
-//                                withdraw_button.setBackground(ContextCompat.getDrawable(WithdrawActivity.this, R.drawable.radius_smallround_pink_button));
-//                                withdraw_button.setEnabled(true);
-//                            }
-//                        }
-//                    }
-//                }
-//            });
-//
-//        });
+        withdraw_textview.setOnClickListener(v ->
+        {
+            CustomWithdrawDialog dialog = new CustomWithdrawDialog(this);
+            // 선택해 주세요 텍스트뷰 클릭 시 커스텀 다이얼로그 출력
+            dialog.showDialog();
+            // 커스텀 다이얼로그에서 어떤 라디오 버튼을 눌렀냐에 따라 각각 다른 값을 변수에 담아 회원탈퇴 api 매개변수로 넘김
+            dialog.setOnWithdrawListener(new MyWithdrawListener()
+            {
+                @Override
+                public void sendFirstValue(String value)
+                {
+                    /* NPE 방지를 위해 매개변수에 null 체크(1~4번 모두 동일) */
+                    if (value != null)
+                    {
+                        if (!value.equals(""))
+                        {
+                            // 매개변수로 받은 문자열을 액티비티의 멤버 변수에 대입
+                            reason = value;
+                            Log.e(TAG, "1번 클릭 후 다이얼로그 -> 액티비티로 값 전달 확인 : " + reason);
+                            // 4번을 선택한 경우에만 editText가 보여야 하기 때문에 아직 GONE으로 visibility 설정
+                            // 그게 아니라도 각 버튼마다 아래 코드를 써줘야 기타 -> 1~3번 클릭 시 editText가 안 보이게 된다
+                            reason_to_leave_edittext.setVisibility(View.GONE);
+                            withdraw_button.setBackground(ContextCompat.getDrawable(WithdrawActivity.this, R.drawable.radius_smallround_pink_button));
+                            withdraw_button.setEnabled(true);
+                            // 콜백 메서드가 다이얼로그 -> 액티비티로 값 가져오는 작업을 끝내면 Rxjava로 텍스트뷰에 값 set
+                            Observable.just(reason)
+                                    .subscribeOn(Schedulers.io())
+                                    .subscribe(data -> withdraw_textview.setText(reason));
+                        }
+                    }
+                }
+
+                @Override
+                public void sendSecondValue(String second_value)
+                {
+                    if (second_value != null)
+                    {
+                        if (!second_value.equals(""))
+                        {
+                            reason = second_value;
+                            Log.e(TAG, "2번 클릭 후 다이얼로그 -> 액티비티로 값 전달 확인 : " + reason);
+                            reason_to_leave_edittext.setVisibility(View.GONE);
+                            withdraw_button.setBackground(ContextCompat.getDrawable(WithdrawActivity.this, R.drawable.radius_smallround_pink_button));
+                            withdraw_button.setEnabled(true);
+                            // 콜백 메서드가 다이얼로그 -> 액티비티로 값 가져오는 작업을 끝내면 Rxjava로 텍스트뷰에 값 set
+                            Observable.just(reason)
+                                    .subscribeOn(Schedulers.io())
+                                    .subscribe(data -> withdraw_textview.setText(reason));
+                        }
+                    }
+                }
+
+                @Override
+                public void sendThirdValue(String third_value)
+                {
+                    if (third_value != null)
+                    {
+                        if (!third_value.equals(""))
+                        {
+                            reason = third_value;
+                            Log.e(TAG, "3번 클릭 후 다이얼로그 -> 액티비티로 값 전달 확인 : " + reason);
+                            reason_to_leave_edittext.setVisibility(View.GONE);
+                            withdraw_button.setBackground(ContextCompat.getDrawable(WithdrawActivity.this, R.drawable.radius_smallround_pink_button));
+                            withdraw_button.setEnabled(true);
+                            // 콜백 메서드가 다이얼로그 -> 액티비티로 값 가져오는 작업을 끝내면 Rxjava로 텍스트뷰에 값 set
+                            Observable.just(reason)
+                                    .subscribeOn(Schedulers.io())
+                                    .subscribe(data -> withdraw_textview.setText(reason));
+                        }
+                    }
+                }
+
+                @Override
+                public void sendFourthValue(String fourth_value)
+                {
+                    if (fourth_value != null)
+                    {
+                        if (!fourth_value.equals(""))
+                        {
+                            reason = fourth_value;
+                            Log.e(TAG, "4번 클릭 후 다이얼로그 -> 액티비티로 값 전달 확인 : " + reason);
+                            // 콜백 메서드가 다이얼로그 -> 액티비티로 값 가져오는 작업을 끝내면 Rxjava로 텍스트뷰에 값 set
+                            Observable.just(reason)
+                                    .subscribeOn(Schedulers.io())
+                                    .subscribe(data -> withdraw_textview.setText(reason));
+
+                            // 기타를 눌렀을 경우 탈퇴 사유를 적을 수 있는 란을 visible로 바꾼다
+                            if (reason.equals("기타"))
+                            {
+                                reason_to_leave_edittext.setVisibility(View.VISIBLE);
+                                withdraw_button.setBackground(ContextCompat.getDrawable(WithdrawActivity.this, R.drawable.withdraw_non_activated));
+                                withdraw_button.setEnabled(false);
+                            }
+                            else
+                            {
+                                reason_to_leave_edittext.setVisibility(View.GONE);
+                                withdraw_button.setBackground(ContextCompat.getDrawable(WithdrawActivity.this, R.drawable.radius_smallround_pink_button));
+                                withdraw_button.setEnabled(true);
+                            }
+                        }
+                    }
+                }
+            });
+
+        });
 
         // 탈퇴 사유 적는 editText
         reason_to_leave_edittext.addTextChangedListener(new TextWatcher()
@@ -493,8 +444,17 @@ public class WithdrawActivity extends AppCompatActivity
         withdraw_question_textview = findViewById(R.id.withdraw_question_textview);
         withdraw_alert_textview = findViewById(R.id.withdraw_alert_textview);
         select_reason_textview = findViewById(R.id.select_reason_textview);
-//        withdraw_textview = findViewById(R.id.withdraw_textview);
+        withdraw_textview = findViewById(R.id.withdraw_textview);
         reason_to_leave_edittext = findViewById(R.id.reason_to_leave_edittext);
         withdraw_button = findViewById(R.id.withdraw_button);
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("reason");
+        editor.apply();
     }
 }
