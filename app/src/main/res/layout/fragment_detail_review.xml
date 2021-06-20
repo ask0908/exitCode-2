@@ -396,7 +396,8 @@
                                 app:layout_constraintLeft_toLeftOf="parent"
                                 app:layout_constraintRight_toLeftOf="@+id/satisfaction_progressbar"
                                 app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintWidth_percent=".27">
+                                app:layout_constraintWidth_percent=".27"
+                                android:overScrollMode="never">
 
                                 <TextView
                                     android:id="@+id/useful_text"
@@ -577,7 +578,8 @@
                             android:scrollbarSize="5dp"
                             android:scrollbarThumbVertical="@android:color/darker_gray"
                             android:scrollbars="vertical"
-                            android:visibility="visible"/>
+                            android:visibility="visible"
+                            tools:listitem="@layout/item_two_review"/>
 
                         <!--리뷰가 없습니다 레이아웃-->
                         <androidx.constraintlayout.widget.ConstraintLayout

@@ -44,7 +44,7 @@ public interface ApiInterfaceTest {
     );
 
     //리뷰 모두 보기
-    @GET("v2/review")
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/review")
     Call<String> ReviewAllLook(
             @Header("logintoken") String LoginToken,
             @Query("welf_id") String welf_id
@@ -85,4 +85,20 @@ public interface ApiInterfaceTest {
             @Query("type") String type,
             @Query("page") String page
     );
+
+    //배너 데이터 받기(로그인o)
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/banner-detail")
+    Call<String> BannerDetail_beingid(
+            @Header("logintoken") String LoginToken,
+            @Header("sessionid") String sessionid,
+            @Query("banner_name") String banner_name
+    );
+
+    //배너 데이터 받기(로그인x)
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/banner-detail")
+    Call<String> BannerDetail(
+            @Query("banner_name") String banner_name
+    );
+
+
 }

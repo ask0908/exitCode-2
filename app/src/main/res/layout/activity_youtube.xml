@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="#fff"
-    android:theme="@style/ToolbarTheme"
     android:descendantFocusability="blocksDescendants"
+    android:orientation="vertical"
+    android:theme="@style/ToolbarTheme"
     tools:context=".activity.YoutubeActivity">
 
 
-<!--    유튜브 툴바-->
-<!--    <androidx.appcompat.widget.Toolbar-->
-<!--        android:id="@+id/youtube_toolbar"-->
-<!--        app:titleTextColor="@color/colorMainWhite"-->
-<!--        android:background="@drawable/renewal_gradation_background"-->
-<!--        android:theme="@style/toolbar_jalnan_fontfamily"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"/>-->
+    <!--    유튜브 툴바-->
+    <!--    <androidx.appcompat.widget.Toolbar-->
+    <!--        android:id="@+id/youtube_toolbar"-->
+    <!--        app:titleTextColor="@color/colorMainWhite"-->
+    <!--        android:background="@drawable/renewal_gradation_background"-->
+    <!--        android:theme="@style/toolbar_jalnan_fontfamily"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"/>-->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/youtubeTop_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="50dp"
         android:background="@drawable/renewal_gradation_background"
         app:layout_constraintHeight_percent=".075"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -37,15 +37,15 @@
             android:id="@+id/back_btn"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintTop_toTopOf="parent"
+            android:background="@drawable/arrow_left_black"
+            android:backgroundTint="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_percent="0.6"
+            app:layout_constraintHorizontal_bias="0.05"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:background="@drawable/arrow_left_black"
-            app:layout_constraintHeight_percent="0.6"
-            app:layout_constraintWidth_percent="0.07"
-            app:layout_constraintHorizontal_bias="0.05"
-            android:backgroundTint="@color/white"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.07" />
 
         <TextView
             android:id="@+id/youtube_title_text"
@@ -53,6 +53,7 @@
             android:layout_height="0dp"
             android:autoSizeTextType="uniform"
             android:backgroundTint="@color/white"
+            android:gravity="center_vertical"
             android:text="유튜버 혜택 소개"
             android:textColor="@color/white"
             android:textStyle="bold"
@@ -62,10 +63,10 @@
             app:layout_constraintLeft_toRightOf="@+id/back_btn"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_percent="0.4"
-            android:gravity="center_vertical"/>
+            app:layout_constraintWidth_percent="0.4" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <!-- enableLiveVideoUi : 기본값 false, true인 경우 이 뷰는 라이브 동영상에 UI를 사용한다
      false인 경우 UI 일반 동영상을 사용한다. useWebUi가 true라면 이 속성은 아무 작업도 수행하지 않는다
@@ -78,119 +79,145 @@
      false면 직접 코딩해서 이 뷰를 초기화해야 한다
      useWebUi : 기본값 false, true면 이 뷰는 IFrame YoutubePlayer의 웹 기반 UI를 사용한다
      false면 라이브러리의 기본 UI를 사용한다 -->
+
+
     <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
         android:id="@+id/player_1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintHeight_percent=".3"
-        app:layout_constraintWidth_percent="1"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
         android:layout_marginTop="0dp"
         app:autoPlay="false"
-        app:showFullScreenButton="true"
-        app:showSeekBar="true"
-        app:handleNetworkEvents="true"
         app:enableAutomaticInitialization="true"
-        app:useWebUi="true"
+        app:handleNetworkEvents="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent=".3"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/youtubeTop_layout"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <TextView
-        android:id="@+id/first_video_title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:lineSpacingExtra="6sp"
-        android:text="텍스트"
-        android:textColor="@color/gray"
-        android:textSize="17sp"
-        app:layout_constraintWidth_percent=".93"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/player_1"
-        android:textStyle="bold"/>
-
-    <TextView
-        android:id="@+id/first_video_youtuber"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:lineSpacingExtra="6sp"
-        android:text="텍스트"
-        android:textColor="@color/gray"
-        android:textStyle="bold"
-        android:textSize="17sp"
-        android:layout_marginTop="10dp"
-        android:paddingBottom="10dp"
-        android:autoSizeTextType="uniform"
-        app:layout_constraintWidth_percent=".93"
-        app:layout_constraintHeight_percent=".035"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/first_video_title"/>
-
-    <View
-        android:id="@+id/youtube_divider"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintHeight_percent=".001"
         app:layout_constraintWidth_percent="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/first_video_youtuber"
-        android:background="@color/colorGray_B"/>
+        app:showFullScreenButton="true"
+        app:showSeekBar="true"
+        app:useWebUi="true" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/youtube_more_layout"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/main_scrollview"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/youtube_divider"
+        android:layout_height="match_parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/other_video_recyclerview"
-        app:layout_constraintHeight_percent=".08">
+        app:layout_constraintTop_toBottomOf="@+id/player_1">
 
-        <TextView
-            android:id="@+id/youtube_more_text"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_width="0dp"
+        <!-- 자식뷰의 포커싱을 막아주는 blocksDescendants 를 추가해 줍니다. -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintWidth_percent=".5"
-            android:text="다른 영상 보기"
-            android:textStyle="bold"
-            app:layout_constraintHorizontal_bias=".05"/>
+            android:descendantFocusability="blocksDescendants"
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/youtube_more_btn"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintHeight_percent=".6"
-            app:layout_constraintWidth_percent=".215"
-            app:layout_constraintHorizontal_bias=".93"
-            android:background="@drawable/radius_smallround_pink_button"
-            android:text="더보기"
-            android:textColor="#FFFFFF"/>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-   </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/first_video_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:lineSpacingExtra="6sp"
+                    android:text="텍스트"
+                    android:textColor="@color/gray"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent=".93" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/other_video_recyclerview"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintWidth_percent="1"
-        android:orientation="vertical"
-        android:padding="8dp"
-        android:layout_marginTop="7dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/youtube_more_layout"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:listitem="@layout/youtubelist_item"/>
+                <TextView
+                    android:id="@+id/first_video_youtuber"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:autoSizeTextType="uniform"
+                    android:lineSpacingExtra="6sp"
+                    android:paddingBottom="10dp"
+                    android:text="텍스트"
+                    android:textColor="@color/colorGray_C"
+                    android:textSize="17sp"
+                    app:layout_constraintBottom_toTopOf="@+id/youtube_divider"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHeight_percent=".035"
+                    app:layout_constraintHorizontal_bias="0.551"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/first_video_title"
+                    app:layout_constraintWidth_percent=".93" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                <View
+                    android:id="@+id/youtube_divider"
+                    android:layout_width="0dp"
+                    android:layout_height="0.02dp"
+                    android:background="@color/colorGray_B"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHeight_percent=".001"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/first_video_youtuber"
+                    app:layout_constraintWidth_percent="1" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/youtube_more_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    app:layout_constraintHeight_percent=".08"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/youtube_divider">
+
+                    <TextView
+                        android:id="@+id/youtube_more_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="다른 영상 보기"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintHorizontal_bias=".093"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintWidth_percent=".5" />
+
+                    <Button
+                        android:id="@+id/youtube_more_btn"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="@drawable/radius_smallround_pink_button"
+                        android:text="더보기"
+                        android:textColor="#FFFFFF"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintHeight_percent=".6"
+                        app:layout_constraintHorizontal_bias=".93"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintWidth_percent=".215" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/other_video_recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="6dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/youtube_more_layout"
+                app:layout_constraintWidth_percent="1"
+                tools:listitem="@layout/youtubelist_item"
+                android:overScrollMode="never"/>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

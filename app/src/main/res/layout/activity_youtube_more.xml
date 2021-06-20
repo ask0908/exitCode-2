@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.YoutubeMoreActivity">
+    tools:context=".activity.YoutubeMoreActivity"
+    android:background="@color/white">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/YoutubeMore_Top"
@@ -81,12 +82,15 @@
         android:backgroundTint="@color/white"
         android:gravity="center_vertical"
         android:textStyle="bold"
+        tools:text="총 15개 혜택 영상"
         app:layout_constraintHeight_percent="0.04"
         app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintVertical_bias=".116"
         app:layout_constraintWidth_percent="0.9"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/YoutubeMore_Top"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/YoutubeMore_recyclerview"
@@ -94,7 +98,6 @@
         android:layout_height="0dp"
         app:layout_constraintWidth_percent="1"
         android:orientation="vertical"
-        android:padding="8dp"
         android:layout_marginTop="7dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

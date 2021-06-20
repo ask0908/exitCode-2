@@ -50,7 +50,7 @@ public class YoutubeListAdapter extends RecyclerView.Adapter<YoutubeListAdapter.
 
         String youtube_thumbnail = youtubelist.get(position).getYoutube_thumbnail(); //유튜브 썸네일
         String youtube_title = youtubelist.get(position).getYoutube_title(); //유튜브 타이틀
-        String youtube_name = youtubelist.get(position).getYoutube_name() + " " + youtubelist.get(position).getYoutube_upload_date(); //유튜버 + 업로드날짜
+        String youtube_name = youtubelist.get(position).getYoutube_name() + " · " + youtubelist.get(position).getYoutube_upload_date(); //유튜버 + 업로드날짜
 
         Glide.with(holder.itemView)
                 .load(youtube_thumbnail)
@@ -99,14 +99,17 @@ public class YoutubeListAdapter extends RecyclerView.Adapter<YoutubeListAdapter.
         //context의 스크린 사이즈를 구함
         Point size = screen.getScreenSize((Activity) context);
 
+        //썸네일
         holder.youtube_list_thumbnail.getLayoutParams().width = (int) (size.x * 0.38);
-        holder.youtube_list_thumbnail.getLayoutParams().height = (int) (size.y * 0.108);
+        holder.youtube_list_thumbnail.getLayoutParams().height = (int) (size.y * 0.112);
 
+        //유튜브 리스트 레이아웃
         holder.youtube_layout.getLayoutParams().width = (int) (size.x * 0.92);
         holder.youtube_layout.getLayoutParams().height = (int) (size.y * 0.115);
 
-        //디스플레이 값을 기준으로 레이아웃등 크기를 동적으로 정함
-        holder.youtube_list_title.setTextSize(TypedValue.COMPLEX_UNIT_PX,size.x/28);
+        //유튜브 제목 텍스트
+        holder.youtube_list_title.setTextSize(TypedValue.COMPLEX_UNIT_PX,size.x/26);
+        //유튜버 + 업로드 날짜
         holder.youtube_list_name.setTextSize(TypedValue.COMPLEX_UNIT_PX,size.x/28);
     }
 

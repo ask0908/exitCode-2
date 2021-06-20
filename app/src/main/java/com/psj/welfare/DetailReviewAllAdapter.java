@@ -35,6 +35,8 @@ public class DetailReviewAllAdapter extends RecyclerView.Adapter<DetailReviewAll
 
     @Override
     public void onBindViewHolder(@NonNull AllReviewViewHolder holder, int position) {
+
+
         DetailReviewData reviewData = DetailReviewList.get(position);
 
         holder.two_review_nickname.setText(reviewData.getNickName()); //닉네임 데이터 넣기
@@ -48,6 +50,14 @@ public class DetailReviewAllAdapter extends RecyclerView.Adapter<DetailReviewAll
 
         //버튼 및 텍스트의 사이즈를 동적으로 맞춤
         setsize(holder);
+
+        if(position == DetailReviewList.size()-1){
+            //마지막 아이템이면파트를 나누는 라인을 안보여줌
+            holder.review_delimiter.setVisibility(View.GONE);
+        } else {
+            //마지막 아이템이 아니면 파트를 나누는 라인을 보여줌
+            holder.review_delimiter.setVisibility(View.VISIBLE);
+        }
     }
 
     public class AllReviewViewHolder extends RecyclerView.ViewHolder {
@@ -57,6 +67,7 @@ public class DetailReviewAllAdapter extends RecyclerView.Adapter<DetailReviewAll
         TextView two_review_nickname; //닉네임
         TextView two_review_date; //날짜
         TextView two_review_content; //내용
+        View review_delimiter; //리뷰 파트 나누는 라인
 
         public AllReviewViewHolder(@NonNull View view) {
             super(view);
@@ -65,6 +76,7 @@ public class DetailReviewAllAdapter extends RecyclerView.Adapter<DetailReviewAll
             two_review_star = view.findViewById(R.id.two_review_star); //별점
             two_review_date = view.findViewById(R.id.two_review_date); //날짜
             two_review_content = view.findViewById(R.id.two_review_content); //내용
+            review_delimiter = view.findViewById(R.id.review_delimiter); //리뷰 파트 나누는 라인
         }
     }
 
@@ -77,14 +89,15 @@ public class DetailReviewAllAdapter extends RecyclerView.Adapter<DetailReviewAll
         //디스플레이 값을 기준으로 버튼 텍스트 크기를 정함
         holder.two_review_nickname.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x/23); //닉네임
         holder.two_review_content.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x/25); //내용
-        holder.two_review_content.setPadding(size.x/50, 0, 0, 0); //레이아웃 패딩값 적용
+        holder.two_review_content.setPadding(0,0,0,(int) (size.y * 0.01));
 
-        holder.review_item.setPadding(size.x / 30, size.x / 25, size.x / 30, size.x / 25); //레이아웃 패딩값 적용
+        holder.review_item.setPadding((int) (size.x * 0.015), (int) (size.y * 0.03), (int) (size.x * 0.015), (int) (size.y * 0.03)); //레이아웃 패딩값 적용
         holder.two_review_date.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x/30);
+
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return DetailReviewList != null ? DetailReviewList.size() : 0;
     }
 }

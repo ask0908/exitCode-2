@@ -1,6 +1,7 @@
 package com.psj.welfare.activity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -70,6 +72,8 @@ public class YoutubeActivity extends AppCompatActivity
 
     private Button youtube_more_btn; //유튜브 더보기 버튼
     private TextView youtube_more_text; //유튜브 "다른 영상 보기" 텍스트
+    private ConstraintLayout youtube_more_layout; //영상 더보기 레이아웃
+    private ConstraintLayout youtubeTop_layout; //상단 툴바 레이아웃
 
 //    Toolbar youtube_toolbar;
     YouTubePlayerView player_1;
@@ -134,6 +138,7 @@ public class YoutubeActivity extends AppCompatActivity
         //로그인 했는지 여부
         being_loging();
 
+        //초기화 작업
         init();
 
 //        showWelfareAndYoutubeNotLogin();
@@ -214,8 +219,10 @@ public class YoutubeActivity extends AppCompatActivity
 
 
 
-        //리사이클러뷰가 마지막에 도달하면 이벤트 발생
-        youtubeScrollListener();
+
+
+//        //리사이클러뷰가 마지막에 도달하면 이벤트 발생
+//        youtubeScrollListener();
 
         //유튜브 데이터 서버에서 받아오기
         youtubedata(1);
@@ -300,8 +307,16 @@ public class YoutubeActivity extends AppCompatActivity
 
     //유튜브 데이터 서버에서 받아오기
     public void youtubedata(int page){
-        //서버 연결하기
-//        Log.e(TAG,"id : " + id);
+
+
+        //서버 연결전에 프로그래스바 보여주기
+        final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setMax(100);
+        dialog.setMessage("잠시만 기다려 주세요...");
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.show();
+
+
         if(!being_logout) //로그인 했을 경우
         {
             ApiInterfaceTest apiInterface = ApiClient.getRetrofit().create(ApiInterfaceTest.class);
@@ -322,6 +337,8 @@ public class YoutubeActivity extends AppCompatActivity
                     {
                         Log.e(TAG, "비로그인일 시 데이터 가져오기 실패 : " + response.body());
                     }
+
+                    dialog.dismiss(); //서버 연결후에 프로그래스바 숨기기
                 }
 
                 @Override
@@ -330,6 +347,8 @@ public class YoutubeActivity extends AppCompatActivity
                     Log.e(TAG, "비로그인일 시 데이터 가져오기 에러 : " + t.getMessage());
                 }
             });
+
+
         }
         else //로그인 안했을 경우
         {
@@ -350,6 +369,8 @@ public class YoutubeActivity extends AppCompatActivity
                     {
                         Log.e(TAG, "비로그인일 시 데이터 가져오기 실패 : " + response.body());
                     }
+
+                    dialog.dismiss(); //서버 연결후에 프로그래스바 숨기기
                 }
 
                 @Override
@@ -358,6 +379,7 @@ public class YoutubeActivity extends AppCompatActivity
                     Log.e(TAG, "비로그인일 시 데이터 가져오기 에러 : " + t.getMessage());
                 }
             });
+
         }
     }
 
@@ -400,7 +422,7 @@ public class YoutubeActivity extends AppCompatActivity
                     String videoId = see_object.getString("videoId"); ////현재 선택한 유튜브 비디오id
                     String upload_date = see_object.getString("upload_date"); ////현재 선택한 유튜브 업로드 날짜
 
-                    first_video_youtuber.setText(name + " "+ upload_date);
+                    first_video_youtuber.setText(name + " · "+ upload_date);
                 }
 
                 JSONArray jsonArraymore = inner_json.getJSONArray("more_video"); //현재 선택한 유튜브 영상을 제외한 다른 유튜브(페이징 처리)
@@ -701,6 +723,8 @@ public class YoutubeActivity extends AppCompatActivity
         first_video_youtuber = findViewById(R.id.first_video_youtuber); //유튜버 + 업로드날짜
         youtube_more_btn = findViewById(R.id.youtube_more_btn); //유튜브 더보기 버튼
         youtube_more_text = findViewById(R.id.youtube_more_text); //유튜브 "다른 영상 보기" 텍스트
+        youtube_more_layout = findViewById(R.id.youtube_more_layout); //영상 더보기 레이아웃
+        youtubeTop_layout = findViewById(R.id.youtubeTop_layout); //상단 툴바 레이아웃
 
         //유튜브 다른 영상 목록 보여주기 위한 리사이클러뷰
         recyclerView = findViewById(R.id.other_video_recyclerview); //리사이클러뷰 연결
@@ -728,6 +752,16 @@ public class YoutubeActivity extends AppCompatActivity
 //        youtube_more_btn.getLayoutParams().height = (int) (size.y * 0.1);
         youtube_more_text.setTextSize(TypedValue.COMPLEX_UNIT_PX,(int) (size.x * 0.043));
         youtube_more_btn.setTextSize(TypedValue.COMPLEX_UNIT_PX,(int) (size.x * 0.043));
+
+
+        //상단 툴바 레이아웃
+        youtubeTop_layout.getLayoutParams().height = (int) (size.y * 0.073);
+        //유튜브 영상
+        player_1.getLayoutParams().height = (int) (size.y * 0.29);
+        //유튜버 + 업로드 날짜
+        first_video_youtuber.setTextSize((int) (size.y * 0.038));
+        //다른 영상 보기 레이아웃
+        youtube_more_layout.getLayoutParams().height = (int) (size.y * 0.08);
     }
 
 

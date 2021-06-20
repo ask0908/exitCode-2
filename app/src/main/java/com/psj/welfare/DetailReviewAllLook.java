@@ -6,13 +6,19 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -21,15 +27,17 @@ import retrofit2.Callback;
 
 public class DetailReviewAllLook extends AppCompatActivity {
 
+    private final String TAG = DetailReviewAllLook.class.getSimpleName();
+
     ConstraintLayout title_layout,filter_layout; //타이틀 레이아웃, 리뷰 필터 레이아웃
     ImageButton back_btn,filter_icon; //뒤로가기 버튼, 필터링 버튼
     TextView benefit_title,review_count,filter_text; //혜택명, 리뷰 갯 수, 필터 텍스트
 
     //리사이클러뷰 사용하기 위한 변수 선언
-    private RecyclerView review_recycler; //리사이클러뷰 선언
-    private RecyclerView.Adapter DetailReviewAdapter; //아답터 연결
-    private RecyclerView.LayoutManager layoutManager; //레이아웃 매니저
-    private ArrayList<DetailReviewData> DetailReviewList; //리뷰 2개 보여주기 데이터
+    private RecyclerView allreview_recycler; //리사이클러뷰 선언
+    private DetailReviewAllAdapter allreview_adapter; //아답터 연결
+    private RecyclerView.LayoutManager allreview_layoutManager; //레이아웃 매니저
+    private ArrayList<DetailReviewData> allreviewList; //리뷰 2개 보여주기 데이터
 
     boolean being_id; //혜택 id값이 존재 하는지
     String welf_id; //혜택 아이디 값
@@ -60,8 +68,14 @@ public class DetailReviewAllLook extends AppCompatActivity {
         //서버로부터 리뷰 데이터 가져오기
         LoadReview();
 
+        //뒤로가기 버튼
         back_btn.setOnClickListener(v->{
             finish();
+        });
+
+        //리뷰 필터 아이콘
+        filter_icon.setOnClickListener(v -> {
+
         });
     }
 
@@ -94,33 +108,29 @@ public class DetailReviewAllLook extends AppCompatActivity {
 
     //서버로부터 리뷰 데이터 가져오기
     private void LoadReview() {
-        String URL = "https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/"; //연결하고자 하는 서버의 url, 반드시 /로 끝나야 함
-        ApiInterfaceTest apiInterfaceTest = ApiClientTest.ApiClient(URL).create(ApiInterfaceTest.class); //레트로핏 인스턴스로 인터페이스 객체 구현
+
+        //ApiInterfaceTest apiInterfaceTest = ApiClient.getApiClient().create(ApiInterfaceTest.class); //레트로핏 인스턴스로 인터페이스 객체 구현
+        ApiInterfaceTest apiInterfaceTest = ApiClientTest.ApiClient().create(ApiInterfaceTest.class); //레트로핏 인스턴스로 인터페이스 객체 구현
         Call<String> call = apiInterfaceTest.ReviewAllLook(token,welf_id); //인터페이스에서 사용할 메소드 선언
         call.enqueue(new Callback<String>() { //enqueue로 비동기 통신 실행, 통신 완료 후 이벤트 처리 위한 callback 리스너 등록
             @Override
             public void onResponse(Call<String> call, retrofit2.Response<String> response) { //onResponse 통신 성공시 callback
 
-                Log.e("response",response.body());
-
-//                try {
-//                    JSONObject jsonObject = new JSONObject(response.body());
-//                    Log.e("test",jsonObject.toString());
-//                    Intent intent = new Intent(DetailReviewWrite.this,DetailTabLayoutActivity.class);
-//                    intent.putExtra("being_id",true);
-//                    intent.putExtra("review_write",true);
-//                    intent.putExtra("welf_id",welf_id);
-//                    finish();
-//                    startActivity(intent);
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    responseParse(result);
+                }
+                else
+                {
+                    Log.e(TAG, "비로그인일 시 데이터 가져오기 실패 : " + response.body());
+                }
 
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
+                Log.e(TAG, "비로그인일 시 데이터 가져오기 에러 : " + t.getMessage());
             }
         });
 
@@ -128,8 +138,57 @@ public class DetailReviewAllLook extends AppCompatActivity {
 
     }
 
+    //서버로부터 받아온 유튜브데이터 파싱
+    private void responseParse(String result) {
+        try
+        {
+            JSONObject jsonObject = new JSONObject(result);
+            JSONArray jsonArray = jsonObject.getJSONArray("message");
+
+            for (int i = 0; i < jsonArray.length(); i++)
+            {
+                JSONObject inner_json = jsonArray.getJSONObject(i);
+                String id = inner_json.getString("id");
+                String writer = inner_json.getString("writer");
+                String content = inner_json.getString("content");
+                int star_count = Integer.parseInt(inner_json.getString("star_count"));
+                String difficulty_level = inner_json.getString("difficulty_level");
+                String satisfaction = inner_json.getString("satisfaction");
+                String create_date = inner_json.getString("create_date");
+
+//                Log.e(TAG,"id : " + id);
+//                Log.e(TAG,"writer : " + writer);
+//                Log.e(TAG,"content : " + content);
+
+                DetailReviewData ReviewData = new DetailReviewData();
+//                ReviewData.setReview_id(review_id);
+//                ReviewData.setLogin_id(login_id);
+                ReviewData.setNickName(writer);
+                ReviewData.setContent(content);
+                float star = (float)star_count;
+                ReviewData.setStar_count(star);
+                ReviewData.setDifficulty_level(difficulty_level);
+                ReviewData.setSatisfaction(satisfaction);
+                ReviewData.setCreate_date(create_date);
+
+                allreviewList.add(ReviewData);
+                allreview_adapter.notifyDataSetChanged();
+
+            }
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+
     //자바 변수와 xml 변수 연결
     private void init() {
+
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);         // 상태바(상태표시줄) 글자색 검정색으로 바꾸기
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorMainWhite));    // 상태바(상태표시줄) 배경 흰색으로 설정
+
         title_layout = findViewById(R.id.title_layout); //타이틀 레이아웃
         filter_layout = findViewById(R.id.filter_layout); //리뷰 필터 레이아웃
         back_btn = findViewById(R.id.back_btn); //뒤로가기 버튼
@@ -139,15 +198,15 @@ public class DetailReviewAllLook extends AppCompatActivity {
         filter_text = findViewById(R.id.filter_text); //필터 텍스트
 
         //리사이클러뷰 사용하기 위한 변수 연결
-        review_recycler = findViewById(R.id.all_review_recyclerview); //리사이클러뷰 연결
-        review_recycler.setHasFixedSize(true); //setHasFixedSize(true)는 리사이클러뷰 안 아이템들의 크기를 가변적으로 하지 않고 고정으로 한다는 것
-        layoutManager = new LinearLayoutManager(getApplicationContext()); //리사이클러뷰의 레이아웃을 Linear 방식으로 한다는 것
-        review_recycler.setLayoutManager(layoutManager); //리사이클러뷰의 레이아웃을 정함
+        allreview_recycler = findViewById(R.id.all_review_recyclerview); //리사이클러뷰 연결
+        allreview_recycler.setHasFixedSize(true); //setHasFixedSize(true)는 리사이클러뷰 안 아이템들의 크기를 가변적으로 하지 않고 고정으로 한다는 것
+        allreview_layoutManager = new LinearLayoutManager(this); //리사이클러뷰의 레이아웃을 Linear 방식으로 한다는 것
+        allreview_recycler.setLayoutManager(allreview_layoutManager); //리사이클러뷰의 레이아웃을 정함
         //recyclerView.setLayoutManager(new LinearLayoutManager(this)); 위 두줄을 이렇게 한줄로 쓸 수도 있다
-        DetailReviewList = new ArrayList<>(); // 강의 데이터를 담을 어레이 리스트 (어댑터 쪽으로)
+        allreviewList = new ArrayList<>(); // 강의 데이터를 담을 어레이 리스트 (어댑터 쪽으로)
 
-        DetailReviewAdapter = new DetailReviewAllAdapter(DetailReviewList, getApplicationContext()); //아답터 연결(어레이리스트와 뷰 연결)
-        review_recycler.setAdapter(DetailReviewAdapter); //리사이클러뷰에 아답터 연결
+        allreview_adapter = new DetailReviewAllAdapter(allreviewList, this); //아답터 연결(어레이리스트와 뷰 연결)
+        allreview_recycler.setAdapter(allreview_adapter); //리사이클러뷰에 아답터 연결
     }
 
     //버튼 및 텍스트의 사이즈를 동적으로 맞춤
@@ -170,6 +229,6 @@ public class DetailReviewAllLook extends AppCompatActivity {
         review_count.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x / 24); //리뷰 수
         filter_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x / 24); //필터 텍스트
 
-        review_recycler.setPadding(size.x / 30, size.x / 30, size.x / 30, size.x / 30); //레이아웃 패딩값 적용
+        allreview_recycler.setPadding(size.x / 30, size.x / 30, size.x / 30, size.x / 30); //레이아웃 패딩값 적용
     }
 }

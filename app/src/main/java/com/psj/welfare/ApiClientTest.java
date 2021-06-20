@@ -38,5 +38,20 @@ public class ApiClientTest
         return retrofit;
     }
 
+    public static Retrofit ApiClient()
+    {
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
 
+        if (retrofit == null)
+        {
+            retrofit = new Retrofit.Builder()
+                    .addConverterFactory(ScalarsConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+//                    .client(client)
+                    .build();
+        }
+        return retrofit;
+    }
 }

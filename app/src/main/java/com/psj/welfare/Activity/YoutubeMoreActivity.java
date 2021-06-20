@@ -1,11 +1,16 @@
 package com.psj.welfare.activity;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -66,6 +71,7 @@ public class YoutubeMoreActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStatusBarGradiant(YoutubeMoreActivity.this);
         setContentView(R.layout.activity_youtube_more);
 
 
@@ -141,8 +147,14 @@ public class YoutubeMoreActivity extends AppCompatActivity {
 
     //유튜브 데이터 서버에서 받아오기
     public void youtubemoredata(int page) {
-        //서버 연결하기
-//        Log.e(TAG,"id : " + id);
+
+        //서버 연결전에 프로그래스바 보여주기
+        final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setMax(100);
+        dialog.setMessage("잠시만 기다려 주세요...");
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.show();
+
         if (!being_logout) //로그인 했을 경우
         {
             ApiInterfaceTest apiInterface = ApiClient.getRetrofit().create(ApiInterfaceTest.class);
@@ -158,6 +170,8 @@ public class YoutubeMoreActivity extends AppCompatActivity {
                     } else {
                         Log.e(TAG, "비로그인일 시 데이터 가져오기 실패 : " + response.body());
                     }
+
+                    dialog.dismiss(); //서버 연결후에 프로그래스바 숨기기
                 }
 
                 @Override
@@ -180,6 +194,8 @@ public class YoutubeMoreActivity extends AppCompatActivity {
                     } else {
                         Log.e(TAG, "비로그인일 시 데이터 가져오기 실패 : " + response.body());
                     }
+
+                    dialog.dismiss(); //서버 연결후에 프로그래스바 숨기기
                 }
 
                 @Override
@@ -260,7 +276,6 @@ public class YoutubeMoreActivity extends AppCompatActivity {
             SessionId = app_pref.getString("sessionId", ""); //세션값 받아오기
             token = app_pref.getString("token", ""); //토큰값 받아오기
         }
-
     }
 
 
@@ -270,10 +285,24 @@ public class YoutubeMoreActivity extends AppCompatActivity {
         ScreenSize screen = new ScreenSize();
         //context의 스크린 사이즈를 구함
         Point size = screen.getScreenSize(YoutubeMoreActivity.this);
+
+        //유튜브 리사이클러뷰
+        recyclerView.setPadding((int) (size.x * 0.03),0,(int) (size.x * 0.03),0);
+
         //scrollview 크기
 //        youtube_more_btn.getLayoutParams().width = (int) (size.x * 0.2);
 //        youtube_more_btn.getLayoutParams().height = (int) (size.y * 0.1);
 //        youtube_more_text.setTextSize(TypedValue.COMPLEX_UNIT_PX,(int) (size.x * 0.043));
 //        youtube_more_btn.setTextSize(TypedValue.COMPLEX_UNIT_PX,(int) (size.x * 0.043));
+    }
+
+    //상태표시줄 색상변경
+    public void setStatusBarGradiant(Activity activity)
+    {
+        Window window = activity.getWindow();
+        Drawable background = activity.getResources().getDrawable(R.drawable.renewal_gradation_background);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(activity.getResources().getColor(android.R.color.transparent));
+        window.setBackgroundDrawable(background);
     }
 }

@@ -47,6 +47,7 @@ public class DetailReviewAdapter extends RecyclerView.Adapter<DetailReviewAdapte
         String DataReplace = date.replace("-", "/"); //제이슨으로 받은 태그에서 -구분자를 #으로 바꿈
         holder.two_review_date.setText(DataReplace); //날짜 데이터 넣기
 
+        holder.review_delimiter.setVisibility(View.GONE);
         //버튼 및 텍스트의 사이즈를 동적으로 맞춤
         setsize(holder);
     }
@@ -58,6 +59,7 @@ public class DetailReviewAdapter extends RecyclerView.Adapter<DetailReviewAdapte
         TextView two_review_nickname; //닉네임
         TextView two_review_date; //날짜
         TextView two_review_content; //내용
+        View review_delimiter; //리뷰 파트 나누는 라인
 
         public TwoReviewViewHolder(@NonNull View view) {
             super(view);
@@ -66,7 +68,7 @@ public class DetailReviewAdapter extends RecyclerView.Adapter<DetailReviewAdapte
             two_review_star = view.findViewById(R.id.two_review_star); //별점
             two_review_date = view.findViewById(R.id.two_review_date); //날짜
             two_review_content = view.findViewById(R.id.two_review_content); //내용
-
+            review_delimiter = view.findViewById(R.id.review_delimiter); //내용
         }
     }
 
@@ -85,9 +87,8 @@ public class DetailReviewAdapter extends RecyclerView.Adapter<DetailReviewAdapte
         //디스플레이 값을 기준으로 버튼 텍스트 크기를 정함
         holder.two_review_nickname.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x/23); //닉네임
         holder.two_review_content.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x/25); //내용
-        holder.two_review_content.setPadding(size.x/50, 0, 0, 0); //레이아웃 패딩값 적용
 
-        holder.review_item.setPadding(size.x / 30, size.x / 25, size.x / 30, size.x / 25); //레이아웃 패딩값 적용
+        holder.review_item.setPadding((int) (size.x * 0.015), (int) (size.y * 0.02), (int) (size.x * 0.015), (int) (size.y * 0.02)); //레이아웃 패딩값 적용
         holder.two_review_date.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x/30);
     }
 }

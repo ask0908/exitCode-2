@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/banner_delimiter"
+        android:layout_width="match_parent"
+        android:layout_height="0.3dp"
+        android:background="@color/colorGray_B" />
+
+    <LinearLayout
+        android:id="@+id/bannerdetail_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/banner_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="청년구직활동지원금"
+            android:textColor="@color/colorBlack"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/banner_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="#청년 #취업/창업"/>
+
+        <TextView
+            android:id="@+id/banner_contents"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="청년들을 위한 많은 정책이 시행 중에 있습니다"
+            android:textColor="@color/colorBlack" />
+
+        <LinearLayout
+            android:id="@+id/banner_btn_layout"
+            android:layout_width="300dp"
+            android:layout_height="40dp"
+            android:background="@drawable/radius_smallround_pink_button"
+            android:clickable="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/banner_btn_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="혜택 자세히 보기 "
+                android:textColor="#FFFFFF" />
+
+            <ImageView
+                android:id="@+id/banner_btn_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/arrow_right_black"
+                android:backgroundTint="@color/white" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>

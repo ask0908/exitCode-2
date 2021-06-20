@@ -1,5 +1,6 @@
-package com.psj.welfare.test;
+ package com.psj.welfare.test;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -31,6 +32,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.psj.welfare.AppDatabase;
+import com.psj.welfare.BannerDetail;
 import com.psj.welfare.CategoryDao;
 import com.psj.welfare.CategoryData;
 import com.psj.welfare.DetailTabLayoutActivity;
@@ -222,6 +224,16 @@ public class TestFragment extends Fragment
         setviewpager();
 
 
+        //배너 아이템 클릭
+        bannerAdapter.setbannerClickListener(new MainBannerAdapter.BannerListener() {
+            @Override
+            public void bannerClick(View v, int pos) {
+                Intent intent = new Intent(getActivity(), BannerDetail.class);
+                intent.putExtra("banner_title", bannerList.get(pos).getTitle());
+                startActivity(intent);
+            }
+        });
+
         //혜택 아이템 클릭
         downAdapter.setOnItemClickListener(new MainDownAdapter.ItemClickListener(){
             @Override
@@ -402,6 +414,14 @@ public class TestFragment extends Fragment
      * MVVM에 맞게 Observer와 뷰모델을 사용해 서버에서 결과값을 가져온 다음 파싱해 뷰에 붙인다 */
     private void showWelfareAndYoutubeNotLogin()
     {
+
+        //서버로부터 데이터를 받아오는데 걸리는 시간동안 보여줄 프로그래스 바
+        final ProgressDialog dialog = new ProgressDialog(getActivity());
+        dialog.setMax(100);
+        dialog.setMessage("잠시만 기다려 주세요...");
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.show();
+
         mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         final Observer<String> mainObserver = new Observer<String>()
         {
@@ -417,6 +437,8 @@ public class TestFragment extends Fragment
                 {
                     Log.e(TAG, "str(결과값)이 null입니다");
                 }
+
+                dialog.dismiss(); //서버 연결후에 프로그래스바 숨기기
             }
         };
         mainViewModel.getAllData().observe(getActivity(), mainObserver);

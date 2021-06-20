@@ -3,15 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/youtube_more_layout"
     android:layout_width="match_parent"
-    android:layout_height="350dp"
-    android:layout_margin="5dp"
+    android:layout_height="wrap_content"
     android:paddingVertical="10dp">
 
 
     <ImageView
         android:id="@+id/youtube_more_thumbnail"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="200dp"
         android:scaleType="centerCrop"
         android:src="@mipmap/ic_launcher"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -21,47 +20,36 @@
         app:layout_constraintHeight_percent="0.7"/>
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/youtube_more_text_layout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/youtube_more_thumbnail"
-        app:layout_constraintHeight_percent="0.3"
         app:layout_constraintWidth_percent="1"
-        app:layout_constraintVertical_bias="1">
+        app:layout_constraintVertical_bias="1"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/youtube_more_title"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:autoSizeTextType="none"
             android:ellipsize="end"
             android:maxLines="2"
-            android:textStyle="bold"
-            app:layout_constraintHeight_percent=".55"
-            app:layout_constraintWidth_percent=".94"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/youtube_more_name"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:autoSizeTextType="none"
             android:ellipsize="end"
             android:gravity="bottom"
             android:maxLines="2"
-            android:textStyle="bold"
-            app:layout_constraintHeight_percent=".45"
-            app:layout_constraintWidth_percent=".94"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginBottom="2dp"/>
+            android:layout_marginBottom="2dp"
+            android:textColor="@color/colorGray_C"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -281,7 +281,7 @@ public class DetailTabLayoutActivity extends AppCompatActivity
         being_id = intent.getBooleanExtra("being_id", false); //혜택 데이터가 있는지, 없는 경우 서버에서 데이터 안받아 오도록
         /* if (being_id) 부분 때문에 검색 -> 상세보기 화면으로 갈 수 없어서 삭제했습니다 */
         welf_id = intent.getStringExtra("welf_id");
-        Log.e(TAG, "welf_id : " + welf_id);
+//        Log.e(TAG, "welf_id : " + welf_id);
         review_write = intent.getBooleanExtra("review_write", false); //리뷰 작성 했는지
     }
 
@@ -306,7 +306,7 @@ public class DetailTabLayoutActivity extends AppCompatActivity
             bookmark_btn.setBackgroundResource(R.drawable.bookmark_ok);
             Toast.makeText(DetailTabLayoutActivity.this,"북마크에 추가 됐습니다",Toast.LENGTH_SHORT).show();
         }
-        Log.e("isBookmark",isBookmark);
+//        Log.e("isBookmark",isBookmark);
 
 
         String URL = "https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/"; //연결하고자 하는 서버의 url, 반드시 /로 끝나야 함
@@ -315,7 +315,7 @@ public class DetailTabLayoutActivity extends AppCompatActivity
         call.enqueue(new Callback<String>() { //enqueue로 비동기 통신 실행, 통신 완료 후 이벤트 처리 위한 callback 리스너 등록
             @Override
             public void onResponse(Call<String> call, retrofit2.Response<String> response) { //onResponse 통신 성공시 callback
-                Log.e("결과",response.body().toString());
+//                Log.e("결과",response.body().toString());
 
             }
             @Override
@@ -328,7 +328,7 @@ public class DetailTabLayoutActivity extends AppCompatActivity
     void LoadBenefitDetail() {
 
 //        Log.e(TAG, "LoadBenefitDetail() 호출");
-        //서버로부터 데이터를 받아오는데 걸리는 시간동연 보여줄 프로그래스 바
+        //서버로부터 데이터를 받아오는데 걸리는 시간동안 보여줄 프로그래스 바
         final ProgressDialog dialog = new ProgressDialog(this);
         dialog.setMax(100);
         dialog.setMessage("잠시만 기다려 주세요...");
@@ -338,14 +338,14 @@ public class DetailTabLayoutActivity extends AppCompatActivity
 
         String URL = "https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/"; //연결하고자 하는 서버의 url, 반드시 /로 끝나야 함
         ApiInterfaceTest apiInterfaceTest = ApiClientTest.ApiClient(URL).create(ApiInterfaceTest.class); //레트로핏 인스턴스로 인터페이스 객체 구현
-        Log.e(TAG, "token : " + token + ", 세션 : " + SessionId + ", welf_id : " + welf_id);
+//        Log.e(TAG, "token : " + token + ", 세션 : " + SessionId + ", welf_id : " + welf_id);
         Call<String> call = apiInterfaceTest.BenefitDetail(token, SessionId, "detail", welf_id); //인터페이스에서 사용할 메소드 선언
         call.enqueue(new Callback<String>() { //enqueue로 비동기 통신 실행, 통신 완료 후 이벤트 처리 위한 callback 리스너 등록
             @Override
             public void onResponse(Call<String> call, retrofit2.Response<String> response) { //onResponse 통신 성공시 callback
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    Log.e(TAG, "상세보기에서 데이터 가져오기 성공 : " + response.body());
+//                    Log.e(TAG, "상세보기에서 데이터 가져오기 성공 : " + response.body());
                     try {
                         JSONObject jsonObject = new JSONObject(response.body());
 
@@ -410,9 +410,9 @@ public class DetailTabLayoutActivity extends AppCompatActivity
 //                    Log.e("e",e.toString());
                     }
 
-                    Log.e(TAG, "isBookmark : " + isBookmark);
-                    Log.e(TAG, "message : " + message);
-                    Log.e(TAG, "TotalCount : " + TotalCount);
+//                    Log.e(TAG, "isBookmark : " + isBookmark);
+//                    Log.e(TAG, "message : " + message);
+//                    Log.e(TAG, "TotalCount : " + TotalCount);
 
                     if (isBookmark != null)
                     {

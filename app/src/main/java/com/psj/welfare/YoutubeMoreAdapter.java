@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -49,7 +50,7 @@ public class YoutubeMoreAdapter extends RecyclerView.Adapter<YoutubeMoreAdapter.
 
         String youtube_thumbnail = youtubemorelist.get(position).getYoutube_thumbnail(); //유튜브 썸네일
         String youtube_title = youtubemorelist.get(position).getYoutube_title(); //유튜브 타이틀
-        String youtube_name = youtubemorelist.get(position).getYoutube_name() + " " + youtubemorelist.get(position).getYoutube_upload_date(); //유튜버 + 업로드날짜
+        String youtube_name = youtubemorelist.get(position).getYoutube_name() + " · " + youtubemorelist.get(position).getYoutube_upload_date(); //유튜버 + 업로드날짜
 
         Glide.with(holder.itemView)
                 .load(youtube_thumbnail)
@@ -69,6 +70,7 @@ public class YoutubeMoreAdapter extends RecyclerView.Adapter<YoutubeMoreAdapter.
     public class youtubemoreholder extends RecyclerView.ViewHolder {
 
         private ConstraintLayout youtube_more_layout; //아이템 전체 레이아웃
+        private LinearLayout youtube_more_text_layout; //텍스트 레이아웃
         private ImageView youtube_more_thumbnail; //썸네일 이미지
         private TextView youtube_more_title; //유튜브 제목
         private TextView youtube_more_name; //유튜버 + 업로드 날짜짜
@@ -76,6 +78,7 @@ public class YoutubeMoreAdapter extends RecyclerView.Adapter<YoutubeMoreAdapter.
        public youtubemoreholder(@NonNull View itemView) {
             super(itemView);
            youtube_more_layout = itemView.findViewById(R.id.youtube_more_layout);
+           youtube_more_text_layout = itemView.findViewById(R.id.youtube_more_text_layout);
            youtube_more_thumbnail = itemView.findViewById(R.id.youtube_more_thumbnail);
            youtube_more_title = itemView.findViewById(R.id.youtube_more_title);
            youtube_more_name = itemView.findViewById(R.id.youtube_more_name);
@@ -101,14 +104,17 @@ public class YoutubeMoreAdapter extends RecyclerView.Adapter<YoutubeMoreAdapter.
 //        holder.youtube_more_layout.getLayoutParams().width = (int) (size.x * 0.92);
 
 
-        holder.youtube_more_layout.getLayoutParams().width = (int) (size.x * 0.92); //아이템 전체 레이아웃
-        holder.youtube_more_layout.getLayoutParams().height = (int) (size.y * 0.44); //아이템 전체 레이아웃
+//        holder.youtube_more_layout.getLayoutParams().width = (int) (size.x * 0.92); //아이템 전체 레이아웃
+//        holder.youtube_more_layout.getLayoutParams().height = (int) (size.y * 0.43); //아이템 전체 레이아웃
 
-        holder.youtube_more_thumbnail.getLayoutParams().width = (int) (size.x * 0.92); //썸네일 이미지
-        holder.youtube_more_thumbnail.getLayoutParams().height = (int) (size.y * 0.262); //썸네일 이미지
+        holder.youtube_more_text_layout.setPadding((int) (size.x * 0.02),(int) (size.y * 0.015),(int) (size.x * 0.02),(int) (size.y * 0.015));
+
+//        holder.youtube_more_thumbnail.getLayoutParams().width = (int) (size.x * 0.92); //썸네일 이미지
+        holder.youtube_more_thumbnail.getLayoutParams().height = (int) (size.y * 0.27); //썸네일 이미지
 
         holder.youtube_more_title.setTextSize(TypedValue.COMPLEX_UNIT_PX,(int) (size.x * 0.045));
-        holder.youtube_more_name.setTextSize(TypedValue.COMPLEX_UNIT_PX,(int) (size.x * 0.045));
+        holder.youtube_more_name.setTextSize(TypedValue.COMPLEX_UNIT_PX,(int) (size.x * 0.04));
+        holder.youtube_more_name.setPadding(0,(int) (size.y * 0.005),0,0);
     }
 
     public interface YoutubeMoreClick{

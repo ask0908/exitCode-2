@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +33,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class DetailReviewFragment extends Fragment {
+
+    private final String TAG = DetailReviewFragment.class.getSimpleName();
 
     CardView star_cardview, review_cardview; //별점 카드뷰 ,리뷰 카드뷰
     TextView review_average_textview, review_total_textview; //별점 평균, 별점 갯수
@@ -192,7 +193,7 @@ public class DetailReviewFragment extends Fragment {
         welf_id = getArguments().getString("welf_id"); //혜택id
         welf_name = getArguments().getString("welf_name"); //혜택명
 
-        Log.e("welf_id", welf_id);
+//        Log.e("welf_id", welf_id);
         ReviewState = null;
         if (!TotalCount.equals("0")) { //리뷰 갯수가 0이 아니면
             ReviewState = getArguments().getString("ReviewState"); //리뷰 데이터
@@ -203,7 +204,7 @@ public class DetailReviewFragment extends Fragment {
         //리뷰 총 갯수
         review_total_textview.setText("(" + TotalCount + ")");
 
-        Log.e("TotalCount", TotalCount);
+//        Log.e("TotalCount", TotalCount);
         int IntTotalCount = Integer.parseInt(TotalCount);
         if (IntTotalCount == 0) { //리뷰가 없다면
             star_cardview.setVisibility(View.GONE);
@@ -236,7 +237,7 @@ public class DetailReviewFragment extends Fragment {
             JSONArray jsonArray_message = new JSONArray(message); //혜택 상세 데이터
             JSONObject jsonObject_message = jsonArray_message.getJSONObject(0);
 
-            Log.e("message", message.toString());
+//            Log.e("message", message.toString());
             JSONArray jsonArray_welf_data = jsonObject_message.getJSONArray("review_data");
             for (int i = 0; i < jsonArray_welf_data.length(); i++) {
                 JSONObject jsonObject = jsonArray_welf_data.getJSONObject(i);
@@ -249,6 +250,9 @@ public class DetailReviewFragment extends Fragment {
                 difficulty_level = jsonObject.getString("difficulty_level"); //난이도 평가
                 satisfaction = jsonObject.getString("satisfaction"); //만족도 평가
                 create_date = jsonObject.getString("create_date"); //리뷰 작성 날짜
+
+//                Log.e(TAG,"review_id : " + review_id);
+//                Log.e(TAG,"login_id : " + login_id);
 
                 DetailReviewData reviewData = new DetailReviewData();
                 reviewData.setReview_id(review_id);
@@ -265,12 +269,12 @@ public class DetailReviewFragment extends Fragment {
                 DetailReviewAdapter.notifyDataSetChanged();
             }
 
-            Log.e("ReviewState", ReviewState.toString());
+//            Log.e("ReviewState", ReviewState.toString());
             //ReviewState 데이터 파싱하기
             JSONArray jsonArray_ReviewState = new JSONArray(ReviewState);
             JSONObject jsonObject_state = jsonArray_ReviewState.getJSONObject(0);
 
-            Log.e("jsonObject_state", jsonObject_state.toString());
+//            Log.e("jsonObject_state", jsonObject_state.toString());
 
 
             star = jsonObject_state.getString("star"); //별점
@@ -291,8 +295,8 @@ public class DetailReviewFragment extends Fragment {
             String unhelpPercent = String.valueOf(100 - helpPercent_int); //어려워요 평균
 
 
-            Log.e("easyPercent_int", easyPercent);
-            Log.e("helpPercent_int", helpPercent);
+//            Log.e("easyPercent_int", easyPercent);
+//            Log.e("helpPercent_int", helpPercent);
 
             level_progressbar.setProgress(easyPercent_int); //난이도 평균
             satisfaction_progressbar.setProgress(helpPercent_int); //만족도 평균
