@@ -255,7 +255,7 @@
                             app:layout_constraintTop_toBottomOf="@+id/Welfdata_title_layout"
                             app:layout_constraintVertical_bias=".1"
                             app:layout_constraintWidth_percent="1"
-                            tools:listitem="@layout/test_down_item" />
+                            tools:listitem="@layout/see_more_down_item" />
 
 
                         <TextView

@@ -36,5 +36,6 @@
     <color name="bookmark_recyclerview_item">#FBD6E1</color>
     <color name="recommend_tag_background">#F4F4F4</color>
     <color name="recommend_tag_text_color">#707070</color>
+    <color name="gray_gradation_start_color">#EAEBEB</color>
 
 </resources>

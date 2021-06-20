@@ -20,7 +20,7 @@
             app:layout_constraintVertical_bias="0"
             app:layout_constraintWidth_percent="1"
             app:layout_constraintHeight_percent=".145"
-            android:background="@drawable/gradation_background">
+            android:background="@drawable/renewal_gradation_background">
 
             <TextView
                 android:id="@+id/search_fragment_top_textview"
@@ -34,6 +34,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:text="어떤 혜택을 찾으세요?"
+                android:textStyle="bold"
                 android:textColor="@color/colorMainWhite"
                 android:layout_gravity="center"
                 android:gravity="center"/>

@@ -247,9 +247,20 @@
         <item>수지구</item>
         <item>처인구</item>
     </string-array>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="written_menu_edit">수정</string>
     <string name="written_menu_delete">삭제</string>
+    <string name="kakao_unlink_message">정말 혜택모아를 탈퇴하시겠어요?</string>
+
+    <string name="withdraw_textview_default">선택해 주세요</string>
+    <string name="withdraw_first_reason">나한테 맞는 혜택이 없어서</string>
+    <string name="withdraw_second_reason">보는 게 어려워서</string>
+    <string name="withdraw_third_reason">사용하기 불편해서</string>
+    <string name="withdraw_fourth_reason">기타</string>
+    
+    <!-- 버튼, 텍스트뷰 등 뷰 / 위젯에 넣을 텍스트 -->
+    <string name="login_activity_explanation">간편 로그인으로 더 많은 기능을 경험해보세요</string>
+    
+    <!-- 사용자 로그 api에 넣을 문자열 -->
+    <string name="login_entry">로그인 화면 진입</string>
 
 </resources>

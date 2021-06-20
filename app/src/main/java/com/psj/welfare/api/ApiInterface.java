@@ -2,6 +2,7 @@ package com.psj.welfare.api;
 
 import androidx.annotation.Nullable;
 
+import io.reactivex.Flowable;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -192,6 +193,14 @@ public interface ApiInterface
      */
     @GET("https://www.hyemo.com/push")
     Call<String> getPushData(
+            @Header("LoginToken") String token,
+            @Header("SessionId") String session,
+            @Query("type") String type
+    );
+
+    /* Observable<Call> 테스트 */
+    @GET("https://www.hyemo.com/push")
+    Flowable<Call<String>> gotPushData(
             @Header("LoginToken") String token,
             @Header("SessionId") String session,
             @Query("type") String type
@@ -1018,7 +1027,7 @@ public interface ApiInterface
     Call<String> leaveFromApp(
             @Header("logintoken") String token,
             @Query("type") String type,
-            @Query("reason") String reason
+            @Query("leave_reason") String reason
     );
 
 }

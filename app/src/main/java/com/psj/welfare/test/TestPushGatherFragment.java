@@ -243,9 +243,10 @@ public class TestPushGatherFragment extends Fragment
         if (adapter.getItemCount() == 0)
         {
             // 어댑터에 값이 없으면 알림이 없는 것이니 리사이클러뷰를 숨기고 텍스트뷰를 보여준다
+            push_bell_textview.setVisibility(View.VISIBLE);
             push_bell_textview.setText("도착한 혜택 알림이 없어요");
             push_bell_image.setVisibility(View.VISIBLE);
-            push_recyclerview.setVisibility(View.GONE);
+            push_recyclerview.setVisibility(View.VISIBLE);
         }
         else
         {

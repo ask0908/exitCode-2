@@ -158,9 +158,10 @@ dependencies {
     implementation 'me.relex:circleindicator:2.1.6'
 
     // RxJava, RxAndroid
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.2'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.6'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
     implementation 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
 
     // RxLifecycle 2.x
     implementation 'com.trello.rxlifecycle2:rxlifecycle-android:2.1.0'
@@ -174,4 +175,6 @@ dependencies {
     // Utils - butter-knife
     implementation 'com.jakewharton:butterknife:10.0.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
+
+    implementation 'com.scwang.wave:MultiWaveHeader:1.0.0-andx'
 }

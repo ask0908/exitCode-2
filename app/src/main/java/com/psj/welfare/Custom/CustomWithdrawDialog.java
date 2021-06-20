@@ -7,8 +7,11 @@ import android.view.WindowManager;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import androidx.core.content.ContextCompat;
+
 import com.psj.welfare.R;
 
+/* 회원탈퇴 다이얼로그. "선택해 주세요"를 누르면 나오는 라디오 버튼 다이얼로그다 */
 public class CustomWithdrawDialog
 {
     private Context context;
@@ -35,11 +38,20 @@ public class CustomWithdrawDialog
         dialog.getWindow().setAttributes(params);
         dialog.show();
 
-        final RadioGroup radioGroup = dialog.findViewById(R.id.withdraw_radiogroup);
-        final RadioButton first_reason = dialog.findViewById(R.id.first_reason);
-        final RadioButton second_reason = dialog.findViewById(R.id.second_reason);
-        final RadioButton third_reason = dialog.findViewById(R.id.third_reason);
-        final RadioButton fourth_reason = dialog.findViewById(R.id.fourth_reason);
+        final RadioGroup radioGroup = dialog.findViewById(R.id.withdraw_radiogroup);    // 라디오 버튼 사용 위한 라디오 그룹
+        final RadioButton first_reason = dialog.findViewById(R.id.first_reason);        // 나한테 맞는 혜택이 없어서
+        final RadioButton second_reason = dialog.findViewById(R.id.second_reason);      // 보는 게 어려워서
+        final RadioButton third_reason = dialog.findViewById(R.id.third_reason);        // 사용하기 불편해서
+        final RadioButton fourth_reason = dialog.findViewById(R.id.fourth_reason);      // 기타
+
+        // 라디오 버튼 글자 크기 조절
+        first_reason.setTextAppearance(android.R.style.TextAppearance_DeviceDefault_Medium);
+        second_reason.setTextAppearance(android.R.style.TextAppearance_DeviceDefault_Medium);
+        third_reason.setTextAppearance(android.R.style.TextAppearance_DeviceDefault_Medium);
+        fourth_reason.setTextAppearance(android.R.style.TextAppearance_DeviceDefault_Medium);
+
+        // 라디오 그룹 안에서 선택한 라디오 버튼이 무엇이냐에 따라 다른 값을 액티비티로 전달하기 위해 만든 콜백 리스너
+        // 라디오 그룹에 콜백을 추가해야 라디오 그룹 안의 라디오 버튼 id에 따라 다른 콜백 메서드 호출이 가능
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
             @Override
@@ -47,26 +59,30 @@ public class CustomWithdrawDialog
             {
                 switch (id)
                 {
-                    // TODO : 라디오 버튼 클릭 시 다이얼로그를 없애고 선택한 값을 액티비티로 보내야 한다. custom > MyDialogListener 참고
-                    // 다이얼로그 클릭 시 ripple이 너무 크고 다이얼로그 크기도 작다
-                    case R.id.first_reason :
+                    /* sendFirstValue(String value) : 1번 라디오 버튼 선택 시 거기에 적힌 문자열을 액티비티로 보내는 커스텀 콜백
+                     * 1~4번 버튼 모두 이름만 다르고 같은 기능을 하는 콜백을 달았다 */
+                    case R.id.first_reason:
                         listener.sendFirstValue(first_reason.getText().toString());
-                        dialog.dismiss();
+                        first_reason.setButtonDrawable(ContextCompat.getDrawable(context, R.drawable.withdraw_checked_radiobutton));
+//                        dialog.dismiss();
                         break;
 
-                    case R.id.second_reason :
+                    case R.id.second_reason:
                         listener.sendSecondValue(second_reason.getText().toString());
-                        dialog.dismiss();
+                        second_reason.setButtonDrawable(ContextCompat.getDrawable(context, R.drawable.withdraw_checked_radiobutton));
+//                        dialog.dismiss();
                         break;
 
-                    case R.id.third_reason :
+                    case R.id.third_reason:
                         listener.sendThirdValue(third_reason.getText().toString());
-                        dialog.dismiss();
+                        third_reason.setButtonDrawable(ContextCompat.getDrawable(context, R.drawable.withdraw_checked_radiobutton));
+//                        dialog.dismiss();
                         break;
 
-                    case R.id.fourth_reason :
+                    case R.id.fourth_reason:
                         listener.sendFourthValue(fourth_reason.getText().toString());
-                        dialog.dismiss();
+                        fourth_reason.setButtonDrawable(ContextCompat.getDrawable(context, R.drawable.withdraw_checked_radiobutton));
+//                        dialog.dismiss();
                         break;
 
                     default:

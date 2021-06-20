@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorMainWhite"
+    android:backgroundTint="@color/colorMainWhite"
     android:orientation="vertical"
     tools:context=".activity.TermsAndConditionsActivity">
 
@@ -30,7 +32,7 @@
         app:layout_constraintWidth_percent="1"
         app:layout_constraintHeight_percent=".09"
         app:layout_constraintVertical_bias="0"
-        android:background="@color/colorGray_L"
+        android:background="@drawable/gray_gradation_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/terms_toolbar"
         app:layout_constraintEnd_toEndOf="parent"

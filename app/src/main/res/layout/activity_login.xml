@@ -2,46 +2,56 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/login_layout"
+    android:background="@color/colorMainWhite"
+    android:backgroundTint="@color/colorMainWhite"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/loginClose"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/app_logo_text"
-        android:layout_gravity="end"
-        android:layout_margin="10dp"
-        android:src="@drawable/close" />
-
     <TextView
         android:id="@+id/app_logo_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:fontFamily="@font/jalnan"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent=".2"
+        app:layout_constraintVertical_bias=".26"
         android:gravity="center"
         android:lineSpacingExtra="6sp"
         android:padding="20dp"
-        android:text="혜택모아"
+        android:text="@string/app_name"
         android:textColor="@color/colorPink"
+        android:textStyle="bold"
         android:textSize="40sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <TextView
+        android:id="@+id/login_activity_explanation_textview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintVertical_bias=".612"
+        app:layout_constraintWidth_percent=".9"
+        app:layout_constraintHeight_percent=".03"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/login_activity_explanation"
+        android:gravity="center"/>
 
     <FrameLayout
         android:id="@+id/kakao_login_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="260dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent=".09"
+        app:layout_constraintVertical_bias=".69"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/app_logo_text">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <com.kakao.usermgmt.LoginButton
             android:id="@+id/real_kakao"
@@ -53,86 +63,55 @@
 
         <Button
             android:id="@+id/fake_kakao"
-            android:layout_width="match_parent"
+            android:layout_width="350dp"
             android:layout_height="60dp"
-            android:layout_marginStart="35dp"
-            android:layout_marginEnd="35dp"
-            android:background="@drawable/radius_pink"
+            android:layout_gravity="center"
+            android:background="@drawable/login_kakao"
             android:fontFamily="@font/jalnan"
-            android:text="카카오로 시작하기"
-            android:textColor="@color/colorMainWhite"
             android:textSize="17sp" />
 
     </FrameLayout>
 
-    <!-- 다른 sns 로그인은 아직 로직, 계획 다 없어서 안 보이게 처리함 -->
-    <TextView
-        android:id="@+id/other_login_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:fontFamily="@font/jalnan"
-        android:gravity="center"
-        android:text="다른 계정으로 시작하기"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/kakao_login_layout" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
+    <com.scwang.wave.MultiWaveHeader
+        android:id="@+id/login_wave_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintHeight_percent=".22"
+        app:layout_constraintVertical_bias="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/other_login_layout"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal"
-        android:weightSum="1">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:scaleY="-1"
+        app:mwhVelocity="10"
+        app:mwhProgress="1"
+        app:mwhIsRunning="true"
+        app:mwhGradientAngle="90"
+        app:mwhWaveHeight="70dp"
+        app:mwhColorAlpha="0.3"
+        app:mwhStartColor="@color/colorPrimaryDark"
+        app:mwhCloseColor="@color/layout_background_start_gradation"
+        app:mwhWaves="MultiWave"/>
 
-        <!-- 페이스북 로그인 버튼 -->
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".20"
-            android:layout_marginTop="20dp">
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/facebook_login"
-                app:maxImageSize="36dp"
-                app:borderWidth="0dp"
-                android:layout_gravity="center"
-                android:backgroundTint="#3B5999"/>
-
-        </FrameLayout>
-
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".20"
-            android:layout_marginTop="20dp">
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/google_btn"
-                android:layout_gravity="center"
-                android:backgroundTint="#DA4835"/>
-
-            <com.google.android.gms.common.SignInButton
-                android:id="@+id/google_login_btn"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                app:borderWidth="0dp"
-                android:layout_marginStart="10dp"
-                android:layout_gravity="center"
-                android:layout_marginEnd="10dp"/>
-
-        </FrameLayout>
-
-    </LinearLayout>
+<!--    <com.scwang.wave.MultiWaveHeader-->
+<!--        android:id="@+id/login_wave_view"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="0dp"-->
+<!--        app:layout_constraintWidth_percent="1"-->
+<!--        app:layout_constraintHeight_percent=".22"-->
+<!--        app:layout_constraintVertical_bias="1"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:mwhWaves="PairWave"-->
+<!--        app:mwhWaves="MultiWave"-->
+<!--        app:mwhWaves="-->
+<!--            70,25,1.4,1.4,-26-->
+<!--            100,5,1.4,1.2,15-->
+<!--            420,0,1.15,1,-10-->
+<!--            520,10,1.7,1.5,20-->
+<!--            220,0,1,1,-15"/>-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

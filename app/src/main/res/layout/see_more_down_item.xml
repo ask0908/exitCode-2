@@ -23,6 +23,7 @@
             app:layout_constraintWidth_percent=".9"
             app:layout_constraintHeight_percent=".30"
             app:layout_constraintVertical_bias=".3"
+            android:text="행복주택공급"
             app:layout_constraintHorizontal_bias=".5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -35,7 +36,7 @@
             android:textColor="@color/gray"/>
 
         <TextView
-            android:id="@+id/bottom_result_subject"
+            android:id="@+id/bottom_result_tag"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintWidth_percent=".65"
@@ -47,6 +48,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="#다자녀 #다문화 #임신/출산"
             android:ellipsize="end"
             android:ems="18"
             android:maxLength="23"
@@ -57,6 +61,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintWidth_percent=".26"
+            android:text="View 100+"
             app:layout_constraintHeight_percent=".22"
             app:layout_constraintHorizontal_bias=".94"
             app:layout_constraintVertical_bias=".81"

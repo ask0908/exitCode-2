@@ -78,7 +78,6 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
 
         /* 버튼 클릭 시 테두리와 글자 색이 바뀌고 해당 값이 변수에 저장돼야 한다
          * 나이대, 지역에서 여러 값을 선택하면 값들 사이에 "-"를 붙인다 -> 다음 버튼 누르면 리스트에 저장되게 하자 */
-        // TODO : 나이 또는 지역을 아예 선택하지 않아도 다음 화면으로 넘어가게 할 것인가?
         go_second_interest_btn.setOnClickListener(v ->
         {
             if (age.size() == 0 || area.size() == 0)

@@ -56,6 +56,7 @@ import java.net.URLEncoder;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -464,16 +465,17 @@ public class TestMyPageFragment extends Fragment
             e.printStackTrace();
         }
 
+        Log.e(TAG, "닉네임 요청 시 message : " + message);
         if (message.equals("계정 정보가 존재하지 않습니다.") || message.equals("data is empty"))
         {
-            notLoginView();
+            //
         }
         else
         {
-            loginView();
-            Observable.just(receivedNickname)
+            Observable.just(message)
                     .subscribeOn(Schedulers.io())
-                    .subscribe(data -> binding.mypageMyId.setText(receivedNickname));
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(data -> binding.mypageMyId.setText(message));
         }
     }
 
@@ -517,6 +519,7 @@ public class TestMyPageFragment extends Fragment
         });
     }
 
+    // 서버로 한글 로그 보내면 깨지기 때문에 인코딩하는 메서드
     private String userAction(String user_action)
     {
         try
@@ -556,6 +559,7 @@ public class TestMyPageFragment extends Fragment
         }
     }
 
+    // 푸시 알림 받을지를 설정하는 스위치의 값 변경 메서드
     void putPushSetting(boolean isPushed)
     {
         Cursor cursor = helper.selectColumns();
@@ -568,7 +572,7 @@ public class TestMyPageFragment extends Fragment
         }
         String is_push = String.valueOf(isPushed);
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        String action = encode("푸시 설정값 수정");
+        String action = userAction("푸시 설정값 수정");
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
         String session = sharedPreferences.getString("sessionId", "");
         Call<String> call = apiInterface.putPushSetting(session, action, sqlite_token, "push", is_push);
@@ -593,19 +597,6 @@ public class TestMyPageFragment extends Fragment
                 Log.e("putPushSetting()", "에러 = " + t.getMessage());
             }
         });
-    }
-
-    private String encode(String str)
-    {
-        try
-        {
-            str = URLEncoder.encode(str, "UTF-8");
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            e.printStackTrace();
-        }
-        return str;
     }
 
     @Override

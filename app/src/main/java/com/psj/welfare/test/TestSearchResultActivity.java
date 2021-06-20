@@ -29,7 +29,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
-import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.psj.welfare.DetailTabLayoutActivity;
 import com.psj.welfare.R;
@@ -124,7 +123,6 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_search_result);
-        Logger.addLogAdapter(new AndroidLogAdapter());
 
         search_result_drawer = findViewById(R.id.search_result_drawer);
         progressbar = findViewById(R.id.progressbar);

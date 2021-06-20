@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.text.InputFilter;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
@@ -109,6 +110,7 @@ public class CustomEditNicknameDialog
                 }
             });
 
+            // 취소 버튼
             binding.editNicknameCancel.setOnClickListener(v -> dialog.dismiss());
 
             // 닉네임 변경 버튼
@@ -142,8 +144,32 @@ public class CustomEditNicknameDialog
                     }
                 }
             });
-        }
 
+            binding.editNicknameEdittext.setFilters(new InputFilter[]{new InputFilter()
+            {
+                @Override
+                public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend)
+                {
+                    // 이모티콘, 특수문자 입력 방지하는 정규식
+                    // 둘 중 하나라도 입력되면 공백을 리턴한다
+                    /**
+                     * ^ : 패턴의 시작을 알리는 문자
+                     * [] : 문자의 집합 or 범위 나타냄, 두 문자 사이는 "-"로 범위를 나타낸다. 이 안에 있는 문자 중 하나라도 해당되면 정규식과 매치된다
+                     * \\w : 알파벳이나 숫자를 제외한 문자, 자바는 \를 표현하려면 \\로 입력해야 한다. 즉 \\w는 \w와 같은 뜻이다. 그래서 \\w는 알파벳이나 숫자를 제외한 문자라는
+                     * 것 같다
+                     * $ : 문자열(패턴)의 종료를 알리는 문자
+                     * -> 입력되는 문자열의 시작부터 끝까지 알파벳이나 숫자를 제외한 문자가 들어오면 공백을 리턴해서 아무것도 입력되지 않게 한다
+                     */
+                    Pattern pattern = Pattern.compile("^[\\w]$");
+                    if (source.equals("") || pattern.matcher(source).matches())
+                    {
+                        return source;
+                    }
+                    return "";
+                }
+            }, new InputFilter.LengthFilter(10)});  // 닉네임 입력은 10자까지만 된다
+
+        }
     }
 
     // editText 밑의 문구를 에러 문구로 바꾸는 메서드

@@ -40,7 +40,7 @@ public class MainDownAdapter extends RecyclerView.Adapter<MainDownAdapter.MainDo
     @Override
     public MainDownAdapter.MainDownViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        View view = LayoutInflater.from(context).inflate(R.layout.test_down_item, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.see_more_down_item, parent, false);
 
         ViewGroup.LayoutParams params = view.getLayoutParams();
         params.width = (int) (parent.getWidth() * 0.85);
@@ -64,17 +64,13 @@ public class MainDownAdapter extends RecyclerView.Adapter<MainDownAdapter.MainDo
                 String str = "#" + before;
                 String s = str.replace("-", " #");
 
-                holder.bottom_result_subject.setText(s);
-//                Log.e("before1 : ",before);
-//                Log.e("tag1 : ",item.getWelf_tag());
+                holder.bottom_result_tag.setText(s);
             }
             else if (!item.getWelf_tag().equals(""))
             {
                 String before = item.getWelf_tag().replace(" ","");
                 String else_str = "#" + before;
-                holder.bottom_result_subject.setText(else_str);
-//                Log.e("before2 : ",before);
-//                Log.e("tag2 : ",item.getWelf_tag());
+                holder.bottom_result_tag.setText(else_str);
             }
         }
         else
@@ -92,7 +88,7 @@ public class MainDownAdapter extends RecyclerView.Adapter<MainDownAdapter.MainDo
     public class MainDownViewHolder extends RecyclerView.ViewHolder
     {
         CardView bottom_result_layout;
-        TextView bottom_result_name, bottom_result_subject, bottom_result_views;
+        TextView bottom_result_name, bottom_result_tag, bottom_result_views;
         ItemClickListener itemClickListener;
 
         public MainDownViewHolder(@NonNull View view, ItemClickListener itemClickListener)
@@ -101,7 +97,7 @@ public class MainDownAdapter extends RecyclerView.Adapter<MainDownAdapter.MainDo
 
             bottom_result_layout = view.findViewById(R.id.bottom_result_layout);
             bottom_result_name = view.findViewById(R.id.bottom_result_name);
-            bottom_result_subject = view.findViewById(R.id.bottom_result_subject);
+            bottom_result_tag = view.findViewById(R.id.bottom_result_tag);
             bottom_result_views = view.findViewById(R.id.bottom_result_views);
 
             this.itemClickListener = itemClickListener;
