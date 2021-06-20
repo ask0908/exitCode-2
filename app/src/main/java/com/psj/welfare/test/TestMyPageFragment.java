@@ -68,6 +68,7 @@ public class TestMyPageFragment extends Fragment
     // 데이터 바인딩 적용
     private com.psj.welfare.databinding.TestMyPageFragment binding;
 
+
     SharedPreferences sharedPreferences;
     boolean isLogout;
 
@@ -115,26 +116,47 @@ public class TestMyPageFragment extends Fragment
         helper.openDatabase();
         helper.create();
 
-        // 텍스트뷰들 크기 조절
+        //size에 저장되는 가로/세로 길이의 단위는 픽셀(Pixel)입니다.
         ScreenSize screen = new ScreenSize();
+        //context의 스크린 사이즈를 구함
         Point size = screen.getScreenSize(getActivity());
-        binding.searchFragmentTopTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 14);
-        binding.mypageMyId.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 20);
 
-        binding.bookmarkTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 27);
-        binding.recentWelfareTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 27);
-        binding.writtenReviewTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 27);
+        binding.searchFragmentTopTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.035)); //"마이페이지" 텍스트
+        binding.mypageMyId.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.03)); //닉네임 텍스트
+        binding.nicknameEditImage.getLayoutParams().width = (int) (size.y * 0.03); //닉네임 변경 아이콘
+        binding.nicknameEditImage.getLayoutParams().height = (int) (size.y * 0.03); //닉네임 변경 아이콘
 
-        binding.editInterestTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-        binding.pushSettingText.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-        binding.checkNoticeTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-        binding.checkTermTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-        binding.checkPrivacyTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-        binding.appVersionTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-        binding.mypageLogoutTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-        binding.mypageWithdrawTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+        binding.bookmarkTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.02)); //"북마크 혜택" 텍스트
+        binding.recentWelfareTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.02)); //"최근본 혜택" 텍스트
+        binding.writtenReviewTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.02)); //"작선한 리뷰" 텍스트
+
+        binding.editInterestTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"관심사 선택"
+        binding.editInterestTextview.setPadding((int) (size.y * 0.023),0,(int) (size.y * 0.023),0);
+
+        binding.pushSettingText.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"푸시 알림 선택"
+        binding.mypagePushLayout.setPadding((int) (size.y * 0.023),0,(int) (size.y * 0.023),0);
+
+        binding.checkNoticeTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"공지사항 확인"
+        binding.checkNoticeTextview.setPadding((int) (size.y * 0.023),0,(int) (size.y * 0.023),0);
+
+        binding.checkTermTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"이용약관 확인"
+        binding.checkTermTextview.setPadding((int) (size.y * 0.023),0,(int) (size.y * 0.023),0);
+
+        binding.checkPrivacyTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"개인정보 처리방침 확인"
+        binding.checkPrivacyTextview.setPadding((int) (size.y * 0.023),0,(int) (size.y * 0.023),0);
+
+        binding.appVersionTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"버전 2.0.0"
+        binding.appVersionTextview.setPadding((int) (size.y * 0.023),0,(int) (size.y * 0.023),0);
+
+        binding.mypageLogoutTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"로그아웃"
+        binding.mypageLogoutTextview.setPadding((int) (size.y * 0.023),0,(int) (size.y * 0.023),0);
+
+        binding.mypageWithdrawTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"탈퇴하기"
+        binding.mypageWithdrawTextview.setPadding((int) (size.y * 0.023),0,(int) (size.y * 0.023),0);
+
 
         binding.mypageLoginButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 21);
+
 
         checkMyNickname("show_name");
 

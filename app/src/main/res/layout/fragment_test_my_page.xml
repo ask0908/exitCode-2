@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <data class="TestMyPageFragment">
         <variable
             name="testMyPage"
             type="com.psj.welfare.test.TestMyPageFragment" />
     </data>
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <FrameLayout
         android:id="@+id/mypage_parent_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -33,22 +33,19 @@
 
                 <TextView
                     android:id="@+id/search_fragment_top_textview"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintWidth_percent="1"
-                    app:layout_constraintHeight_percent=".45"
-                    app:layout_constraintVertical_bias=".2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintVertical_bias="0.06"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:fontFamily="@font/jalnan"
+                    android:fontFamily="@font/notosanscjkkr_bold"
                     android:text="마이페이지"
+                    tools:textSize="22dp"
                     android:textColor="@color/colorMainWhite"
                     android:layout_gravity="center"
-                    android:paddingStart="30dp"
-                    android:paddingEnd="30dp"
-                    android:gravity="center_vertical|bottom"/>
+                    android:gravity="center"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -81,33 +78,42 @@
                     app:layout_constraintBottom_toBottomOf="parent">
 
                     <!-- 로그인 시 닉네임이 들어갈 텍스트뷰 -->
-                    <TextView
-                        android:id="@+id/mypage_my_id"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        app:layout_constraintWidth_percent=".5"
-                        app:layout_constraintHeight_percent=".12"
-                        app:layout_constraintVertical_bias=".15"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:fontFamily="@font/jalnan"
-                        android:gravity="center"/>
+                        app:layout_constraintVertical_bias=".15">
 
-                    <ImageView
-                        android:id="@+id/nickname_edit_image"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        app:layout_constraintWidth_percent=".1"
-                        app:layout_constraintHeight_percent=".1"
-                        app:layout_constraintVertical_bias=".14"
-                        app:layout_constraintHorizontal_bias=".83"
-                        android:src="@drawable/nickname_edit"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"/>
+                        <TextView
+                            android:id="@+id/mypage_my_id"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/notosanscjkkr_bold"
+                            android:gravity="center"
+                            tools:text="닉네임"
+                            android:layout_gravity="center"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"/>
+
+                        <ImageView
+                            android:id="@+id/nickname_edit_image"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            app:layout_constraintWidth_percent=".1"
+                            app:layout_constraintHeight_percent="1"
+                            app:layout_constraintHorizontal_bias="0.15"
+                            android:src="@drawable/nickname_edit"
+                            app:layout_constraintLeft_toRightOf="@+id/mypage_my_id"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <!-- 가로 리니어 레이아웃 안에 세로 리니어 레이아웃 3개를 넣어서 북마크, 최근 본 혜택, 작성한
                     리뷰 버튼들을 보여준다 -->
@@ -161,7 +167,7 @@
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/bookmark_image"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                android:fontFamily="@font/jalnan"
+                                android:fontFamily="@font/notosanscjkkr_bold"
                                 android:gravity="center"
                                 android:text="북마크 혜택"/>
 
@@ -251,7 +257,7 @@
                                 app:layout_constraintTop_toBottomOf="@+id/written_review_image"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 android:gravity="center"
-                                android:fontFamily="@font/jalnan"
+                                android:fontFamily="@font/notosanscjkkr_bold"
                                 android:text="작성한 리뷰"/>
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -288,30 +294,22 @@
 
                     <TextView
                         android:id="@+id/edit_interest_textview"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="20dp"
-                        app:layout_constraintWidth_percent=".8"
-                        app:layout_constraintHeight_percent=".06"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintVertical_bias=".04"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:fontFamily="@font/jalnan"
+                        android:fontFamily="@font/notosanscjkkr_bold"
                         android:text="관심사 선택" />
 
                     <LinearLayout
                         android:id="@+id/mypage_push_layout"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="20dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:weightSum="1"
-                        app:layout_constraintWidth_percent="1"
-                        app:layout_constraintHeight_percent=".07"
                         app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintVertical_bias=".16"
                         app:layout_constraintStart_toStartOf="parent"
@@ -322,12 +320,12 @@
 
                         <TextView
                             android:id="@+id/push_setting_text"
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight=".6"
-                            android:fontFamily="@font/jalnan"
+                            android:fontFamily="@font/notosanscjkkr_bold"
                             android:text="푸시 알림 설정"
-                            android:textColor="@color/gray"/>
+                            android:textColor="@color/gray" />
 
                         <Switch
                             android:id="@+id/mypage_noti_switch"
@@ -355,8 +353,6 @@
                         android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:visibility="gone"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="20dp"
                         app:layout_constraintWidth_percent=".8"
                         app:layout_constraintHeight_percent=".06"
                         app:layout_constraintHorizontal_bias="0"
@@ -370,87 +366,67 @@
 
                     <TextView
                         android:id="@+id/check_term_textview"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="20dp"
-                        app:layout_constraintWidth_percent=".8"
-                        app:layout_constraintHeight_percent=".06"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintVertical_bias=".28"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:fontFamily="@font/jalnan"
+                        android:fontFamily="@font/notosanscjkkr_bold"
                         android:text="이용약관 확인" />
 
                     <TextView
                         android:id="@+id/check_privacy_textview"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="20dp"
-                        app:layout_constraintWidth_percent=".8"
-                        app:layout_constraintHeight_percent=".06"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintVertical_bias=".40"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:fontFamily="@font/jalnan"
+                        android:fontFamily="@font/notosanscjkkr_bold"
                         android:text="개인정보 처리방침 확인" />
 
                     <TextView
                         android:id="@+id/app_version_textview"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="20dp"
-                        app:layout_constraintWidth_percent=".8"
-                        app:layout_constraintHeight_percent=".06"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintVertical_bias=".52"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:fontFamily="@font/jalnan"
+                        android:fontFamily="@font/notosanscjkkr_bold"
                         android:text="버전 2.0.0" />
 
                     <TextView
                         android:id="@+id/mypage_logout_textview"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="20dp"
-                        app:layout_constraintWidth_percent=".8"
-                        app:layout_constraintHeight_percent=".06"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintVertical_bias=".63"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:fontFamily="@font/jalnan"
+                        android:fontFamily="@font/notosanscjkkr_bold"
                         android:text="로그아웃" />
 
                     <TextView
                         android:id="@+id/mypage_withdraw_textview"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="20dp"
-                        app:layout_constraintWidth_percent=".8"
-                        app:layout_constraintHeight_percent=".06"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintVertical_bias=".74"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:fontFamily="@font/jalnan"
+                        android:fontFamily="@font/notosanscjkkr_bold"
                         android:text="탈퇴하기" />
 
                     <!-- 비로그인 시에만 보여야 하는 레이아웃
@@ -485,6 +461,7 @@
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"
+                            android:fontFamily="@font/notosanscjkkr_medium"
                             android:text="로그인하고 더 많은 기능을 만나보세요" />
 
                         <View
@@ -499,7 +476,7 @@
                             android:layout_height="0dp"
                             android:layout_weight=".6"
                             android:background="@drawable/btn_keyword_selected"
-                            android:fontFamily="@font/jalnan"
+                            android:fontFamily="@font/notosanscjkkr_bold"
                             android:text="로그인하러 가기"
                             android:textColor="@color/colorMainWhite"/>
 

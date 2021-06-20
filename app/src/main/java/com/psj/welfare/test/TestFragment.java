@@ -72,6 +72,7 @@ public class TestFragment extends Fragment
     private ConstraintLayout scrollview_innerlayout; //메인에서 사용하는 스크롤 뷰 안에 있는 레이아웃
     private ConstraintLayout Welfdata_title_layout; //로그인시 닉네임 보여주는 레이아웃(ex 20대, 서울, 여성 맞춤 혜택)
     private CardView notlogin_card; //비로그인 + 미리보기 안했을 경우 나타나는 카드뷰
+    private TextView title_text; //메인 텍스트 사이즈
 
     //로그인 여부를 확인하기 위해 사용하는 쉐어드
     private SharedPreferences app_pref;
@@ -86,6 +87,8 @@ public class TestFragment extends Fragment
 
     // 20대, 강원, 여성
     TextView Welfdata_first_title;
+    // "맞춤 혜택"
+    TextView Welfdata_second_title;
     // 더보기(화면 이동)
     TextView more_see_textview;
 
@@ -153,6 +156,7 @@ public class TestFragment extends Fragment
                              Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.fragment_test, container, false);
+        title_text = view.findViewById(R.id.title_text);
         youtube_title_layout = view.findViewById(R.id.youtube_title_layout);
         MainTop = view.findViewById(R.id.MainTop);
         welfdata_layout = view.findViewById(R.id.welfdata_layout);
@@ -161,6 +165,7 @@ public class TestFragment extends Fragment
         Welfdata_title_layout = view.findViewById(R.id.Welfdata_title_layout);
         scrollview_innerlayout = view.findViewById(R.id.scrollview_innerlayout);
         Welfdata_first_title = view.findViewById(R.id.Welfdata_first_title);
+        Welfdata_second_title = view.findViewById(R.id.Welfdata_second_title);
         more_see_textview = view.findViewById(R.id.more_see_textview);
         notlogin_button = view.findViewById(R.id.notlogin_button);
 //        up_recycler = view.findViewById(R.id.interest_subject_recyclerview);
@@ -327,6 +332,10 @@ public class TestFragment extends Fragment
         MainTop.getLayoutParams().height = (int) (size.y * 0.14);
         //뷰페이저 크기
         MainBannerViewpager2.getLayoutParams().height = (int) (size.y * 0.25);
+        //닉네임 첫번째줄 텍스트
+        Welfdata_first_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.015));
+        //닉네임 두번째줄 텍스트
+        Welfdata_second_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.015));
         //관심사 선택 카드뷰
         notlogin_card.getLayoutParams().height = (int) (size.y * 0.22);
         //맞춤 혜택 보여주기 레이아웃
@@ -337,6 +346,8 @@ public class TestFragment extends Fragment
         youtube_video_recyclerview.getLayoutParams().height = (int) (size.y * 0.3);
         //"나에게 맞는 혜택 찾기" 버튼 텍스트 크기
         notlogin_button.setTextSize(TypedValue.COMPLEX_UNIT_PX,(int) (size.y * 0.021));
+        //메인 타이틀 "혜택모아" 텍스트
+        title_text.setTextSize(TypedValue.COMPLEX_UNIT_PX,(int) (size.y * 0.035));
     }
 
     //selected_interest_textview(제목) 값 넣기

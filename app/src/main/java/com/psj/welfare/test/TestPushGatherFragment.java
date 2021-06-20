@@ -96,13 +96,16 @@ public class TestPushGatherFragment extends Fragment
         // findViewById() 모아놓은 메서드
         init(view);
 
+        //size에 저장되는 가로/세로 길이의 단위는 픽셀(Pixel)입니다.
         ScreenSize screen = new ScreenSize();
+        //context의 스크린 사이즈를 구함
         Point size = screen.getScreenSize(getActivity());
 
-        push_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 14);
-        push_all_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 19);
-        push_latest_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 19);
-        push_recommend_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 19);
+        push_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.035));
+        push_all_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.023));
+        push_latest_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.023));
+        push_recommend_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.023));
+
 
         return view;
     }

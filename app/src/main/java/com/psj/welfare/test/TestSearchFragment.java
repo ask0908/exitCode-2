@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.TypedValue;
-import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +20,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.psj.welfare.R;
+import com.psj.welfare.ScreenSize;
 
 /* SearchFragment 바뀐 화면 테스트하는 곳
  * 구현 완료되면 SearchFragment로 옮긴다 */
@@ -77,12 +77,17 @@ public class TestSearchFragment extends Fragment
             analytics = FirebaseAnalytics.getInstance(getActivity());
         }
 
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getRealSize(size);
+        //size에 저장되는 가로/세로 길이의 단위는 픽셀(Pixel)입니다.
+        ScreenSize screen = new ScreenSize();
+        //context의 스크린 사이즈를 구함
+        Point size = screen.getScreenSize(getActivity());
 
-        search_fragment_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 14);
-        recommend_tag_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 17);
+//        Display display = getActivity().getWindowManager().getDefaultDisplay();
+//        Point size = new Point();
+//        display.getRealSize(size);
+
+        search_fragment_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.035));
+        recommend_tag_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.03));
         recommend_old.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
         recommend_pregnancy.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
         recommend_living.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);

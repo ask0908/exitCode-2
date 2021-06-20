@@ -19,10 +19,9 @@
         <TextView
             android:id="@+id/bottom_result_name"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             app:layout_constraintWidth_percent=".9"
-            app:layout_constraintHeight_percent=".30"
-            app:layout_constraintVertical_bias=".3"
+            app:layout_constraintVertical_bias=".25"
             android:text="행복주택공급"
             app:layout_constraintHorizontal_bias=".5"
             app:layout_constraintStart_toStartOf="parent"
@@ -31,7 +30,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:maxLines="1"
             android:ellipsize="end"
-            android:fontFamily="@font/jalnan"
+            android:fontFamily="@font/notosanscjkkr_black"
             android:gravity="start"
             android:textColor="@color/gray"/>
 
