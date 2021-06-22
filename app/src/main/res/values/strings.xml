@@ -256,11 +256,13 @@
     <string name="withdraw_second_reason">보는 게 어려워서</string>
     <string name="withdraw_third_reason">사용하기 불편해서</string>
     <string name="withdraw_fourth_reason">기타</string>
-    
+
     <!-- 버튼, 텍스트뷰 등 뷰 / 위젯에 넣을 텍스트 -->
     <string name="login_activity_explanation">간편 로그인으로 더 많은 기능을 경험해보세요</string>
-    
+
     <!-- 사용자 로그 api에 넣을 문자열 -->
     <string name="login_entry">로그인 화면 진입</string>
+
+    <string name="change_complete">닉네임 변경 완료</string>
 
 </resources>

@@ -168,6 +168,12 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
             }
 
         });
+
+        second_interest_back_image.setOnClickListener(v ->
+        {
+            finish();
+        });
+
     }
 
     // 관심사 추가

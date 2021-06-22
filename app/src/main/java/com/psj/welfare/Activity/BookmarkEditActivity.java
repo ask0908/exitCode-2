@@ -58,6 +58,7 @@ public class BookmarkEditActivity extends AppCompatActivity
 
     DBOpenHelper helper;
     String sqlite_token;
+    int count = 0;
 
     ArrayList<String> checked_welf_list;
     StringBuilder stringBuilder;
@@ -104,18 +105,21 @@ public class BookmarkEditActivity extends AppCompatActivity
         // 전체선택, 선택해제
         all_or_not_textview.setOnClickListener(v ->
         {
-            isAllSelectClicked = true;
+            count++;
             String text = all_or_not_textview.getText().toString();
             // 전체선택 클릭
             if (text.equals("전체선택"))
             {
+                isAllSelectClicked = true;
                 all_or_not_textview.setText("선택해제");
                 adapter.selectAll();
-                all_bookmark_edit_count.setText("선택 " + list.size() + "개");
+                Log.e(TAG, "전체선택 눌렀을 때 currentSelectedItems의 size : " + currentSelectedItems.size());
+                all_bookmark_edit_count.setText("선택 " + currentSelectedItems.size() + "개");
             }
             // 선택해제 클릭
             else if (text.equals("선택해제"))
             {
+                isAllSelectClicked = false;
                 all_or_not_textview.setText("전체선택");
                 adapter.deselectAll();
                 all_bookmark_edit_count.setText("선택 0개");
@@ -147,6 +151,7 @@ public class BookmarkEditActivity extends AppCompatActivity
                             // 전체선택이 클릭됐다 -> 체크박스 개수를 담을 리스트의 size를 0으로 만든다
                             currentSelectedItems.clear();
                             checked_welf_list.clear();
+                            Log.e(TAG, "if문 갓 들어왔을 때 checked_welf_list : " + checked_welf_list);
                             // 체크박스 클릭 -> 선택된 체크박스의 id값을 ArrayList에 추가
                             currentSelectedItems.add(item); /* 아이템이 추가돼도 리스트의 크기가 1로 고정돼 있다 */
                             for (int i = 0; i < currentSelectedItems.size(); i++)
@@ -160,15 +165,18 @@ public class BookmarkEditActivity extends AppCompatActivity
                             {
                                 checked_welf_list.add(id);
                             }
+                            Log.e(TAG, "add() 후 checked_welf_list : " + checked_welf_list);
                             // 우상단 텍스트뷰는 체크박스가 1개라도 선택됐으면 '선택해제'로 변경한다
                             all_or_not_textview.setText("선택해제");
                             // 체크해서 리스트 숫자가 변경될 때마다 텍스트뷰의 문장을 바꿔 보여준다
+                            Log.e(TAG, "if 안에서 currentSelectedItems.size() : " + currentSelectedItems.size());
                             all_bookmark_edit_count.setText("선택 " + currentSelectedItems.size() + "개");
                         }
                         else
                         {
                             // 체크박스 클릭 -> 선택된 체크박스의 id값을 ArrayList에 추가
                             currentSelectedItems.add(item);
+                            Log.e(TAG, "else에서 currentSelectedItems의 size : " + currentSelectedItems.size());
                             // 체크박스의 id값을 액티비티로 가져온 다음
                             String id = item.getId();
                             // 액티비티에 선언한 ArrayList에 있는지 확인 후 add한다(중복 처리)

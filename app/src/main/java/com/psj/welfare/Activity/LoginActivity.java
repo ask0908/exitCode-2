@@ -31,7 +31,6 @@ import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.util.DBOpenHelper;
 import com.psj.welfare.util.LogUtil;
-import com.scwang.wave.MultiWaveHeader;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,8 +74,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private FirebaseAnalytics analytics;
 
     DBOpenHelper helper;
-
-    MultiWaveHeader waveView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -123,18 +120,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // 혜택모아 텍스트
         app_logo_text = findViewById(R.id.app_logo_text);
         login_activity_explanation_textview = findViewById(R.id.login_activity_explanation_textview);
-
-        // 파도 애니메이션 뷰
-        waveView = findViewById(R.id.login_wave_view);
-//        String[] waves = new String[]{
-//                "70,25,1.4,1.4,-26",//wave-1:offsetX(dp),offsetY(dp),scaleX,scaleY,velocity(dp/s)
-//                "100,5,1.4,1.2,15",
-//                "420,0,1.15,1,-10",//wave-3:水平偏移(dp),竖直偏移(dp),水平拉伸,竖直拉伸,速度(dp/s)
-//                "520,10,1.7,1.5,20",
-//                "220,0,1,1,-15",
-//        };
-//        waveView.setWaves(TextUtils.join(" ", Arrays.asList(waves)));// custom
-//        waveView.setWaves("MultiWave");// default five waves
 
         ScreenSize screen = new ScreenSize();
         Point size = screen.getScreenSize(this);

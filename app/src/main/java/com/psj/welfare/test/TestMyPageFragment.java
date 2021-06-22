@@ -214,7 +214,10 @@ public class TestMyPageFragment extends Fragment
                 {
                     Log.e(TAG, "다이얼로그에서 가져온 문자열 : " + edited_str);
                     receivedNickname = edited_str;
-                    changeNickname(edited_str, "save");
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("changed_nickname", receivedNickname);
+                    editor.apply();
+                    changeNickname(receivedNickname, "save");
                 }
             });
             dialog.showDialog();
@@ -487,7 +490,7 @@ public class TestMyPageFragment extends Fragment
             e.printStackTrace();
         }
 
-        Log.e(TAG, "닉네임 요청 시 message : " + message);
+        Log.e(TAG, "닉네임 변경 요청 후 서버에서 받은 message : " + message);
         if (message.equals("계정 정보가 존재하지 않습니다.") || message.equals("data is empty"))
         {
             //
@@ -497,7 +500,17 @@ public class TestMyPageFragment extends Fragment
             Observable.just(message)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(data -> binding.mypageMyId.setText(message));
+                    .subscribe(data ->
+                    {
+                        if (message.equals(getString(R.string.change_complete)))
+                        {
+                            binding.mypageMyId.setText(receivedNickname);
+                        }
+                        else
+                        {
+                            binding.mypageMyId.setText(message);
+                        }
+                    });
         }
     }
 

@@ -142,6 +142,9 @@ public class TestFragment extends Fragment
     String welfare_id, welfare_name, welfare_tag, welfare_viewcount;
     // 새 서버에서 가져온 배너 데이터를 저장할 변수
     String banner_image, banner_title;
+
+    String changed_nickname;
+
     public TestFragment()
     {
     }
@@ -186,6 +189,10 @@ public class TestFragment extends Fragment
 //        youtube_hashmap = new HashMap<>();
         youtube_list = new ArrayList<>();
         other_list = new ArrayList<>();
+
+        app_pref = getActivity().getSharedPreferences("app_pref", 0);
+        changed_nickname = app_pref.getString("changed_nickname", "");
+        Log.e(TAG, "마이페이지에서 바꾼 닉 : " + changed_nickname);
 
         MainWelfdata.setLayoutManager(new LinearLayoutManager(getActivity()));
         downAdapter = new MainDownAdapter(getActivity(), down_list, downClickListener);
@@ -412,9 +419,15 @@ public class TestFragment extends Fragment
             String user_nickname = bundle.getString("user_nickname");
             boolean being_logout = bundle.getBoolean("being_logout");
 
-
             if(!being_logout){ //로그인 했다면
-                Welfdata_first_title.setText(user_nickname + "님");
+                if (!changed_nickname.equals(""))
+                {
+                    Welfdata_first_title.setText(changed_nickname + "님");
+                }
+                else
+                {
+                    Welfdata_first_title.setText(user_nickname + "님");
+                }
                 notlogin_card.setVisibility(View.GONE);
                 welfdata_layout.setVisibility(View.VISIBLE);
             } else if(age != null){ //미리보기 관심사를 선택했다면

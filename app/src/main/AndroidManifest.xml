@@ -22,7 +22,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
-        <activity android:name=".BannerDetail"></activity>
+        <activity android:name=".BannerDetail" />
         <activity android:name=".activity.WithdrawActivity" />
         <activity android:name=".activity.ChooseSecondInterestActivity" />
         <activity android:name=".activity.ChooseFirstInterestActivity" />

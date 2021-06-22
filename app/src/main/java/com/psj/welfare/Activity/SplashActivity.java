@@ -29,6 +29,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.installations.FirebaseInstallations;
+import com.google.firebase.installations.InstallationTokenResult;
 import com.psj.welfare.AppDatabase;
 import com.psj.welfare.CategoryDao;
 import com.psj.welfare.CategoryData;
@@ -94,9 +96,21 @@ public class SplashActivity extends AppCompatActivity
                     return;
                 }
                 token = task.getResult().getToken();
-//                Log.e(TAG, "FCM token = " + token);
+                Log.e(TAG, "스플래시 화면에서 받은 fcm token : " + token);
                 editor.putString("fcm_token", token);
                 editor.apply();
+            }
+        });
+
+        /* 아래 코드를 쓰면 토큰이 항상 refresh되지만 이 토큰으로 fcm을 받을 수 있을지? */
+        FirebaseInstallations.getInstance().getToken(true).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<InstallationTokenResult> task)
+            {
+                Log.e(TAG, "task : " + task);
+                Log.e(TAG, "task.getResult() : " + task.getResult());
+                Log.e(TAG, "task.getResult().getToken() : " + task.getResult().getToken());
             }
         });
 

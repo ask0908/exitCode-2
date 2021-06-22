@@ -7,7 +7,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 
 public class MyFirebaseInstanceIDService extends FirebaseMessagingService
 {
-    private final String TAG = "MyFirebaseInstanceIDService";
+    private final String TAG = this.getClass().getSimpleName();
     private static final String SUBSCRIBE_TO = "urbenefit";
 
     public MyFirebaseInstanceIDService()
