@@ -12,10 +12,12 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -26,9 +28,11 @@ import com.psj.welfare.ScreenSize;
  * 구현 완료되면 SearchFragment로 옮긴다 */
 public class TestSearchFragment extends Fragment
 {
-    EditText search_name_edittext;
-    TextView search_fragment_top_textview;
-
+    private LinearLayout tag_total_layout; //태그 전체 레이아웃
+    private ConstraintLayout tag_layout1,tag_layout2,tag_layout3; //태그 레이아웃 노인 임신/출산, 주거 청년 취업/창업, 코로나 한부모
+    private EditText search_name_edittext; //검색 바
+    private TextView search_fragment_top_textview; //"어떤 혜택을 찾으세요?" 텍스트
+    private View recommend_firstview,recommend_second_firstview,recommend_second_secondview,recommend_thirdview; //태그(ex "#주거" "#청년") 사이에 간격을 임의로 주기 위한 뷰
     // 구글 애널리틱스
     private FirebaseAnalytics analytics;
 
@@ -52,8 +56,19 @@ public class TestSearchFragment extends Fragment
     {
         View view = inflater.inflate(R.layout.fragment_test_search, container, false);
 
+        tag_total_layout = view.findViewById(R.id.tag_total_layout);
+        tag_layout1 = view.findViewById(R.id.tag_layout1);
+        tag_layout2 = view.findViewById(R.id.tag_layout2);
+        tag_layout3 = view.findViewById(R.id.tag_layout3);
+
+        recommend_firstview = view.findViewById(R.id.recommend_firstview);
+        recommend_second_firstview = view.findViewById(R.id.recommend_second_firstview);
+        recommend_second_secondview = view.findViewById(R.id.recommend_second_secondview);
+        recommend_thirdview = view.findViewById(R.id.recommend_thirdview);
+
         search_name_edittext = view.findViewById(R.id.search_name_edittext);
         search_fragment_top_textview = view.findViewById(R.id.search_fragment_top_textview);
+
 
         recommend_tag_textview = view.findViewById(R.id.recommend_tag_textview);
         recommend_old = view.findViewById(R.id.recommend_old);
@@ -86,15 +101,46 @@ public class TestSearchFragment extends Fragment
 //        Point size = new Point();
 //        display.getRealSize(size);
 
+        //태그 전체 레이아웃
+        tag_total_layout.setPadding((int)(size.x * 0.07),0,0,0);
+        //"어떤 혜택을 찾으세요" 텍스트
         search_fragment_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.035));
-        recommend_tag_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.03));
-        recommend_old.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-        recommend_pregnancy.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-        recommend_living.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-        recommend_young_man.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-        recommend_job.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-        recommend_corona.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-        recommend_single_parent.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+        //검색
+        search_name_edittext.setPadding((int)(size.x * 0.06),0,(int)(size.x * 0.06),0);
+        //태그 레이아웃 첫번째 줄, 두번째 줄, 세번째 줄
+        tag_layout1.setPadding(0,(int)(size.y * 0.015),0,(int)(size.y * 0.015));
+        tag_layout2.setPadding(0,(int)(size.y * 0.015),0,(int)(size.y * 0.015));
+        tag_layout3.setPadding(0,(int)(size.y * 0.015),0,(int)(size.y * 0.015));
+        //"추천 태그" 텍스트
+        recommend_tag_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.x * 0.05));
+        recommend_tag_textview.setPadding((int)(size.x * 0.08),0,(int)(size.x * 0.08),0);
+        //태그 사이 간격
+        recommend_firstview.getLayoutParams().width = (int)(size.x * 0.05);
+        recommend_second_firstview.getLayoutParams().width = (int)(size.x * 0.05);
+        recommend_second_secondview.getLayoutParams().width = (int)(size.x * 0.05);
+        recommend_thirdview.getLayoutParams().width = (int)(size.x * 0.05);
+
+        //태그 "노인"
+        recommend_old.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
+        recommend_old.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
+        //태그 "임신/출산"
+        recommend_pregnancy.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
+        recommend_pregnancy.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
+        //태그 "주거"
+        recommend_living.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
+        recommend_living.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
+        //태그 "청년"
+        recommend_young_man.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
+        recommend_young_man.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
+        //태그 "취업/창업"
+        recommend_job.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
+        recommend_job.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
+        //태그 "코로나"
+        recommend_corona.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
+        recommend_corona.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
+        //태그 "한부모"
+        recommend_single_parent.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
+        recommend_single_parent.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
 
         // 검색창
         search_name_edittext.setOnEditorActionListener(new TextView.OnEditorActionListener()

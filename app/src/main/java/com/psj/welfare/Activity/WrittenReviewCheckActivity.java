@@ -14,6 +14,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,6 +56,7 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
 //    ActivityWrittenReviewCheckBinding binding;
 //    private com.psj.welfare.databinding.WrittenReview binding;
 
+    private ImageView written_review_back_image; //뒤로가기 버튼
     TextView written_review_count, written_review_empty_textview, written_review_textview;
     RecyclerViewEmptySupport written_review_recyclerview;
     WrittenReviewAdapter adapter;
@@ -100,6 +102,8 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
             }
         }
 
+        written_review_back_image = findViewById(R.id.written_review_back_image);
+
         written_review_recyclerview = findViewById(R.id.written_review_recyclerview);
         written_review_recyclerview.setLayoutManager(new LinearLayoutManager(this));
         written_review_recyclerview.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
@@ -116,6 +120,11 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
         written_review_empty_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
 
         getMyReview(page);
+
+        //뒤로 가기 버튼 누르기
+        written_review_back_image.setOnClickListener(v -> {
+            finish();
+        });
     }
 
     // 내가 작성한 리뷰 가져오기

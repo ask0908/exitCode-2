@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.psj.welfare.DetailReviewWrite;
@@ -86,11 +87,6 @@ public class WrittenReviewAdapter extends RecyclerView.Adapter<WrittenReviewAdap
     @Override
     public void onBindViewHolder(@NonNull WrittenReviewAdapter.WrittenReviewViewHolder holder, int position)
     {
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        Point size = new Point();
-        display.getRealSize(size);
-
         WrittenReviewItem item = list.get(position);
         holder.written_review_writer.setText(item.getWriter());
         holder.written_review_star.setStar(item.getStar_count());
@@ -98,11 +94,6 @@ public class WrittenReviewAdapter extends RecyclerView.Adapter<WrittenReviewAdap
         holder.written_review_content.setText(item.getContent());
         welf_id = String.valueOf(item.getWelf_id());
         welf_name = item.getWelf_name();
-
-        holder.written_review_welf_name.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-        holder.written_review_writer.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
-        holder.written_review_content.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
-        holder.written_review_content.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
 
         // 21/06/06 형식으로 날짜 보여주는 처리부
         SimpleDateFormat dateFormat = new SimpleDateFormat("yy-mm-dd");
@@ -165,6 +156,9 @@ public class WrittenReviewAdapter extends RecyclerView.Adapter<WrittenReviewAdap
             });
             menu.show();
         });
+
+        //레이아웃의 사이즈를 동적으로 맞춤
+        setsize(holder);
     }
 
     @Override
@@ -179,11 +173,15 @@ public class WrittenReviewAdapter extends RecyclerView.Adapter<WrittenReviewAdap
         com.hedgehog.ratingbar.RatingBar written_review_star;
         TextView written_review_welf_name, written_review_option, written_review_writer, written_review_date, written_review_content;
         OnItemClickListener itemClickListener;
-
+        ConstraintLayout review_content_layout; //리뷰 내용 레이아웃
+        LinearLayout review_title_layout,review_star_layout; //리뷰 타이틀 레이아웃, 리뷰 별점 레이아웃
         public WrittenReviewViewHolder(@NonNull View view, OnItemClickListener itemClickListener)
         {
             super(view);
 
+            review_title_layout = view.findViewById(R.id.review_title_layout);
+            review_star_layout = view.findViewById(R.id.review_star_layout);
+            review_content_layout = view.findViewById(R.id.review_content_layout);
             written_review_item_layout = view.findViewById(R.id.written_review_item_layout);
             written_review_detail_layout = view.findViewById(R.id.written_review_detail_layout);
             written_review_welf_name = view.findViewById(R.id.written_review_welf_name);
@@ -203,6 +201,31 @@ public class WrittenReviewAdapter extends RecyclerView.Adapter<WrittenReviewAdap
                 }
             });
         }
+    }
+
+    //레이아웃의 사이즈를 동적으로 맞춤
+    private void setsize(WrittenReviewViewHolder holder) {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getRealSize(size);
+//        ScreenSize screen = new ScreenSize();
+//        //context의 스크린 사이즈를 구함
+//        Point size = screen.getScreenSize((Activity) context);
+
+        //닉네임
+        holder.written_review_writer.setPadding(0,(int)(size.y * 0.008),0,0);
+        //별점 레이아웃
+        holder.review_star_layout.setPadding(0,(int)(size.y * 0.02),0,0);
+        //내용 레이아웃
+        holder.review_content_layout.setPadding(0,(int)(size.y * 0.008),0,0);
+        //아이템 전체 레이아웃
+        holder.written_review_item_layout.setPadding((int)(size.x * 0.04),(int)(size.y * 0.03),(int)(size.x * 0.04),(int)(size.y * 0.03));
+
+        holder.written_review_welf_name.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+        holder.written_review_writer.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
+        holder.written_review_content.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
+        holder.written_review_content.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
     }
 
     public interface OnItemClickListener

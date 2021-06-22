@@ -27,7 +27,8 @@ public class PersonalInformationActivity extends AppCompatActivity
         toolbar = findViewById(R.id.personal_toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //툴바 왼쪽 버튼 사용 여부
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.arrow_left_black); //툴바 왼쪽 버튼 아이콘
     }
 
     @Override

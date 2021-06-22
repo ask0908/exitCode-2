@@ -218,17 +218,18 @@ public class DetailReviewAllLook extends AppCompatActivity {
         //디스플레이 값을 기준으로 버튼 텍스트 크기를 정함
 
         title_layout.getLayoutParams().height = size.y/14; //타이틀 레이아웃
-        filter_layout.getLayoutParams().height = size.y/16; //리뷰 필터 레이아웃
+        filter_layout.getLayoutParams().height = size.y/14; //리뷰 필터 레이아웃
 
         back_btn.getLayoutParams().width = size.x /16; //뒤로 가기 버튼
         back_btn.getLayoutParams().height = size.x /16; //뒤로 가기 버튼
         filter_icon.getLayoutParams().width = size.x /20; //필터링 버튼
         filter_icon.getLayoutParams().height = size.x /20; //필터링 버튼
+        filter_icon.setPadding((int)(size.x*0.03),(int)(size.x*0.03),(int)(size.x*0.03),(int)(size.x*0.03)); //필터링 버튼
 
         benefit_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x / 18); //혜택명
         review_count.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x / 24); //리뷰 수
         filter_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x / 24); //필터 텍스트
 
-        allreview_recycler.setPadding(size.x / 30, size.x / 30, size.x / 30, size.x / 30); //레이아웃 패딩값 적용
+        allreview_recycler.setPadding(size.x / 30, (int)(size.x*0.01), size.x / 30, size.x / 30); //레이아웃 패딩값 적용
     }
 }

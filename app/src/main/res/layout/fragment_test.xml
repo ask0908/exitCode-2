@@ -41,7 +41,7 @@
                 android:text="혜택모아"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="0.07"
+                app:layout_constraintHorizontal_bias="0.08"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -88,8 +88,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="40dp"
-                    android:paddingVertical="10dp"
                     android:scrollbars="none"
                     app:layout_constraintLeft_toLeftOf="parent "
                     app:layout_constraintRight_toRightOf="parent"
@@ -174,13 +172,11 @@
                             android:layout_height="0dp"
                             android:layout_marginTop="10dp"
                             android:orientation="vertical"
-                            android:paddingStart="20dp"
-                            android:paddingEnd="20dp"
-                            app:layout_constraintHeight_percent="0.18"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintRight_toRightOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintWidth_percent=".925">
+                            app:layout_constraintWidth_percent="0.84"
+                            app:layout_constraintHeight_percent=".2">
 
                             <ImageView
                                 android:id="@+id/Welfdata_title_image"
@@ -189,14 +185,13 @@
                                 android:background="@drawable/round_quadrangle"
                                 android:backgroundTint="@color/colorPink"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintRight_toLeftOf="@+id/Welfdata_second_layout"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintLeft_toLeftOf="parent"
+                                app:layout_constraintRight_toRightOf="parent"
                                 app:layout_constraintWidth_percent=".015"
-                                app:layout_constraintHeight_percent=".4 "
-                                app:layout_constraintHorizontal_bias="0.5"
-                                app:layout_constraintVertical_bias="0.18"/>
-
+                                app:layout_constraintHeight_percent="0.38"
+                                app:layout_constraintHorizontal_bias="0"
+                                app:layout_constraintVertical_bias="0.19"/>
 
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:id="@+id/Welfdata_second_layout"
@@ -209,14 +204,14 @@
                                 app:layout_constraintWidth_percent="0.9">
 
                                 <TextView
-                                    app:autoSizePresetSizes="@array/autosize_text_sizes"
                                     android:id="@+id/Welfdata_first_title"
                                     android:layout_width="match_parent"
                                     android:layout_height="0dp"
                                     app:layout_constraintHeight_percent="0.4"
                                     android:fontFamily="@font/notosanskr_bold"
                                     android:includeFontPadding="false"
-                                    android:text="20대, 서울, 여성"
+                                    android:autoSizeTextType="uniform"
+                                    tools:text="20대, 서울, 여성"
                                     app:layout_constraintBottom_toBottomOf="parent"
                                     app:layout_constraintLeft_toLeftOf="parent"
                                     app:layout_constraintTop_toTopOf="parent"
@@ -224,13 +219,13 @@
 
 
                                 <TextView
-                                    app:autoSizePresetSizes="@array/autosize_text_sizes"
                                     android:id="@+id/Welfdata_second_title"
                                     android:layout_width="match_parent"
                                     android:layout_height="0dp"
                                     app:layout_constraintHeight_percent="0.4"
                                     android:fontFamily="@font/notosanskr_bold"
                                     android:includeFontPadding="false"
+                                    android:autoSizeTextType="uniform"
                                     android:text="맞춤 혜택"
                                     app:layout_constraintLeft_toLeftOf="parent"
                                     app:layout_constraintTop_toBottomOf="@+id/Welfdata_first_title" />
@@ -245,10 +240,8 @@
                             android:layout_height="0dp"
                             android:orientation="vertical"
                             android:overScrollMode="never"
-                            android:paddingStart="24dp"
-                            android:paddingEnd="24dp"
                             android:scrollbars="none"
-                            app:layout_constraintHeight_percent=".75"
+                            app:layout_constraintHeight_percent=".72"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintRight_toRightOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/Welfdata_title_layout"
@@ -268,7 +261,7 @@
                             android:text="+ 더보기"
                             android:textColor="@color/gray"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintHeight_percent=".05"
+                            app:layout_constraintHeight_percent=".06"
                             app:layout_constraintHorizontal_bias=".92"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintRight_toRightOf="parent"
@@ -284,12 +277,13 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/youtube_title_layout"
                     android:layout_width="0dp"
-                    android:layout_height="50dp"
+                    android:layout_height="0dp"
                     android:layout_marginTop="1dp"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/welfdata_total_layout"
-                    app:layout_constraintWidth_percent=".925">
+                    app:layout_constraintWidth_percent="0.84"
+                    app:layout_constraintHeight_percent=".04">
 
                     <ImageView
                         android:id="@+id/youtube_title_image"
@@ -298,8 +292,8 @@
                         android:background="@drawable/round_quadrangle"
                         android:backgroundTint="@color/colorPink"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintHeight_percent=".9 "
-                        app:layout_constraintHorizontal_bias="0.05"
+                        app:layout_constraintHeight_percent="0.8"
+                        app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -312,6 +306,7 @@
                         android:text="유튜버들의 혜택 리뷰"
                         android:fontFamily="@font/notosanskr_bold"
                         android:includeFontPadding="false"
+                        android:autoSizeTextType="uniform"
                         android:textStyle="bold"
                         android:gravity="center_vertical"
                         app:layout_constraintBottom_toBottomOf="parent"

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottom_result_layout"
     android:layout_width="match_parent"
     android:layout_height="70dp"
@@ -17,60 +18,70 @@
         android:layout_height="match_parent">
 
         <TextView
+            android:layout_marginTop="4dp"
             android:id="@+id/bottom_result_name"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:autoSizeTextType="uniform"
             app:layout_constraintWidth_percent=".9"
-            app:layout_constraintVertical_bias=".25"
+            app:layout_constraintHeight_percent=".35"
             android:text="행복주택공급"
-            app:layout_constraintHorizontal_bias=".5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_result_tag_layout"
             android:maxLines="1"
             android:ellipsize="end"
-            android:fontFamily="@font/notosanskr_black"
+            android:fontFamily="@font/notosanskr_bold"
             android:includeFontPadding="false"
             android:gravity="start"
             android:textColor="@color/gray"/>
 
-        <TextView
-            android:id="@+id/bottom_result_tag"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_marginBottom="4dp"
+            android:id="@+id/bottom_result_tag_layout"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintWidth_percent=".65"
-            app:layout_constraintHeight_percent=".215"
-            app:layout_constraintVertical_bias=".8"
-            app:layout_constraintHorizontal_bias=".1"
-            android:fontFamily="@font/nanum_barun_gothic_bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:text="#다자녀 #다문화 #임신/출산"
-            android:ellipsize="end"
-            android:ems="18"
-            android:maxLength="23"
-            android:maxLines="1"/>
+            app:layout_constraintHeight_percent="0.3"
+            app:layout_constraintWidth_percent="0.9"
+            app:layout_constraintTop_toBottomOf="@+id/bottom_result_name"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-        <TextView
-            android:id="@+id/bottom_result_views"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintWidth_percent=".26"
-            android:text="View 100+"
-            app:layout_constraintHeight_percent=".22"
-            app:layout_constraintHorizontal_bias=".94"
-            app:layout_constraintVertical_bias=".81"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:gravity="center|end"
-            android:fontFamily="@font/nanum_barun_gothic_bold"/>
+            <TextView
+                android:id="@+id/bottom_result_tag"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:autoSizeTextType="uniform"
+                app:layout_constraintWidth_percent=".75"
+                android:fontFamily="@font/notosanskr_medium"
+                android:includeFontPadding="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:text="#다자녀 #다문화 #임신/출산"
+                android:ellipsize="end"
+                android:ems="18"
+                android:maxLength="23"
+                android:maxLines="1"/>
+
+            <TextView
+                android:id="@+id/bottom_result_views"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:autoSizeTextType="uniform"
+                tools:text="View 100+"
+                app:layout_constraintWidth_percent=".25"
+                app:layout_constraintHorizontal_bias=".94"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:gravity="center|end"
+                android:fontFamily="@font/notosanskr_medium"
+                android:includeFontPadding="false"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

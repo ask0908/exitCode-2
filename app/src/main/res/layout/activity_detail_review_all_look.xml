@@ -14,14 +14,12 @@
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:elevation="10dp">
+        android:background="@color/white">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/title_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:elevation="10dp">
+            android:layout_height="wrap_content">
 
             <ImageButton
                 android:id="@+id/back_btn"
@@ -43,12 +41,13 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias=".46"
+                app:layout_constraintHorizontal_bias=".5"
                 app:layout_constraintWidth_percent=".72"
-                android:textStyle="bold"
                 android:gravity="center_vertical"
                 android:ellipsize="end"
-                android:maxLines="1"/>
+                android:maxLines="1"
+                android:fontFamily="@font/notosanskr_bold"
+                android:includeFontPadding="false"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.appbar.AppBarLayout>
@@ -62,14 +61,16 @@
             android:id="@+id/review_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="사용자 리뷰 52개"
+            tools:text="사용자 리뷰 52개"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias=".1"
             android:textStyle="bold"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:fontFamily="@font/notosanskr_bold"
+            android:includeFontPadding="false"/>
         
         <TextView
             android:id="@+id/filter_text"
@@ -81,7 +82,9 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias=".83"
-            android:gravity="center" />
+            android:gravity="center"
+            android:fontFamily="@font/notosanskr_medium"
+            android:includeFontPadding="false"/>
 
         <ImageButton
             android:id="@+id/filter_icon"
@@ -93,7 +96,8 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias=".94"
-            android:backgroundTint="@color/gray"/>
+            android:backgroundTint="@color/gray"
+            tools:padding="5dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

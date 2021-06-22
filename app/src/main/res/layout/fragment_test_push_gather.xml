@@ -181,7 +181,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:listitem="@layout/push_gather_item"/>
 
             <ImageView
                 android:id="@+id/push_bell_image"
@@ -206,9 +207,11 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/push_bell_image"
                 android:gravity="center|top"
-                android:textStyle="bold"
                 android:lineSpacingExtra="6sp"
-                android:text="최신 혜택과 추천 혜택을 받고 싶다면\n로그인을 해 주세요"/>
+                android:text="최신 혜택과 추천 혜택을 받고 싶다면\n로그인을 해 주세요"
+                android:autoSizeTextType="uniform"
+                android:fontFamily="@font/notosanskr_medium"
+                android:includeFontPadding="false"/>
 
             <Button
                 android:id="@+id/push_login_button"
@@ -225,7 +228,9 @@
                 android:text="로그인하러 가기"
                 android:textColor="#FFFFFF"
                 android:textSize="17sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:fontFamily="@font/notosanskr_bold"
+                android:includeFontPadding="false"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

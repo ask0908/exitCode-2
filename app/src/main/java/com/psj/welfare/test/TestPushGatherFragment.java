@@ -102,9 +102,9 @@ public class TestPushGatherFragment extends Fragment
         Point size = screen.getScreenSize(getActivity());
 
         push_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.035));
-        push_all_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.023));
-        push_latest_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.023));
-        push_recommend_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.023));
+        push_all_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.x * 0.045));
+        push_latest_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.x * 0.045));
+        push_recommend_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.x * 0.045));
 
 
         return view;

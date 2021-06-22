@@ -26,7 +26,8 @@ public class TermsAndConditionsActivity extends AppCompatActivity
         toolbar = findViewById(R.id.terms_toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //툴바 왼쪽 버튼 사용 여부
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.arrow_left_black); //툴바 왼쪽 버튼 아이콘
     }
 
     @Override

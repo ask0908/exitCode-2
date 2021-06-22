@@ -172,7 +172,7 @@
                                 android:fontFamily="@font/notosanskr_bold"
                                 android:includeFontPadding="false"
                                 android:gravity="center"
-                                android:text="북마크 혜택"/>
+                                android:text="북마크"/>
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -298,7 +298,7 @@
 
                     <TextView
                         android:id="@+id/edit_interest_textview"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintVertical_bias=".04"
@@ -356,7 +356,7 @@
 
                     <TextView
                         android:id="@+id/check_notice_textview"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:visibility="gone"
                         app:layout_constraintWidth_percent=".8"
@@ -372,7 +372,7 @@
 
                     <TextView
                         android:id="@+id/check_term_textview"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintVertical_bias=".28"
@@ -386,10 +386,10 @@
 
                     <TextView
                         android:id="@+id/check_privacy_textview"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:layout_constraintHorizontal_bias="0"
-                        app:layout_constraintVertical_bias=".40"
+                        app:layout_constraintVertical_bias=".4"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -400,7 +400,7 @@
 
                     <TextView
                         android:id="@+id/app_version_textview"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintVertical_bias=".52"
@@ -414,7 +414,7 @@
 
                     <TextView
                         android:id="@+id/mypage_logout_textview"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintVertical_bias=".63"
@@ -428,7 +428,7 @@
 
                     <TextView
                         android:id="@+id/mypage_withdraw_textview"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintVertical_bias=".74"

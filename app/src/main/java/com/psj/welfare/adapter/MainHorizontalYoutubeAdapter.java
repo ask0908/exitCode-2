@@ -3,7 +3,6 @@ package com.psj.welfare.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -133,10 +132,9 @@ public class MainHorizontalYoutubeAdapter extends RecyclerView.Adapter<MainHoriz
         Point size = screen.getScreenSize((Activity) context);
 
         if( pos == 0){ //첫 유튜브 데이터 일 때
-            holder.youtube_list_layout.setPadding((int) (size.x * 0.055),0,0,0);
+            holder.youtube_list_layout.setPadding((int) (size.x * 0.044),0,0,0);
         } else if( pos == (list.size()-1)) { //마지막 유튜브 데이터 일 때
-            Log.e(TAG,"test");
-            holder.youtube_list_layout.setPadding(0,0,(int) (size.x * 0.055),0);
+            holder.youtube_list_layout.setPadding(0,0,(int) (size.x * 0.044),0);
         } else {
             holder.youtube_list_layout.setPadding(0,0,0,0);
         }

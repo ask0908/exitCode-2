@@ -307,7 +307,7 @@ public class TestFragment extends Fragment
         //context의 스크린 사이즈를 구함
         Point size = screen.getScreenSize(getActivity());
         //디스플레이 값을 기준으로 페이지 마진 구하기
-        MainBannerViewpager2.setPageTransformer(new MarginPageTransformer((int) (size.x * 0.06)));
+        MainBannerViewpager2.setPageTransformer(new MarginPageTransformer((int) (size.x * 0.05)));
 
 
 //        MainBannerViewpager2.setCurrentItem(10,false);
@@ -331,27 +331,30 @@ public class TestFragment extends Fragment
         Point size = screen.getScreenSize(getActivity());
 
         //상단 타이틀
-        MainTop.getLayoutParams().height = (int) (size.y * 0.14);
+        MainTop.getLayoutParams().height = (int)(size.y * 0.14);
         //뷰페이저 크기
-        MainBannerViewpager2.getLayoutParams().height = (int) (size.y * 0.25);
+        MainBannerViewpager2.getLayoutParams().height = (int)(size.y * 0.275);
+        MainBannerViewpager2.setPadding((int)(size.x * 0.1),(int)(size.y * 0.007),(int)(size.x * 0.1),(int)(size.y * 0.007));
         //닉네임 첫번째줄 텍스트
-        Welfdata_first_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.025));
+        Welfdata_first_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.y * 0.027));
         //닉네임 두번째줄 텍스트
-        Welfdata_second_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.025));
+        Welfdata_second_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.y * 0.027));
+        //맞춤혜텍 아이템
+        MainWelfdata.setPadding((int)(size.x * 0.05),0,(int)(size.x * 0.05),0);
         //관심사 선택 카드뷰
-        notlogin_card.getLayoutParams().height = (int) (size.y * 0.22);
+        notlogin_card.getLayoutParams().height = (int)(size.y * 0.22);
         //맞춤 혜택 보여주기 레이아웃
-        welfdata_layout.getLayoutParams().height = (int) (size.y * 0.47);
+        welfdata_layout.getLayoutParams().height = (int)(size.y * 0.515);
         //유튜버 혜택 리뷰 타이틀 레이아웃
-        youtube_title_layout.getLayoutParams().height = (int) (size.y * 0.0415);
+        youtube_title_layout.getLayoutParams().height = (int)(size.y * 0.0415);
         //유튜브 혜택 타이틀 텍스트
-        youtube_title_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.025));
+        youtube_title_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.y * 0.025));
         //유튜브 리사이클러뷰
-        youtube_video_recyclerview.getLayoutParams().height = (int) (size.y * 0.3);
+        youtube_video_recyclerview.getLayoutParams().height = (int)(size.y * 0.3);
         //"나에게 맞는 혜택 찾기" 버튼 텍스트 크기
-        notlogin_button.setTextSize(TypedValue.COMPLEX_UNIT_PX,(int) (size.y * 0.021));
+        notlogin_button.setTextSize(TypedValue.COMPLEX_UNIT_PX,(int)(size.y * 0.021));
         //메인 타이틀 "혜택모아" 텍스트
-        title_text.setTextSize(TypedValue.COMPLEX_UNIT_PX,(int) (size.y * 0.035));
+        title_text.setTextSize(TypedValue.COMPLEX_UNIT_PX,(int)(size.y * 0.035));
     }
 
     //selected_interest_textview(제목) 값 넣기

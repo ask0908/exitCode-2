@@ -2,13 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:hedgehog="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/written_review_item_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="12dp"
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/review_title_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -19,7 +20,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".9"
-            android:fontFamily="@font/jalnan"
+            android:fontFamily="@font/notosanskr_bold"
+            android:includeFontPadding="false"
+            android:autoSizeTextType="uniform"
             android:text="기초생활보장 수급자 해산급여 지원"
             android:layout_gravity="center_vertical"/>
 
@@ -45,16 +48,20 @@
         android:id="@+id/written_review_writer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        tools:paddingTop="10dp"
+        android:fontFamily="@font/notosanskr_bold"
+        android:includeFontPadding="false"
+        android:autoSizeTextType="uniform"
         android:text="user101"
         android:textStyle="bold"/>
 
     <!-- 별점 평점, 작성일자를 보여줄 가로 리니어 레이아웃 -->
     <LinearLayout
+        android:id="@+id/review_star_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="10dp"
+        tools:paddingTop="10dp"
         android:weightSum="1">
 
         <com.hedgehog.ratingbar.RatingBar
@@ -76,16 +83,21 @@
             android:id="@+id/written_review_date"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight=".3"/>
+            android:layout_weight=".3"
+            android:fontFamily="@font/notosanskr_light"
+            android:includeFontPadding="false"
+            android:autoSizeTextType="uniform"
+            tools:text="21/3/29"/>
 
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/review_content_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
         android:weightSum="1"
-        android:layout_marginTop="10dp">
+        tools:paddingTop="10dp">
 
         <TextView
             android:id="@+id/written_review_content"
@@ -99,7 +111,10 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_weight=".7"
-            android:text="신청 방법이 쉬워서 신청했어요\n지원금액이 낮은게 아쉽네요"/>
+            tools:text="신청 방법이 쉬워서 신청했어요\n지원금액이 낮은게 아쉽네요"
+            android:fontFamily="@font/notosanskr_medium"
+            android:includeFontPadding="false"
+            android:autoSizeTextType="uniform"/>
 
         <LinearLayout
             android:id="@+id/written_review_detail_layout"
