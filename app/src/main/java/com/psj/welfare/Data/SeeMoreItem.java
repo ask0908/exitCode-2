@@ -2,11 +2,11 @@ package com.psj.welfare.data;
 
 public class SeeMoreItem
 {
-    private String welf_id;     // 혜택의 idx
-    private String welf_name;   // 혜택명
-    private String welf_tag;    // 임신/출산, 다자녀, 다문화 등
-    private String welf_field;  // 상단 리사이클러뷰에 들어가는 값들(사업, 교육, 기타, 문화 등)
-    private String welf_count;  // 조회수
+    private String welf_id;         // 혜택의 idx
+    private String welf_name;       // 혜택명
+    private String welf_tag;        // 임신/출산, 다자녀, 다문화 등
+    private String assist_method;   // 상단 리사이클러뷰에 들어가는 값들(현금 지원, 물품 지원 등)
+    private String welf_count;      // 조회수
 
     public String getWelf_id()
     {
@@ -38,14 +38,14 @@ public class SeeMoreItem
         this.welf_tag = welf_tag;
     }
 
-    public String getWelf_field()
+    public String getAssist_method()
     {
-        return welf_field;
+        return assist_method;
     }
 
-    public void setWelf_field(String welf_field)
+    public void setAssist_method(String assist_method)
     {
-        this.welf_field = welf_field;
+        this.assist_method = assist_method;
     }
 
     public String getWelf_count()

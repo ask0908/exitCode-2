@@ -76,7 +76,6 @@ public class BookmarkEditAdapter extends RecyclerView.Adapter<BookmarkEditAdapte
     public void onBindViewHolder(@NonNull final BookmarkEditAdapter.BookmarkEditViewHolder holder, final int position)
     {
         final BookmarkItem item = list.get(position);
-        Log.e(TAG, "북마크 삭제 화면 - item.getTag() : " + item.getTag());
         holder.bookmark_edit_welf_name.setText(item.getWelf_name());
         if (item.getTag().contains("-"))
         {

@@ -25,11 +25,11 @@ public class MoreViewModel extends AndroidViewModel
     }
 
     /* 로그인 상태일 때 메인에서 더보기를 누르면 호출되는 메서드 */
-    public MutableLiveData<String> moreViewWelfareLogin(String token, String session, String page, String theme)
+    public MutableLiveData<String> moreViewWelfareLogin(String token, String session, String page, String assist_method)
     {
         apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
         final MutableLiveData<String> data = new MutableLiveData<>();
-        apiInterface.moreViewWelfareLogin(token, session, page, theme)
+        apiInterface.moreViewWelfareLogin(token, session, page, assist_method)
                 .enqueue(new Callback<String>()
                 {
                     @Override

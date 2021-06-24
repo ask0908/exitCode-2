@@ -16,7 +16,7 @@ import com.psj.welfare.data.MoreViewItem;
 
 import java.util.List;
 
-/* TestMoreViewActivity에서 상단 리사이클러뷰에 카테고리들을 보여줄 때 사용할 어댑터 */
+/* 혜택 더보기 리스트 화면에서 상단 리사이클러뷰에 카테고리들을 보여줄 때 사용할 어댑터 */
 public class MoreViewAdapter extends RecyclerView.Adapter<MoreViewAdapter.MoreViewHolder>
 {
     private final String TAG = MoreViewAdapter.class.getSimpleName();
@@ -51,18 +51,18 @@ public class MoreViewAdapter extends RecyclerView.Adapter<MoreViewAdapter.MoreVi
     public void onBindViewHolder(@NonNull MoreViewAdapter.MoreViewHolder holder, int position)
     {
         MoreViewItem item = list.get(position);
-        holder.more_result_category.setText(item.getWelf_thema());
+        holder.assist_method_text.setText(item.getAssist_method());
 
         if (selected_position == position)
         {
-            holder.more_result_category.setTextColor(ContextCompat.getColor(context, R.color.layout_background_start_gradation));
+            holder.assist_method_text.setTextColor(ContextCompat.getColor(context, R.color.layout_background_start_gradation));
             holder.more_result_view.setBackgroundColor(ContextCompat.getColor(context, R.color.layout_background_start_gradation));
             holder.more_result_view.setVisibility(View.VISIBLE);
 
         }
         else
         {
-            holder.more_result_category.setTextColor(ContextCompat.getColor(context, R.color.middle_gray));
+            holder.assist_method_text.setTextColor(ContextCompat.getColor(context, R.color.middle_gray));
             holder.more_result_view.setVisibility(View.INVISIBLE);
         }
     }
@@ -76,7 +76,7 @@ public class MoreViewAdapter extends RecyclerView.Adapter<MoreViewAdapter.MoreVi
     public class MoreViewHolder extends RecyclerView.ViewHolder
     {
         ConstraintLayout interest_layout;
-        TextView more_result_category;
+        TextView assist_method_text;
         View more_result_view;
         ItemClickListener itemClickListener;
 
@@ -85,7 +85,7 @@ public class MoreViewAdapter extends RecyclerView.Adapter<MoreViewAdapter.MoreVi
             super(view);
 
             interest_layout = view.findViewById(R.id.interest_layout);
-            more_result_category = view.findViewById(R.id.interest_text);
+            assist_method_text = view.findViewById(R.id.assist_method_text);
             more_result_view = view.findViewById(R.id.interest_bottom_view);
 
             this.itemClickListener = itemClickListener;

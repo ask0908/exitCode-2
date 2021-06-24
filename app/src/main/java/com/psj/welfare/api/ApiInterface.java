@@ -768,9 +768,10 @@ public interface ApiInterface
 
     /**
      * 비회원이 각 테마별 전체 혜택들을 볼 수 있는 메서드
+     * 메인 화면에서 "+ 더보기" 텍스트를 누르면 이동하는 화면에서 호출한다
      * @param page - 요청하는 페이지 값
-     * @param theme - 더 보고자 하는 혜택 테마 이름(start, all, 건강, 교육, 근로 등)
-     *              - start : 각 테마별 10개씩 리턴하고(welf_10) 전체 혜택 리스트 중 10개 리턴(all_10)
+     * @param assist_method - 더 보고자 하는 지원 형태에 대한 혜택(start, all, 현금 지원, 서비스 지원 등)
+     *              - start : 각 테마별 10개씩 리턴하고(assist_method_10) 전체 혜택 리스트 중 10개 리턴(all_10)
      *              - all : 전체 혜택 리스트
      * @param gender - 미리보기에서 선택한 성별
      * @param age - 미리보기에서 선택한 나이
@@ -792,7 +793,7 @@ public interface ApiInterface
     @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/welf-more")
     Call<String> moreViewWelfareNotLogin(
             @Query("page") String page,
-            @Query("theme") String theme,
+            @Query("assist_method") String assist_method,
             @Query("gender") String gender,
             @Query("age") String age,
             @Query("local") String local
@@ -800,10 +801,11 @@ public interface ApiInterface
 
     /**
      * 회원이 각 테마별 전체 혜택들을 볼 수 있는 기능
+     * 메인 화면에서 "+ 더보기" 텍스트를 누르면 이동하는 화면에서 호출한다
      * @param token - 서버에서 받은 토큰
      * @param session - 쉐어드에 저장된 세션 id
      * @param page - 요청하는 페이지 값
-     * @param theme - 더 보고자 하는 혜택 테마 이름
+     * @param assist_method - 더 보고자 하는 혜택 테마 이름
      * @return - {
      *     "statusCode": 200,
      *     "message": [
@@ -823,7 +825,7 @@ public interface ApiInterface
             @Header("logintoken") String token,
             @Header("sessionid") String session,
             @Query("page") String page,
-            @Query("theme") String theme
+            @Query("assist_method") String assist_method
     );
 
     /* 마이페이지에서 사용하는 메서드 */

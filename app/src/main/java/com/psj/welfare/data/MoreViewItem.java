@@ -6,17 +6,16 @@ public class MoreViewItem
     private String welf_id;
     private String welf_name;
     private String welf_tag;
+    private String assist_method;
     private String welf_count;
-
-    private String welf_thema;
-
-    public MoreViewItem(String welf_thema)
-    {
-        this.welf_thema = welf_thema;
-    }
 
     public MoreViewItem()
     {
+    }
+
+    public MoreViewItem(String assist_method)
+    {
+        this.assist_method = assist_method;
     }
 
     public String getWelf_id()
@@ -49,6 +48,16 @@ public class MoreViewItem
         this.welf_tag = welf_tag;
     }
 
+    public String getAssist_method()
+    {
+        return assist_method;
+    }
+
+    public void setAssist_method(String assist_method)
+    {
+        this.assist_method = assist_method;
+    }
+
     public String getWelf_count()
     {
         return welf_count;
@@ -59,13 +68,4 @@ public class MoreViewItem
         this.welf_count = welf_count;
     }
 
-    public String getWelf_thema()
-    {
-        return welf_thema;
-    }
-
-    public void setWelf_thema(String welf_thema)
-    {
-        this.welf_thema = welf_thema;
-    }
 }
