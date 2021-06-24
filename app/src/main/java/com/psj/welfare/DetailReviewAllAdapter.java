@@ -122,7 +122,7 @@ public class DetailReviewAllAdapter extends RecyclerView.Adapter<DetailReviewAll
         //context의 스크린 사이즈를 구함
         Point size = screen.getScreenSize((Activity) context);
         //디스플레이 값을 기준으로 버튼 텍스트 크기를 정함
-        holder.nickname_layout.setPadding(0,0,0,(int)(size.y*0.05)); //닉네임쪽 전체 레이아웃
+        holder.nickname_layout.setPadding(0,0,0,(int)(size.y*0.03)); //닉네임쪽 전체 레이아웃
         holder.two_review_nickname.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x/23); //닉네임
         holder.review_repair.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x/23); //수정
         holder.review_delete.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x/23); //삭제

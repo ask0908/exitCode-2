@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +26,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.psj.welfare.activity.LoginActivity;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
 
 import org.eazegraph.lib.models.BarModel;
 import org.json.JSONArray;
@@ -32,6 +35,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DetailReviewFragment extends Fragment {
 
@@ -58,6 +65,9 @@ public class DetailReviewFragment extends Fragment {
     private ArrayList<DetailReviewData> DetailReviewList; //리뷰 2개 보여주기 데이터
 
     boolean being_logout; //로그인 했는지 여부
+    private String SessionId = null; //세션 값
+    private String token = null; //토큰 값
+    private String status = null; //리뷰 삭제후 반환값
 
     String message, TotalCount, isBookmark, ReviewState; //액티비티에서 받아온 파싱 전 데이터
     String welf_id, welf_name; //혜택 id값, 혜택명
@@ -188,21 +198,126 @@ public class DetailReviewFragment extends Fragment {
             @Override
             public void repairClick(View v, int pos) { //리뷰 수정 버튼
 //                Toast.makeText(getActivity(),"수정",Toast.LENGTH_SHORT).show();
-                Log.e(TAG,"수정");
+//                Log.e(TAG,"수정");
+
+                Intent intent = new Intent(getContext(), DetailReviewWrite.class);
+                intent.putExtra("welfId", welf_id);
+                intent.putExtra("welf_name", welf_name);
+                intent.putExtra("review_id", DetailReviewList.get(pos).getReview_id());
+
+                intent.putExtra("Star_count", DetailReviewList.get(pos).getStar_count());
+                intent.putExtra("satisfaction", DetailReviewList.get(pos).getSatisfaction());
+                intent.putExtra("difficulty_level", DetailReviewList.get(pos).getDifficulty_level());
+                intent.putExtra("content", DetailReviewList.get(pos).getContent());
+
+                Log.e(TAG,welf_id +" "+ DetailReviewList.get(pos).getReview_id());
+//                Log.e(TAG,"satisfaction : "+ DetailReviewList.get(pos).getNickName());
+//                            Log.e(TAG,"difficulty_level : "+ list.get(position).getDifficulty_level());
+//                            Log.e(TAG,"content : "+ list.get(position).getContent());
+
+                intent.putExtra("review_edit", 100);
+                startActivity(intent);
             }
 
             @Override
             public void DeleteClick(View v, int pos) { //리뷰 삭제 버튼
 //                Toast.makeText(getActivity(),"삭제",Toast.LENGTH_SHORT).show();
-                Log.e(TAG,"삭제");
+                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
+                builder.setMessage("삭제하신 리뷰는 복구할 수 없어요.\n정말 리뷰를 삭제하시겠어요?")
+                        .setPositiveButton("예", (dialog, which) ->
+                        {
+                            // 리뷰 삭제 메서드 호출
+//                            Log.e(TAG,"삭제!!!");
+                            removeReview(DetailReviewList.get(pos).getReview_id(),"true");
+                        })
+                        .setNegativeButton("아니오", ((dialog, which) ->
+                        {
+                            Toast.makeText(getContext(), "리뷰 삭제를 취소했어요", Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                        }))
+                        .show();
+
             }
         });
     }
+
+    //리뷰 삭제하기
+    private void removeReview(int review_id, String is_remove)
+    {
+        ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
+
+        JSONObject jsonObject = new JSONObject();
+        try
+        {
+            jsonObject.put("id", review_id);
+            jsonObject.put("is_remove", is_remove);
+
+            Log.e(TAG, "삭제 api로 보낼 JSON 만들어진 것 테스트 : " + jsonObject.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
+        Call<String> call = apiInterface.deleteReview(token, jsonObject.toString());
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    removeResponseParse(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "리뷰 삭제 에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    //리뷰 삭제후 반환값 받기
+    private void removeResponseParse(String result)
+    {
+        try
+        {
+            JSONObject result_object = new JSONObject(result);
+            status = result_object.getString("statusCode");
+            message = result_object.getString("message");
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
+        if (status.equals("200"))
+        {
+            Toast.makeText(getContext(), "리뷰가 성공적으로 삭제됐어요", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(getContext(),DetailTabLayoutActivity.class);
+            //STACK 정리, 기존의 상세보기 페이지가 stack에 맨위에 있으면 기존 액티비티는 종료하고 새로운 액티비티를 띄운다
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra("being_id",true);
+            intent.putExtra("review_write",true);
+            intent.putExtra("welf_id",welf_id);
+//            getActivity().finish();
+            startActivity(intent);
+//            getMyReview(page);
+//            adapter.notifyDataSetChanged();
+        }
+    }
+
+
+
 
     //상세페이지 내용 데이터 받아오기
     private void SetData() {
         //액티비티에서 보내온 데이터 보여주기
         message = getArguments().getString("message"); //혜택 상세 데이터
+//        Log.e(TAG,message);
         TotalCount = getArguments().getString("TotalCount"); //리뷰 갯수
         isBookmark = getArguments().getString("isBookmark"); //북마크 여부
         welf_id = getArguments().getString("welf_id"); //혜택id
@@ -259,6 +374,9 @@ public class DetailReviewFragment extends Fragment {
 
                 review_id = jsonObject.getInt("review_id"); //리뷰 id
                 login_id = jsonObject.getInt("login_id"); //유저 id
+                String is_me = jsonObject.getString("is_me"); //내가 쓴 리뷰인지
+                boolean boolean_isme = Boolean.parseBoolean(is_me);
+//                Log.e(TAG, String.valueOf(boolean_isme));
                 nickName = jsonObject.getString("nickName"); //닉네임
                 content = jsonObject.getString("content"); //내용
                 star_count = jsonObject.getInt("star_count"); //별점
@@ -272,6 +390,7 @@ public class DetailReviewFragment extends Fragment {
                 DetailReviewData reviewData = new DetailReviewData();
                 reviewData.setReview_id(review_id);
                 reviewData.setLogin_id(login_id);
+                reviewData.setIs_me(boolean_isme);
                 reviewData.setNickName(nickName);
                 reviewData.setContent(content);
                 float star = (float)star_count;
@@ -343,11 +462,12 @@ public class DetailReviewFragment extends Fragment {
         SharedPreferences app_pref = getActivity().getSharedPreferences(getString(R.string.shared_name), 0);
         being_logout = app_pref.getBoolean("logout", false); //로그인 했는지 여부 확인하기
 
-//        if (!being_logout) { //로그인 했다면
-//            btn_review_write.setVisibility(View.VISIBLE);
-//        } else { //로그인 안했다면
-//            btn_review_write.setVisibility(View.GONE);
-//        }
+        SessionId = null;
+        token = null;
+        if (!being_logout) { //로그인 했다면
+            SessionId = app_pref.getString("sessionId", ""); //세션값 받아오기
+            token = app_pref.getString("token", ""); //토큰값 받아오기
+        }
     }
 
 
@@ -401,7 +521,7 @@ public class DetailReviewFragment extends Fragment {
         nothing_review_layout.setLayoutParams(params4); //리뷰 없음 레이아웃
 
         ViewGroup.LayoutParams params5 = look_allreview_layout.getLayoutParams();
-        params5.height = size.y / 12;
+        params5.height = size.y / 14;
         look_allreview_layout.setLayoutParams(params5); //리뷰 모두보기 레이아웃
 
 
@@ -415,5 +535,11 @@ public class DetailReviewFragment extends Fragment {
         satisfaction_imageview.setLayoutParams(params_imageview2); //타이틀 앞에 붙어있는 이미지
 
         review_recycler.setPadding(size.x / 30, size.x / 30, size.x / 30, size.x / 30); //레이아웃 패딩값 적용
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+//        Log.e(TAG,"testaskmdnmhfkjalshkdjf");
     }
 }

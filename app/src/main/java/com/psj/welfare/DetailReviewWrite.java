@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
 import com.psj.welfare.api.ApiClient;
@@ -59,6 +60,8 @@ public class DetailReviewWrite extends AppCompatActivity {
     Button btnRegister; //등록 버튼
     LinearLayout text_length_layout; //의견란 글자수 담을 레이아웃
     TextView text_length, text_length_textview; //의견란 현재 글자수, 의견란 최대 글자수
+
+    private Point size; //디스플레이 전체 크기 담기 위한 변수
 
     boolean being_id; //혜택 id값이 존재 하는지
     String welf_id, welf_name, level_value, satisfaction_value; //혜택 id값, 혜택명, 난이도, 만족도
@@ -112,8 +115,6 @@ public class DetailReviewWrite extends AppCompatActivity {
             //액티비티 스택을 추적하고싶을경우. 이런 경우엔 새액티비티를 시작할때마다 intent에 FLAG_ACTIVITY_REORDER_TO_FRONT 나 FLAG_ACTIVITY_PREVIOUS_IS_TOP 같은 플래그를 줄 수 있습니다.
         });
 
-        //별점 기본값 설정
-        review_star.setRating(3);
 
         //별점 갯수 변화 할 때 반응 하는 리스너
         review_star.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
@@ -239,9 +240,9 @@ public class DetailReviewWrite extends AppCompatActivity {
             }
             else
             {
-                if (level_value.equals("")) { //난이도 평가를 안했다면
+                if (level_value == null) { //난이도 평가를 안했다면
                     Toast.makeText(this, "신청 과정을 평가해 주세요", Toast.LENGTH_SHORT).show();
-                } else if (satisfaction_value.equals("")) { //만족도 평가를 안했다면
+                } else if (satisfaction_value == null) { //만족도 평가를 안했다면
                     Toast.makeText(this, "만족도를 평가해 주세요", Toast.LENGTH_SHORT).show();
                 } else if (review_content_edit.getText().toString().length() == 0) { //의견란이 공백이라면
                     Toast.makeText(this, "의견을 입력해 주세요", Toast.LENGTH_SHORT).show();
@@ -256,17 +257,19 @@ public class DetailReviewWrite extends AppCompatActivity {
     // 리뷰 수정 메서드
     private void editReview()
     {
-        String star_count = String.valueOf(review_star.getRating());
+
+        int star_count_int = (int)review_star.getRating(); //rating 값을 int 값으로
+//        String star_count = String.valueOf(review_star.getRating());
         String send_id = String.valueOf(written_review_id);
         ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
-        Log.e(TAG, "star_count : " + star_count + ", level_value : " + level_value + ", 만족도 : " + satisfaction_value + ", 리뷰의 idx : " + send_id +
-                ", 입력한 내용 : " + review_content_edit.getText().toString() + ", 토큰 : " + sqlite_token);
+//        Log.e(TAG, "star_count : " + star_count + ", level_value : " + level_value + ", 만족도 : " + satisfaction_value + ", 리뷰의 idx : " + send_id +
+//                ", 입력한 내용 : " + review_content_edit.getText().toString() + ", 토큰 : " + sqlite_token);
         JSONObject jsonObject = new JSONObject();
         try
         {
             jsonObject.put("id", send_id);
             jsonObject.put("content", review_content_edit.getText().toString());
-            jsonObject.put("star_count", star_count);
+            jsonObject.put("star_count", String.valueOf(star_count_int));
             jsonObject.put("difficulty_level", level_value);
             jsonObject.put("satisfaction", satisfaction_value);
 
@@ -346,11 +349,13 @@ public class DetailReviewWrite extends AppCompatActivity {
         }
     }
 
-    //의견 서버에 업로드 하기
+    //리뷰 등록 하기
     private void UploadOpinion() {
         int star_count_int = (int)review_star.getRating();
-        Log.e("star_count_int",String.valueOf(star_count_int));
+//        Log.e("star_count_int",String.valueOf(star_count_int));
         //리뷰 json값으로 만들기
+
+
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("welf_id", welf_id);
@@ -358,12 +363,12 @@ public class DetailReviewWrite extends AppCompatActivity {
             jsonObject.put("star_count", String.valueOf(star_count_int));
             jsonObject.put("difficulty_level", level_value);
             jsonObject.put("satisfaction", satisfaction_value);
+            Log.e(TAG,"jsonObject : " + jsonObject.toString());
+            Log.e(TAG,"token :" + token);
 
-            Log.e("test",jsonObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
 
         String URL = "https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/"; //연결하고자 하는 서버의 url, 반드시 /로 끝나야 함
         ApiInterfaceTest apiInterfaceTest = ApiClientTest.ApiClient(URL).create(ApiInterfaceTest.class); //레트로핏 인스턴스로 인터페이스 객체 구현
@@ -372,9 +377,11 @@ public class DetailReviewWrite extends AppCompatActivity {
             @Override
             public void onResponse(Call<String> call, retrofit2.Response<String> response) { //onResponse 통신 성공시 callback
 
+                Log.e(TAG,"response :" + response);
+
                 try {
                     JSONObject jsonObject = new JSONObject(response.body());
-                    Log.e("test",jsonObject.toString());
+//                    Log.e("test",jsonObject.toString());
                     Intent intent = new Intent(DetailReviewWrite.this,DetailTabLayoutActivity.class);
                     //STACK 정리, 기존의 상세보기 페이지가 stack에 맨위에 있으면 기존 액티비티는 종료하고 새로운 액티비티를 띄운다
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -384,10 +391,10 @@ public class DetailReviewWrite extends AppCompatActivity {
                     finish();
                     startActivity(intent);
 
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
             }
 
             @Override
@@ -420,13 +427,16 @@ public class DetailReviewWrite extends AppCompatActivity {
         text_length_layout = findViewById(R.id.text_length_layout); //의견란 글자수 담을 레이아웃
         text_length = findViewById(R.id.text_length); //의견란 현재 글자수
         text_length_textview = findViewById(R.id.text_length_textview); //의견란 최대 글자수
+
+        //별점 기본값 설정
+        review_star.setRating(3);
     }
 
     //버튼 및 텍스트의 사이즈를 동적으로 맞춤
     private void SetSize() {
         //size에 저장되는 가로/세로 길이의 단위는 픽셀(Pixel)입니다.
         Display display = getWindowManager().getDefaultDisplay();  // in Activity
-        Point size = new Point();
+        size = new Point();
         display.getRealSize(size); // or getSize(size)
 
         //디스플레이 값을 기준으로 버튼 텍스트 크기를 정함
@@ -499,8 +509,48 @@ public class DetailReviewWrite extends AppCompatActivity {
             checkStatus = intent.getIntExtra("review_edit", -1);
             written_review_id = intent.getIntExtra("review_id", -1); //혜택id
             String welf_name = intent.getStringExtra("welf_name");
+
+            float Star_count = intent.getFloatExtra("Star_count",-1);
+            String satisfaction = intent.getStringExtra("satisfaction");
+            String difficulty_level = intent.getStringExtra("difficulty_level");
+            String content = intent.getStringExtra("content");
+
+            //만족도
+            if(satisfaction.equals("도움 돼요")){
+                good_radiobutton.setBackgroundResource(R.drawable.radius_smallround_pink_border); //핑크색 테두리 버튼
+                good_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.color_text_pink)); //핑크색 글자
+                bad_radiobutton.setBackgroundResource(R.drawable.radius_smallround_lightgray_border); //그레이 테두리 버튼
+                bad_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorGray_B)); //그레이색 글자
+                satisfaction_value = "도움 돼요";
+            } else if(satisfaction.equals("도움 안 돼요")) {
+                bad_radiobutton.setBackgroundResource(R.drawable.radius_smallround_pink_border); //핑크색 테두리 버튼
+                bad_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.color_text_pink)); //핑크색 글자
+                good_radiobutton.setBackgroundResource(R.drawable.radius_smallround_lightgray_border); //그레이 테두리 버튼
+                good_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorGray_B)); //그레이색 글자
+                satisfaction_value = "도움 안 돼요";
+            }
+
+            //난이도
+            if(difficulty_level.equals("쉬워요")){
+                easy_radiobutton.setBackgroundResource(R.drawable.radius_smallround_pink_border); //핑크색 테두리 버튼
+                easy_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.color_text_pink)); //핑크색 글자
+                hard_radiobutton.setBackgroundResource(R.drawable.radius_smallround_lightgray_border); //그레이 테두리 버튼
+                hard_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorGray_B)); //그레이색 글자
+                level_value = "쉬워요";
+            } else if(difficulty_level.equals("어려워요")) {
+                hard_radiobutton.setBackgroundResource(R.drawable.radius_smallround_pink_border); //핑크색 테두리 버튼
+                hard_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.color_text_pink)); //핑크색 글자
+                easy_radiobutton.setBackgroundResource(R.drawable.radius_smallround_lightgray_border); //그레이 테두리 버튼
+                easy_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorGray_B)); //그레이색 글자
+                level_value = "어려워요";
+            }
+
+
+            review_star.setRating(Star_count); //별점
+            review_content_edit.setText(content); //난이도
+
             BenefitTitle.setText(welf_name);
-            Log.e(TAG, "checkStatus : " + checkStatus + ", 내가 작성한 리뷰 id : " + written_review_id + ", 내가 작성한 리뷰의 혜택명 : " + welf_name);
+//            Log.e(TAG, "checkStatus : " + checkStatus + ", 내가 작성한 리뷰 id : " + written_review_id + ", 내가 작성한 리뷰의 혜택명 : " + welf_name);
         }
         else
         {
@@ -508,7 +558,7 @@ public class DetailReviewWrite extends AppCompatActivity {
             welf_id = intent.getStringExtra("welf_id"); //혜택id
             welf_name = intent.getStringExtra("welf_name"); //혜택명
             BenefitTitle.setText(welf_name);
-            Log.e(TAG, "checkStatus = " + checkStatus + ", welf_id : " + welf_id);
+//            Log.e(TAG, "checkStatus = " + checkStatus + ", welf_id : " + welf_id);
         }
         /* if (being_id) 부분 때문에 혜택이름과 id를 받아오지 못해서 삭제했습니다 */
     }
@@ -519,17 +569,25 @@ public class DetailReviewWrite extends AppCompatActivity {
 
         AlertDialog.Builder reviewDialog = new AlertDialog.Builder(DetailReviewWrite.this);
         View dialogview = getLayoutInflater().inflate(R.layout.custom_tutorial_dialog,null); //다이얼로그의 xml뷰 담기
-        Button BtbCancle = dialogview.findViewById(R.id.BtbCancle); //취소 버튼
-        Button BtnBack = dialogview.findViewById(R.id.BtnBack); //뒤로 가기 버튼
+        Button BtbCancle = dialogview.findViewById(R.id.BtbCancle); //계속 작성 버튼
+        Button BtnBack = dialogview.findViewById(R.id.BtnBack); //작성 취소 버튼
         TextView delete_dialog_firsttext = dialogview.findViewById(R.id.delete_dialog_firsttext);
+        TextView delete_dialog_secondtext = dialogview.findViewById(R.id.delete_dialog_secondtext);
+        ConstraintLayout review_dialog_layout = dialogview.findViewById(R.id.review_dialog_layout);
 
         delete_dialog_firsttext.setText("이 화면에서 벗어날 경우\n리뷰 작성이 취소됩니다");
+        delete_dialog_secondtext.setText("리뷰 작성을 취소하시겠습니까?");
+        BtbCancle.setText("계속작성");
+        BtnBack.setText("작성취소");
+
+        review_dialog_layout.getLayoutParams().width = (int) (size.x*0.9);
+        review_dialog_layout.getLayoutParams().height = (int) (size.y*0.26);
 
         reviewDialog.setView(dialogview); //alertdialog에 view 넣기
         final AlertDialog alertDialog = reviewDialog.create(); //다이얼로그 객체로 만들기
         alertDialog.show(); //다이얼로그 보여주기
 
-        //취소 버튼
+        //계속 작성 버튼
         BtbCancle.setOnClickListener(v->{
             alertDialog.dismiss(); //다이얼로그 사라지기
         });

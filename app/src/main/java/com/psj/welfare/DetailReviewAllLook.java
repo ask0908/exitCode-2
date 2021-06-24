@@ -9,6 +9,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +17,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,6 +29,7 @@ import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DetailReviewAllLook extends AppCompatActivity {
 
@@ -49,6 +54,8 @@ public class DetailReviewAllLook extends AppCompatActivity {
     private boolean being_logout; //로그인 했는지 여부 확인하기
     private String SessionId = null; //세션 값
     private String token = null; //토큰 값
+    private String status = null; //리뷰 삭제후 반환값
+    private String message; //리뷰 삭제후 받을 메세지
 
     private String filter = "newest";
 
@@ -89,15 +96,102 @@ public class DetailReviewAllLook extends AppCompatActivity {
             @Override
             public void repairClick(View v, int pos) { //리뷰 수정 버튼
 //                Toast.makeText(DetailReviewAllLook.this,"수정",Toast.LENGTH_SHORT).show();
-                Log.e(TAG,"수정");
+//                Log.e(TAG,"수정");
             }
 
             @Override
             public void DeleteClick(View v, int pos) { //리뷰 삭제 버튼
 //                Toast.makeText(DetailReviewAllLook.this,"삭제",Toast.LENGTH_SHORT).show();
-                Log.e(TAG,"삭제");
+//                Log.e(TAG,"삭제");
+                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(DetailReviewAllLook.this);
+                builder.setMessage("삭제하신 리뷰는 복구할 수 없어요.\n정말 리뷰를 삭제하시겠어요?")
+                        .setPositiveButton("예", (dialog, which) ->
+                        {
+                            // 리뷰 삭제 메서드 호출
+//                            Log.e(TAG,"getReview_id : " + allreviewList.get(pos).getReview_id());
+                            removeReview(allreviewList.get(pos).getReview_id(),"true");
+
+                        })
+                        .setNegativeButton("아니오", ((dialog, which) ->
+                        {
+                            Toast.makeText(DetailReviewAllLook.this, "리뷰 삭제를 취소했어요", Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                        }))
+                        .show();
             }
         });
+    }
+
+    //리뷰 삭제하기
+    private void removeReview(int review_id, String is_remove)
+    {
+        ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
+
+        JSONObject jsonObject = new JSONObject();
+        try
+        {
+            jsonObject.put("id", review_id);
+            jsonObject.put("is_remove", is_remove);
+
+            Log.e(TAG, "삭제 api로 보낼 JSON 만들어진 것 테스트 : " + jsonObject.toString());
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
+        Call<String> call = apiInterface.deleteReview(token, jsonObject.toString());
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    removeResponseParse(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "리뷰 삭제 에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    //리뷰 삭제후 반환값 받기
+    private void removeResponseParse(String result)
+    {
+
+        try
+        {
+            JSONObject result_object = new JSONObject(result);
+            status = result_object.getString("statusCode");
+            message = result_object.getString("message");
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
+        if (status.equals("200"))
+        {
+            Toast.makeText(DetailReviewAllLook.this, "리뷰가 성공적으로 삭제됐어요", Toast.LENGTH_SHORT).show();
+//        Log.e(TAG,"tttt");
+            LoadReview();
+
+
+
+//            Intent intent = new Intent(DetailReviewAllLook.this,DetailTabLayoutActivity.class);
+//            //STACK 정리, 기존의 상세보기 페이지가 stack에 맨위에 있으면 기존 액티비티는 종료하고 새로운 액티비티를 띄운다
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//            intent.putExtra("being_id",true);
+//            intent.putExtra("review_write",true);
+//            intent.putExtra("welf_id",welf_id);
+//            finish();
+//            startActivity(intent);
+        }
     }
 
 
@@ -129,7 +223,7 @@ public class DetailReviewAllLook extends AppCompatActivity {
 
     //서버로부터 리뷰 데이터 가져오기
     private void LoadReview() {
-
+//        allreviewList.clear();
         //ApiInterfaceTest apiInterfaceTest = ApiClient.getApiClient().create(ApiInterfaceTest.class); //레트로핏 인스턴스로 인터페이스 객체 구현
         ApiInterfaceTest apiInterfaceTest = ApiClientTest.ApiClient().create(ApiInterfaceTest.class); //레트로핏 인스턴스로 인터페이스 객체 구현
         Call<String> call = apiInterfaceTest.ReviewAllLook(token,filter,welf_id); //인터페이스에서 사용할 메소드 선언
@@ -169,13 +263,15 @@ public class DetailReviewAllLook extends AppCompatActivity {
             for (int i = 0; i < jsonArray.length(); i++)
             {
                 JSONObject inner_json = jsonArray.getJSONObject(i);
+//                Log.e(TAG,"inner_json : " + inner_json);
+
                 String id = inner_json.getString("id");
                 String writer = inner_json.getString("writer");
                 String is_me = inner_json.getString("is_me"); //내가 쓴 리뷰인지
                 boolean boolean_isme = Boolean.parseBoolean(is_me);
 //                Log.e(TAG,"is_me : " + is_me);
                 String content = inner_json.getString("content");
-                int star_count = Integer.parseInt(inner_json.getString("star_count"));
+                String star_count = inner_json.getString("star_count");
                 String difficulty_level = inner_json.getString("difficulty_level");
                 String satisfaction = inner_json.getString("satisfaction");
                 String create_date = inner_json.getString("create_date");
@@ -185,12 +281,13 @@ public class DetailReviewAllLook extends AppCompatActivity {
 //                Log.e(TAG,"content : " + content);
 
                 DetailReviewData ReviewData = new DetailReviewData();
-//                ReviewData.setReview_id(review_id);
+                ReviewData.setReview_id(Integer.parseInt(id));
 //                ReviewData.setLogin_id(login_id);
                 ReviewData.setIs_me(boolean_isme);
                 ReviewData.setNickName(writer);
                 ReviewData.setContent(content);
-                float star = (float)star_count;
+                Log.e(TAG,"star_count : " + star_count);
+                float star = Float.parseFloat(star_count);
                 ReviewData.setStar_count(star);
                 ReviewData.setDifficulty_level(difficulty_level);
                 ReviewData.setSatisfaction(satisfaction);

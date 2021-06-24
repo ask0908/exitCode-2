@@ -929,6 +929,7 @@ public interface ApiInterface
      *     "message": "리뷰 삭제가 완료되었습니다."
      * }
      */
+    //@DELETE는 @Body를 쓸수 없다 그래서 @HTTP를 사용(@HTTP는 @Body를 쓸 수 있다)
     @HTTP(method = "DELETE", path = "https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/review", hasBody = true)
     Call<String> deleteReview(
             @Header("logintoken") String token,

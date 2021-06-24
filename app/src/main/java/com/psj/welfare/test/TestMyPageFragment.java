@@ -128,7 +128,7 @@ public class TestMyPageFragment extends Fragment
 
         binding.bookmarkTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.02)); //"북마크 혜택" 텍스트
         binding.recentWelfareTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.02)); //"최근본 혜택" 텍스트
-        binding.writtenReviewTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.02)); //"작선한 리뷰" 텍스트
+        binding.writtenReviewTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.02)); //"작성한 리뷰" 텍스트
 
         binding.editInterestTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"관심사 선택"
         binding.editInterestTextview.setPadding((int) (size.x * 0.04),(int) (size.y * 0.02),(int) (size.x * 0.04),(int) (size.y * 0.02));
@@ -450,7 +450,7 @@ public class TestMyPageFragment extends Fragment
         }
         ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
         Call<String> call = apiInterface.editNickname(sqlite_token, nickname, type);
-        Log.e(TAG, "token : " + sqlite_token + ", 변경할 닉네임 : " + nickname);
+//        Log.e(TAG, "token : " + sqlite_token + ", 변경할 닉네임 : " + nickname);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -490,7 +490,7 @@ public class TestMyPageFragment extends Fragment
             e.printStackTrace();
         }
 
-        Log.e(TAG, "닉네임 변경 요청 후 서버에서 받은 message : " + message);
+//        Log.e(TAG, "닉네임 변경 요청 후 서버에서 받은 message : " + message);
         if (message.equals("계정 정보가 존재하지 않습니다.") || message.equals("data is empty"))
         {
             //

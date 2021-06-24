@@ -9,6 +9,24 @@ public class WrittenReviewItem
     private String create_date;
     private float star_count;
     private int review_id;
+    private String difficulty_level; //난이도
+    private String satisfaction; //만족도
+
+    public String getDifficulty_level() {
+        return difficulty_level;
+    }
+
+    public void setDifficulty_level(String difficulty_level) {
+        this.difficulty_level = difficulty_level;
+    }
+
+    public String getSatisfaction() {
+        return satisfaction;
+    }
+
+    public void setSatisfaction(String satisfaction) {
+        this.satisfaction = satisfaction;
+    }
 
     public String getWelf_name()
     {

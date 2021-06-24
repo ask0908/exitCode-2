@@ -23,6 +23,7 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -72,6 +73,8 @@ public class SplashActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);         // 상태바(상태표시줄) 글자색 검정색으로 바꾸기
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorMainWhite));    // 상태바(상태표시줄) 배경 흰색으로 설정
 
         intent = getIntent();
 
@@ -96,7 +99,7 @@ public class SplashActivity extends AppCompatActivity
                     return;
                 }
                 token = task.getResult().getToken();
-                Log.e(TAG, "스플래시 화면에서 받은 fcm token : " + token);
+//                Log.e(TAG, "스플래시 화면에서 받은 fcm token : " + token);
                 editor.putString("fcm_token", token);
                 editor.apply();
             }
@@ -108,9 +111,9 @@ public class SplashActivity extends AppCompatActivity
             @Override
             public void onComplete(@NonNull Task<InstallationTokenResult> task)
             {
-                Log.e(TAG, "task : " + task);
-                Log.e(TAG, "task.getResult() : " + task.getResult());
-                Log.e(TAG, "task.getResult().getToken() : " + task.getResult().getToken());
+//                Log.e(TAG, "task : " + task);
+//                Log.e(TAG, "task.getResult() : " + task.getResult());
+//                Log.e(TAG, "task.getResult().getToken() : " + task.getResult().getToken());
             }
         });
 
@@ -185,14 +188,14 @@ public class SplashActivity extends AppCompatActivity
                 {
                     isPushClicked = true;
                     Handler handler = new Handler();
-                    handler.postDelayed(new SplashHandler(), 1000);
+                    handler.postDelayed(new SplashHandler(), 1500);
                 }
             }
             else
             {
                 //일반적으로 앱을 실행시켰을 때
                 Handler handler = new Handler();
-                handler.postDelayed(new NormalHandler(), 1000);
+                handler.postDelayed(new NormalHandler(), 1500);
             }
         }
         super.onNewIntent(intent);

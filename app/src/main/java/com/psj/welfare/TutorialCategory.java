@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 
@@ -26,6 +27,8 @@ public class TutorialCategory extends AppCompatActivity {
     private Button BtnGenderMan, BtnGenderWoman; //남성 선택 버튼, 여성 선택 버튼
     private Button BtnCategory; //다음 페이지 가기 버튼
     private NumberPicker PickerHome; //지역 선택 picker
+
+    private Point size; //디스플레이 전체 크기 담기 위한 변수
 
     private TextView TextAge; //나이대
     private String [] PickerString = {"서울","강원","광주","경기","경남","경북","대구","대전","부산","세종","울산","인천","전남","전북","제주","충남","충북"}; //NumberPicker에 넣을 값
@@ -131,7 +134,7 @@ public class TutorialCategory extends AppCompatActivity {
         //size에 저장되는 가로/세로 길이의 단위는 픽셀(Pixel)입니다.
         Display display = getWindowManager().getDefaultDisplay();  // in Activity
         /* getActivity().getWindowManager().getDefaultDisplay() */ // in Fragment
-        Point size = new Point();
+        size = new Point();
         display.getRealSize(size); // or getSize(size)
 
         //디스플레이 값을 기준으로 버튼 텍스트 크기를 정함
@@ -150,6 +153,10 @@ public class TutorialCategory extends AppCompatActivity {
         View dialogview = getLayoutInflater().inflate(R.layout.custom_tutorial_dialog,null); //다이얼로그의 xml뷰 담기
         Button BtbCancle = dialogview.findViewById(R.id.BtbCancle); //취소 버튼
         Button BtnBack = dialogview.findViewById(R.id.BtnBack); //뒤로 가기 버튼
+        ConstraintLayout review_dialog_layout = dialogview.findViewById(R.id.review_dialog_layout);
+
+        review_dialog_layout.getLayoutParams().width = (int) (size.x*0.9);
+        review_dialog_layout.getLayoutParams().height = (int) (size.y*0.26);
 
         TutorialDialog.setView(dialogview); //alertdialog에 view 넣기
         final AlertDialog alertDialog = TutorialDialog.create(); //다이얼로그 객체로 만들기

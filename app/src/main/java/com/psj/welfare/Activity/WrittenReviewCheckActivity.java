@@ -71,6 +71,7 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
 
     // 리사이클러뷰에서 보여줄 내용
     String welf_name, writer, content, create_date;
+    private String satisfaction, difficulty_level; //만족도, 난이도
     int welf_id, review_id;
     String star_count;
     // 페이징에 필요한 내용
@@ -144,7 +145,7 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
             {
                 if (s != null)
                 {
-                    Log.e(TAG, "액티비티에서 내가 작성한 리뷰 가져온 결과 : " + s);
+//                    Log.e(TAG, "액티비티에서 내가 작성한 리뷰 가져온 결과 : " + s);
                     parsingResult(s);
                     dialog.dismiss();
                 }
@@ -164,6 +165,7 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
             total = jsonObject.getString("total");
             totalPage = jsonObject.getString("totalPage");
             JSONArray jsonArray = jsonObject.getJSONArray("message");
+//            Log.e(TAG,"jsonArray : " + jsonArray);
             for (int i = 0; i < jsonArray.length(); i++)
             {
                 JSONObject inner_json = jsonArray.getJSONObject(i);
@@ -174,6 +176,11 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
                 create_date = inner_json.getString("create_date");
                 welf_id = inner_json.getInt("welf_id");
                 review_id = inner_json.getInt("review_id");
+                satisfaction = inner_json.getString("satisfaction");
+                difficulty_level = inner_json.getString("difficulty_level");
+
+//                Log.e(TAG,"welf_name : " + welf_name);
+//                Log.e(TAG,"star_count : " + star_count);
 
                 WrittenReviewItem item = new WrittenReviewItem();
                 item.setWelf_name(welf_name);
@@ -183,6 +190,8 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
                 item.setCreate_date(create_date);
                 item.setWelf_id(welf_id);
                 item.setReview_id(review_id);
+                item.setSatisfaction(satisfaction);
+                item.setDifficulty_level(difficulty_level);
                 list.add(item);
             }
         }
@@ -237,8 +246,8 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
             int welfId = list.get(pos).getWelf_id();
             int reviewId = list.get(pos).getReview_id();
             float star_counts = list.get(pos).getStar_count();
-            Log.e(TAG, "이름 : " + name + ", 작성자 : " + writer + ", 작성일 : " + date + ", welf_id : " + welfId + ", 평점 : " + star_counts
-                    + ", 리뷰의 idx : " + reviewId);
+//            Log.e(TAG, "이름 : " + name + ", 작성자 : " + writer + ", 작성일 : " + date + ", welf_id : " + welfId + ", 평점 : " + star_counts
+//                    + ", 리뷰의 idx : " + reviewId);
             Intent intent = new Intent(this, DetailTabLayoutActivity.class);
             intent.putExtra("welf_id", String.valueOf(welfId));
             intent.putExtra("review_id", String.valueOf(reviewId));

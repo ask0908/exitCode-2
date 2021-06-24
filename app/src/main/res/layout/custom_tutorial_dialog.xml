@@ -4,48 +4,54 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="#FFFFFF"
     android:layout_gravity="center"
-    android:layout_width="340dp"
-    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     tools:context=".CustomTutorialDialog"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:gravity="center">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="215dp"
-        android:orientation="vertical">
+        android:id="@+id/review_dialog_layout"
+        android:layout_width="340dp"
+        android:layout_height="200dp">
 
         <TextView
             android:id="@+id/delete_dialog_firsttext"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/delete_dialog_secondtext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#595959"
-            android:layout_margin="35dp"
+            android:layout_marginTop="4dp"
             android:gravity="center"
             android:text="이 화면에서 벗어날 경우\n데이터가 사라지며\n미리보기를 다시 할 수 없습니다"
-            android:textSize="17dp" />
+            android:textSize="18dp" />
 
         <TextView
-            android:id="@+id/delete_dialog_thirdtext"
+            android:id="@+id/delete_dialog_secondtext"
             app:layout_constraintTop_toBottomOf="@id/delete_dialog_firsttext"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginTop="13dp"
+            app:layout_constraintBottom_toTopOf="@+id/button_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#595959"
             android:textStyle="bold"
+            android:layout_marginBottom="4dp"
             android:text="미리보기를 건너뛰시겠습니까?"
-            android:textSize="18dp"/>
+            android:textSize="19dp"/>
 
         <LinearLayout
+            android:id="@+id/button_layout"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="1"
+            app:layout_constraintHeight_percent="0.23"
             android:orientation="horizontal"
             android:weightSum="2"
             android:layout_gravity="right">

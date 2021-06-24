@@ -283,6 +283,7 @@ public class DetailTabLayoutActivity extends AppCompatActivity
         welf_id = intent.getStringExtra("welf_id");
 //        Log.e(TAG, "welf_id : " + welf_id);
         review_write = intent.getBooleanExtra("review_write", false); //리뷰 작성 했는지
+
     }
 
     //북마크 하기

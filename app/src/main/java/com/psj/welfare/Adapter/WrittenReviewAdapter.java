@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Point;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -126,8 +125,19 @@ public class WrittenReviewAdapter extends RecyclerView.Adapter<WrittenReviewAdap
                             intent.putExtra("welfId", list.get(position).getWelf_id());
                             intent.putExtra("welf_name", list.get(position).getWelf_name());
                             intent.putExtra("review_id", list.get(position).getReview_id());
-                            intent.putExtra("review_edit", 100);
-                            Log.e(TAG, "수정할 혜택의 welf_id : " + list.get(position).getWelf_id() + ", welf_name : " + list.get(position).getWelf_name());
+
+                            intent.putExtra("Star_count", list.get(position).getStar_count());
+                            intent.putExtra("satisfaction", list.get(position).getSatisfaction());
+                            intent.putExtra("difficulty_level", list.get(position).getDifficulty_level());
+                            intent.putExtra("content", list.get(position).getContent());
+
+//                            Log.e(TAG,"Star_count : "+ list.get(position).getStar_count());
+//                            Log.e(TAG,"satisfaction : "+ list.get(position).getSatisfaction());
+//                            Log.e(TAG,"difficulty_level : "+ list.get(position).getDifficulty_level());
+//                            Log.e(TAG,"content : "+ list.get(position).getContent());
+
+                           intent.putExtra("review_edit", 100);
+//                            Log.e(TAG, "수정할 혜택의 welf_id : " + list.get(position).getWelf_id() + ", welf_name : " + list.get(position).getWelf_name());
                             context.startActivity(intent);
                             notifyDataSetChanged();
                             break;
