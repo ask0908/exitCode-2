@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
@@ -29,9 +30,11 @@ public class DetailReviewAllLook extends AppCompatActivity {
 
     private final String TAG = DetailReviewAllLook.class.getSimpleName();
 
-    ConstraintLayout title_layout,filter_layout; //타이틀 레이아웃, 리뷰 필터 레이아웃
-    ImageButton back_btn,filter_icon; //뒤로가기 버튼, 필터링 버튼
-    TextView benefit_title,review_count,filter_text; //혜택명, 리뷰 갯 수, 필터 텍스트
+    private ConstraintLayout filter_button_layout; //리뷰 필터 버튼쪽 레이아웃
+    private ConstraintLayout title_layout,filter_layout; //타이틀 레이아웃, 리뷰 필터 레이아웃
+    private ImageButton back_btn,filter_icon; //뒤로가기 버튼, 필터링 버튼
+    private TextView benefit_title,review_count,filter_text; //혜택명, 리뷰 갯 수, 필터 텍스트
+    private Point size; //디스플레이 크기를 담을 변수
 
     //리사이클러뷰 사용하기 위한 변수 선언
     private RecyclerView allreview_recycler; //리사이클러뷰 선언
@@ -39,14 +42,15 @@ public class DetailReviewAllLook extends AppCompatActivity {
     private RecyclerView.LayoutManager allreview_layoutManager; //레이아웃 매니저
     private ArrayList<DetailReviewData> allreviewList; //리뷰 2개 보여주기 데이터
 
-    boolean being_id; //혜택 id값이 존재 하는지
-    String welf_id; //혜택 아이디 값
-    String welf_name; //혜택 명
+    private boolean being_id; //혜택 id값이 존재 하는지
+    private String welf_id; //혜택 아이디 값
+    private String welf_name; //혜택 명
 
-    boolean being_logout; //로그인 했는지 여부 확인하기
-    String SessionId = null; //세션 값
-    String token = null; //토큰 값
+    private boolean being_logout; //로그인 했는지 여부 확인하기
+    private String SessionId = null; //세션 값
+    private String token = null; //토큰 값
 
+    private String filter = "newest";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +78,25 @@ public class DetailReviewAllLook extends AppCompatActivity {
         });
 
         //리뷰 필터 아이콘
+        filter_button_layout.setOnClickListener(v -> {
+            setReview_filter(); //리뷰 필터
+        });
         filter_icon.setOnClickListener(v -> {
+            setReview_filter(); //리뷰 필터
+        });
 
+        allreview_adapter.setOnItemClickListener(new DetailReviewAllAdapter.ReviewAllClickListener() {
+            @Override
+            public void repairClick(View v, int pos) { //리뷰 수정 버튼
+//                Toast.makeText(DetailReviewAllLook.this,"수정",Toast.LENGTH_SHORT).show();
+                Log.e(TAG,"수정");
+            }
+
+            @Override
+            public void DeleteClick(View v, int pos) { //리뷰 삭제 버튼
+//                Toast.makeText(DetailReviewAllLook.this,"삭제",Toast.LENGTH_SHORT).show();
+                Log.e(TAG,"삭제");
+            }
         });
     }
 
@@ -111,7 +132,7 @@ public class DetailReviewAllLook extends AppCompatActivity {
 
         //ApiInterfaceTest apiInterfaceTest = ApiClient.getApiClient().create(ApiInterfaceTest.class); //레트로핏 인스턴스로 인터페이스 객체 구현
         ApiInterfaceTest apiInterfaceTest = ApiClientTest.ApiClient().create(ApiInterfaceTest.class); //레트로핏 인스턴스로 인터페이스 객체 구현
-        Call<String> call = apiInterfaceTest.ReviewAllLook(token,welf_id); //인터페이스에서 사용할 메소드 선언
+        Call<String> call = apiInterfaceTest.ReviewAllLook(token,filter,welf_id); //인터페이스에서 사용할 메소드 선언
         call.enqueue(new Callback<String>() { //enqueue로 비동기 통신 실행, 통신 완료 후 이벤트 처리 위한 callback 리스너 등록
             @Override
             public void onResponse(Call<String> call, retrofit2.Response<String> response) { //onResponse 통신 성공시 callback
@@ -144,12 +165,15 @@ public class DetailReviewAllLook extends AppCompatActivity {
         {
             JSONObject jsonObject = new JSONObject(result);
             JSONArray jsonArray = jsonObject.getJSONArray("message");
-
+            review_count.setText("사용자 리뷰 " + jsonArray.length() + "개");
             for (int i = 0; i < jsonArray.length(); i++)
             {
                 JSONObject inner_json = jsonArray.getJSONObject(i);
                 String id = inner_json.getString("id");
                 String writer = inner_json.getString("writer");
+                String is_me = inner_json.getString("is_me"); //내가 쓴 리뷰인지
+                boolean boolean_isme = Boolean.parseBoolean(is_me);
+//                Log.e(TAG,"is_me : " + is_me);
                 String content = inner_json.getString("content");
                 int star_count = Integer.parseInt(inner_json.getString("star_count"));
                 String difficulty_level = inner_json.getString("difficulty_level");
@@ -163,6 +187,7 @@ public class DetailReviewAllLook extends AppCompatActivity {
                 DetailReviewData ReviewData = new DetailReviewData();
 //                ReviewData.setReview_id(review_id);
 //                ReviewData.setLogin_id(login_id);
+                ReviewData.setIs_me(boolean_isme);
                 ReviewData.setNickName(writer);
                 ReviewData.setContent(content);
                 float star = (float)star_count;
@@ -189,6 +214,7 @@ public class DetailReviewAllLook extends AppCompatActivity {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);         // 상태바(상태표시줄) 글자색 검정색으로 바꾸기
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorMainWhite));    // 상태바(상태표시줄) 배경 흰색으로 설정
 
+        filter_button_layout = findViewById(R.id.filter_button_layout); //리뷰 필터 버튼쪽 레이아웃
         title_layout = findViewById(R.id.title_layout); //타이틀 레이아웃
         filter_layout = findViewById(R.id.filter_layout); //리뷰 필터 레이아웃
         back_btn = findViewById(R.id.back_btn); //뒤로가기 버튼
@@ -214,7 +240,7 @@ public class DetailReviewAllLook extends AppCompatActivity {
         //size에 저장되는 가로/세로 길이의 단위는 픽셀(Pixel)입니다.
         ScreenSize screen = new ScreenSize();
         //context의 스크린 사이즈를 구함
-        Point size = screen.getScreenSize(DetailReviewAllLook.this);
+        size = screen.getScreenSize(DetailReviewAllLook.this);
         //디스플레이 값을 기준으로 버튼 텍스트 크기를 정함
 
         title_layout.getLayoutParams().height = size.y/14; //타이틀 레이아웃
@@ -224,12 +250,56 @@ public class DetailReviewAllLook extends AppCompatActivity {
         back_btn.getLayoutParams().height = size.x /16; //뒤로 가기 버튼
         filter_icon.getLayoutParams().width = size.x /20; //필터링 버튼
         filter_icon.getLayoutParams().height = size.x /20; //필터링 버튼
-        filter_icon.setPadding((int)(size.x*0.03),(int)(size.x*0.03),(int)(size.x*0.03),(int)(size.x*0.03)); //필터링 버튼
 
         benefit_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x / 18); //혜택명
         review_count.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x / 24); //리뷰 수
         filter_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x / 24); //필터 텍스트
 
         allreview_recycler.setPadding(size.x / 30, (int)(size.x*0.01), size.x / 30, size.x / 30); //레이아웃 패딩값 적용
+    }
+
+    //리뷰 필터
+    private void setReview_filter(){
+        AlertDialog.Builder TutorialDialog = new AlertDialog.Builder(DetailReviewAllLook.this);
+        View dialogview = getLayoutInflater().inflate(R.layout.custom_reviewfilter_dialog,null); //다이얼로그의 xml뷰 담기
+
+        ConstraintLayout reviewfilter_dialog = dialogview.findViewById(R.id.reviewfilter_dialog); //다이얼로그 전체 크기
+        TextView newest = dialogview.findViewById(R.id.newest); //최신 순
+        TextView high_star = dialogview.findViewById(R.id.high_star); //별점 높은 순
+        TextView low_star = dialogview.findViewById(R.id.low_star); //별점 낮은 순
+
+        TutorialDialog.setView(dialogview); //alertdialog에 view 넣기
+        final AlertDialog alertDialog = TutorialDialog.create(); //다이얼로그 객체로 만들기
+        alertDialog.show(); //다이얼로그 보여주기
+
+        reviewfilter_dialog.getLayoutParams().height = (int) (size.y*0.3); //다이얼로그 전체 레이아웃 동적으로 크기
+        newest.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.04));
+        high_star.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.04));
+        low_star.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.04));
+
+        newest.setOnClickListener(v->{ //리뷰 최신순
+            filter = "newest";
+            allreviewList.clear();
+            //서버로부터 리뷰 데이터 가져오기
+            LoadReview();
+            alertDialog.dismiss();
+        });
+
+        high_star.setOnClickListener(v->{ //리뷰 최신순
+            filter = "high_star";
+            allreviewList.clear();
+            //서버로부터 리뷰 데이터 가져오기
+            LoadReview();
+            alertDialog.dismiss();
+        });
+
+        low_star.setOnClickListener(v->{ //리뷰 최신순
+            filter = "low_star";
+            allreviewList.clear();
+            //서버로부터 리뷰 데이터 가져오기
+            LoadReview();
+            alertDialog.dismiss();
+        });
+
     }
 }

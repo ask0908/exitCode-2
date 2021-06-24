@@ -1,16 +1,20 @@
 package com.psj.welfare.custom;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
 import com.psj.welfare.R;
+import com.psj.welfare.ScreenSize;
 
 /* 회원탈퇴 다이얼로그. "선택해 주세요"를 누르면 나오는 라디오 버튼 다이얼로그다 */
 public class CustomWithdrawDialog
@@ -18,6 +22,7 @@ public class CustomWithdrawDialog
     private Context context;
     private MyWithdrawListener listener;
     private SharedPreferences sharedPreferences;
+//    private ConstraintLayout withdraw_dialog; //다이얼로그 전체 레이아웃
 
     public void setOnWithdrawListener(MyWithdrawListener listener)
     {
@@ -35,16 +40,24 @@ public class CustomWithdrawDialog
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.withdraw_dialog);
         WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+
         params.width = WindowManager.LayoutParams.MATCH_PARENT;
         params.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        dialog.getWindow().setAttributes(params);
+        dialog.getWindow().setAttributes(params); //다이얼로그 크기를 정함
         dialog.show();
 
-        final RadioGroup radioGroup = dialog.findViewById(R.id.withdraw_radiogroup);    // 라디오 버튼 사용 위한 라디오 그룹
-        final RadioButton first_reason = dialog.findViewById(R.id.first_reason);        // 나한테 맞는 혜택이 없어서
-        final RadioButton second_reason = dialog.findViewById(R.id.second_reason);      // 보는 게 어려워서
-        final RadioButton third_reason = dialog.findViewById(R.id.third_reason);        // 사용하기 불편해서
-        final RadioButton fourth_reason = dialog.findViewById(R.id.fourth_reason);      // 기타
+        ConstraintLayout withdraw_dialog = dialog.findViewById(R.id.withdraw_dialog); //다이얼로그 전체 레이아웃
+        RadioGroup radioGroup = dialog.findViewById(R.id.withdraw_radiogroup);    // 라디오 버튼 사용 위한 라디오 그룹
+        RadioButton first_reason = dialog.findViewById(R.id.first_reason);        // 나한테 맞는 혜택이 없어서
+        RadioButton second_reason = dialog.findViewById(R.id.second_reason);      // 보는 게 어려워서
+        RadioButton third_reason = dialog.findViewById(R.id.third_reason);        // 사용하기 불편해서
+        RadioButton fourth_reason = dialog.findViewById(R.id.fourth_reason);      // 기타
+
+        //size에 저장되는 가로/세로 길이의 단위는 픽셀(Pixel)입니다. (activity 화면 기준)
+        ScreenSize screen = new ScreenSize();
+        //context의 스크린 사이즈를 구함
+        Point size = screen.getScreenSize((Activity) context);
+        withdraw_dialog.getLayoutParams().height = (int) (size.y*0.37); //다이얼로그 전체 레이아웃 동적으로 크기
 
         // 라디오 버튼 글자 크기 조절
         first_reason.setTextAppearance(android.R.style.TextAppearance_DeviceDefault_Medium);
@@ -139,5 +152,6 @@ public class CustomWithdrawDialog
         });
 
     }
+
 
 }

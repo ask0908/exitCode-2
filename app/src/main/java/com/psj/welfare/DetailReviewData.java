@@ -4,6 +4,7 @@ public class DetailReviewData {
 
     private int review_id; //리뷰 아이디값
     private int login_id; //로그인 아이디값
+    private boolean is_me; //내가 쓴 리뷰인지
     private String nickName; //닉네임
     private String content; // 내용
     private float star_count; //별점
@@ -14,15 +15,13 @@ public class DetailReviewData {
     public DetailReviewData() {
     }
 
-    public DetailReviewData(int review_id, int login_id, String nickName, String content, float star_count, String difficulty_level, String satisfaction, String create_date) {
-        this.review_id = review_id;
-        this.login_id = login_id;
-        this.nickName = nickName;
-        this.content = content;
-        this.star_count = star_count;
-        this.difficulty_level = difficulty_level;
-        this.satisfaction = satisfaction;
-        this.create_date = create_date;
+
+    public boolean getIs_me() {
+        return is_me;
+    }
+
+    public void setIs_me(boolean is_me) {
+        this.is_me = is_me;
     }
 
     public int getReview_id() {

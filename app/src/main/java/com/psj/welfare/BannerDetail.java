@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,6 +38,7 @@ public class BannerDetail extends AppCompatActivity {
 
     private ImageView bannerdetail_image; //배너 이미지
     private ImageButton back_btn; //뒤로가기 버튼
+    private ConstraintLayout back_btn_layout; //뒤로가기 버튼 레이아웃
     private TextView banner_title_first; //배너 타이틀 첫벌째 줄
     private TextView banner_title_second; //배너 타이틀 두번째 줄
 
@@ -89,6 +91,10 @@ public class BannerDetail extends AppCompatActivity {
             }
         });
 
+        //뒤로가기
+        back_btn_layout.setOnClickListener(v -> {
+            finish();
+        });
         back_btn.setOnClickListener(v -> {
             finish();
         });
@@ -176,8 +182,8 @@ public class BannerDetail extends AppCompatActivity {
             //타이틀을 \n기준으로 자른다
             String[] title = banner_title.split("\n");
 
-            banner_title_first.setText(title[1]); //타이틀 내용
-            banner_title_second.setText(title[0]); //"TOP5"
+            banner_title_first.setText(title[0]); //"TOP5"
+            banner_title_second.setText(title[1]); //타이틀 내용
 
             Glide.with(this)
                     .load(banner_image)
@@ -191,8 +197,6 @@ public class BannerDetail extends AppCompatActivity {
                 String welf_name = item_final.getString("welf_name");
                 String welf_tag = item_final.getString("welf_tag");
                 String welf_text = item_final.getString("welf_text");
-
-//                Log.e(TAG,"welf_id : " + welf_id);
 
 
                 BannerDetailData banneritem = new BannerDetailData();
@@ -231,6 +235,7 @@ public class BannerDetail extends AppCompatActivity {
 
         bannerdetail_image = findViewById(R.id.bannerdetail_image); //배너 이미지
         back_btn = findViewById(R.id.back_btn); //뒤로가기 버튼
+        back_btn_layout = findViewById(R.id.back_btn_layout); //뒤로가기 버튼 레이아웃
         banner_title_first = findViewById(R.id.banner_title_first); //배너 타이틀 첫벌째 줄
         banner_title_second = findViewById(R.id.banner_title_second); //배너 타이틀 두번째 줄
 
@@ -270,6 +275,7 @@ public class BannerDetail extends AppCompatActivity {
         //뒤로 가기 버튼
         back_btn.getLayoutParams().width = (int) (size.x * 0.1);
         back_btn.getLayoutParams().height = (int) (size.x * 0.1);
+
         //배너 타이틀
         banner_title_first.setTextSize((int) (size.x * 0.02));
         banner_title_first.setPadding(0,0,0,(int) (size.x * 0.01));

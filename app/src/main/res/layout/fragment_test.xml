@@ -303,7 +303,7 @@
                         android:id="@+id/youtube_title_text"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:text="유튜버들의 혜택 리뷰"
+                        android:text="유튜버들의 혜택 영상"
                         android:fontFamily="@font/notosanskr_bold"
                         android:includeFontPadding="false"
                         android:autoSizeTextType="uniform"

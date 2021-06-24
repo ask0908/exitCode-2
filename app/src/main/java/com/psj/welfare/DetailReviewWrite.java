@@ -1,18 +1,23 @@
 package com.psj.welfare;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,6 +39,8 @@ import com.psj.welfare.util.DBOpenHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.regex.Pattern;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -71,7 +78,7 @@ public class DetailReviewWrite extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_review_write);
-
+        setStatusBarGradiant(DetailReviewWrite.this); //상태 표시줄 색 바꾸기
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         helper = new DBOpenHelper(this);
@@ -120,10 +127,55 @@ public class DetailReviewWrite extends AppCompatActivity {
         });
 
 
-        //입력 글자 수 제한
-        review_content_edit.setFilters(new InputFilter[]{
-                new InputFilter.LengthFilter(350)
+//        //입력 글자 수 제한
+//        review_content_edit.setFilters(new InputFilter[]{
+//                new InputFilter.LengthFilter(350)
+//        });
+
+        //NestedScrollView 안에서 edittext한테 스크롤 가능하게 하기
+        review_content_edit.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(v.getId()==R.id.reason_to_leave_edittext){
+                    v.getParent().requestDisallowInterceptTouchEvent(true); //부모의 터치 이벤트 true
+
+                    switch(event.getAction() & MotionEvent.ACTION_MASK){
+                      case  MotionEvent.ACTION_UP: v.getParent().requestDisallowInterceptTouchEvent(false); //부모의 터치 이벤트 false
+                          break;
+                    }
+                }
+                return false;
+            }
         });
+
+
+        review_content_edit.setFilters(new InputFilter[]{new InputFilter()
+        {
+            @Override
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend)
+            {
+                // 이모티콘, 특수문자 입력 방지하는 정규식
+                // 둘 중 하나라도 입력되면 공백을 리턴한다
+                /**
+                 * ^ : 패턴의 시작을 알리는 문자
+                 * [] : 문자의 집합 or 범위 나타냄, 두 문자 사이는 "-"로 범위를 나타낸다. 이 안에 있는 문자 중 하나라도 해당되면 정규식과 매치된다
+                 * [] 내부 : 한글, 영어, 숫자만 입력할 수 있게 하고 천지인 키보드의 .(middle dot)도 쓸 수 있도록 한다
+                 * $ : 문자열(패턴)의 종료를 알리는 문자
+                 * -> 입력되는 문자열의 시작부터 끝까지 한글, 영어, 숫자를 제외한 문자가 들어오면 공백을 리턴해서 아무것도 입력되지 않게 한다
+                 */
+                Pattern pattern = Pattern.compile("^[a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ \\s\\u318D\\u119E\\u11A2\\u2022\\u2025a\\u00B7\\uFE55]+$");
+                // editText에서 사용하고 싶은 문자가 있으면 '[ ]' 대 괄호 안에 넣으면 된다(띄어쓰기를 사용하고 싶으면 띄어쓰기를 넣으면 된다), '\\s' 는 공백을 나타낸다
+                // compile()안에 editText에 입력하고자 하는 문자or숫자 등등의 입력 방식을 써주면 된다
+                // '-' 는 ~에서 ~까지라는 뜻 ex) a-z 소문자 a에서 소문자 z까지
+                if (source.equals("") || pattern.matcher(source).matches())
+                {
+                    return source;
+                }
+                return "";
+            }
+        }, new InputFilter.LengthFilter(350)});  // 리뷰 입력은 350자까지만 된다
+
+
 
         //현재 글자수 세기 위함
         review_content_edit.addTextChangedListener(new TextWatcher() {
@@ -489,5 +541,15 @@ public class DetailReviewWrite extends AppCompatActivity {
             alertDialog.dismiss(); //다이얼로그 사라지기
             finish();
         });
+    }
+
+    //상단 상태표시줄 화면 ui에 맞게 그라데이션 넣기
+    public void setStatusBarGradiant(Activity activity)
+    {
+        Window window = activity.getWindow();
+        Drawable background = activity.getResources().getDrawable(R.drawable.actionbar_gradient_end);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(activity.getResources().getColor(android.R.color.transparent));
+        window.setBackgroundDrawable(background);
     }
 }

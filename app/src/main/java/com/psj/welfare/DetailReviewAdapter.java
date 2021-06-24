@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -20,6 +21,13 @@ public class DetailReviewAdapter extends RecyclerView.Adapter<DetailReviewAdapte
     LayoutInflater layoutInflater;
     private ArrayList<DetailReviewData> DetailReviewList; //데이터 받을 어레이리스트 변수
     private Context context; //리사이클러뷰를 실행시킨 뷰를 가져오기 위한 변수
+    private DetailReviewAdapter.ReviewClickListener reviewClickListener = null;
+
+    //아이템 클릭 리스너
+    public void setOnItemClickListener(DetailReviewAdapter.ReviewClickListener reviewClickListener)
+    {
+        this.reviewClickListener = reviewClickListener;
+    }
 
     public DetailReviewAdapter(ArrayList<DetailReviewData> detailReviewList, Context context) {
         DetailReviewList = detailReviewList;
@@ -50,13 +58,25 @@ public class DetailReviewAdapter extends RecyclerView.Adapter<DetailReviewAdapte
         holder.review_delimiter.setVisibility(View.GONE);
         //버튼 및 텍스트의 사이즈를 동적으로 맞춤
         setsize(holder);
+
+        //내가 쓴 리뷰이면 수정/삭제 보여주고 아니면 안보여주기
+        if(reviewData.getIs_me()){
+            holder.review_delete_layout.setVisibility(View.VISIBLE);
+        } else {
+            holder.review_delete_layout.setVisibility(View.GONE);
+        }
     }
 
     public class TwoReviewViewHolder extends RecyclerView.ViewHolder {
 
         com.hedgehog.ratingbar.RatingBar two_review_star; //별점
+        ConstraintLayout nickname_layout; //닉네임쪽 전체 레이아웃
+        ConstraintLayout review_delete_layout; //수정 삭제 레이아웃
         LinearLayout review_item; //아이템 전체 레이아웃
         TextView two_review_nickname; //닉네임
+        TextView review_repair; //수정
+        TextView review_delete; //삭제
+        View review_inteval; //수정/삭제 사이 간격
         TextView two_review_date; //날짜
         TextView two_review_content; //내용
         View review_delimiter; //리뷰 파트 나누는 라인
@@ -65,10 +85,23 @@ public class DetailReviewAdapter extends RecyclerView.Adapter<DetailReviewAdapte
             super(view);
             review_item = view.findViewById(R.id.review_item); //아이템 전체 레이아웃
             two_review_nickname = view.findViewById(R.id.two_review_nickname); //닉네임
+            nickname_layout = view.findViewById(R.id.nickname_layout); //닉네임쪽 전체 레이아웃
+            review_delete_layout = view.findViewById(R.id.review_delete_layout); //수정 삭제 레이아웃
+            review_repair = view.findViewById(R.id.review_repair); //수정
+            review_delete = view.findViewById(R.id.review_delete); //삭제
+            review_inteval = view.findViewById(R.id.review_inteval); //수정/삭제 사이 간격
             two_review_star = view.findViewById(R.id.two_review_star); //별점
             two_review_date = view.findViewById(R.id.two_review_date); //날짜
             two_review_content = view.findViewById(R.id.two_review_content); //내용
             review_delimiter = view.findViewById(R.id.review_delimiter); //내용
+
+            review_repair.setOnClickListener(v->{ //수정 버튼
+                reviewClickListener.repairClick(v, getAdapterPosition());
+            });
+
+            review_delete.setOnClickListener(v->{ //삭제 버튼
+                reviewClickListener.DeleteClick(v, getAdapterPosition());
+            });
         }
     }
 
@@ -85,10 +118,22 @@ public class DetailReviewAdapter extends RecyclerView.Adapter<DetailReviewAdapte
         //context의 스크린 사이즈를 구함
         Point size = screen.getScreenSize((Activity) context);
         //디스플레이 값을 기준으로 버튼 텍스트 크기를 정함
+        holder.nickname_layout.setPadding(0,0,0,(int)(size.y*0.02)); //닉네임쪽 전체 레이아웃
         holder.two_review_nickname.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x/23); //닉네임
+        holder.review_repair.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x/23); //수정
+        holder.review_delete.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x/23); //삭제
         holder.two_review_content.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x/25); //내용
+        holder.review_inteval.getLayoutParams().height = (int) (size.y*0.02); //수정/삭제 사이 간격
+        holder.review_inteval.getLayoutParams().width = (int) (size.x*0.0035); //수정/삭제 사이 간격
 
         holder.review_item.setPadding((int) (size.x * 0.015), (int) (size.y * 0.02), (int) (size.x * 0.015), (int) (size.y * 0.02)); //레이아웃 패딩값 적용
         holder.two_review_date.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x/30);
+
+    }
+
+
+    public interface ReviewClickListener{
+        void repairClick(View v, int pos);
+        void DeleteClick(View v, int pos);
     }
 }

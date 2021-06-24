@@ -8,14 +8,18 @@ import android.database.Cursor;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +28,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.kakao.network.ApiErrorCode;
 import com.kakao.network.ErrorResult;
@@ -40,6 +45,8 @@ import com.psj.welfare.util.DBOpenHelper;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.regex.Pattern;
+
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
@@ -52,10 +59,13 @@ public class WithdrawActivity extends AppCompatActivity
 {
     private final String TAG = this.getClass().getSimpleName();
 
+    AppBarLayout withdraw_appbar; //앱바 레이아웃
     ImageView withdraw_back_image;
     TextView withdraw_top_textview, withdraw_question_textview, withdraw_alert_textview, select_reason_textview, withdraw_textview;
     EditText reason_to_leave_edittext;
     Button withdraw_button;
+    private LinearLayout textcount_layout; //기타 사유 글자수 레이아웃
+    private TextView text_count,text_total; //기타 사유 글자수, 글자 제한
 
     DBOpenHelper helper;
 
@@ -75,29 +85,69 @@ public class WithdrawActivity extends AppCompatActivity
         setContentView(R.layout.activity_withdraw);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);         // 상태바 글자색 검정색으로 바꾸기
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorMainWhite));
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING); //키보드가 올라가도 레이아웃이 변하지 않도록
+        //android:windowSoftInputMode="adjustNothing" 매니페스트에서 이렇게 코드 입력한것과 동일한 기능
 
         analytics = FirebaseAnalytics.getInstance(this);
         sharedPreferences = getSharedPreferences("app_pref", 0);
         init();
 
+        //버튼 및 텍스트의 사이즈를 동적으로 맞춤
+        SetSize();
+
         // Room DB에서 유저 토큰 획득
         getUserToken();
 
-        ScreenSize screen = new ScreenSize();
-        Point size = screen.getScreenSize(this);
 
-        withdraw_question_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 20);    // 계정을 삭제하시나요?
-        withdraw_alert_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 23);       // 계정을 삭제하면 관심사 선택~삭제됩니다
-        select_reason_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 20);        // 계정을 삭제하는 이유를 말해주세요
-        withdraw_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 19);             // "선택해 주세요" 텍스트뷰
-        reason_to_leave_edittext.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 19);      // 탈퇴 사유 적는 editText
-        withdraw_button.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 16);               // 탈퇴 버튼
+//        //입력 글자 수 제한
+//        reason_to_leave_edittext.setFilters(new InputFilter[]{
+//                new InputFilter.LengthFilter(350)
+//        });
 
-        /* 회원탈퇴 버튼의 width, height 수정 */
-        ViewGroup.LayoutParams button_params = withdraw_button.getLayoutParams();
-        button_params.width = (size.x / 7) * 5;
-        button_params.height = size.y / 15;
-        withdraw_button.setLayoutParams(button_params);
+        //NestedScrollView 안에서 edittext한테 스크롤 가능하게 하기
+        reason_to_leave_edittext.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(v.getId()==R.id.reason_to_leave_edittext){
+                    v.getParent().requestDisallowInterceptTouchEvent(true); //부모의 터치 이벤트 true
+
+                    switch(event.getAction() & MotionEvent.ACTION_MASK){
+                      case  MotionEvent.ACTION_UP: v.getParent().requestDisallowInterceptTouchEvent(false); //부모의 터치 이벤트 false
+                          Log.e(TAG,"test edittext");
+                          break;
+                    }
+                }
+                return false;
+            }
+        });
+
+
+        reason_to_leave_edittext.setFilters(new InputFilter[]{new InputFilter()
+        {
+            @Override
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend)
+            {
+                // 이모티콘, 특수문자 입력 방지하는 정규식
+                // 둘 중 하나라도 입력되면 공백을 리턴한다
+                /**
+                 * ^ : 패턴의 시작을 알리는 문자
+                 * [] : 문자의 집합 or 범위 나타냄, 두 문자 사이는 "-"로 범위를 나타낸다. 이 안에 있는 문자 중 하나라도 해당되면 정규식과 매치된다
+                 * [] 내부 : 한글, 영어, 숫자만 입력할 수 있게 하고 천지인 키보드의 .(middle dot)도 쓸 수 있도록 한다
+                 * $ : 문자열(패턴)의 종료를 알리는 문자
+                 * -> 입력되는 문자열의 시작부터 끝까지 한글, 영어, 숫자를 제외한 문자가 들어오면 공백을 리턴해서 아무것도 입력되지 않게 한다
+                 */
+                Pattern pattern = Pattern.compile("^[a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ \\s\\u318D\\u119E\\u11A2\\u2022\\u2025a\\u00B7\\uFE55]+$");
+                // editText에서 사용하고 싶은 문자가 있으면 '[ ]' 대 괄호 안에 넣으면 된다(띄어쓰기를 사용하고 싶으면 띄어쓰기를 넣으면 된다), '\\s' 는 공백을 나타낸다
+                // compile()안에 editText에 입력하고자 하는 문자or숫자 등등의 입력 방식을 써주면 된다
+                // '-' 는 ~에서 ~까지라는 뜻 ex) a-z 소문자 a에서 소문자 z까지
+                if (source.equals("") || pattern.matcher(source).matches())
+                {
+                    return source;
+                }
+                return "";
+            }
+        }, new InputFilter.LengthFilter(350)});  // 의견 입력은 350자까지만 된다
+
 
         // 탈퇴 사유를 아직 선택하지 않은 경우
         if (withdraw_textview.getText().toString().equals(getString(R.string.withdraw_textview_default)))
@@ -126,6 +176,7 @@ public class WithdrawActivity extends AppCompatActivity
                     {
                         if (!value.equals(""))
                         {
+                            textcount_layout.setVisibility(View.GONE); //기타 edittext의 글자수 안보이도록
                             // 매개변수로 받은 문자열을 액티비티의 멤버 변수에 대입
                             reason = value;
                             Log.e(TAG, "1번 클릭 후 다이얼로그 -> 액티비티로 값 전달 확인 : " + reason);
@@ -149,6 +200,7 @@ public class WithdrawActivity extends AppCompatActivity
                     {
                         if (!second_value.equals(""))
                         {
+                            textcount_layout.setVisibility(View.GONE); //기타 edittext의 글자수 안보이도록
                             reason = second_value;
                             Log.e(TAG, "2번 클릭 후 다이얼로그 -> 액티비티로 값 전달 확인 : " + reason);
                             reason_to_leave_edittext.setVisibility(View.GONE);
@@ -169,6 +221,7 @@ public class WithdrawActivity extends AppCompatActivity
                     {
                         if (!third_value.equals(""))
                         {
+                            textcount_layout.setVisibility(View.GONE); //기타 edittext의 글자수 안보이도록
                             reason = third_value;
                             Log.e(TAG, "3번 클릭 후 다이얼로그 -> 액티비티로 값 전달 확인 : " + reason);
                             reason_to_leave_edittext.setVisibility(View.GONE);
@@ -189,13 +242,14 @@ public class WithdrawActivity extends AppCompatActivity
                     {
                         if (!fourth_value.equals(""))
                         {
+                            textcount_layout.setVisibility(View.VISIBLE); //기타 edittext의 글자수 보이도록
+                            reason_to_leave_edittext.setText(null);
                             reason = fourth_value;
                             Log.e(TAG, "4번 클릭 후 다이얼로그 -> 액티비티로 값 전달 확인 : " + reason);
                             // 콜백 메서드가 다이얼로그 -> 액티비티로 값 가져오는 작업을 끝내면 Rxjava로 텍스트뷰에 값 set
                             Observable.just(reason)
                                     .subscribeOn(Schedulers.io())
                                     .subscribe(data -> withdraw_textview.setText(reason));
-
                             // 기타를 눌렀을 경우 탈퇴 사유를 적을 수 있는 란을 visible로 바꾼다
                             if (reason.equals("기타"))
                             {
@@ -230,6 +284,9 @@ public class WithdrawActivity extends AppCompatActivity
             {
                 input = reason_to_leave_edittext.getText().toString().length();
                 Log.e(TAG, "input : " + input);
+
+                text_count.setText(String.valueOf(input));
+
                 if (input > 0)
                 {
                     withdraw_button.setEnabled(true);
@@ -439,10 +496,14 @@ public class WithdrawActivity extends AppCompatActivity
     // findViewById() 모아놓은 메서드
     private void init()
     {
+        withdraw_appbar = findViewById(R.id.withdraw_appbar);
         withdraw_back_image = findViewById(R.id.withdraw_back_image);
         withdraw_top_textview = findViewById(R.id.withdraw_top_textview);
         withdraw_question_textview = findViewById(R.id.withdraw_question_textview);
         withdraw_alert_textview = findViewById(R.id.withdraw_alert_textview);
+        textcount_layout = findViewById(R.id.textcount_layout);
+        text_count = findViewById(R.id.text_count);
+        text_total = findViewById(R.id.text_total);
         select_reason_textview = findViewById(R.id.select_reason_textview);
         withdraw_textview = findViewById(R.id.withdraw_textview);
         reason_to_leave_edittext = findViewById(R.id.reason_to_leave_edittext);
@@ -456,5 +517,41 @@ public class WithdrawActivity extends AppCompatActivity
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove("reason");
         editor.apply();
+    }
+
+    //버튼 및 텍스트의 사이즈를 동적으로 맞춤
+    private void SetSize() {
+        //size에 저장되는 가로/세로 길이의 단위는 픽셀(Pixel)입니다. (activity 화면 기준)
+        ScreenSize screen = new ScreenSize();
+        //context의 스크린 사이즈를 구함
+        Point size = screen.getScreenSize(WithdrawActivity.this);
+        //디스플레이 값을 기준으로 버튼 텍스트 크기를 정함
+
+
+        //앱바
+        withdraw_appbar.getLayoutParams().height = (int)(size.y*0.07);
+        //"계정을 삭제하나요?"
+        withdraw_question_textview.getLayoutParams().height = (int)(size.y*0.038);
+        //회원 탈퇴 안내
+        withdraw_alert_textview.getLayoutParams().height = (int)(size.y*0.06);
+        //"계정을 삭제하는 이유를 알려주세요"
+        select_reason_textview.getLayoutParams().height = (int)(size.y*0.038);
+        //"선택해주세요" 버튼
+//        withdraw_textview.getLayoutParams().height = (int)(size.y*0.058);
+        withdraw_textview.setPadding((int)(size.x*0.03),(int)(size.x*0.02),(int)(size.x*0.03),(int)(size.x*0.02));
+        //기타 사유 적는 칸
+//        reason_to_leave_edittext.getLayoutParams().height = (int)(size.y*0.058);
+        reason_to_leave_edittext.setPadding((int)(size.x*0.03),(int)(size.x*0.02),(int)(size.x*0.03),(int)(size.x*0.02));
+        reason_to_leave_edittext.setMaxHeight((int)(size.y*0.35));
+
+        //회원 탈퇴 버튼
+        withdraw_button.getLayoutParams().height = (int)(size.y*0.07);
+        withdraw_button.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.05));
+//        withdraw_button.setPadding(0,(int)(size.x*0.03),0,(int)(size.x*0.03));
+
+        //글자 수
+        text_count.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) (size.x*0.035));
+        //글자 총 제한
+        text_total.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) (size.x*0.035));
     }
 }

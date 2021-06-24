@@ -47,6 +47,7 @@ public interface ApiInterfaceTest {
     @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/review")
     Call<String> ReviewAllLook(
             @Header("logintoken") String LoginToken,
+            @Query("filter") String filter,
             @Query("welf_id") String welf_id
     );
 

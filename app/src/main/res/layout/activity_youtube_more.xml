@@ -46,9 +46,11 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:autoSizeTextType="uniform"
+                android:fontFamily="@font/notosanskr_bold"
+                android:includeFontPadding="false"
                 android:backgroundTint="@color/white"
                 android:gravity="center_vertical"
-                android:text="유튜브"
+                android:text="유튜버들의 혜택 영상"
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -57,7 +59,7 @@
                 app:layout_constraintLeft_toRightOf="@+id/back_btn"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.4" />
+                app:layout_constraintWidth_percent="0.43" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -79,6 +81,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:autoSizeTextType="uniform"
+        android:fontFamily="@font/notosanskr_bold"
+        android:includeFontPadding="false"
         android:backgroundTint="@color/white"
         android:gravity="center_vertical"
         android:textStyle="bold"

@@ -8,96 +8,121 @@
     android:backgroundTint="@color/colorMainWhite"
     android:fillViewport="true"
     android:orientation="vertical"
-    tools:context=".activity.WithdrawActivity">
+    tools:context=".activity.WithdrawActivity"
+    android:fitsSystemWindows="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/withdraw_back_image"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:src="@drawable/arrow_left_black"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent=".04"
-            app:layout_constraintHorizontal_bias=".04"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias=".014"
-            app:layout_constraintWidth_percent=".1" />
-
-        <TextView
-            android:id="@+id/withdraw_top_textview"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="3dp"
-            android:background="@color/colorMainWhite"
-            android:gravity="center_vertical"
-            android:text="탈퇴하기"
-            android:textColor="@color/colorBlack"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent=".05"
-            app:layout_constraintStart_toEndOf="@id/withdraw_back_image"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias=".005" />
-
-        <View
-            android:id="@+id/withdraw_top_view"
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/withdraw_appbar"
             android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:background="@drawable/gray_gradation_view"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent=".09"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/withdraw_back_image"
-            app:layout_constraintVertical_bias=".02"
-            app:layout_constraintWidth_percent="1" />
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintHeight_percent="0.07"
+            android:background="@color/white">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/withdraw_back_image"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:src="@drawable/arrow_left_black"
+                    app:layout_constraintHeight_percent="0.5"
+                    app:layout_constraintHorizontal_bias="0.05"
+                    app:layout_constraintWidth_percent="0.1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <TextView
+                    android:id="@+id/withdraw_top_textview"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:text="탈퇴하기"
+                    android:textColor="@color/colorBlack"
+                    android:autoSizeTextType="uniform"
+                    android:fontFamily="@font/notosanskr_bold"
+                    android:includeFontPadding="false"
+                    app:layout_constraintHeight_percent="0.6"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/withdraw_back_image"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+
+
+<!--        <View-->
+<!--            android:id="@+id/withdraw_top_view"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="10dp"-->
+<!--            android:background="@drawable/gray_gradation_view"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintHeight_percent=".09"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/withdraw_back_image"-->
+<!--            app:layout_constraintVertical_bias=".02"-->
+<!--            app:layout_constraintWidth_percent="1" />-->
 
         <TextView
             android:id="@+id/withdraw_question_textview"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:text="계정을 삭제 하시나요?"
-            android:textStyle="bold"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="@font/notosanskr_bold"
+            android:includeFontPadding="false"
+            android:textColor="@color/colorBlack"
+            app:layout_constraintHeight_percent=".038"
+            app:layout_constraintVertical_bias=".022"
+            app:layout_constraintWidth_percent=".87"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent=".05"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/withdraw_top_view"
-            app:layout_constraintVertical_bias=".02"
-            app:layout_constraintWidth_percent=".9" />
+            app:layout_constraintTop_toBottomOf="@+id/withdraw_appbar" />
 
         <TextView
             android:id="@+id/withdraw_alert_textview"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:text="계정을 삭제하면 관심사 선택, 맞춤 혜택, 알림, 리뷰\n등 모든 활동 정보가 삭제됩니다"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="@font/notosanskr_medium"
+            android:includeFontPadding="false"
+            app:layout_constraintHeight_percent=".06"
+            app:layout_constraintVertical_bias=".075"
+            app:layout_constraintWidth_percent=".87"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent=".07"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias=".153"
-            app:layout_constraintWidth_percent=".9" />
+            app:layout_constraintTop_toBottomOf="@+id/withdraw_appbar"/>
 
         <TextView
             android:id="@+id/select_reason_textview"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:text="계정을 삭제하는 이유를 알려주세요"
-            android:textStyle="bold"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="@font/notosanskr_bold"
+            android:includeFontPadding="false"
+            android:textColor="@color/colorBlack"
+            app:layout_constraintHeight_percent=".038"
+            app:layout_constraintVertical_bias=".175"
+            app:layout_constraintWidth_percent=".87"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent=".05"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/withdraw_top_view"
-            app:layout_constraintVertical_bias=".18"
-            app:layout_constraintWidth_percent=".9" />
+            app:layout_constraintTop_toBottomOf="@+id/withdraw_appbar" />
 
         <TextView
             android:id="@+id/withdraw_textview"
@@ -106,55 +131,102 @@
             android:background="@drawable/withdraw_textview"
             android:drawableRight="@drawable/ic_arrow_down"
             android:gravity="center_vertical"
-            android:paddingStart="20dp"
-            android:paddingEnd="10dp"
             android:text="선택해 주세요"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="@font/notosanskr_medium"
+            android:includeFontPadding="false"
             android:textColor="@color/layout_background_start_gradation"
+            app:layout_constraintHeight_percent=".058"
+            app:layout_constraintVertical_bias=".3"
+            app:layout_constraintWidth_percent=".885"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent=".06"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias=".31"
-            app:layout_constraintWidth_percent=".92"/>
+            tools:padding="7dp"/>
+
+        <View
+            android:id="@+id/edittext_interval"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.02"
+            app:layout_constraintVertical_bias="0"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/withdraw_textview"/>
 
         <EditText
             android:id="@+id/reason_to_leave_edittext"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="30dp"
+            android:layout_height="wrap_content"
             android:background="@drawable/withdraw_gray_textview"
             android:hint="탈퇴 사유를 알려주세요"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="@font/notosanskr_medium"
+            android:includeFontPadding="false"
             android:textColorHint="@color/colorGray_B"
+            app:layout_constraintHeight_percent=".058"
+            app:layout_constraintVertical_bias="0"
+            app:layout_constraintWidth_percent=".885"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent=".06"
-            app:layout_constraintHorizontal_bias="0.468"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias=".366"
-            app:layout_constraintWidth_percent=".92" />
+            app:layout_constraintTop_toBottomOf="@+id/edittext_interval"
+            tools:padding="7dp"
+            android:overScrollMode="always"
+            android:scrollbarStyle="insideInset"
+            android:scrollbars="vertical"
+            android:fitsSystemWindows="true"/>
 
+        <LinearLayout
+            android:id="@+id/textcount_layout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@+id/reason_to_leave_edittext"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_percent="0.032"
+            app:layout_constraintWidth_percent="0.83"
+            app:layout_constraintVertical_bias="0.01"
+            android:gravity="end"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/text_count"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="0"
+                android:fontFamily="@font/notosanskr_medium"
+                android:includeFontPadding="false"/>
+            <TextView
+                android:id="@+id/text_total"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="/350"
+                android:fontFamily="@font/notosanskr_medium"
+                android:includeFontPadding="false"/>
+
+        </LinearLayout>
         <Button
             android:id="@+id/withdraw_button"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="30dp"
             android:background="@drawable/withdraw_non_activated"
             android:enabled="false"
             android:text="회원 탈퇴 하기"
             android:textColor="#FFFFFF"
-            android:textSize="26sp"
             android:textStyle="bold"
+            android:fontFamily="@font/notosanskr_medium"
+            android:includeFontPadding="false"
+            app:layout_constraintHeight_percent=".07"
+            app:layout_constraintVertical_bias=".96"
+            app:layout_constraintWidth_percent=".885"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHeight_percent=".062"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias=".97"
-            app:layout_constraintWidth_percent=".79" />
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

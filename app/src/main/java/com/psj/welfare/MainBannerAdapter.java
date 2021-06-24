@@ -23,21 +23,24 @@ public class MainBannerAdapter extends RecyclerView.Adapter<MainBannerAdapter.Ba
 
     private MainBannerAdapter.BannerListener bannerListener = null; //배너 클릭 리스너
     private ArrayList<MainBannerData> BannerArrayList; //배너데이터
+    private ArrayList<MainBannerData> DefaultList; //최초로 서버에서 받은 데이터
     private Context context; //컨텍스트
     private ViewPager2 viewPager2;
+    private int ListCount;
 
     //클릭을 액티비티에서 하기 위한 생성자
-    public void setbannerClickListener(MainBannerAdapter.BannerListener bannerListener)
-    {
+    public void setbannerClickListener(MainBannerAdapter.BannerListener bannerListener) {
         this.bannerListener = bannerListener;
     }
 
+
     //무한 스크롤을 하기 위해 viewPager2를 인자로 받음
-    public MainBannerAdapter(ArrayList<MainBannerData> bannerArrayList, Context context, BannerListener bannerListener, ViewPager2 viewPager2) {
+    public MainBannerAdapter(ArrayList<MainBannerData> bannerArrayList, Context context, BannerListener bannerListener, ViewPager2 viewPager2, ArrayList<MainBannerData> DefaultList) {
         this.BannerArrayList = bannerArrayList;
         this.context = context;
         this.bannerListener = bannerListener;
         this.viewPager2 = viewPager2;
+        this.DefaultList = DefaultList; //최초로 서버에서 받은 데이터 (이 데이터가 없으면 무한 스크롤 기능 때문에 BannerArrayList 데이터가 계속 늘어난다)
     }
 
     @NonNull
@@ -50,35 +53,42 @@ public class MainBannerAdapter extends RecyclerView.Adapter<MainBannerAdapter.Ba
 
     @Override
     public void onBindViewHolder(@NonNull BannerHolder holder, int position) {
-
-        MainBannerData bannerData = BannerArrayList.get(position); //배너데이터
-        String bannerImage = bannerData.getImageurl(); //배너이미지
-        String bannertitle = bannerData.getTitle(); //배너타이틀
-
-        Glide.with(holder.itemView)
-                .load(bannerImage)
-                .into(holder.banner_image);
-
-        holder.banner_title.setText(bannertitle);
-        holder.banner_total.setText(String.valueOf(BannerArrayList.size()));
-        holder.banner_num.setText(String.valueOf(position + 1));
+        int bannercount = DefaultList.size(); //서버로부터 받아온 베너 데이터 갯수
+//        Log.e("TAG", "BannerArrayList : " + BannerArrayList.size());
 //        Log.e("TAG","position : " + position);
 
-        //레이아웃의 사이즈를 동적으로 맞춤
-        setsize(holder);
+        if (bannercount != 0) {
 
-//        이미지를 무한 반복(처음 이미지면 마지막 이미지가 왼쪽에 로드됨) 반대도 마찬가지, 여기서는 일부러 안함
-        if(position == BannerArrayList.size()-2){
-            viewPager2.post(runnable);
+            MainBannerData bannerData = BannerArrayList.get(position % bannercount); //배너데이터
+            String bannerImage = bannerData.getImageurl(); //배너이미지
+            String bannertitle = bannerData.getTitle(); //배너타이틀
+
+            Glide.with(holder.itemView)
+                    .load(bannerImage)
+                    .into(holder.banner_image);
+
+            holder.banner_title.setText(bannertitle);
+            holder.banner_total.setText(String.valueOf(bannercount));
+            holder.banner_num.setText(String.valueOf(position % bannercount + 1));
+
+            //레이아웃의 사이즈를 동적으로 맞춤
+            setsize(holder);
+
+////        이미지를 무한 반복(처음 이미지면 마지막 이미지가 왼쪽에 로드됨) 반대도 마찬가지, 여기서는 일부러 안함
+//        if(position == BannerArrayList.size()-2){
+//            viewPager2.post(runnable);
+//        }
+
         }
     }
 
     @Override
     public int getItemCount() {
-        return (BannerArrayList != null ? BannerArrayList.size() : 0);
+        //무한 스크롤 처럼 보이도록 트릭을 사용(데이터를 여러개 넣고 그중 가운데 값부터 시작)
+        return (BannerArrayList != null ? BannerArrayList.size() + 6000 : 0);
     }
 
-    public class BannerHolder extends RecyclerView.ViewHolder{
+    public class BannerHolder extends RecyclerView.ViewHolder {
 
         private ConstraintLayout banner_layout; //배너 레이아웃
         private ImageView banner_image; //배너 이미지
@@ -90,6 +100,7 @@ public class MainBannerAdapter extends RecyclerView.Adapter<MainBannerAdapter.Ba
 
         public BannerHolder(@NonNull View itemView) {
             super(itemView);
+
             banner_layout = itemView.findViewById(R.id.banner_layout); //배너 레이아웃
             banner_image = itemView.findViewById(R.id.banner_image); //배너 이미지
             banner_title = itemView.findViewById(R.id.banner_title); //배너 타이틀
@@ -107,10 +118,11 @@ public class MainBannerAdapter extends RecyclerView.Adapter<MainBannerAdapter.Ba
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
-//            BannerArrayList.addAll(BannerArrayList);
-//            notifyDataSetChanged();
+            BannerArrayList.addAll(DefaultList);
+            notifyDataSetChanged();
         }
     };
+
 
     //레이아웃의 사이즈를 동적으로 맞춤
     private void setsize(MainBannerAdapter.BannerHolder holder) {

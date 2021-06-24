@@ -64,7 +64,10 @@ public class TestFragment extends Fragment
     private ViewPager2 MainBannerViewpager2; //메인 배너
     private MainBannerAdapter bannerAdapter; //뷰페이저에 넣을 아답터
     private ArrayList<MainBannerData> bannerList; //메인 배너 담을 리스트
+    private ArrayList<MainBannerData> DefaultList; //메인 배너 담을 리스트(서버에서 받은 최소 배너 데이터)
     private MainBannerAdapter.BannerListener bannerListener; //배너 클릭 리스너
+    private final int startBannerPosition = 3000;
+    private int bannercount; //서버에서 받은 배너 데이터 갯수
 
     private ConstraintLayout youtube_title_layout; //유튜버 혜택 리뷰 타이틀
     private ConstraintLayout MainTop; //상단 타이틀
@@ -204,7 +207,8 @@ public class TestFragment extends Fragment
 
         //메인 배너 뷰페이저 셋팅
         bannerList = new ArrayList<>(); //메인 배너 담을 리스트
-        bannerAdapter = new MainBannerAdapter(bannerList,getActivity(),bannerListener,MainBannerViewpager2);
+        DefaultList = new ArrayList<>(); //메인 배너 담을 리스트(서버에서 받은 최초 데이터)
+        bannerAdapter = new MainBannerAdapter(bannerList,getActivity(),bannerListener,MainBannerViewpager2,DefaultList);
         MainBannerViewpager2.setAdapter(bannerAdapter);
 
 
@@ -243,7 +247,7 @@ public class TestFragment extends Fragment
             @Override
             public void bannerClick(View v, int pos) {
                 Intent intent = new Intent(getActivity(), BannerDetail.class);
-                intent.putExtra("banner_title", bannerList.get(pos).getTitle());
+                intent.putExtra("banner_title", bannerList.get(pos % bannercount).getTitle());
                 startActivity(intent);
             }
         });
@@ -267,13 +271,38 @@ public class TestFragment extends Fragment
 
         //자동 스크롤
         MainBannerViewpager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                sliderHandler.removeCallbacks(sliderRunnable);
-                sliderHandler.postDelayed(sliderRunnable, 2500);
+//                Log.e(TAG,"position" + position);
+                //처음 메인에 들어올 때 자동 스크롤 되도록
+                if(position == startBannerPosition){
+//                    sliderHandler.removeCallbacks(sliderRunnable);
+//                    sliderHandler.postDelayed(sliderRunnable, 3500);
+                    autoScrollStart();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                super.onPageScrollStateChanged(state);
+                switch (state) {
+                    case ViewPager2.SCROLL_STATE_IDLE: {// 스크롤이 끝났다거나, 뷰페이저에서 손 떼었을때
+//                        sliderHandler.removeCallbacks(sliderRunnable); //액티비티가 일시정지일때 Handler를 정지시켜주고, 액티비티가 재시작될 때 다시 실행
+//                        sliderHandler.postDelayed(sliderRunnable, 3500);
+                        autoScrollStart();
+                        break;
+                    }
+                    case ViewPager2.SCROLL_STATE_DRAGGING: { // 사용자가 손으로 뷰페이저 움직이는 중
+//                        sliderHandler.removeMessages(0); // 핸들러를 중지시킴
+                        autoScrollStop();
+                        break;
+                    }
+                }
             }
         });
+
     }
 
 
@@ -283,6 +312,18 @@ public class TestFragment extends Fragment
             MainBannerViewpager2.setCurrentItem(MainBannerViewpager2.getCurrentItem() + 1);
         }
     };
+
+    //배너 자동 스크롤 시작
+    private void autoScrollStart(){
+        sliderHandler.removeCallbacks(sliderRunnable); //액티비티가 일시정지일때 Handler를 정지시켜주고, 액티비티가 재시작될 때 다시 실행
+        sliderHandler.postDelayed(sliderRunnable, 3500);
+    }
+
+    //배너 자동 스크롤 멈춤
+    private void autoScrollStop(){
+        sliderHandler.removeMessages(0); // 핸들러를 중지시킴
+    }
+
 
     //배너 뷰페이저
     private void setviewpager() {
@@ -316,18 +357,6 @@ public class TestFragment extends Fragment
         //디스플레이 값을 기준으로 페이지 마진 구하기
         MainBannerViewpager2.setPageTransformer(new MarginPageTransformer((int) (size.x * 0.05)));
 
-
-//        MainBannerViewpager2.setCurrentItem(10,false);
-
-
-
-//        MainBannerViewpager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-//            @Override
-//            public void onPageSelected(int position) {
-//                super.onPageSelected(position);
-////                Log.e("pos",String.valueOf(position));
-//            }
-//        });
     }
 
     //xml크기를 동적으로 변환
@@ -545,6 +574,8 @@ public class TestFragment extends Fragment
 
                 /* 배너에 보여줄 데이터 */
                 JSONArray banner = inner_json.getJSONArray("banner");
+                bannercount = banner.length(); //서버에서 받은 배너 데이터 갯수
+//                Log.e(TAG,"bannercount : " + bannercount);
                 for (int k = 0; k < banner.length(); k++)
                 {
 //                    Log.e(TAG,"banner : " + banner);
@@ -557,14 +588,16 @@ public class TestFragment extends Fragment
                     bannerData.setTitle(banner_title);
 
                     bannerList.add(bannerData);
+                    DefaultList.add(bannerData);
                     bannerAdapter.notifyDataSetChanged();
 
 //                    Log.e(TAG,"banner_image : " + banner_image);
 //                    Log.e(TAG,"banner_title : " + banner_title);
                 }
 
+                //무한 스크롤 처럼 보이도록 트릭을 사용(데이터를 여러개 넣고 그중 가운데 값부터 시작) (이 작업을 하면 배너가 늦게뜸)
+                MainBannerViewpager2.setCurrentItem(startBannerPosition,false);
             }
-
         }
         catch (JSONException e)
         {
@@ -589,14 +622,6 @@ public class TestFragment extends Fragment
 //        {
 //            youtube_hashmap.put(youtube_list.get(i).getYoutube_name(), youtube_list.get(i).getYoutube_videoId());
 //        }
-
-
-
-
-
-
-
-
 
 
 
@@ -803,6 +828,21 @@ public class TestFragment extends Fragment
         });
         youtube_video_recyclerview.setAdapter(youtubeAdapter);
 
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // 다른 페이지로 떠나있는 동안 스크롤이 동작할 필요는 없음. 정지
+        autoScrollStop();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 다른 페이지 갔다가 돌아오면 다시 스크롤 시작
+        autoScrollStart();
     }
 
 }

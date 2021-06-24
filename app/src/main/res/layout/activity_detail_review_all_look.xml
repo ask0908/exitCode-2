@@ -71,33 +71,43 @@
             android:gravity="center"
             android:fontFamily="@font/notosanskr_bold"
             android:includeFontPadding="false"/>
-        
-        <TextView
-            android:id="@+id/filter_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="최신순"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias=".83"
-            android:gravity="center"
-            android:fontFamily="@font/notosanskr_medium"
-            android:includeFontPadding="false"/>
 
-        <ImageButton
-            android:id="@+id/filter_icon"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/filter_button_layout"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/hamburger_icon"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias=".94"
-            android:backgroundTint="@color/gray"
-            tools:padding="5dp"/>
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintWidth_percent="0.3">
+
+            <TextView
+                android:id="@+id/filter_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="최신순"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.2"
+                android:gravity="center"
+                android:fontFamily="@font/notosanskr_medium"
+                android:includeFontPadding="false"/>
+
+            <ImageButton
+                android:id="@+id/filter_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/hamburger_icon"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.74"
+                android:backgroundTint="@color/gray"
+                tools:padding="5dp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

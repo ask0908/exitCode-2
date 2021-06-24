@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,7 +53,7 @@ public class DetailReviewFragment extends Fragment {
 
     //리사이클러뷰 사용하기 위한 변수 선언
     private RecyclerView review_recycler; //리사이클러뷰 선언
-    private RecyclerView.Adapter DetailReviewAdapter; //아답터 연결
+    private DetailReviewAdapter DetailReviewAdapter; //아답터 연결
     private RecyclerView.LayoutManager layoutManager; //레이아웃 매니저
     private ArrayList<DetailReviewData> DetailReviewList; //리뷰 2개 보여주기 데이터
 
@@ -182,6 +183,20 @@ public class DetailReviewFragment extends Fragment {
             }
         });
 
+
+        DetailReviewAdapter.setOnItemClickListener(new DetailReviewAdapter.ReviewClickListener() {
+            @Override
+            public void repairClick(View v, int pos) { //리뷰 수정 버튼
+//                Toast.makeText(getActivity(),"수정",Toast.LENGTH_SHORT).show();
+                Log.e(TAG,"수정");
+            }
+
+            @Override
+            public void DeleteClick(View v, int pos) { //리뷰 삭제 버튼
+//                Toast.makeText(getActivity(),"삭제",Toast.LENGTH_SHORT).show();
+                Log.e(TAG,"삭제");
+            }
+        });
     }
 
     //상세페이지 내용 데이터 받아오기
