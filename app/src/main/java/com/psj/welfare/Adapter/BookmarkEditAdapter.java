@@ -1,6 +1,7 @@
 package com.psj.welfare.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ import java.util.List;
 
 public class BookmarkEditAdapter extends RecyclerView.Adapter<BookmarkEditAdapter.BookmarkEditViewHolder>
 {
+    private final String TAG = this.getClass().getSimpleName();
+
     private Context context;
     private List<BookmarkItem> list;
     private ItemClickListener itemClickListener;
@@ -63,6 +66,7 @@ public class BookmarkEditAdapter extends RecyclerView.Adapter<BookmarkEditAdapte
         notifyDataSetChanged();
     }
 
+    // 체크된 체크박스 개수를 리턴하는 메서드
     public int getCheckedCount()
     {
         return checked_count;
@@ -72,6 +76,7 @@ public class BookmarkEditAdapter extends RecyclerView.Adapter<BookmarkEditAdapte
     public void onBindViewHolder(@NonNull final BookmarkEditAdapter.BookmarkEditViewHolder holder, final int position)
     {
         final BookmarkItem item = list.get(position);
+        Log.e(TAG, "북마크 삭제 화면 - item.getTag() : " + item.getTag());
         holder.bookmark_edit_welf_name.setText(item.getWelf_name());
         if (item.getTag().contains("-"))
         {
@@ -89,6 +94,19 @@ public class BookmarkEditAdapter extends RecyclerView.Adapter<BookmarkEditAdapte
             String else_str = "#" + before;
             holder.bookmark_edit_tag.setText(else_str);
         }
+        else if (item.getTag().equals("None"))
+        {
+            holder.bookmark_edit_tag.setText("");
+        }
+
+        if (isSelectedAll)
+        {
+            holder.bookmark_edit_checkbox.setChecked(true);
+        }
+        else
+        {
+            holder.bookmark_edit_checkbox.setChecked(false);
+        }
 
         holder.bookmark_edit_checkbox.setOnCheckedChangeListener(null);
         holder.bookmark_edit_checkbox.setChecked(item.getSelected());
@@ -97,7 +115,6 @@ public class BookmarkEditAdapter extends RecyclerView.Adapter<BookmarkEditAdapte
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
             {
-                item.setSelected(isChecked);
                 if (isChecked)
                 {
                     checked_count++;
@@ -117,27 +134,33 @@ public class BookmarkEditAdapter extends RecyclerView.Adapter<BookmarkEditAdapte
         if (isSelectedAll)
         {
             holder.bookmark_edit_checkbox.setChecked(true);
+//            holder.bookmark_edit_checkbox.setBackground(ContextCompat.getDrawable(context, R.drawable.bookmark_check));
+//            holder.bookmark_edit_item_parent_layout.setBackgroundColor(ContextCompat.getColor(context, R.color.bookmark_recyclerview_item));
         }
         else
         {
             holder.bookmark_edit_checkbox.setChecked(false);
+//            holder.bookmark_edit_checkbox.setBackground(ContextCompat.getDrawable(context, R.drawable.bookmark_uncheck));
+//            holder.bookmark_edit_item_parent_layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorMainWhite));
         }
 
         /* 체크박스에 클릭 리스너를 추가해서 체크박스가 체크/체크해제될 때마다 리스트에 값을 넣을 겁니다 */
         holder.bookmark_edit_checkbox.setOnClickListener(v -> {
             /* 여기서 클릭 리스너의 내부 로직을 만들진 않습니다. 액티비티에서 개수를 보여줘야 하기 때문에 내부 로직은 액티비티에서 구현합니다
             * 먼저 체크박스가 체크됐는지 확인합니다
-            * -> 그 다음 체크됐으면 onItemCheck(), onItemUncheck()의 인자로 체크된 또는 체크해제된 체크박스를 인자로 넘깁니다
-            * 이 틀을 잘 기억해두고 BookmarkEditActivity 133번 줄로 이동해 주세요 */
-            if (holder.bookmark_edit_checkbox.isChecked() || isSelectedAll)
+            * -> 그 다음 체크됐으면 onItemCheck(), onItemUncheck()의 인자로 체크된 또는 체크해제된 체크박스를 인자로 넘깁니다 */
+            if (holder.bookmark_edit_checkbox.isChecked())
             {
                 itemCheckListener.onItemCheck(item);
-                checked_count++;
+                Log.e(TAG, "체크된 아이템의 이름 : " + item.getWelf_name());
+                Log.e(TAG, "체크된 아이템의 id : " + item.getId());
+//                checked_count++;
             }
             else
             {
                 itemCheckListener.onItemUncheck(item);
-                checked_count--;
+                Log.e(TAG, "체크해제된 아이템 이름 : " + item.getWelf_name());
+//                checked_count--;
             }
         });
 

@@ -1,6 +1,7 @@
 package com.psj.welfare.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import java.util.List;
 
 public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.BookmarkViewHolder>
 {
+    private final String TAG = this.getClass().getSimpleName();
+
     private Context context;
     private List<BookmarkItem> list;
     private OnItemClickListener itemClickListener;
@@ -44,6 +47,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.Bookma
     public void onBindViewHolder(@NonNull BookmarkAdapter.BookmarkViewHolder holder, int position)
     {
         final BookmarkItem item = list.get(position);
+        Log.e(TAG, "북마크 조회 화면 - item.getTag() : " + item.getTag());
         holder.bookmark_welf_name.setText(item.getWelf_name());
         if (item.getTag().contains("-"))
         {
@@ -60,6 +64,10 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.Bookma
             String before = item.getTag().replace(" ", "");
             String else_str = "#" + before;
             holder.bookmark_tag.setText(else_str);
+        }
+        else if (item.getTag().equals("None"))
+        {
+            holder.bookmark_tag.setText("");
         }
     }
 
