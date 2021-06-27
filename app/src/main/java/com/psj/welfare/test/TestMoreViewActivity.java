@@ -2,6 +2,7 @@ package com.psj.welfare.test;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
@@ -13,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -53,12 +55,19 @@ public class TestMoreViewActivity extends AppCompatActivity
     SeeMoreBottomAdapter.OnItemClickListener itemClickListener;
     List<SeeMoreItem> list;
 
+    ArrayList<MoreViewItem> noRepeat;
+
+    // 중복없는 값들을 담아서 상단 리사이클러뷰에 보여줄 리스트
+    ArrayList<MoreViewItem> noDuplicateList;
+
     SharedPreferences sharedPreferences;
     boolean isLogin;
     MoreViewModel moreViewModel;
 
     // 서버 값 파싱할 때 값 담는 변수
-    String welf_id, welf_name, welf_tag, welf_count, assist_method, welf_theme, total_page, total_count;
+    String welf_id, welf_name, welf_tag, welf_count, bottom_assist_method, total_page;
+    // 상단 리사이클러뷰에 넣을 값을 담을 변수
+    String top_assist_method;
     String status;
     int total_pages;
     String sqlite_token, sessionId;
@@ -101,6 +110,7 @@ public class TestMoreViewActivity extends AppCompatActivity
         // 상, 하단 리사이클러뷰에 사용할 리스트 초기화
         up_list = new ArrayList<>();
         list = new ArrayList<>();
+        noDuplicateList = new ArrayList<>();
 
         // 상단 리사이클러뷰의 첫 번째 아이템은 전체여야 한다. 전체를 누르면 모든 결과를 보여줘야 한다(인자로 all 넘기기)
         up_list.add(0, new MoreViewItem("전체"));
@@ -196,7 +206,7 @@ public class TestMoreViewActivity extends AppCompatActivity
                                 // TODO : 이 아래 줄이 한번 페이징할 때마다 계속 호출되는데, 이전에 눌렀던 상단 리사이클러뷰 아이템들이 같이 로그에 찍혀서
                                 //  그것들의 검색 결과까지 같이 보여준다
                                 Log.e(TAG, "current_page : " + current_page + ", theme : " + theme);
-                                moreViewWelfareLogin(current_page, theme);
+                                moreViewWelfareLogin(current_page, "start");
                             }
                         }
                         else
@@ -276,159 +286,117 @@ public class TestMoreViewActivity extends AppCompatActivity
                 .observe(this, moreViewObserver);
     }
 
-    /* 로그인 시 더보기를 눌렀을 경우 받아온 JSON 값을 파싱하는 메서드 */
+    /* 로그인 시 더보기를 눌렀을 경우 받아온 JSON 값을 파싱하는 메서드
+     * 이 메서드는 페이징이 필요없고 각 지원형태 별로 가져오는 10개의 데이터들을 갖고 있다가 맨 먼저 보여줘야 한다 */
     private void firstEntranceParsing(String result)
     {
         Log.e(TAG, "서버 리턴값 파싱하는 메서드 호출##");
         try
         {
             JSONObject jsonObject = new JSONObject(result);
-            total_count = jsonObject.getString("total_num");
-            total_page = jsonObject.getString("total_page");
             status = jsonObject.getString("statusCode");
+            /* 이 JSONArray를 JSONObject로 파싱할 때는 주의해야 한다. message라는 JSONArray를 가져와 JSONArray 객체에 담지만
+             * 그 안의 assist_method_10과 all_10이 "message":[{"assist_method_10":[{"welf_id":580}]}] 형태로 들어있기 때문에
+             * for문으로 jsonArray의 길이만큼 반복하며 값을 가져오는 게 아니라 곧바로 getJSONObject(0)으로 JSONArray가 value인 assist_method_10 JSONObject를 가져와야 한다 */
             JSONArray jsonArray = jsonObject.getJSONArray("message");
-            for (int i = 0; i < jsonArray.length(); i++)
+            JSONObject inner_json = jsonArray.getJSONObject(0);
+            JSONArray assist_method_array = inner_json.getJSONArray("assist_method_10");
+            for (int i = 0; i < assist_method_array.length(); i++)
             {
-                JSONObject inner_json = jsonArray.getJSONObject(i);
-                JSONArray assist_method_array = inner_json.getJSONArray("assist_method_10");
-                JSONArray all_ten_array = inner_json.getJSONArray("all_10");
-                Log.e(TAG, "assist_method 길이 : " + assist_method_array.length());
-                Log.e(TAG, "all_ten_array 길이 : " + all_ten_array.length());
-//                welf_id = inner_json.getString("welf_id");
-//                welf_name = inner_json.getString("welf_name");
-//                welf_tag = inner_json.getString("welf_tag");
-//                assist_method = inner_json.getString("assist_method");
-//                welf_count = inner_json.getString("welf_count");
-//
-//                SeeMoreItem items = new SeeMoreItem();
-//                items.setWelf_id(welf_id);
-//                items.setWelf_name(welf_name);
-//                items.setWelf_tag(welf_tag);
-//                items.setAssist_method(assist_method);
-//                items.setWelf_count(welf_count);
-//                list.add(items);
-//
-//                // 상단 리사이클러뷰에서 보여줄 카테고리들을 리스트에 담는다(교육 지원, 물품 지원)
-//                MoreViewItem top_item = new MoreViewItem();
-//                top_item.setAssist_method(assist_method);
-//                up_list.add(top_item);
+                JSONObject assist_obj = assist_method_array.getJSONObject(i);
+                welf_id = assist_obj.getString("welf_id");
+                welf_name = assist_obj.getString("welf_name");
+                welf_tag = assist_obj.getString("welf_tag");
+                top_assist_method = assist_obj.getString("assist_method");
+
+                MoreViewItem item = new MoreViewItem();
+                item.setWelf_id(welf_id);
+                item.setWelf_name(welf_name);
+                item.setWelf_tag(welf_tag);
+                item.setAssist_method(top_assist_method);
+                up_list.add(item);
+
+                SeeMoreItem bottom_item = new SeeMoreItem();
+                bottom_item.setWelf_id(welf_id);
+                bottom_item.setWelf_name(welf_name);
+                bottom_item.setWelf_tag(welf_tag);
+                list.add(bottom_item);
             }
+
         }
         catch (JSONException e)
         {
             e.printStackTrace();
         }
 
-        /* 서버에서 받은 값 중 "-"을 없애는 로직입니다 */
-        // 1. for문으로 up_list를 돌며 contains()로 "-"이 붙어있는 assist_method를 찾는다
-        // 2. 찾았을 경우 "-"를 구분자로 삼아 split()을 호출해 리스트 안의 요소들을 나눈다
-        // 3. 2번의 결과값들은 ArrayList에 담는다
-//        ArrayList<String> results = new ArrayList<>();
-//        for (int i = 0; i < up_list.size(); i++)
-//        {
-//            results.add(up_list.get(i).getAssist_method());
-//        }
-//
-//        // ArrayList를 split()할 수는 없다. 그래서 ArrayList 안의 값들을 String으로 만들어야 하는데 이 처리를 하려면 StringBuilder를 만들고
-//        // 이 안에 다른 구분자를 섞어 리스트 안의 요소들을 빼내야 한다
-//        StringBuilder stringBuilder = new StringBuilder();
-//        for (int i = 0; i < results.size(); i++)
-//        {
-//            stringBuilder.append(results.get(i)).append(",");
-//        }
-//
-//        // StringBuilder 마지막의 "," 문자를 제거한다
-//        String split_target = stringBuilder.toString().substring(0, stringBuilder.toString().length() - 1);
-//
-//        // " - " 기준 split
-//        String[] arr = split_target.split(" - ");
-//        Log.e(TAG, "arr : " + Arrays.toString(arr)); // [전체,교육 지원,물품 지원,현금 지원, 물품 지원,현금 지원, 감면,현금 지원, 물품 지원,감면,감면,현금 지원,현금 지원,감면]
-//
-//        // 1. for문으로 up_list를 돌며 split()으로 모든 요소를 낱개로 나눠 String[]에 담는다
-//        // 2. String[] 안에 들어있는 요소들 사이에 껴있는 "-"를 ","로 변경한다
-//        // 3. 2의 처리가 끝나면, String[]을 ArrayList로 변환한다
-//        // 4. 3의 처리가 끝나면, 3에서 만들어진 ArrayList를 아래의 중복 검사 로직에 넣어서 만약에라도 중복되는 값이 있다면 없도록 처리한다
-//
-//        // 서버 응답 코드에 따른 예외처리
-//        if (status.equals("400") || status.equals("404") || status.equals("500"))
-//        {
-//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//            builder.setMessage("인터넷 연결이 불안정해요\n잠시 후 다시 시도해 주세요")
-//                    .setCancelable(false)
-//                    .setPositiveButton("확인", new DialogInterface.OnClickListener()
-//                    {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which)
-//                        {
-//                            dialog.dismiss();
-//                            finish();
-//                        }
-//                    }).show();
-//        }
-//        else
-//        {
-//            /* 서버 응답 코드가 200(성공)인 경우 */
-//            // 총 혜택 개수 null 체크
-//            if (total_count != null)
-//            {
-//                more_view_result_count.setText("맞춤 혜택 총 " + total_count + "개");
-//            }
-//
-//            // 현재 페이지 null 체크
-//            if (total_page != null)
-//            {
-//                total_pages = Integer.parseInt(total_page);
-//            }
-//
-//            // 다음 페이지 데이터 가져올 시 스크롤이 자동으로 맨 위로 올라가는 현상 방지
-//            if (more_view_bottom_recyclerview.getLayoutManager() != null)
-//                recyclerViewState = more_view_bottom_recyclerview.getLayoutManager().onSaveInstanceState();
-//            if (more_view_top_recyclerview.getLayoutManager() != null)
-//                recyclerViewState = more_view_top_recyclerview.getLayoutManager().onSaveInstanceState();
-//
-//            // 상단 리사이클러뷰, 어댑터 초기화
-//            up_adapter = new MoreViewAdapter(this, up_list, up_clickListener);
-//            up_adapter.setOnItemClickListener(pos ->
-//            {
-//                final String name = up_list.get(pos).getAssist_method();
-//                Log.e(TAG, "상단 리사이클러뷰에서 선택한 카테고리명 : " + name);
-//                // name을 누르면 상단 리사이클러뷰에서 선택한 아이템의 이름이 나오게 된다(전체, 사업, 교육 등)
-//                // 일단 여기서 api를 호출해 이름을 theme 인자로 넘기고, page와 같이 넘겨서 해당 카테고리의 값들을 받아온다
-//                list.clear();
-//                if (!name.equals("전체"))
-//                {
-//                    moreViewWelfareLogin(String.valueOf(integer_page), name);
-//                    moreViewPaging(String.valueOf(integer_page), name);
-//                    up_adapter.notifyDataSetChanged();
-//                    adapter.notifyDataSetChanged();
-//                }
-//                else
-//                {
-//                    moreViewWelfareLogin(String.valueOf(integer_page), "all");
-//                    moreViewPaging(String.valueOf(integer_page), "all");
-//                    adapter.notifyDataSetChanged();
-//                }
-//            });
-//            more_view_top_recyclerview.setAdapter(up_adapter);
-//
-//            // 하단 리사이클러뷰 초기화 및 클릭 리스너 정의
-//            // 아이템 클릭 시 상세보기 화면으로 이동
-//            adapter = new SeeMoreBottomAdapter(TestMoreViewActivity.this, list, itemClickListener);
-//            adapter.setOnItemClickListener(pos ->
-//            {
-//                String id = list.get(pos).getWelf_id();
-//                String name = list.get(pos).getWelf_name();
-//                String tag = list.get(pos).getWelf_tag();
-//                String count = list.get(pos).getWelf_count();
-//                Log.e(TAG, "하단 리사이클러뷰의 아이템 이름 : " + name + ", 조회수 : " + count + ", id : " + id + ", 태그 : " + tag);
+        checkDuplicate();
+
+        // 서버 응답 코드에 따른 예외처리
+        if (status.equals("400") || status.equals("404") || status.equals("500"))
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("인터넷 연결이 불안정해요\n잠시 후 다시 시도해 주세요")
+                    .setCancelable(false)
+                    .setPositiveButton("확인", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            dialog.dismiss();
+                            finish();
+                        }
+                    }).show();
+        }
+        else
+        {
+            /* 서버 응답 코드가 200(성공)인 경우 */
+            // 현재 페이지 null 체크
+            if (total_page != null)
+            {
+                total_pages = Integer.parseInt(total_page);
+            }
+
+            // 상단 리사이클러뷰, 어댑터 초기화
+            up_adapter = new MoreViewAdapter(this, noRepeat, up_clickListener);
+            up_adapter.setOnItemClickListener(pos ->
+            {
+                final String name = noRepeat.get(pos).getAssist_method();
+                Log.e(TAG, "상단 리사이클러뷰에서 선택한 카테고리명 : " + name);
+                // name을 누르면 상단 리사이클러뷰에서 선택한 아이템의 이름이 나오게 된다(전체, 사업, 교육 등)
+                // 일단 여기서 api를 호출해 이름을 theme 인자로 넘기고, page와 같이 넘겨서 해당 카테고리의 값들을 받아온다
+                list.clear();
+                if (!name.equals("전체"))
+                {
+                    moreViewWelfareLogin(String.valueOf(integer_page), name);
+                    moreViewPaging(String.valueOf(integer_page), name);
+                    up_adapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged();
+                }
+                else
+                {
+                    moreViewWelfareLogin(String.valueOf(integer_page), "all");
+                    moreViewPaging(String.valueOf(integer_page), "all");
+                    adapter.notifyDataSetChanged();
+                }
+            });
+            more_view_top_recyclerview.setAdapter(up_adapter);
+
+            // 하단 리사이클러뷰 초기화 및 클릭 리스너 정의
+            // 아이템 클릭 시 상세보기 화면으로 이동
+            adapter = new SeeMoreBottomAdapter(TestMoreViewActivity.this, list, itemClickListener);
+            adapter.setOnItemClickListener(pos ->
+            {
+                String id = list.get(pos).getWelf_id();
+                String name = list.get(pos).getWelf_name();
+                String tag = list.get(pos).getWelf_tag();
+                String count = list.get(pos).getWelf_count();
+                Log.e(TAG, "하단 리사이클러뷰의 아이템 이름 : " + name + ", 조회수 : " + count + ", id : " + id + ", 태그 : " + tag);
 //                Intent intent = new Intent(this, DetailTabLayoutActivity.class);
 //                intent.putExtra("welf_id", id);
 //                startActivity(intent);
-//            });
-//            more_view_bottom_recyclerview.setAdapter(adapter);
-//            more_view_bottom_recyclerview.getLayoutManager().onRestoreInstanceState(recyclerViewState);
-//            more_view_top_recyclerview.getLayoutManager().onRestoreInstanceState(recyclerViewState);
-//        }
+            });
+            more_view_bottom_recyclerview.setAdapter(adapter);
+        }
 
     }
 
@@ -438,7 +406,7 @@ public class TestMoreViewActivity extends AppCompatActivity
         /* 서버에서 값을 받으면 up_list 안에 중복된 값들이 여럿 있는데, 이것들을 중복 검사하는 로직입니다
          * 참고 : https://stackoverflow.com/questions/29965140/remove-duplicates-arraylist-custom-object */
         // 1. 먼저 중복이 제거된 값들을 담을 ArrayList(이하 list)를 만듭니다. 이 list는 나중에 상단 리사이클러뷰의 어댑터 초기화 시 어댑터 생성자의 매개변수로 넘길 겁니다
-        ArrayList<MoreViewItem> noRepeat = new ArrayList<>();
+        noRepeat = new ArrayList<>();
         // 2. for-each 문으로 up_list에 MoreViewItem 객체를 넣을 겁니다
         for (MoreViewItem item : up_list)
         {
@@ -463,8 +431,16 @@ public class TestMoreViewActivity extends AppCompatActivity
             // 6. isFound가 true일 경우(왜냐면 3에서 false로 초기화했기 때문에, true여야 중복되지 않았다는 신호가 됩니다)에만 1에서 새로 만든 리스트에 값을 넣습니다
             // 이 처리까지 끝나고 로그로 리스트 안의 값을 확인해보면 중복없는 값들만 들어있는 걸 볼 수 있습니다
             if (!isFound)
+            {
                 noRepeat.add(item);
+            }
         }
+
+        for (int i = 0; i < noRepeat.size(); i++)
+        {
+            Log.e(TAG, "noRepeat 안의 지원 유형들 : " + noRepeat.get(i).getAssist_method());
+        }
+
     }
 
     public void setStatusBarGradiant(Activity activity)
