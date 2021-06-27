@@ -133,7 +133,7 @@ public class DetailReviewAllLook extends AppCompatActivity {
             jsonObject.put("id", review_id);
             jsonObject.put("is_remove", is_remove);
 
-            Log.e(TAG, "삭제 api로 보낼 JSON 만들어진 것 테스트 : " + jsonObject.toString());
+//            Log.e(TAG, "삭제 api로 보낼 JSON 만들어진 것 테스트 : " + jsonObject.toString());
         }
         catch (JSONException e)
         {
@@ -181,8 +181,6 @@ public class DetailReviewAllLook extends AppCompatActivity {
 //        Log.e(TAG,"tttt");
             LoadReview();
 
-
-
 //            Intent intent = new Intent(DetailReviewAllLook.this,DetailTabLayoutActivity.class);
 //            //STACK 정리, 기존의 상세보기 페이지가 stack에 맨위에 있으면 기존 액티비티는 종료하고 새로운 액티비티를 띄운다
 //            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -223,7 +221,7 @@ public class DetailReviewAllLook extends AppCompatActivity {
 
     //서버로부터 리뷰 데이터 가져오기
     private void LoadReview() {
-//        allreviewList.clear();
+        allreviewList.clear();
         //ApiInterfaceTest apiInterfaceTest = ApiClient.getApiClient().create(ApiInterfaceTest.class); //레트로핏 인스턴스로 인터페이스 객체 구현
         ApiInterfaceTest apiInterfaceTest = ApiClientTest.ApiClient().create(ApiInterfaceTest.class); //레트로핏 인스턴스로 인터페이스 객체 구현
         Call<String> call = apiInterfaceTest.ReviewAllLook(token,filter,welf_id); //인터페이스에서 사용할 메소드 선언
@@ -286,7 +284,7 @@ public class DetailReviewAllLook extends AppCompatActivity {
                 ReviewData.setIs_me(boolean_isme);
                 ReviewData.setNickName(writer);
                 ReviewData.setContent(content);
-                Log.e(TAG,"star_count : " + star_count);
+//                Log.e(TAG,"star_count : " + star_count);
                 float star = Float.parseFloat(star_count);
                 ReviewData.setStar_count(star);
                 ReviewData.setDifficulty_level(difficulty_level);
@@ -398,5 +396,21 @@ public class DetailReviewAllLook extends AppCompatActivity {
             alertDialog.dismiss();
         });
 
+    }
+
+    //뒤로가기 누르면 상세보기 페이지로 넘어감
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+//        Intent intent = new Intent(DetailReviewAllLook.this, DetailTabLayoutActivity.class);
+//        //STACK 정리, 기존의 상세보기 페이지가 stack에 맨위에 있으면 기존 액티비티는 종료하고 새로운 액티비티를 띄운다
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        intent.putExtra("welf_name",welf_name);
+//        intent.putExtra("welf_id",welf_id);
+//        intent.putExtra("being_id",true);
+//        intent.putExtra("review_write",true);
+//        startActivity(intent);
+//        finish();
     }
 }

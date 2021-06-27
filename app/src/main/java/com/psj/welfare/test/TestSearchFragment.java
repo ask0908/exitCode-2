@@ -3,10 +3,12 @@ package com.psj.welfare.test;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -14,6 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -148,15 +151,55 @@ public class TestSearchFragment extends Fragment
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
             {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH)
+                if (search_name_edittext.length() == 0 )
                 {
+                    Toast.makeText(getContext(), "검색어를 입력해 주세요", Toast.LENGTH_SHORT).show();
+                    return true;
+                } else if(actionId == EditorInfo.IME_ACTION_SEARCH){
                     Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "검색 화면에서 키워드 검색 결과 화면으로 이동. 검색한 키워드 : " +
-                            search_name_edittext.getText().toString());
+                    bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "검색 화면에서 키워드 검색 결과 화면으로 이동. 검색한 키워드 : " + search_name_edittext.getText().toString());
                     analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
                     performSearch(search_name_edittext.getText().toString().trim());
-
                     return true;
+                }
+                return false;
+            }
+        });
+
+
+        //키보드 환경 설정(화면에 띄워져 있는지 판단하기 위함)
+        InputMethodManager keyboard = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        //edittext 오른쪽 drawble 아이콘 클릭
+        search_name_edittext.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Drawable drawable = search_name_edittext.getCompoundDrawables()[2]; //[0] -> left아이콘, [1] -> top아이콘, [2] -> right아이콘, [3] -> bottom아이콘
+                if(event.getAction() == MotionEvent.ACTION_UP){ //edittext에서 터치를 땠을 때
+                    if (drawable != null) { //edittext에서 오른쪽 아이콘이 있을 때
+                        //edittext에서 오른쪽 아이콘 클릭 했을 때 (너비랑 아이콘 패딩, 아이콘 크기 값 으로 계산)
+                        if(event.getX() >= (search_name_edittext.getWidth() - search_name_edittext.getPaddingRight() - drawable.getIntrinsicWidth())){
+
+                            //키보드 열려 있을때만 검색 눌렀을 때 결과값 보여주기
+                            if (search_name_edittext.length() == 0 )
+                            {
+                                Toast.makeText(getContext(), "검색어를 입력해 주세요", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Bundle bundle = new Bundle();
+                                bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "검색 화면에서 키워드 검색 결과 화면으로 이동. 검색한 키워드 : " + search_name_edittext.getText().toString());
+                                analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+                                performSearch(search_name_edittext.getText().toString().trim());
+                            }
+
+//                            if(keyboard.isActive()){ //키보드 열려 있는지
+//                                Log.e("TAG","키보드 열려 있음");
+//
+//                            } else {
+//                                Log.e("TAG","키보드 닫혀 있음");
+//                            }
+                            return false;
+                        }
+                    }
                 }
                 return false;
             }

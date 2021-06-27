@@ -55,7 +55,7 @@ public class MyPageViewModel extends AndroidViewModel
                         if (response.isSuccessful() && response.body() != null)
                         {
                             String result = response.body();
-                            Log.e(TAG, "뷰모델에서 내가 작성한 리뷰 가져오기 : " + result);
+//                            Log.e(TAG, "뷰모델에서 내가 작성한 리뷰 가져오기 : " + result);
                             data.setValue(result);
                         }
                         else

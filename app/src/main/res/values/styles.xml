@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- 액션바(시계, 와이파이 상태 표시란 있는 곳)에 그라데이션을 입히려면 colorPrimaryDark를 주석처리한 다음 MainTabLayoutActivity의 setStatusBarGradiant()를
      사용하면 된다 -->
@@ -6,11 +6,14 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/layout_background_start_gradation</item>
+<!--        <item name="colorPrimaryDark">@color/white</item>-->
+<!--        <item name="colorPrimaryDark">@color/layout_background_start_gradation</item>-->
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
 
         <!-- No Title Bar-->
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+<!--        <item name="windowActionBar">false</item>-->
+<!--        <item name="windowNoTitle">true</item>-->
     </style>
 
     <style name="TestActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">

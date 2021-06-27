@@ -137,14 +137,25 @@ public class DetailReviewWrite extends AppCompatActivity {
         review_content_edit.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(v.getId()==R.id.reason_to_leave_edittext){
-                    v.getParent().requestDisallowInterceptTouchEvent(true); //부모의 터치 이벤트 true
-
-                    switch(event.getAction() & MotionEvent.ACTION_MASK){
-                      case  MotionEvent.ACTION_UP: v.getParent().requestDisallowInterceptTouchEvent(false); //부모의 터치 이벤트 false
-                          break;
-                    }
+                final int action = event.getAction();
+                switch(action & MotionEvent.ACTION_MASK){
+                  case  MotionEvent.ACTION_MOVE:
+                      v.getParent().requestDisallowInterceptTouchEvent(true);
+                      Log.e(TAG,"tetete324234");
+                    break;
                 }
+
+
+//                if(v.getId()==R.id.reason_to_leave_edittext){
+//                    v.getParent().requestDisallowInterceptTouchEvent(true); //부모의 터치 이벤트 true
+//                    Log.e(TAG,"tete000");
+//                    switch(event.getAction() & MotionEvent.ACTION_MASK){
+//                      case  MotionEvent.ACTION_UP: v.getParent().requestDisallowInterceptTouchEvent(false); //부모의 터치 이벤트 false
+//
+//                          Log.e(TAG,"tete111");
+//                          break;
+//                    }
+//                }
                 return false;
             }
         });
@@ -483,9 +494,11 @@ public class DetailReviewWrite extends AppCompatActivity {
         bad_radiobutton.getLayoutParams().width = size.x / 6; //도움 안돼요 버튼 크기 변경
 
         review_content_edit.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x / 24);
-        review_content_edit.getLayoutParams().height = size.x / 3 * 2; //의견란
-        review_content_edit.getLayoutParams().width = size.x / 6 * 5; //의견란
+//        review_content_edit.getLayoutParams().height = (int) (size.y * 0.2); //의견란
+        review_content_edit.getLayoutParams().width = (int) (size.x * 0.835); //의견란
         review_content_edit.setPadding(size.y / 70, size.y / 70, size.y / 70, size.y / 70); //의견란 패딩값 적용
+        review_content_edit.setMaxHeight((int)(size.y*0.2));
+
 
         text_length_layout.getLayoutParams().height = size.y / 24; //의견란 글자수 레이아웃 크기 변경
         text_length_layout.getLayoutParams().width = size.x / 6 * 5; //의견란 글자수 레이아웃 크기 변경
@@ -496,7 +509,7 @@ public class DetailReviewWrite extends AppCompatActivity {
 
         btnRegister.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x / 20); //등록 버튼 텍스트 크기
         btnRegister.getLayoutParams().height = size.y / 16; //등록 버튼 크기 변경
-        btnRegister.getLayoutParams().width = size.x / 6 * 5; //등록 버튼 크기 변경
+        btnRegister.getLayoutParams().width = (int) (size.x * 0.835); //등록 버튼 크기 변경
         btnRegister.setPadding(0, size.y / 90, 0, size.y / 80); //등록 버튼패딩값 적용
 
     }

@@ -229,9 +229,14 @@
                     android:background="@drawable/radius_smallround_lightgray_border"
                     android:ems="10"
                     android:gravity="top"
+                    android:fontFamily="@font/notosanskr_medium"
+                    android:includeFontPadding="false"
                     android:hint="최대 350자까지 입력 가능합니다"
-                    android:lines="10"
-                    android:textColorHint="#CFCFCF"/>
+                    android:textColorHint="#CFCFCF"
+                    android:overScrollMode="always"
+                    android:scrollbarStyle="insideInset"
+                    android:scrollbars="vertical"
+                    android:fitsSystemWindows="true"/>
 
                 <LinearLayout
                     android:id="@+id/text_length_layout"

@@ -69,6 +69,12 @@ public class BannerDetailAdapter extends RecyclerView.Adapter<BannerDetailAdapte
             }
         }
 
+        if(bannertag_final.equals("")){ //배너가 "" 이면 안보여주기
+            holder.banner_tag.setVisibility(View.GONE);
+        } else {
+            holder.banner_tag.setVisibility(View.VISIBLE);
+        }
+
         holder.banner_title.setText(BannerTitle);
         holder.banner_tag.setText(bannertag_final);
         holder.banner_contents.setText(BannerContents);

@@ -67,7 +67,7 @@
                 android:fontFamily="@font/notosanskr_medium"
                 android:includeFontPadding="false"
                 android:background="@drawable/renewal_search_edittext"
-                android:drawableEnd="@drawable/edittext_end_pink"
+                android:drawableRight="@drawable/edittext_end_pink"
                 tools:paddingStart="12dp"
                 tools:paddingEnd="12dp"
                 android:hint="검색어를 입력해주세요"
