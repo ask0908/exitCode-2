@@ -4,6 +4,10 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+/**
+ * 인터넷 연결 상태를 확인하는 static 메서드가 있는 클래스
+ * 참고 : https://youngest-programming.tistory.com/32
+ */
 public class NetworkStatus
 {
     public static final int TYPE_WIFI = 1;

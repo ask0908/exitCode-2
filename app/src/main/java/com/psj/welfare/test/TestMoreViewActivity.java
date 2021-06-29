@@ -118,12 +118,16 @@ public class TestMoreViewActivity extends AppCompatActivity
             more_view_result_count = findViewById(R.id.more_view_result_count);
             more_view_top_recyclerview = findViewById(R.id.more_view_top_recyclerview);
             more_view_bottom_recyclerview = findViewById(R.id.more_view_bottom_recyclerview);
+            // 하단 리사이클러뷰에 보이는 아이템들의 크기를 고정으로 설정
+            more_view_bottom_recyclerview.setHasFixedSize(true);
             more_view_bottom_recyclerview.setLayoutManager(new LinearLayoutManager(this));
 
-            // 화면 최상단의 '맞춤 혜택 총 n개' 텍스트뷰 글자 크기 조절
+            // 화면 최상단의 '맞춤 혜택 총 n개' 텍스트뷰 글자 크기, 하단 리사이클러뷰 아이템 간격 및 크기 조절
             ScreenSize screen = new ScreenSize();
             Point size = screen.getScreenSize(TestMoreViewActivity.this);
 
+            // 하단 리사이클러뷰 패딩 설정
+            more_view_bottom_recyclerview.setPadding((int) (size.x * 0.058), 0, (int) (size.x * 0.015), 0);
             more_view_result_count.setTextSize((int) (size.x * 0.022));
 
             // 상, 하단 리사이클러뷰에 사용할 리스트 초기화
@@ -138,6 +142,7 @@ public class TestMoreViewActivity extends AppCompatActivity
             sessionId = sharedPreferences.getString("sessionId", "");
             isLogin = sharedPreferences.getBoolean("logout", false);
 
+            // 처음 화면에 들어오면 start, 1을 인자로 넘겨서 값을 가져와 all_10 안의 값들을 보여준다
             moreViewWelfareLogin(1, "start");
             // 리사이클러뷰 페이징 처리
             moreViewPaging();

@@ -1,6 +1,5 @@
 package com.psj.welfare.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
 import android.view.LayoutInflater;
@@ -15,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
 import com.psj.welfare.data.SeeMoreItem;
+import com.psj.welfare.test.TestMoreViewActivity;
 
 import java.util.List;
 
@@ -55,10 +55,26 @@ public class SeeMoreBottomAdapter extends RecyclerView.Adapter<SeeMoreBottomAdap
     public void onBindViewHolder(@NonNull SeeMoreBottomAdapter.SeeMoreViewHolder holder, int position)
     {
         ScreenSize screen = new ScreenSize();
-        Point size = screen.getScreenSize((Activity) context);
-        holder.bottom_result_name.setTextSize((float) size.x / 22);
-        holder.bottom_result_tag.setTextSize((float) size.x / 28);
-        holder.bottom_result_views.setTextSize((float) size.x / 28);
+        Point size = screen.getScreenSize((TestMoreViewActivity) context);
+        holder.bottom_result_layout.getLayoutParams().height = (int) (size.y * 0.135);
+        holder.bottom_result_name.setTextSize((int) (size.x * 0.017));
+        holder.bottom_result_tag.setTextSize((int) (size.x * 0.0139));
+        holder.bottom_result_views.setTextSize((int) (size.x * 0.0139));
+//        holder.bottom_result_layout.setPadding((int) (size.x * 2), (int) (size.x * 2), (int) (size.x * 2), (int) (size.x * 2));
+
+//        RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.bottom_result_layout.getLayoutParams();
+//        params.setMargins((int) (size.x * 0.03), (int) (size.y * 0.02), (int) (size.x * 0.03), (int) (size.y * 0.02));
+//        holder.bottom_result_layout.setLayoutParams(params);
+
+        if(position != list.size()-1){ //마지막 데이터가 아닐 때
+            RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.bottom_result_layout.getLayoutParams();
+            params.setMargins((int) (size.x * 0.03), (int) (size.y * 0.02), (int) (size.x * 0.03), (int) (size.y * 0.02));
+            holder.bottom_result_layout.setLayoutParams(params);
+        } else if( position == (list.size()-1)) { //마지막 데이터 일 때
+            RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.bottom_result_layout.getLayoutParams();
+            params.setMargins((int) (size.x * 0.03), (int) (size.y * 0.02), (int) (size.x * 0.03), (int) (size.y * 0.043));
+            holder.bottom_result_layout.setLayoutParams(params);
+        }
 
         SeeMoreItem item = list.get(position);
         // 혜택명

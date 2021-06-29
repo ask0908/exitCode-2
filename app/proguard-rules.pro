@@ -31,3 +31,12 @@
     public static void main(java.lang.String[]);
 }
 -keep class android.net.*.* { *; }
+# 로그를 일일이 찾아서 삭제하지 않아도 apk 파일 생성 시 로그를 없애주는 부분
+-assumenosideeffects class android.util.Log {
+    public static boolean isLoggable(java.lang.String, int);
+    public static int v(...);
+    public static int i(...);
+    public static int w(...);
+    public static int d(...);
+    public static int e(...);
+}

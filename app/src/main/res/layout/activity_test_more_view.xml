@@ -71,14 +71,17 @@
                 tools:listitem="@layout/test_up_item"/>
 
             <!-- 상단 리사이클러뷰에서 선택한 카테고리에 따라 다른 내용들을 보여줄 리사이클러뷰
-             페이징 적용해서 10개 이상 올 경우 10개를 한 덩어리로 해서 보여줘야 한다 -->
+             페이징 적용해서 10개 이상 올 경우 10개를 한 덩어리로 해서 보여줘야 한다
+             overScrollMode : never일 경우 리사이클러뷰 스크롤 효과를 제거함, 맨 위와 밑에 도착하고
+             계속 스크롤하면 반원같은 게 올라오는 현상을 없애는 속성 -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/more_view_bottom_recyclerview"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:overScrollMode="never"
+                android:paddingBottom="20dp"
                 app:layout_constraintWidth_percent="1"
-                app:layout_constraintHeight_percent=".9"
+                app:layout_constraintHeight_percent=".91"
                 app:layout_constraintVertical_bias="1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

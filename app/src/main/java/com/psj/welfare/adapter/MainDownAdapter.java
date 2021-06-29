@@ -1,6 +1,8 @@
 package com.psj.welfare.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Point;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.psj.welfare.R;
+import com.psj.welfare.ScreenSize;
 import com.psj.welfare.data.MainThreeDataItem;
 
 import java.util.List;
@@ -53,6 +56,13 @@ public class MainDownAdapter extends RecyclerView.Adapter<MainDownAdapter.MainDo
     @Override
     public void onBindViewHolder(@NonNull MainDownAdapter.MainDownViewHolder holder, int position)
     {
+        ScreenSize screen = new ScreenSize();
+        Point size = screen.getScreenSize((Activity) context);
+
+        RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.bottom_result_layout.getLayoutParams();
+        params.setMargins((int) (size.x * 0.03), (int) (size.y * 0.015), (int) (size.x * 0.03), (int) (size.y * 0.015));
+        holder.bottom_result_layout.setLayoutParams(params);
+
         if (!list.isEmpty())
         {
             MainThreeDataItem item = list.get(position);
