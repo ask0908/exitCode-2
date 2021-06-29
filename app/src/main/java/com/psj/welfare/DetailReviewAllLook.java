@@ -1,5 +1,6 @@
 package com.psj.welfare;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
@@ -40,6 +41,8 @@ public class DetailReviewAllLook extends AppCompatActivity {
     private ImageButton back_btn,filter_icon; //뒤로가기 버튼, 필터링 버튼
     private TextView benefit_title,review_count,filter_text; //혜택명, 리뷰 갯 수, 필터 텍스트
     private Point size; //디스플레이 크기를 담을 변수
+
+    private ProgressDialog dialog; //서버에서 데이터 받아올 동안 보여줄 프로그래스 바
 
     //리사이클러뷰 사용하기 위한 변수 선언
     private RecyclerView allreview_recycler; //리사이클러뷰 선언
@@ -221,6 +224,15 @@ public class DetailReviewAllLook extends AppCompatActivity {
 
     //서버로부터 리뷰 데이터 가져오기
     private void LoadReview() {
+
+        //서버로부터 데이터를 받아오는데 걸리는 시간동안 보여줄 프로그래스 바
+        dialog = new ProgressDialog(this);
+        dialog.setMax(100);
+        dialog.setMessage("잠시만 기다려 주세요...");
+        dialog.setCancelable(false); //"false"면 다이얼로그 나올 때 dismiss 띄우기 전까지 안사라짐
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.show();
+
         allreviewList.clear();
         //ApiInterfaceTest apiInterfaceTest = ApiClient.getApiClient().create(ApiInterfaceTest.class); //레트로핏 인스턴스로 인터페이스 객체 구현
         ApiInterfaceTest apiInterfaceTest = ApiClientTest.ApiClient().create(ApiInterfaceTest.class); //레트로핏 인스턴스로 인터페이스 객체 구현
@@ -295,6 +307,8 @@ public class DetailReviewAllLook extends AppCompatActivity {
                 allreview_adapter.notifyDataSetChanged();
 
             }
+
+            dialog.dismiss();
         }
         catch (JSONException e)
         {

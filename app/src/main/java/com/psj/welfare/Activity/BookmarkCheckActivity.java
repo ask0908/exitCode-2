@@ -75,6 +75,7 @@ public class BookmarkCheckActivity extends AppCompatActivity
         setStatusBarGradiant(this);
         setContentView(R.layout.activity_bookmark_check);
 
+
         init();
         list = new ArrayList<>();
         progressBar = findViewById(R.id.bookmark_progressbar);
@@ -83,6 +84,81 @@ public class BookmarkCheckActivity extends AppCompatActivity
         bookmark_recyclerview.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
 
         /* 북마크 페이징 처리 */
+        recyclerviewScrollListener(); //리사이클러뷰가 마지막에 도달하면 이벤트 발생
+
+        //버튼 및 텍스트의 사이즈를 동적으로 맞춤
+        setsize();
+
+        bookmark_back_image.setOnClickListener(v -> finish());
+
+        //서버에서 북마크한 데이터 가져오기
+        getBookmark(String.valueOf(integer_page),false);
+
+        // 자세히 보기
+        bookmark_edit_textview.setOnClickListener(v -> {
+            if (list.size() > 0)
+            {
+                Intent intent = new Intent(this, BookmarkEditActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("list", list);
+                intent.putExtra("list", bundle);
+                startActivityForResult(intent, 1);
+            }
+            else
+            {
+                Toast.makeText(this, "저장된 북마크가 없습니다", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+
+    //리사이클러뷰가 마지막에 도달하면 이벤트 발생
+    private void recyclerviewScrollListener() {
+//        RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//
+//                LinearLayoutManager llm = LinearLayoutManager.class.cast(recyclerView.getLayoutManager());
+//                int totalItemCount = llm.getItemCount(); //리사이클러뷰가 가진 총 아이템 갯수
+//                //indLastCompletelyVisibleItemPosition 메서드이다. 얘는 마지막 아이템이 완전히 보일때 해당 Position을 알려준다.
+//                int lastVisible = llm.findLastCompletelyVisibleItemPosition(); //Position을 반환하기 때문에 0부터 시작이 된다
+//                //ex) 1개의 아이템을 가지고 있다. Position은 0으로 나올 것이고, totalItemCount 는 1로 나오게 된다
+//
+//                if (llm != null)
+//                {
+//                    if (llm.getItemCount() == 0)
+//                    {
+//                        //
+//                    }
+//                    else
+//                    {
+//                        String log_str = String.valueOf(integer_page);
+//                        if (!log_str.equals(String.valueOf(total_paging_count)))
+//                        {
+//                            if (lastVisible >= totalItemCount - 1)
+//                            {
+//                                integer_page++;
+//                                progressBar.setVisibility(View.VISIBLE); //하단 프로그래스바
+//                                current_page = String.valueOf(integer_page);
+//                                getBookmark(current_page);
+//                            }
+//                        }
+//                        else
+//                        {
+//                            Log.e(TAG, "서버에서 불러올 데이터가 없음");
+//                            progressBar.setVisibility(View.GONE);
+//                        }
+//                    }
+//                }
+//            }
+//        };
+//        bookmark_recyclerview.addOnScrollListener(onScrollListener);
+
+
+
+        //페이징으로 추가 데이터 받아오기
         bookmark_recyclerview.addOnScrollListener(new RecyclerView.OnScrollListener()
         {
             @Override
@@ -108,48 +184,38 @@ public class BookmarkCheckActivity extends AppCompatActivity
                             if (lastVisible >= totalItemCount - 1)
                             {
                                 integer_page++;
-                                progressBar.setVisibility(View.VISIBLE);
+                                progressBar.setVisibility(View.VISIBLE); //하단 프로그래스바
                                 current_page = String.valueOf(integer_page);
-                                getBookmark(current_page);
+                                //서버에서 북마크한 데이터 가져오기
+                                getBookmark(current_page,true);
                             }
                         }
                         else
                         {
                             Log.e(TAG, "서버에서 불러올 데이터가 없음");
+                            progressBar.setVisibility(View.GONE);
                         }
                     }
                 }
             }
         });
 
+    }
+
+
+    //버튼 및 텍스트의 사이즈를 동적으로 맞춤
+    private void setsize(){
         ScreenSize screen = new ScreenSize();
         Point size = screen.getScreenSize(this);
 
-        bookmark_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 18);
+        bookmark_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 18); //"북마크" 텍스트
+        bookmark_top_textview.setPadding((int)(size.x*0.1), 0,(int)(size.x*0.07),0);
+
         all_bookmark_count.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 23);
         bookmark_edit_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 23);
-
-        bookmark_back_image.setOnClickListener(v -> finish());
-
-        getBookmark(String.valueOf(integer_page));
-
-        // 자세히 보기
-        bookmark_edit_textview.setOnClickListener(v -> {
-            if (list.size() > 0)
-            {
-                Intent intent = new Intent(this, BookmarkEditActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("list", list);
-                intent.putExtra("list", bundle);
-                startActivityForResult(intent, 1);
-            }
-            else
-            {
-                Toast.makeText(this, "저장된 북마크가 없습니다", Toast.LENGTH_SHORT).show();
-            }
-        });
-
+        bookmark_check_empty_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 20);
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
@@ -158,7 +224,7 @@ public class BookmarkCheckActivity extends AppCompatActivity
         if (requestCode == 1 && resultCode == RESULT_OK)
         {
             list.clear();
-            getBookmark(String.valueOf(integer_page));
+            getBookmark(String.valueOf(integer_page),false);
         }
     }
 
@@ -173,14 +239,19 @@ public class BookmarkCheckActivity extends AppCompatActivity
         bookmark_check_empty_textview = findViewById(R.id.bookmark_check_empty_textview);
     }
 
-    // 내 북마크 가져오기
-    private void getBookmark(String page)
+    //서버에서 북마크한 데이터 가져오기
+    private void getBookmark(String page, boolean paging)
     {
+        //paging은 페이징으로 데이터를 불러오는건지 아닌건지를 판단할 때 쓰임
+
         final ProgressDialog dialog = new ProgressDialog(this);
         dialog.setMessage("잠시만 기다려 주세요...");
         dialog.setCancelable(false);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        dialog.show();
+
+        if(!paging){ //페이징으로 서버를 연결하는것이 아니라면
+            dialog.show();
+        }
 
         viewModel = new ViewModelProvider(this).get(BookmarkViewModel.class);
         final Observer<String> bookmarkObserver = new Observer<String>()
@@ -190,13 +261,19 @@ public class BookmarkCheckActivity extends AppCompatActivity
             {
                 if (s != null)
                 {
-                    Log.e(TAG, "액티비티에서 북마크 데이터 가져온 결과 : " + s);
-                    bookmarkParsing(s);
-                    dialog.dismiss();
+                    if(!paging){ //페이징으로 서버를 연결한다면
+                        bookmarkParsing(s);
+                        dialog.dismiss();
+                    } else { //페이징이 아닌 처음 액티비티로 들어왔을 때 서버를 연결항다면
+                        bookmarkParsing(s);
+                    }
+//                    Log.e(TAG, "액티비티에서 북마크 데이터 가져온 결과 : " + s);
+                    bookmark_check_empty_textview.setVisibility(View.GONE); //"아직 북마크한 혜택이 없습니다"
                 }
                 else
                 {
                     Log.e(TAG, "가져온 북마크 데이터가 없습니다");
+                    bookmark_check_empty_textview.setVisibility(View.VISIBLE); //"아직 북마크한 혜택이 없습니다"
                 }
             }
         };
@@ -208,6 +285,7 @@ public class BookmarkCheckActivity extends AppCompatActivity
     @SuppressLint("CheckResult")
     private void bookmarkParsing(String result)
     {
+//        Log.e(TAG,"result : " + result);
         try
         {
             JSONObject jsonObject = new JSONObject(result);
@@ -217,7 +295,7 @@ public class BookmarkCheckActivity extends AppCompatActivity
             for (int i = 0; i < jsonArray.length(); i++)
             {
                 JSONObject inner_json = jsonArray.getJSONObject(i);
-                id = inner_json.getString("id");
+                id = inner_json.getString("bookmark_id");
                 welf_id = inner_json.getString("welf_id");
                 welf_name = inner_json.getString("welf_name");
                 tag = inner_json.getString("tag");
@@ -235,7 +313,7 @@ public class BookmarkCheckActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        // 페이징해서 새 데이터 가져올 때 리사이클러뷰 스크롤이 자동으로 맨 위로 올라가는 현상이 있는데 그걸 막기 위한 코드
+//        // 페이징해서 새 데이터 가져올 때 리사이클러뷰 스크롤이 자동으로 맨 위로 올라가는 현상이 있는데 그걸 막기 위한 코드
         recyclerViewState = bookmark_recyclerview.getLayoutManager().onSaveInstanceState();
 
         // 혜택 개수 set
@@ -273,6 +351,9 @@ public class BookmarkCheckActivity extends AppCompatActivity
         });
         bookmark_recyclerview.setAdapter(adapter);
 
+
+
+        bookmark_recyclerview.getLayoutManager().onRestoreInstanceState(recyclerViewState); //리사이클러뷰 현재 위치값 저장한 데이터를 스크롤 해서 새로운 데이터를 받아왔을 때 기억하고 셋팅함
     }
 
     public void setStatusBarGradiant(Activity activity)
@@ -284,12 +365,13 @@ public class BookmarkCheckActivity extends AppCompatActivity
         window.setBackgroundDrawable(background);
     }
 
-//    @Override
-//    protected void onRestart()
-//    {
-//        super.onRestart();
-//        list.clear();
-//        getBookmark(String.valueOf(integer_page));
-//        adapter.notifyDataSetChanged();
-//    }
+    @Override
+    protected void onRestart()
+    {
+        super.onRestart();
+        list.clear();
+        getBookmark(String.valueOf(integer_page),false);
+        adapter.notifyDataSetChanged();
+    }
+
 }

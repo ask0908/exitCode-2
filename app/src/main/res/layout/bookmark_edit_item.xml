@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bookmark_edit_item_parent_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    tools:paddingBottom="15dp"
+    tools:paddingTop="15dp">
 
     <LinearLayout
         android:layout_width="0dp"
@@ -16,11 +19,9 @@
         app:layout_constraintWidth_percent=".8">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/welfname_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="15dp"
-            android:layout_marginStart="13dp"
-            android:layout_marginTop="20dp">
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/bookmark_edit_welf_name"
@@ -28,12 +29,13 @@
                 android:layout_height="match_parent"
                 android:ellipsize="end"
                 android:text="혜택 제목"
-                android:fontFamily="@font/nanum_barun_gothic_bold"
+                android:fontFamily="@font/notosanskr_bold"
+                android:includeFontPadding="false"
                 android:lineSpacingExtra="5sp"
                 android:maxLines="1"
                 android:textColor="@color/colorBlack"
-                android:textSize="15sp"
-                android:textStyle="bold"
+                tools:textSize="15sp"
+                tools:paddingLeft="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHeight_percent="1"
@@ -59,9 +61,9 @@
                 android:fontFamily="@font/nanum_barun_gothic_bold"
                 android:gravity="center_vertical"
                 android:lineSpacingExtra="6sp"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:textSize="14sp"
+                tools:paddingStart="12dp"
+                tools:paddingEnd="12dp"
+                tools:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHeight_percent="1"
@@ -87,17 +89,15 @@
         <CheckBox
             android:id="@+id/bookmark_edit_checkbox"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="13dp"
-            android:layout_marginEnd="13dp"
+            android:layout_height="0dp"
             android:background="@drawable/bookmark_uncheck"
             android:button="@null"
             android:fontFamily="@font/nanum_barun_gothic_bold"
-            android:gravity="center|bottom"
+            android:gravity="center"
             android:lineSpacingExtra="6sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent=".04"
+            app:layout_constraintHeight_percent=".55"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintWidth_percent=".4" />

@@ -26,7 +26,6 @@
         android:layout_height="0dp"
         android:gravity="center"
         android:text="환영해요!"
-        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/TextExplain"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -36,7 +35,9 @@
         app:layout_constraintWidth_percent=".55"
         app:layout_constraintHeight_percent=".08"
         android:autoSizeTextType="none"
-        app:autoSizePresetSizes="@array/autosize_text_sizes"/>
+        app:autoSizePresetSizes="@array/autosize_text_sizes"
+        android:fontFamily="@font/notosanskr_bold"
+        android:includeFontPadding="false"/>
 
     <TextView
         android:id="@+id/TextExplain"
@@ -44,7 +45,6 @@
         android:layout_height="0dp"
         android:gravity="center"
         android:text="당신이 놓치고 있는 혜택을 찾아드릴게요 \n 혜택을 한 번 알아볼래요?"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -54,7 +54,9 @@
         app:layout_constraintWidth_percent=".8"
         app:layout_constraintHeight_percent=".1"
         android:autoSizeTextType="none"
-        app:autoSizePresetSizes="@array/autosize_text_sizes"/>
+        app:autoSizePresetSizes="@array/autosize_text_sizes"
+        android:fontFamily="@font/notosanskr_bold"
+        android:includeFontPadding="false"/>
 
     <Button
         android:id="@+id/BtnTutorial"
@@ -64,7 +66,6 @@
         android:text="알아보기"
         android:textSize="26sp"
         android:textColor="#FF7088"
-        android:textStyle="bold"
         android:layout_marginBottom="15dp"
         app:layout_constraintBottom_toTopOf="@+id/BtnMain"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -72,7 +73,9 @@
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintWidth_percent="0.8"
         app:layout_constraintHeight_percent=".082"
-        android:autoSizeMaxTextSize="10dp"/>
+        android:autoSizeMaxTextSize="10dp"
+        android:fontFamily="@font/notosanskr_bold"
+        android:includeFontPadding="false"/>
 
     <TextView
         android:id="@+id/BtnMain"
@@ -90,6 +93,8 @@
         app:layout_constraintWidth_percent="0.4"
         app:layout_constraintHeight_percent=".047"
         android:autoSizeTextType="none"
-        app:autoSizePresetSizes="@array/autosize_text_sizes"/>
+        app:autoSizePresetSizes="@array/autosize_text_sizes"
+        android:fontFamily="@font/notosanskr_medium"
+        android:includeFontPadding="false"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -40,7 +40,6 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:text="나이대를 선택해 주세요"
-                    android:textStyle="bold"
                     android:gravity="center"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
@@ -50,7 +49,9 @@
                     app:layout_constraintWidth_percent=".67"
                     app:layout_constraintHeight_percent=".25"
                     android:autoSizeTextType="none"
-                    app:autoSizePresetSizes="@array/autosize_text_sizes"/>
+                    app:autoSizePresetSizes="@array/autosize_text_sizes"
+                    android:fontFamily="@font/notosanskr_bold"
+                    android:includeFontPadding="false"/>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -81,7 +82,6 @@
                         android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:text="20대"
-                        android:textStyle="bold"
                         android:gravity="center"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
@@ -90,7 +90,9 @@
                         app:layout_constraintWidth_percent=".38"
                         app:layout_constraintHeight_percent=".53"
                         android:autoSizeTextType="none"
-                        app:autoSizePresetSizes="@array/autosize_text_sizes"/>
+                        app:autoSizePresetSizes="@array/autosize_text_sizes"
+                        android:fontFamily="@font/notosanskr_bold"
+                        android:includeFontPadding="false"/>
 
                     <ImageButton
                         android:id="@+id/BtnPlus"
@@ -136,7 +138,6 @@
                     android:layout_height="0dp"
                     android:text="성별을 선택해 주세요"
                     android:gravity="center"
-                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
@@ -145,7 +146,9 @@
                     app:layout_constraintWidth_percent=".6"
                     app:layout_constraintHeight_percent=".25"
                     android:autoSizeTextType="none"
-                    app:autoSizePresetSizes="@array/autosize_text_sizes"/>
+                    app:autoSizePresetSizes="@array/autosize_text_sizes"
+                    android:fontFamily="@font/notosanskr_bold"
+                    android:includeFontPadding="false"/>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -173,7 +176,9 @@
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintVertical_bias="0.0"
-                        app:layout_constraintWidth_percent=".27" />
+                        app:layout_constraintWidth_percent=".27"
+                        android:fontFamily="@font/notosanskr_bold"
+                        android:includeFontPadding="false"/>
 
                     <Button
                         android:id="@+id/BtnGenderWoman"
@@ -190,7 +195,9 @@
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintWidth_percent=".27"
-                        app:layout_constraintHorizontal_bias=".725"/>
+                        app:layout_constraintHorizontal_bias=".725"
+                        android:fontFamily="@font/notosanskr_bold"
+                        android:includeFontPadding="false"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -218,7 +225,6 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:text="지역을 선택해 주세요"
-                    android:textStyle="bold"
                     android:gravity="center"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
@@ -228,7 +234,9 @@
                     app:layout_constraintHeight_percent=".23"
                     app:layout_constraintVertical_bias=".2"
                     android:autoSizeTextType="none"
-                    app:autoSizePresetSizes="@array/autosize_text_sizes"/>
+                    app:autoSizePresetSizes="@array/autosize_text_sizes"
+                    android:fontFamily="@font/notosanskr_bold"
+                    android:includeFontPadding="false"/>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -248,7 +256,9 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"/>
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:fontFamily="@font/notosanskr_bold"
+                        android:includeFontPadding="false"/>
 
                     <ImageView
                         android:layout_width="0dp"

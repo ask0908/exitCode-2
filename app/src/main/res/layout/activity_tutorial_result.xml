@@ -13,7 +13,6 @@
         android:layout_height="0dp"
         android:autoSizeTextType="none"
         android:gravity="center"
-        android:textStyle="bold"
         app:autoSizePresetSizes="@array/autosize_text_sizes"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHeight_percent=".13"
@@ -21,7 +20,11 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.122"
-        app:layout_constraintWidth_percent=".8" />
+        app:layout_constraintWidth_percent=".8"
+        tools:text="강원, 20대, 남성이
+                    놓치고 있는 혜택이예요"
+        android:fontFamily="@font/notosanskr_bold"
+        android:includeFontPadding="false"/>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/CardBenefit1"
@@ -50,7 +53,6 @@
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:maxLines="1"
-                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintHeight_percent=".3"
                 app:layout_constraintHorizontal_bias=".33"
@@ -58,7 +60,10 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias=".25"
-                app:layout_constraintWidth_percent=".78" />
+                app:layout_constraintWidth_percent=".78"
+                tools:text="청년창업농 영농정착 지원"
+                android:fontFamily="@font/notosanskr_bold"
+                android:includeFontPadding="false"/>
 
             <TextView
                 android:id="@+id/BenefitTag1"
@@ -78,7 +83,10 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias=".82"
-                app:layout_constraintWidth_percent=".75" />
+                app:layout_constraintWidth_percent=".75"
+                tools:text="#청년 #농축수산인 #창업"
+                android:fontFamily="@font/notosanskr_medium"
+                android:includeFontPadding="false"/>
 
             <ImageView
                 android:layout_width="0dp"
@@ -122,7 +130,6 @@
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:maxLines="1"
-                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintHeight_percent=".3"
                 app:layout_constraintHorizontal_bias=".33"
@@ -130,7 +137,10 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias=".25"
-                app:layout_constraintWidth_percent=".78" />
+                app:layout_constraintWidth_percent=".78"
+                tools:text="청년창업농 영농정착 지원"
+                android:fontFamily="@font/notosanskr_bold"
+                android:includeFontPadding="false"/>
 
             <TextView
                 android:id="@+id/BenefitTag2"
@@ -150,7 +160,10 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias=".82"
-                app:layout_constraintWidth_percent=".75" />
+                app:layout_constraintWidth_percent=".75"
+                tools:text="#청년 #농축수산인 #창업"
+                android:fontFamily="@font/notosanskr_medium"
+                android:includeFontPadding="false"/>
 
             <ImageView
                 android:layout_width="0dp"
@@ -196,7 +209,6 @@
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:maxLines="1"
-                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintHeight_percent=".3"
                 app:layout_constraintHorizontal_bias=".33"
@@ -204,7 +216,10 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias=".25"
-                app:layout_constraintWidth_percent=".78" />
+                app:layout_constraintWidth_percent=".78"
+                tools:text="청년창업농 영농정착 지원"
+                android:fontFamily="@font/notosanskr_bold"
+                android:includeFontPadding="false"/>
 
             <TextView
                 android:id="@+id/BenefitTag3"
@@ -224,7 +239,10 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias=".82"
-                app:layout_constraintWidth_percent=".75" />
+                app:layout_constraintWidth_percent=".75"
+                tools:text="#청년 #농축수산인 #창업"
+                android:fontFamily="@font/notosanskr_medium"
+                android:includeFontPadding="false"/>
 
             <ImageView
                 android:layout_width="0dp"
@@ -250,7 +268,6 @@
         android:clickable="true"
         android:gravity="center"
         android:text="더 많은 혜택들이 기다려요"
-        android:textStyle="bold"
         app:autoSizePresetSizes="@array/autosize_text_sizes"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHeight_percent=".045"
@@ -259,7 +276,9 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias=".81"
         app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintWidth_percent="0.55" />
+        app:layout_constraintWidth_percent="0.55"
+        android:fontFamily="@font/notosanskr_bold"
+        android:includeFontPadding="false"/>
 
     <Button
         android:id="@+id/BtnGoMain"
@@ -269,13 +288,14 @@
         android:text="메인으로 가기"
         android:textColor="#FFFFFF"
         android:textSize="27sp"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHeight_percent=".085"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias=".905"
-        app:layout_constraintWidth_percent="0.8" />
+        app:layout_constraintWidth_percent="0.8"
+        android:fontFamily="@font/notosanskr_bold"
+        android:includeFontPadding="false"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

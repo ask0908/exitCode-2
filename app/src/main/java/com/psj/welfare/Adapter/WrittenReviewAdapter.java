@@ -233,9 +233,7 @@ public class WrittenReviewAdapter extends RecyclerView.Adapter<WrittenReviewAdap
         //아래와 같이 마진을 주기 위해서는 마진을 주려는 객체가 최상의 view이면 안되고 해당 객체를 감싸는 LinearLayout이 필요하다
         //마진값 주기 위한 처리
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) holder.written_review_item_layout.getLayoutParams();
-//        layoutParams.leftMargin = (int)(size.x * 0.035);
         layoutParams.topMargin = (int)(size.y * 0.03);
-//        layoutParams.rightMargin = (int)(size.x * 0.04);
         layoutParams.bottomMargin = (int)(size.y * 0.03);
         holder.written_review_item_layout.setLayoutParams(layoutParams); //아이템 전체 레이아웃 마진값 설정
 
@@ -243,10 +241,9 @@ public class WrittenReviewAdapter extends RecyclerView.Adapter<WrittenReviewAdap
         //아이템 전체 레이아웃
 //        holder.written_review_item_layout.setPadding((int)(size.x * 0.04),(int)(size.y * 0.03),(int)(size.x * 0.04),(int)(size.y * 0.03));
 
-        holder.written_review_welf_name.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 21);
-        holder.written_review_writer.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
-        holder.written_review_content.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
-        holder.written_review_content.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
+        holder.written_review_welf_name.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 23);
+        holder.written_review_writer.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 26);
+        holder.written_review_content.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 26);
     }
 
     public interface OnItemClickListener

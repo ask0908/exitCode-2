@@ -1,9 +1,11 @@
 package com.psj.welfare.test;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
@@ -12,6 +14,8 @@ import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -55,6 +59,7 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
 {
     public final String TAG = this.getClass().getSimpleName();
 
+    private ImageView filter_layout_image; //필터 이미지
     SearchViewModel searchViewModel;
     EditText search_result_edittext;
     TextView total_search_result;
@@ -122,20 +127,17 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setStatusBarGradiant(TestSearchResultActivity.this); //상태표시줄
         setContentView(R.layout.activity_test_search_result);
 
-        search_result_drawer = findViewById(R.id.search_result_drawer);
-        progressbar = findViewById(R.id.progressbar);
-        total_search_result = findViewById(R.id.total_search_result);
-        search_result_edittext = findViewById(R.id.search_result_edittext);
-        search_result_recyclerview = findViewById(R.id.search_result_recyclerview);
-        search_result_empty_textview = findViewById(R.id.search_result_empty_textview);
-        search_result_no_image = findViewById(R.id.search_result_no_image);
-        search_result_empty_textview.setVisibility(View.GONE);
-        search_result_filter = findViewById(R.id.search_result_filter);
-        selected_filter_recyclerview = findViewById(R.id.selected_filter_recyclerview);
+        //초기화 작업
+        init();
+
+        //xml크기를 동적으로 변환
+        setsize();
 
         search_result_recyclerview.setLayoutManager(new LinearLayoutManager(this));
+
 
         // 선택한 필터들을 보여주는 리사이클러뷰는 가로 모양이다
         LinearLayoutManager llm = new LinearLayoutManager(this);
@@ -160,20 +162,7 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
         }
 
         search_result_drawer.setVisibility(View.INVISIBLE);
-        filter_button = findViewById(R.id.filter_button);
-        filter_textview = findViewById(R.id.filter_textview);
-        filter_layout_text = findViewById(R.id.filter_layout_text);
 
-        // 뷰 크기, 글자 크기 조절
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getRealSize(size);
-
-        search_result_empty_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);  // 검색 결과 없을 때 보여주는 텍스트뷰
-        filter_layout_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 26);
-        total_search_result.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 23);
-        filter_button.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 21);
-        filter_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 17);
 
         search_result_filter.setOnClickListener(v -> search_result_drawer.setVisibility(View.VISIBLE));
 
@@ -726,5 +715,51 @@ public class TestSearchResultActivity extends AppCompatActivity implements Navig
         mAgeList.clear();
         mProvideTypeList.clear();
         item.clear();
+    }
+
+    //초기화 작업
+    private void init(){
+        filter_layout_image = findViewById(R.id.filter_layout_image);
+        search_result_drawer = findViewById(R.id.search_result_drawer);
+        progressbar = findViewById(R.id.progressbar);
+        total_search_result = findViewById(R.id.total_search_result);
+        search_result_edittext = findViewById(R.id.search_result_edittext);
+        search_result_recyclerview = findViewById(R.id.search_result_recyclerview);
+        search_result_empty_textview = findViewById(R.id.search_result_empty_textview);
+        search_result_no_image = findViewById(R.id.search_result_no_image);
+        search_result_empty_textview.setVisibility(View.GONE);
+        search_result_filter = findViewById(R.id.search_result_filter);
+        selected_filter_recyclerview = findViewById(R.id.selected_filter_recyclerview);
+
+        filter_button = findViewById(R.id.filter_button);
+        filter_textview = findViewById(R.id.filter_textview);
+        filter_layout_text = findViewById(R.id.filter_layout_text);
+    }
+
+
+    //xml크기를 동적으로 변환
+    private void setsize() {
+        // 뷰 크기, 글자 크기 조절
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getRealSize(size);
+
+        search_result_empty_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) size.x / 24);  // 검색 결과 없을 때 보여주는 텍스트뷰
+        filter_layout_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) size.x / 26);
+        total_search_result.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) size.x / 23);
+        filter_button.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) size.x / 21);
+        filter_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) size.x / 17);
+
+        search_result_recyclerview.setPadding((int)(size.x*0.05),(int)(size.x*0.05),(int)(size.x*0.05),(int)(size.x*0.05));
+    }
+
+    //상태표시줄 색상변경
+    public void setStatusBarGradiant(Activity activity)
+    {
+        Window window = activity.getWindow();
+        Drawable background = activity.getResources().getDrawable(R.drawable.renewal_gradation_background);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(activity.getResources().getColor(android.R.color.transparent));
+        window.setBackgroundDrawable(background);
     }
 }

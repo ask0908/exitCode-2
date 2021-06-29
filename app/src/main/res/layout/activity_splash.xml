@@ -17,7 +17,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHeight_percent="0.12"
         app:layout_constraintWidth_percent="0.65"
-        app:layout_constraintVertical_bias="0.45">
+        app:layout_constraintVertical_bias="0.44">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
@@ -45,6 +45,7 @@
                 android:layout_height="0dp"
                 android:autoSizeTextType="uniform"
                 android:text="당신이 놓치고 있는 혜택"
+                android:gravity="center_vertical"
                 android:fontFamily="@font/notosanskr_medium"
                 android:includeFontPadding="false"
                 android:textColor="#EC5A7A"
@@ -62,7 +63,6 @@
             android:background="@drawable/splash_icon"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHeight_percent="0.9"
             app:layout_constraintWidth_percent="0.28"/>
     </androidx.constraintlayout.widget.ConstraintLayout>

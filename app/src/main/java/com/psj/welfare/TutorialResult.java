@@ -104,6 +104,7 @@ public class TutorialResult extends AppCompatActivity {
         final ProgressDialog dialog = new ProgressDialog(this);
         dialog.setMax(100);
         dialog.setMessage("잠시만 기다려 주세요...");
+        dialog.setCancelable(false); //"false"면 다이얼로그 나올 때 dismiss 띄우기 전까지 안사라짐
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.show();
 

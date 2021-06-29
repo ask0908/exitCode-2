@@ -114,7 +114,7 @@ public class YoutubeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setStatusBarGradiant(YoutubeActivity.this);
+        setStatusBarGradiant(YoutubeActivity.this); //상태표시줄
         setContentView(R.layout.activity_youtube);
 
         back_btn = findViewById(R.id.back_btn); //뒤로가기 버튼
@@ -313,6 +313,7 @@ public class YoutubeActivity extends AppCompatActivity
         final ProgressDialog dialog = new ProgressDialog(this);
         dialog.setMax(100);
         dialog.setMessage("잠시만 기다려 주세요...");
+        dialog.setCancelable(false); //"false"면 다이얼로그 나올 때 dismiss 띄우기 전까지 안사라짐
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.show();
 

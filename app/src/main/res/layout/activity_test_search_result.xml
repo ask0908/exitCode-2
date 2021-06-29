@@ -86,41 +86,44 @@
             </com.google.android.material.navigation.NavigationView>
 
             <!-- 검색창 있는 상단 레이아웃 -->
+
+            <!-- 검색창 밑의 검색 결과 나오는 레이아웃 -->
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/search_top_layout"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                android:background="@drawable/renewal_gradation_background"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintVertical_bias="0"
-                app:layout_constraintWidth_percent="1"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHeight_percent=".15"
-                android:background="@drawable/gradation_background">
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0"
+                app:layout_constraintWidth_percent="1">
 
                 <EditText
                     android:id="@+id/search_result_edittext"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    app:layout_constraintWidth_percent=".85"
-                    app:layout_constraintHeight_percent=".4"
-                    app:layout_constraintVertical_bias=".2"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:drawableEnd="@drawable/edittext_end_pink"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
                     android:layout_margin="10dp"
+                    android:background="@drawable/renewal_search_edittext"
+                    android:drawableEnd="@drawable/edittext_end_pink"
                     android:imeOptions="actionSearch"
                     android:inputType="text"
-                    android:background="@drawable/renewal_search_edittext"/>
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHeight_percent=".4"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias=".2"
+                    app:layout_constraintWidth_percent=".85" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- 검색창 밑의 검색 결과 나오는 레이아웃 -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/search_result_constraint_layout"
                 android:layout_width="0dp"
@@ -154,10 +157,12 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight=".7"
-                        android:fontFamily="@font/jalnan"
                         android:layout_gravity="center"
                         android:paddingStart="10dp"
-                        android:paddingEnd="10dp"/>
+                        android:paddingEnd="10dp"
+                        tools:text="혜택 총 20개"
+                        android:fontFamily="@font/notosanskr_bold"
+                        android:includeFontPadding="false"/>
 
                     <!-- 필터 이미지와 글자를 보여주는 가로 리니어 레이아웃 -->
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -176,22 +181,19 @@
                             android:id="@+id/filter_layout_image"
                             android:layout_width="0dp"
                             android:layout_height="0dp"
-                            app:layout_constraintWidth_percent=".3"
-                            app:layout_constraintHeight_percent="1"
+                            app:layout_constraintWidth_percent="0.3"
+                            app:layout_constraintHeight_percent="0.65"
                             app:layout_constraintHorizontal_bias=".1"
-                            app:layout_constraintVertical_bias="1"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            android:layout_marginTop="10dp"
-                            android:src="@drawable/search_filter_pink"/>
+                            android:src="@drawable/search_filter_pink" />
 
                         <TextView
                             android:id="@+id/filter_layout_text"
                             android:layout_width="0dp"
                             android:layout_height="0dp"
-                            android:fontFamily="@font/jalnan"
                             app:layout_constraintWidth_percent=".5"
                             app:layout_constraintHorizontal_bias=".93"
                             app:layout_constraintStart_toStartOf="parent"
@@ -200,7 +202,9 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             android:text="필터"
                             android:textColor="@color/layout_background_start_gradation"
-                            android:gravity="start|center"/>
+                            android:gravity="start|center"
+                            android:fontFamily="@font/notosanskr_bold"
+                            android:includeFontPadding="false"/>
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -258,10 +262,11 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/search_result_no_image"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:fontFamily="@font/jalnan"
                     android:text="요청하신 검색 요청에 대한 결과가 없습니다"
                     android:textColor="@color/gray"
-                    android:gravity="center"/>
+                    android:gravity="center"
+                    android:fontFamily="@font/notosanskr_bold"
+                    android:includeFontPadding="false"/>
 
                 <ProgressBar
                     android:id="@+id/progressbar"

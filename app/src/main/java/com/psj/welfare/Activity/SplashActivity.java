@@ -76,9 +76,10 @@ public class SplashActivity extends AppCompatActivity
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);         // 상태바(상태표시줄) 글자색 검정색으로 바꾸기
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorMainWhite));    // 상태바(상태표시줄) 배경 흰색으로 설정
 
-        intent = getIntent();
+        //상태표시줄 색상변경
+//        setStatusBarGradiant(SplashActivity.this);
 
-        setStatusBarGradiant(SplashActivity.this);
+        intent = getIntent();
 
         sharedPreferences = getSharedPreferences("app_pref", 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -347,6 +348,7 @@ public class SplashActivity extends AppCompatActivity
         return false;
     }
 
+    //상태표시줄 색상변경
     public void setStatusBarGradiant(Activity activity)
     {
         Window window = activity.getWindow();

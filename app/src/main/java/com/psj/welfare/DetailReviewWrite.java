@@ -51,6 +51,8 @@ public class DetailReviewWrite extends AppCompatActivity {
 
     private final String TAG = this.getClass().getSimpleName();
 
+    ConstraintLayout empty_layout; //키보드 누르면 밀림현상 없애기 위해 임시적으로 만든 빈 레이아웃
+    ConstraintLayout DetailTabTop; //제목, 뒤로가기 버튼이 들어가는 상단 레이아웃
     ImageButton back_btn; //뒤로 가기 버튼
     TextView BenefitTitle, score_textview, please_tab_textview, level_textview, satisfaction_textview, your_opinion_textview; //혜택명, 별점 주기 타이틀, 탭해서 별점주기, 과정 평가, 만족도 평가, 의견 남겨주세요
     RatingBar review_star; //별점
@@ -83,6 +85,8 @@ public class DetailReviewWrite extends AppCompatActivity {
         setContentView(R.layout.activity_detail_review_write);
         setStatusBarGradiant(DetailReviewWrite.this); //상태 표시줄 색 바꾸기
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+//        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING); //키보드가 올라가도 레이아웃이 변하지 않도록
+        //android:windowSoftInputMode="adjustNothing" 매니페스트에서 이렇게 코드 입력한것과 동일한 기능
 
         helper = new DBOpenHelper(this);
         helper.openDatabase();
@@ -416,6 +420,8 @@ public class DetailReviewWrite extends AppCompatActivity {
 
     //자바 변수와 xml 변수 연결
     private void init() {
+        empty_layout = findViewById(R.id.empty_layout); //키보드 누르면 밀림현상 없애기 위해 임시적으로 만든 빈 레이아웃
+        DetailTabTop = findViewById(R.id.DetailTabTop); //제목, 뒤로가기 버튼이 들어가는 상단 레이아웃
         back_btn = findViewById(R.id.back_btn); //뒤로 가기 버튼
         BenefitTitle = findViewById(R.id.BenefitTitle); //혜택명
         score_textview = findViewById(R.id.score_textview); //별점 주기 타이틀
@@ -451,6 +457,10 @@ public class DetailReviewWrite extends AppCompatActivity {
         display.getRealSize(size); // or getSize(size)
 
         //디스플레이 값을 기준으로 버튼 텍스트 크기를 정함
+
+        empty_layout.getLayoutParams().height = (int) (size.y*0.14); //키보드 누르면 밀림현상 없애기 위해 임시적으로 만든 빈 레이아웃
+        DetailTabTop.getLayoutParams().height = (int) (size.y*0.205); //제목, 뒤로가기 버튼이 들어가는 상단 레이아웃
+
         BenefitTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x / 18); //혜택명
 
         score_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x / 21); //별점 타이틀

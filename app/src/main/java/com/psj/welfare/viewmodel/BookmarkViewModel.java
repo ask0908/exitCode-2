@@ -38,6 +38,7 @@ public class BookmarkViewModel extends AndroidViewModel
             while (cursor.moveToNext())
             {
                 sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+//                Log.e("TAG",sqlite_token);
             }
         }
 
@@ -54,7 +55,7 @@ public class BookmarkViewModel extends AndroidViewModel
                     {
                         if (response.isSuccessful() && response.body() != null)
                         {
-                            Log.e(TAG, "북마크 데이터 가져오기 : " + response.body());
+//                            Log.e(TAG, "북마크 데이터 가져오기 : " + response.body());
                             data.setValue(response.body());
                         }
                         else

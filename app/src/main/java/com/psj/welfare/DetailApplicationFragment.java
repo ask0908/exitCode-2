@@ -32,6 +32,7 @@ public class DetailApplicationFragment extends Fragment {
 
     String message,TotalCount,isBookmark,ReviewState; //액티비티에서 받아온 파싱 전 데이터
     String apply_step,apply_paper,center,center_number,apply_start,apply_end,apply_url; //welf_data데이터를 파싱하고 담을 데이터
+
     public DetailApplicationFragment() { }
     @Override
     public void onCreate(Bundle savedInstanceState) {

@@ -1,5 +1,6 @@
 package com.psj.welfare.test;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
@@ -85,6 +86,7 @@ public class TestSearchFragment extends Fragment
         return view;
     }
 
+    @SuppressLint("ClickableViewAccessibility") //warning 안보이도록
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
@@ -165,7 +167,6 @@ public class TestSearchFragment extends Fragment
                 return false;
             }
         });
-
 
         //키보드 환경 설정(화면에 띄워져 있는지 판단하기 위함)
         InputMethodManager keyboard = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);

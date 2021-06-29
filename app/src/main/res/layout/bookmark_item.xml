@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bookmark_edit_item_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -7,31 +8,33 @@
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bookmark_name_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="13dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="4dp">
+        tools:layout_marginStart="13dp"
+        tools:layout_marginTop="20dp"
+        tools:layout_marginBottom="4dp">
 
         <TextView
             android:id="@+id/bookmark_welf_name"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:text="제목"
-            app:layout_constraintWidth_percent=".8"
+            app:layout_constraintWidth_percent=".9"
             app:layout_constraintHeight_percent="1"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:fontFamily="@font/nanum_barun_gothic_bold"
             android:lineSpacingExtra="5sp"
             android:maxLines="1"
             android:ellipsize="end"
             android:textSize="15sp"
             android:textStyle="bold"
-            android:textColor="@color/colorBlack" />
+            android:textColor="@color/colorBlack"
+            android:fontFamily="@font/notosanskr_medium"
+            android:includeFontPadding="false"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -46,8 +49,8 @@
             android:id="@+id/bookmark_tag"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
+            tools:paddingStart="12dp"
+            tools:paddingEnd="12dp"
             android:gravity="center_vertical"
             android:text="#주거"
             app:layout_constraintWidth_percent=".64"
@@ -57,9 +60,10 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:fontFamily="@font/nanum_barun_gothic_bold"
             android:lineSpacingExtra="6sp"
-            android:textSize="14sp"/>
+            tools:textSize="14sp"
+            android:fontFamily="@font/notosanskr_medium"
+            android:includeFontPadding="false"/>
 
         <TextView
             android:id="@+id/bookmark_detail"
@@ -75,11 +79,12 @@
             android:text="자세히보기"
             android:layout_marginStart="13dp"
             android:layout_marginEnd="13dp"
-            android:layout_marginBottom="15dp"
-            android:layout_marginTop="10dp"
-            android:fontFamily="@font/nanum_barun_gothic_bold"
+            android:layout_marginBottom="13dp"
+            android:layout_marginTop="13dp"
             android:lineSpacingExtra="6sp"
-            android:gravity="center|bottom"/>
+            android:gravity="center|bottom"
+            android:fontFamily="@font/notosanskr_medium"
+            android:includeFontPadding="false"/>
 
         <ImageView
             android:layout_width="0dp"
@@ -87,7 +92,6 @@
             app:layout_constraintWidth_percent=".08"
             app:layout_constraintHeight_percent="1"
             app:layout_constraintHorizontal_bias=".99"
-            app:layout_constraintVertical_bias=".35"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

@@ -51,10 +51,9 @@
             android:id="@+id/written_review_writer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/notosanskr_bold"
+            android:fontFamily="@font/notosanskr_medium"
             android:includeFontPadding="false"
             android:text="user101"
-            android:textStyle="bold"
             tools:paddingTop="10dp" />
 
         <!-- 별점 평점, 작성일자를 보여줄 가로 리니어 레이아웃 -->
@@ -134,7 +133,8 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="bottom"
                     android:layout_marginBottom="2dp"
-                    android:fontFamily="@font/nanum_barun_gothic_bold"
+                    android:fontFamily="@font/notosanskr_medium"
+                    android:includeFontPadding="false"
                     android:gravity="end|bottom"
                     android:lineSpacingExtra="6sp"
                     android:text="자세히보기"
