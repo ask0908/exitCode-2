@@ -1,13 +1,11 @@
 package com.psj.welfare.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
-import android.util.TypedValue;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,10 +13,12 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.psj.welfare.R;
+import com.psj.welfare.ScreenSize;
 import com.psj.welfare.data.SeeMoreItem;
 
 import java.util.List;
 
+/* 더보기 화면의 하단 리사이클러뷰에 쓰이는 어댑터 */
 public class SeeMoreBottomAdapter extends RecyclerView.Adapter<SeeMoreBottomAdapter.SeeMoreViewHolder>
 {
     private Context context;
@@ -54,15 +54,11 @@ public class SeeMoreBottomAdapter extends RecyclerView.Adapter<SeeMoreBottomAdap
     @Override
     public void onBindViewHolder(@NonNull SeeMoreBottomAdapter.SeeMoreViewHolder holder, int position)
     {
-        /* 어댑터에서 뷰 크기, 글자 크기 조절 */
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        // 어댑터에서 사용하려면 아래처럼 써야 한다
-        Display display = wm.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size); // or getSize(size)
-        holder.bottom_result_name.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-        holder.bottom_result_tag.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 28);
-        holder.bottom_result_views.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 28);
+        ScreenSize screen = new ScreenSize();
+        Point size = screen.getScreenSize((Activity) context);
+        holder.bottom_result_name.setTextSize((float) size.x / 22);
+        holder.bottom_result_tag.setTextSize((float) size.x / 28);
+        holder.bottom_result_views.setTextSize((float) size.x / 28);
 
         SeeMoreItem item = list.get(position);
         // 혜택명

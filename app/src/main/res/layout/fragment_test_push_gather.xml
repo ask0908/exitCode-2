@@ -54,9 +54,10 @@
             android:background="@drawable/radius_25">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/push_third_textview_layout"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layout_constraintWidth_percent="0.9"
+                app:layout_constraintWidth_percent="0.83"
                 app:layout_constraintHeight_percent=".08"
                 app:layout_constraintHorizontal_bias=".5"
                 app:layout_constraintVertical_bias=".02"
@@ -69,11 +70,11 @@
                 app:layout_constraintBottom_toBottomOf="parent">
 
                 <LinearLayout
+                    android:id="@+id/push_all_layout"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toLeftOf="@+id/push_latest_layout"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:id="@+id/push_all_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
@@ -100,11 +101,11 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/push_latest_layout"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:id="@+id/push_latest_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
@@ -134,11 +135,11 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/push_recommend_layout"
                     app:layout_constraintLeft_toRightOf="@+id/push_latest_layout"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:id="@+id/push_recommend_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
@@ -168,69 +169,78 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/push_recyclerview"
-                android:layout_width="0dp"
+            <FrameLayout
+                android:id="@+id/push_container"
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:orientation="vertical"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
-                app:layout_constraintWidth_percent="1"
-                app:layout_constraintHeight_percent=".88"
-                app:layout_constraintVertical_bias="1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/push_third_textview_layout"
                 app:layout_constraintBottom_toBottomOf="parent"
-                tools:listitem="@layout/push_gather_item"/>
-
-            <ImageView
-                android:id="@+id/push_bell_image"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintWidth_percent=".3"
-                app:layout_constraintHeight_percent=".2"
-                app:layout_constraintVertical_bias=".3"
-                android:src="@drawable/notification_gray"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/push_recyclerview"/>
+                app:layout_constraintEnd_toEndOf="parent"/>
 
-            <TextView
-                android:id="@+id/push_bell_textview"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintWidth_percent=".7"
-                app:layout_constraintHeight_percent=".09"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/push_bell_image"
-                android:gravity="center|top"
-                android:lineSpacingExtra="6sp"
-                android:text="최신 혜택과 추천 혜택을 받고 싶다면\n로그인을 해 주세요"
-                android:autoSizeTextType="uniform"
-                android:fontFamily="@font/notosanskr_medium"
-                android:includeFontPadding="false"/>
+            <!--            <androidx.recyclerview.widget.RecyclerView-->
+            <!--                android:id="@+id/push_recyclerview"-->
+            <!--                android:layout_width="0dp"-->
+            <!--                android:layout_height="0dp"-->
+            <!--                android:orientation="vertical"-->
+            <!--                android:paddingStart="20dp"-->
+            <!--                android:paddingEnd="20dp"-->
+            <!--                app:layout_constraintWidth_percent="1"-->
+            <!--                app:layout_constraintHeight_percent=".88"-->
+            <!--                app:layout_constraintVertical_bias="1"-->
+            <!--                app:layout_constraintStart_toStartOf="parent"-->
+            <!--                app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                app:layout_constraintTop_toTopOf="parent"-->
+            <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--                tools:listitem="@layout/push_gather_item"/>-->
 
-            <Button
-                android:id="@+id/push_login_button"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHeight_percent=".07"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias=".58"
-                app:layout_constraintWidth_percent=".46"
-                android:background="@drawable/radius_smallround_pink_button"
-                android:text="로그인하러 가기"
-                android:textColor="#FFFFFF"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:fontFamily="@font/notosanskr_bold"
-                android:includeFontPadding="false"/>
+            <!--            <ImageView-->
+            <!--                android:id="@+id/push_bell_image"-->
+            <!--                android:layout_width="0dp"-->
+            <!--                android:layout_height="0dp"-->
+            <!--                app:layout_constraintWidth_percent=".3"-->
+            <!--                app:layout_constraintHeight_percent=".2"-->
+            <!--                app:layout_constraintVertical_bias=".3"-->
+            <!--                android:src="@drawable/notification_gray"-->
+            <!--                app:layout_constraintStart_toStartOf="parent"-->
+            <!--                app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                app:layout_constraintTop_toTopOf="parent"-->
+            <!--                app:layout_constraintBottom_toBottomOf="@id/push_recyclerview"/>-->
+
+            <!--            <TextView-->
+            <!--                android:id="@+id/push_bell_textview"-->
+            <!--                android:layout_width="0dp"-->
+            <!--                android:layout_height="0dp"-->
+            <!--                app:layout_constraintWidth_percent=".7"-->
+            <!--                app:layout_constraintHeight_percent=".09"-->
+            <!--                app:layout_constraintStart_toStartOf="parent"-->
+            <!--                app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                app:layout_constraintTop_toBottomOf="@+id/push_bell_image"-->
+            <!--                android:gravity="center|top"-->
+            <!--                android:lineSpacingExtra="6sp"-->
+            <!--                android:text="최신 혜택과 추천 혜택을 받고 싶다면\n로그인을 해 주세요"-->
+            <!--                android:autoSizeTextType="uniform"-->
+            <!--                android:fontFamily="@font/notosanskr_medium"-->
+            <!--                android:includeFontPadding="false"/>-->
+
+            <!--            <Button-->
+            <!--                android:id="@+id/push_login_button"-->
+            <!--                android:layout_width="0dp"-->
+            <!--                android:layout_height="0dp"-->
+            <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--                app:layout_constraintHeight_percent=".07"-->
+            <!--                app:layout_constraintLeft_toLeftOf="parent"-->
+            <!--                app:layout_constraintRight_toRightOf="parent"-->
+            <!--                app:layout_constraintTop_toTopOf="parent"-->
+            <!--                app:layout_constraintVertical_bias=".58"-->
+            <!--                app:layout_constraintWidth_percent=".46"-->
+            <!--                android:background="@drawable/radius_smallround_pink_button"-->
+            <!--                android:text="로그인하러 가기"-->
+            <!--                android:textColor="#FFFFFF"-->
+            <!--                android:textSize="17sp"-->
+            <!--                android:textStyle="bold"-->
+            <!--                android:fontFamily="@font/notosanskr_bold"-->
+            <!--                android:includeFontPadding="false"/>-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
