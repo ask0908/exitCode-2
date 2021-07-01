@@ -103,6 +103,7 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
         second_select_interest_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 17);
         household_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
         category_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
+        choose_complete_button.setTextSize(TypedValue.COMPLEX_UNIT_PX,(float) (size.x*0.055));
 
         // 가구 형태, 카테고리 버튼 클릭 리스너 모음
         buttonsClickListener();
@@ -119,7 +120,7 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
 
             if (age.size() == 0 || area.size() == 0 || household_type.size() == 0 || category.size() == 0)
             {
-                Toast.makeText(this, "가구 형태와 카테고리 중 1개라도 선택해 주셔야 해요", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "가구 형태와 카테고리 모두 1개라도 선택해 주셔야 해요", Toast.LENGTH_SHORT).show();
             }
             else
             {

@@ -579,8 +579,9 @@
                             android:scrollbarThumbVertical="@android:color/darker_gray"
                             android:scrollbars="vertical"
                             android:visibility="visible"
-                            tools:listitem="@layout/item_two_review"/>
-
+                            tools:listitem="@layout/item_two_review"
+                            android:overScrollMode="never"/>
+                        <!-- overScrollMode="never" 는 스크롤시 파랗게 나오는 효과 없앤다는 뜻 -->
                         <!--리뷰가 없습니다 레이아웃-->
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/nothing_review_layout"

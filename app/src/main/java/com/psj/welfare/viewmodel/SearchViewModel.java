@@ -34,6 +34,7 @@ public class SearchViewModel extends AndroidViewModel
         super(application);
     }
 
+    // 검색
     public MutableLiveData<String> renewalSearchKeyword(String keyword, String page, String category, String local, String age, String provideType)
     {
         apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
@@ -78,12 +79,14 @@ public class SearchViewModel extends AndroidViewModel
         return data;
     }
 
+
     // 추천 태그 검색 메서드
-    public MutableLiveData<String> searchRecommendTag(String keyword, String page, String type)
+    public MutableLiveData<String> searchRecommendTag(String keyword, String page)
     {
+//        Log.e(TAG,"type : " + type);
         apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
         final MutableLiveData<String> data = new MutableLiveData<>();
-        apiInterface.searchRecommendTag(keyword, page, type)
+        apiInterface.searchRecommendTag(keyword, page, "tag")
                 .enqueue(new Callback<String>()
                 {
                     @Override

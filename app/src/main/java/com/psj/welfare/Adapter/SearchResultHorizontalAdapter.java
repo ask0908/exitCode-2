@@ -30,10 +30,10 @@ public class SearchResultHorizontalAdapter extends RecyclerView.Adapter<SearchRe
     private ItemClickListener itemClickListener;
 
     // 카테고리 필터별 체크박스 이름들을 저장할 리스트
-    ArrayList<String> categoryList;
-    ArrayList<String> localList;
-    ArrayList<String> provideTypeList;
-    ArrayList<String> ageList;
+//    ArrayList<String> categoryList;
+//    ArrayList<String> localList;
+//    ArrayList<String> provideTypeList;
+//    ArrayList<String> ageList;
     ArrayList<String> mList;
     ArrayList<String> sList;
 
@@ -42,26 +42,10 @@ public class SearchResultHorizontalAdapter extends RecyclerView.Adapter<SearchRe
         this.itemClickListener = itemClickListener;
     }
 
-    /* 생성자를 통해서 카테고리 필터별 체크박스 이름들을 모두 받는다 */
-    public SearchResultHorizontalAdapter(Context context,
-                                         ArrayList<String> allList,
-                                         ArrayList<String> categoryList,
-                                         ArrayList<String> localList,
-                                         ArrayList<String> provideTypeList,
-                                         ArrayList<String> ageList,
-                                         ItemClickListener itemClickListener)
-    {
+    public SearchResultHorizontalAdapter(Context context,ArrayList<String> allList,ItemClickListener itemClickListener){
         this.context = context;
-        this.categoryList = categoryList;
-        this.localList = localList;
-        this.provideTypeList = provideTypeList;
-        this.ageList = ageList;
-        this.itemClickListener = itemClickListener;
-
-        Log.e(TAG, "어댑터에서 받은 allList 값 : " + allList);  // 값 들어오는 것 확인
         sList = allList;
-        sList.addAll(allList);
-        Log.e(TAG, "sList 값 확인 : " + sList);
+        this.itemClickListener = itemClickListener;
 
         String[] str_arr = new String[4];
         if (sList.size() != 0)
@@ -74,15 +58,67 @@ public class SearchResultHorizontalAdapter extends RecyclerView.Adapter<SearchRe
                 str_arr[3] = sList.get(3);
             }
         }
-        Log.e(TAG, "str_arr 안에 값 넣어본 결과 : " + Arrays.toString(str_arr));
-
         valueSplit(allList);
-
-//        Log.e(TAG, "categoryList 값 확인 : " + categoryList);
-//        Log.e(TAG, "localList 값 확인 : " + localList);
-//        Log.e(TAG, "provideTypeList 값 확인 : " + provideTypeList);
-//        Log.e(TAG, "ageList 값 확인 : " + ageList);
     }
+
+
+
+
+
+
+
+//    /* 생성자를 통해서 카테고리 필터별 체크박스 이름들을 모두 받는다 */
+//    public SearchResultHorizontalAdapter(Context context,
+//                                         ArrayList<String> allList,
+//                                         ArrayList<String> categoryList,
+//                                         ArrayList<String> localList,
+//                                         ArrayList<String> provideTypeList,
+//                                         ArrayList<String> ageList,
+//                                         ItemClickListener itemClickListener)
+//    {
+//        this.context = context;
+//        this.categoryList = categoryList;
+//        this.localList = localList;
+//        this.provideTypeList = provideTypeList;
+//        this.ageList = ageList;
+//        this.itemClickListener = itemClickListener;
+//
+//        Log.e(TAG, "어댑터에서 받은 allList 값 : " + allList);  // 값 들어오는 것 확인
+//        sList = allList;
+////        sList.addAll(allList);
+//        Log.e(TAG, "sList 값 확인 : " + sList);
+//
+//
+//
+//        String[] str_arr = new String[4];
+//        if (sList.size() != 0)
+//        {
+//            if (!sList.get(0).equals("null") || !sList.get(1).equals("null") || !sList.get(2).equals("null") || !sList.get(3).equals("null"))
+//            {
+//                str_arr[0] = sList.get(0);
+//                str_arr[1] = sList.get(1);
+//                str_arr[2] = sList.get(2);
+//                str_arr[3] = sList.get(3);
+//            }
+//        }
+//        Log.e(TAG, "str_arr 안에 값 넣어본 결과 : " + Arrays.toString(str_arr));
+//
+//        valueSplit(allList);
+//
+//
+////        Log.e(TAG, "categoryList 값 확인 : " + categoryList);
+////        Log.e(TAG, "localList 값 확인 : " + localList);
+////        Log.e(TAG, "provideTypeList 값 확인 : " + provideTypeList);
+////        Log.e(TAG, "ageList 값 확인 : " + ageList);
+//    }
+
+
+
+
+
+
+
+
 
     // 어댑터 생성자의 인자로 넘겨 받은 리스트 안의 값들을 꺼내 split하는 메서드
     // '-'를 기준으로 split한 다음 낱개로 가로 필터 리사이클러뷰에 보여주기 위한 처리
@@ -169,10 +205,10 @@ public class SearchResultHorizontalAdapter extends RecyclerView.Adapter<SearchRe
             mProvideTypeList = new ArrayList<>();
             mAgeList = new ArrayList<>();
 
-            mCategoryList.addAll(categoryList);
-            mLocalList.addAll(localList);
-            mProvideTypeList.addAll(provideTypeList);
-            mAgeList.addAll(ageList);
+//            mCategoryList.addAll(categoryList);
+//            mLocalList.addAll(localList);
+//            mProvideTypeList.addAll(provideTypeList);
+//            mAgeList.addAll(ageList);
 
 //            Log.e(TAG, "mCategoryList : " + mCategoryList);
 //            Log.e(TAG, "mLocalList : " + mLocalList);

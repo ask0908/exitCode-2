@@ -370,6 +370,7 @@ public class BookmarkCheckActivity extends AppCompatActivity
     {
         super.onRestart();
         list.clear();
+        integer_page = 1;
         getBookmark(String.valueOf(integer_page),false);
         adapter.notifyDataSetChanged();
     }

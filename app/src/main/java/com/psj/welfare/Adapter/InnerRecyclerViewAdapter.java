@@ -1,5 +1,6 @@
 package com.psj.welfare.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,6 +95,8 @@ public class InnerRecyclerViewAdapter extends RecyclerView.Adapter<InnerRecycler
         {
             lastProvideType = null;
         }
+
+        Log.e("provideTypeBuilder",provideTypeBuilder.toString());
         return lastCategory + "zz" + lastLocal + "zz" + lastAge + "zz" + lastProvideType;
     }
 
@@ -101,6 +104,17 @@ public class InnerRecyclerViewAdapter extends RecyclerView.Adapter<InnerRecycler
     {
         this.nameList = nameList;
         this.list = list;
+
+
+//        Log.e(TAG,"------------------7777777-------------------");
+//        for (int i = 0; i < nameList.size(); i++){
+//            Log.e(TAG,"nameList" + nameList.get(i).toString());
+//        }
+//
+//        for (int i = 0; i < list.size(); i++){
+//            Log.e(TAG,"list" + list.get(i).toString());
+//        }
+
     }
 
     @NonNull
@@ -114,7 +128,7 @@ public class InnerRecyclerViewAdapter extends RecyclerView.Adapter<InnerRecycler
     @Override
     public void onBindViewHolder(ViewHolder holder, int position)
     {
-        holder.checkBox.setTag(position);
+//        holder.checkBox.setTag(position);
         holder.checkBox.setText(nameList.get(position));
         holder.checkBox.setOnClickListener(v -> {
             // 체크박스 체크 값을 가져와서

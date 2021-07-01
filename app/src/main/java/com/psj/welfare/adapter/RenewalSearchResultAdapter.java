@@ -93,6 +93,7 @@ public class RenewalSearchResultAdapter extends RecyclerView.Adapter<RenewalSear
     public class RenewalSearchResultViewHolder extends RecyclerView.ViewHolder
     {
         ConstraintLayout search_result_container;
+        ConstraintLayout bottom_tag_layout;
         CardView search_result_layout;
         TextView search_result_name, search_result_subject, search_result_views;
         onItemClickListener itemClickListener;
@@ -102,6 +103,7 @@ public class RenewalSearchResultAdapter extends RecyclerView.Adapter<RenewalSear
             super(view);
 
             search_result_container = view.findViewById(R.id.search_result_container);
+            bottom_tag_layout = view.findViewById(R.id.bottom_tag_layout);
             search_result_layout = view.findViewById(R.id.search_result_layout);
             search_result_name = view.findViewById(R.id.search_result_name);
             search_result_subject = view.findViewById(R.id.search_result_subject);
@@ -131,9 +133,22 @@ public class RenewalSearchResultAdapter extends RecyclerView.Adapter<RenewalSear
         Point size = new Point();
         display.getRealSize(size);
 
-        holder.search_result_name.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) (size.x * 0.05));
-        holder.search_result_subject.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) (size.x * 0.035));
-        holder.search_result_views.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) (size.x * 0.035));
-    }
+        holder.search_result_name.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) (size.x * 0.045));
+        holder.search_result_subject.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) (size.x * 0.038));
+        holder.search_result_views.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) (size.x * 0.038));
 
+
+
+        RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.search_result_layout.getLayoutParams();
+        params.setMargins((int) (size.x * 0.03), (int) (size.y * 0.015), (int) (size.x * 0.03), (int) (size.y * 0.015));
+        holder.search_result_layout.setLayoutParams(params);
+
+        ConstraintLayout.LayoutParams name_params = (ConstraintLayout.LayoutParams) holder.search_result_name.getLayoutParams();
+        name_params.setMargins(0, (int)(size.y * 0.005), 0,0);
+        holder.search_result_name.setLayoutParams(name_params);
+
+        ConstraintLayout.LayoutParams bottom_params = (ConstraintLayout.LayoutParams) holder.bottom_tag_layout.getLayoutParams();
+        bottom_params.setMargins(0, 0, 0,(int)(size.y * 0.005));
+        holder.bottom_tag_layout.setLayoutParams(bottom_params);
+    }
 }

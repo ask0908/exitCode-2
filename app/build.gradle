@@ -127,6 +127,7 @@ dependencies {
     // 카카오 링크(공유기능에 사용)
     implementation group: 'com.kakao.sdk', name: 'kakaolink', version:'1.16.0'
 
+    //로그를 이쁘게(가독성있게) 볼 수 있는 라이브러리
     implementation 'com.orhanobut:logger:2.2.0'
 
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:chromecast-sender:0.23'

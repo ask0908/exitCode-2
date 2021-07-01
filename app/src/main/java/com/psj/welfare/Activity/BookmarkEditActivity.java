@@ -420,7 +420,8 @@ public class BookmarkEditActivity extends AppCompatActivity
     // 북마크 삭제
     private void deleteBookmark(String type, String page, String id)
     {
-        Cursor cursor = helper.selectColumns();
+        //DB에서 가져온 데이터를 쉽게 처리하기 위해서 Cursor라는 인터페이스를 사용
+        Cursor cursor = helper.selectColumns();//
         if (cursor != null)
         {
             while (cursor.moveToNext())

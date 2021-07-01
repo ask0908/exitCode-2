@@ -161,7 +161,7 @@ public class TestSearchFragment extends Fragment
                     Bundle bundle = new Bundle();
                     bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "검색 화면에서 키워드 검색 결과 화면으로 이동. 검색한 키워드 : " + search_name_edittext.getText().toString());
                     analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-                    performSearch(search_name_edittext.getText().toString().trim());
+                    performSearch(search_name_edittext.getText().toString().trim(),"search");
                     return true;
                 }
                 return false;
@@ -189,7 +189,7 @@ public class TestSearchFragment extends Fragment
                                 Bundle bundle = new Bundle();
                                 bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "검색 화면에서 키워드 검색 결과 화면으로 이동. 검색한 키워드 : " + search_name_edittext.getText().toString());
                                 analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-                                performSearch(search_name_edittext.getText().toString().trim());
+                                performSearch(search_name_edittext.getText().toString().trim(),"search");
                             }
 
 //                            if(keyboard.isActive()){ //키보드 열려 있는지
@@ -209,48 +209,49 @@ public class TestSearchFragment extends Fragment
         /* 추천 태그별 클릭 이벤트 적용, performSearch()의 인자로 넘긴다 */
         recommend_old.setOnClickListener(v ->
         {
-            performSearch("노인");
+            performSearch("노인","tag");
         });
 
         recommend_pregnancy.setOnClickListener(v ->
         {
-            performSearch("임신/출산");
+            performSearch("임신/출산","tag");
         });
 
         recommend_living.setOnClickListener(v ->
         {
-            performSearch("주거");
+            performSearch("주거","tag");
         });
 
         recommend_young_man.setOnClickListener(v ->
         {
-            performSearch("청년");
+            performSearch("청년","tag");
         });
 
         recommend_job.setOnClickListener(v ->
         {
-            performSearch("취업/창업");
+            performSearch("취업/창업","tag");
         });
 
         recommend_corona.setOnClickListener(v ->
         {
-            performSearch("코로나");
+            performSearch("코로나","tag");
         });
 
         recommend_single_parent.setOnClickListener(v ->
         {
-            performSearch("한부모");
+            performSearch("한부모","tag");
         });
 
     }
 
-    public void performSearch(String search)
+    public void performSearch(String search, String type)
     {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(search_name_edittext.getWindowToken(), 0);
 
         Intent intent = new Intent(getActivity(), TestSearchResultActivity.class);
         intent.putExtra("keyword", search);
+        intent.putExtra("type", type);
         startActivity(intent);
     }
 

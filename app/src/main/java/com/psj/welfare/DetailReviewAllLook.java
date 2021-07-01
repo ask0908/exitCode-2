@@ -363,6 +363,7 @@ public class DetailReviewAllLook extends AppCompatActivity {
         benefit_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x / 18); //혜택명
         review_count.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x / 24); //리뷰 수
         filter_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x / 24); //필터 텍스트
+        filter_text.setPadding(0,0,(int)(size.x*0.05),0);
 
         allreview_recycler.setPadding(size.x / 30, (int)(size.x*0.01), size.x / 30, size.x / 30); //레이아웃 패딩값 적용
     }
@@ -392,6 +393,7 @@ public class DetailReviewAllLook extends AppCompatActivity {
             //서버로부터 리뷰 데이터 가져오기
             LoadReview();
             alertDialog.dismiss();
+            filter_text.setText("최신순");
         });
 
         high_star.setOnClickListener(v->{ //리뷰 최신순
@@ -400,6 +402,7 @@ public class DetailReviewAllLook extends AppCompatActivity {
             //서버로부터 리뷰 데이터 가져오기
             LoadReview();
             alertDialog.dismiss();
+            filter_text.setText("별점 높은 순");
         });
 
         low_star.setOnClickListener(v->{ //리뷰 최신순
@@ -408,6 +411,7 @@ public class DetailReviewAllLook extends AppCompatActivity {
             //서버로부터 리뷰 데이터 가져오기
             LoadReview();
             alertDialog.dismiss();
+            filter_text.setText("별점 낮은 순");
         });
 
     }

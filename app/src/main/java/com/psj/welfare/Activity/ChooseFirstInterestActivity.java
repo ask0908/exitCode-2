@@ -66,6 +66,7 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
         age = new ArrayList<>();
         area = new ArrayList<>();
 
+
         ScreenSize screen = new ScreenSize();
         Point size = screen.getScreenSize(this);
 
@@ -73,6 +74,7 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
         first_interest_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
         age_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
         area_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
+        go_second_interest_btn.setTextSize(TypedValue.COMPLEX_UNIT_PX,(float) (size.x*0.055)); //버튼 텍스트 크기
 
         buttonsClickListener();
 
@@ -83,7 +85,7 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
             if (age.size() == 0 || area.size() == 0)
             {
                 // 나이, 지역 중 아무것도 선택하지 않았으면 선택하도록 유도
-                Toast.makeText(activity, "나이와 지역 중 1개라도 선택해 주셔야 해요", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "나이와 지역 모두 1개라도 선택해 주셔야 해요", Toast.LENGTH_SHORT).show();
             }
             else
             {

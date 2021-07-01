@@ -54,6 +54,17 @@ public class ExpandableRecyclerViewAdapter extends RecyclerView.Adapter<Expandab
         {
             counter.add(0);
         }
+
+
+//        Log.e(TAG,"-----------------0000000000-----------------");
+//        for (int i = 0; i < itemNameList.size(); i++){
+//            Log.e(TAG,"itemNameList" + itemNameList.get(i));
+//        }
+//
+//        for (int i = 0; i < list.size(); i++){
+//            Log.e(TAG,"list" + list.get(i));
+//        }
+
     }
 
     @Override
@@ -67,6 +78,7 @@ public class ExpandableRecyclerViewAdapter extends RecyclerView.Adapter<Expandab
     @Override
     public void onBindViewHolder(final ViewHolder holder, @SuppressLint("RecyclerView") final int position)
     {
+
         holder.name.setText(nameList.get(position));
         // 필터들이 들어있는 리스트
         InnerRecyclerViewAdapter itemInnerRecyclerView = new InnerRecyclerViewAdapter(itemNameList.get(position), list);
