@@ -14,6 +14,7 @@ import android.view.Display;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,7 +58,8 @@ public class DetailTabLayoutActivity extends AppCompatActivity
     Fragment ContentsFragment, ApplicationFragment, ReviewFragment; //내용,신청,리뷰 프래그먼트
     FragmentManager fragmentManager = getSupportFragmentManager(); //프래그먼트 매니저, 액티비티와 프래그먼트의 중간에서 서로를 이어주는 역할
     FragmentTransaction fragmentTransaction; //프래그먼트 트랜잭션을 이용한 프래그먼트 삽입, 교체, 제거 기능 수행
-    ImageButton back_btn, bookmark_btn,share_btn; //이전 화면으로 가기 버튼, 북마크, 공유하기
+    ImageButton back_btn, bookmark_btn; //이전 화면으로 가기 버튼, 북마크
+    ImageView share_btn;//공유하기
 
     ProgressBar Detail_progressbar; //혜택 데이터 가져오기 전까지 보여줄 프로그래스 바
     JSONArray message;
@@ -218,7 +220,6 @@ public class DetailTabLayoutActivity extends AppCompatActivity
                         .setWebUrl("https://www.hyemo.com/")
                         .setMobileWebUrl("https://developers.kakao.com")
                         .setAndroidExecutionParams("key1=value1")
-                        .setIosExecutionParams("key1=value1")
                         .build()))
                 .build();
 

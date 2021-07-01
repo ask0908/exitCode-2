@@ -264,7 +264,10 @@
     <string name="login_entry">로그인 화면 진입</string>
 
     <string name="change_complete">닉네임 변경 완료</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="cancel_text">취소하기</string>
+    <string name="skip_text">건너뛰기</string>
+    <string name="alert_remove_text">지금 뒤로 가시면 지금까지 선택하신\n데이터는 사라져요</string>
+    <string name="alert_remove_text_two">정말 뒤로 가시겠어요?</string>
+    <string name="assist_method_start">start</string>
 
 </resources>

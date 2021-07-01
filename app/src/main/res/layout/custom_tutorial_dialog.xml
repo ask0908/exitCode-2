@@ -1,85 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="#FFFFFF"
-    android:layout_gravity="center"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".CustomTutorialDialog"
-    android:orientation="vertical"
-    android:gravity="center">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/edit_nickname_dialog_radius"
+    android:backgroundTint="@color/colorMainWhite"
+    android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/review_dialog_layout"
-        android:layout_width="340dp"
-        android:layout_height="200dp">
+        android:layout_width="match_parent"
+        android:layout_height="215dp">
 
         <TextView
             android:id="@+id/delete_dialog_firsttext"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/delete_dialog_secondtext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#595959"
-            android:layout_marginTop="4dp"
+            android:layout_margin="35dp"
             android:gravity="center"
-            android:text="이 화면에서 벗어날 경우\n데이터가 사라지며\n미리보기를 다시 할 수 없습니다"
-            android:textSize="18dp" />
+            android:text="@string/alert_remove_text"
+            android:textColor="#595959"
+            android:textSize="18sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/delete_dialog_secondtext"
-            app:layout_constraintTop_toBottomOf="@id/delete_dialog_firsttext"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/button_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="13dp"
+            android:text="@string/alert_remove_text_two"
             android:textColor="#595959"
+            android:textSize="19sp"
             android:textStyle="bold"
-            android:layout_marginBottom="4dp"
-            android:text="미리보기를 건너뛰시겠습니까?"
-            android:textSize="19dp"/>
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/delete_dialog_firsttext" />
 
         <LinearLayout
             android:id="@+id/button_layout"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintWidth_percent="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHeight_percent="0.23"
+            android:layout_marginTop="50dp"
             android:orientation="horizontal"
             android:weightSum="2"
-            android:layout_gravity="right">
+            android:layout_gravity="end">
 
             <Button
                 android:id="@+id/BtbCancle"
-                android:text="취소하기"
-                android:textSize="15dp"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:scaleType="center"
-                android:background="#D8D8D8" />
+                android:text="좀 더 할래요"
+                android:textColor="@color/colorMainWhite"
+                android:textSize="15sp"
+                android:layout_weight="1"
+                android:background="@drawable/edit_nickname_cancel_radius" />
 
             <Button
                 android:id="@+id/BtnBack"
-                android:text="건너뛰기"
-                android:textSize="15dp"
-                android:textStyle="bold"
-                android:textColor="#FFFFFF"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:text="다음에 할래요"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorMainWhite"
+                android:layout_weight="1"
                 android:scaleType="center"
-                android:background="#FF7088"/>
+                android:background="@drawable/edit_nickname_ok_radius"/>
 
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:id="@+id/review_dialog_layout"-->
+<!--        android:layout_width="340dp"-->
+<!--        android:layout_height="200dp">-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/delete_dialog_firsttext"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintRight_toRightOf="parent"-->
+<!--            app:layout_constraintLeft_toLeftOf="parent"-->
+<!--            app:layout_constraintBottom_toTopOf="@+id/delete_dialog_secondtext"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textColor="#595959"-->
+<!--            android:layout_marginTop="4dp"-->
+<!--            android:gravity="center"-->
+<!--            android:text="이 화면에서 벗어날 경우\n데이터가 사라지며\n미리보기를 다시 할 수 없습니다"-->
+<!--            android:textSize="18sp" />-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/delete_dialog_secondtext"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/delete_dialog_firsttext"-->
+<!--            app:layout_constraintRight_toRightOf="parent"-->
+<!--            app:layout_constraintLeft_toLeftOf="parent"-->
+<!--            app:layout_constraintBottom_toTopOf="@+id/button_layout"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textColor="#595959"-->
+<!--            android:textStyle="bold"-->
+<!--            android:layout_marginBottom="4dp"-->
+<!--            android:text="미리보기를 건너뛰시겠습니까?"-->
+<!--            android:textSize="19sp"/>-->
+
+<!--        <LinearLayout-->
+<!--            android:id="@+id/button_layout"-->
+<!--            app:layout_constraintRight_toRightOf="parent"-->
+<!--            app:layout_constraintLeft_toLeftOf="parent"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            app:layout_constraintWidth_percent="1"-->
+<!--            app:layout_constraintHeight_percent="0.23"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:weightSum="2"-->
+<!--            android:layout_gravity="end">-->
+
+<!--            <Button-->
+<!--                android:id="@+id/BtbCancle"-->
+<!--                android:text="@string/cancel_text"-->
+<!--                android:textSize="15sp"-->
+<!--                android:layout_weight="1"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:scaleType="center"-->
+<!--                android:background="@drawable/edit_nickname_cancel_radius"/>-->
+
+<!--            <Button-->
+<!--                android:id="@+id/BtnBack"-->
+<!--                android:text="@string/skip_text"-->
+<!--                android:textSize="15sp"-->
+<!--                android:textStyle="bold"-->
+<!--                android:textColor="@color/colorMainWhite"-->
+<!--                android:layout_weight="1"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:scaleType="center"-->
+<!--                android:background="@drawable/edit_nickname_ok_radius"/>-->
+
+<!--        </LinearLayout>-->
+
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 
 </LinearLayout>

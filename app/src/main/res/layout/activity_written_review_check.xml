@@ -94,19 +94,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:fontFamily="@font/notosanskr_bold"
                 android:autoSizeTextType="uniform"
-                android:includeFontPadding="false"
-                tools:text="전체 5개"/>
-
-<!--            <View-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="1dp"-->
-<!--                app:layout_constraintWidth_percent=".9"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="parent"-->
-<!--                app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                android:background="@color/colorGray_B"-->
-<!--                app:layout_constraintVertical_bias=".09"/>-->
+                android:includeFontPadding="false"/>
 
             <com.psj.welfare.custom.RecyclerViewEmptySupport
                 android:id="@+id/written_review_recyclerview"

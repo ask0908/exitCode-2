@@ -165,15 +165,13 @@ public class TestMyPageFragment extends Fragment
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         // 비로그인, 로그인 상태에 따라 다른 뷰를 보여주는 처리부
-        isLogout = sharedPreferences.getBoolean("logout", false);
+        isLogout = sharedPreferences.getBoolean("logout", false);   // logout 키가 없음
         if (isLogout)
         {
-            Log.e(TAG, "로그인하지 않음");
             notLoginView();
         }
         else
         {
-            Log.e(TAG, "로그인함");
             loginView();
         }
 

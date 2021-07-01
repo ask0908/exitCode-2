@@ -27,8 +27,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight=".9"
                 android:fontFamily="@font/notosanskr_bold"
-                android:includeFontPadding="false"
-                tools:text="기초생활보장 수급자 해산급여 지원산급여 지원산급여 지원산급여 지원산급여 지원" />
+                android:includeFontPadding="false"/>
 
             <TextView
                 android:id="@+id/written_review_option"
@@ -53,7 +52,6 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/notosanskr_medium"
             android:includeFontPadding="false"
-            android:text="user101"
             tools:paddingTop="10dp" />
 
         <!-- 별점 평점, 작성일자를 보여줄 가로 리니어 레이아웃 -->
@@ -87,8 +85,7 @@
                 android:layout_weight=".3"
                 android:autoSizeTextType="uniform"
                 android:fontFamily="@font/notosanskr_light"
-                android:includeFontPadding="false"
-                tools:text="21/3/29" />
+                android:includeFontPadding="false"/>
 
         </LinearLayout>
 
@@ -113,8 +110,7 @@
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent=".6"
-                tools:text="신청 방법이 쉬워서 신청했어요\n지원금액이 낮은게 아쉽네요" />
+                app:layout_constraintWidth_percent=".6"/>
 
             <LinearLayout
                 android:id="@+id/written_review_detail_layout"
@@ -125,7 +121,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintWidth_percent=".25"
+                app:layout_constraintWidth_percent=".28"
                 android:gravity="end">
 
                 <TextView
@@ -137,7 +133,6 @@
                     android:includeFontPadding="false"
                     android:gravity="end|bottom"
                     android:lineSpacingExtra="6sp"
-                    android:text="자세히보기"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias=".87"

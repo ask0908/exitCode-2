@@ -23,8 +23,8 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.psj.welfare.DetailTabLayoutActivity;
 import com.psj.welfare.R;
-import com.psj.welfare.activity.DetailBenefitActivity;
 import com.psj.welfare.activity.LoginActivity;
 import com.psj.welfare.adapter.PushGatherAdapter;
 import com.psj.welfare.api.ApiClient;
@@ -94,16 +94,6 @@ public class AllPushFragment extends Fragment
         push_bell_textview = view.findViewById(R.id.push_bell_textview);
         push_login_button = view.findViewById(R.id.push_login_button);
 
-//        // size에 저장되는 가로/세로 길이의 단위는 픽셀(Pixel)입니다.
-//        ScreenSize screen = new ScreenSize();
-//        // context의 스크린 사이즈를 구함
-//        Point size = screen.getScreenSize(getActivity());
-//
-//        push_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.035));
-//        push_all_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.x * 0.045));
-//        push_latest_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.x * 0.045));
-//        push_recommend_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.x * 0.045));
-
         return view;
     }
 
@@ -134,7 +124,6 @@ public class AllPushFragment extends Fragment
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
 
         boolean isLogin = sharedPreferences.getBoolean("logout", false);
-        Log.e(TAG, "로그아웃 상태(false : 로그인, true : 로그아웃) : " + isLogin);
         if (isLogin)
         {
             // 로그아웃 상태인 경우 - xml 화면에 변경 없이 그대로 보여지게 한다
@@ -229,10 +218,11 @@ public class AllPushFragment extends Fragment
             welf_local = list.get(position).getWelf_local();
             // 혜택 이름을 뽑고 푸시를 클릭하면 해당 액티비티로 이동하도록 한다
             // 알림 클릭 시 해당 알림의 id와 일치하는 알림 데이터의 수신 상태값을 바꾼다
+            // 이동은 하게 했지만 API에서 welf_id를 주지 않아 혜택 정보가 나오지 않는 현상 있음
             checkUserWatchedPush();
-            Intent intent = new Intent(getActivity(), DetailBenefitActivity.class);
+            Intent intent = new Intent(getActivity(), DetailTabLayoutActivity.class);
             intent.putExtra("name", welf_name);
-            intent.putExtra("welf_local", welf_local);
+            intent.putExtra("welf_id", welf_local);
             startActivity(intent);
         });
         activity_list = adapter.getList();

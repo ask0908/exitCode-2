@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/edit_nickname_dialog_radius"
     android:backgroundTint="@color/colorMainWhite"
-    android:orientation="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="35dp"
             android:gravity="center"
-            android:text="지금 뒤로 가시면 지금까지 선택하신\n데이터는 사라져요"
+            android:text="@string/alert_remove_text"
             android:textColor="#595959"
             android:textSize="17sp"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="13dp"
-            android:text="정말 뒤로 가시겠어요?"
+            android:text="@string/alert_remove_text_two"
             android:textColor="#595959"
             android:textSize="18sp"
             android:textStyle="bold"

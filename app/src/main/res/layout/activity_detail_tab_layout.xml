@@ -56,7 +56,7 @@
                 android:backgroundTint="@color/white"
                 android:visibility="visible"/>
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/share_btn"
                 android:layout_width="0dp"
                 android:layout_height="0dp"

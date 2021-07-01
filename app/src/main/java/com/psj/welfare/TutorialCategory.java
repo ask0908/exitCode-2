@@ -38,10 +38,15 @@ public class TutorialCategory extends AppCompatActivity {
     private String home = null; //지역
 //    private String age = "20대"; //나이대를 담는 변수(기본값 20대)
 
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial_category);
+
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
 
         BtnMinus = findViewById(R.id.BtnMinus); //나이대 - 버튼
         BtnPlus = findViewById(R.id.BtnPlus); //나이대 - 버튼
@@ -104,6 +109,10 @@ public class TutorialCategory extends AppCompatActivity {
                 Toast.makeText(this, "성별을 선택해 주세요", Toast.LENGTH_SHORT).show();
             } else { //값을 모두 선택 했다면
 
+                editor.putString("gender", gender);
+                editor.putString("age_group", TextAge.getText().toString());
+                editor.putString("user_area", PickerString[PickerHome.getValue()]);
+                editor.apply();
 
                 new Thread(() -> { //Room은 메인 스레드에서 실행시키면 오류가 난다
                     //Room을 쓰기위해 데이터베이스 객체 만들기

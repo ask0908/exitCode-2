@@ -125,19 +125,11 @@ public class WrittenReviewAdapter extends RecyclerView.Adapter<WrittenReviewAdap
                             intent.putExtra("welfId", list.get(position).getWelf_id());
                             intent.putExtra("welf_name", list.get(position).getWelf_name());
                             intent.putExtra("review_id", list.get(position).getReview_id());
-
                             intent.putExtra("Star_count", list.get(position).getStar_count());
                             intent.putExtra("satisfaction", list.get(position).getSatisfaction());
                             intent.putExtra("difficulty_level", list.get(position).getDifficulty_level());
                             intent.putExtra("content", list.get(position).getContent());
-
-//                            Log.e(TAG,"Star_count : "+ list.get(position).getStar_count());
-//                            Log.e(TAG,"satisfaction : "+ list.get(position).getSatisfaction());
-//                            Log.e(TAG,"difficulty_level : "+ list.get(position).getDifficulty_level());
-//                            Log.e(TAG,"content : "+ list.get(position).getContent());
-
-                           intent.putExtra("review_edit", 100);
-//                            Log.e(TAG, "수정할 혜택의 welf_id : " + list.get(position).getWelf_id() + ", welf_name : " + list.get(position).getWelf_name());
+                            intent.putExtra("review_edit", 100);
                             context.startActivity(intent);
                             notifyDataSetChanged();
                             break;
@@ -184,7 +176,8 @@ public class WrittenReviewAdapter extends RecyclerView.Adapter<WrittenReviewAdap
         TextView written_review_welf_name, written_review_option, written_review_writer, written_review_date, written_review_content;
         OnItemClickListener itemClickListener;
         ConstraintLayout review_content_layout; //리뷰 내용 레이아웃
-        LinearLayout review_title_layout,review_star_layout; //리뷰 타이틀 레이아웃, 리뷰 별점 레이아웃
+        LinearLayout review_title_layout, review_star_layout; //리뷰 타이틀 레이아웃, 리뷰 별점 레이아웃
+
         public WrittenReviewViewHolder(@NonNull View view, OnItemClickListener itemClickListener)
         {
             super(view);
@@ -214,7 +207,8 @@ public class WrittenReviewAdapter extends RecyclerView.Adapter<WrittenReviewAdap
     }
 
     //레이아웃의 사이즈를 동적으로 맞춤
-    private void setsize(WrittenReviewViewHolder holder) {
+    private void setsize(WrittenReviewViewHolder holder)
+    {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
@@ -224,17 +218,17 @@ public class WrittenReviewAdapter extends RecyclerView.Adapter<WrittenReviewAdap
 //        Point size = screen.getScreenSize((Activity) context);
 
         //닉네임
-        holder.written_review_writer.setPadding(0,(int)(size.y * 0.03),0,0);
+        holder.written_review_writer.setPadding(0, (int) (size.y * 0.03), 0, 0);
         //별점 레이아웃
-        holder.review_star_layout.setPadding(0,(int)(size.y * 0.003),0,0);
+        holder.review_star_layout.setPadding(0, (int) (size.y * 0.003), 0, 0);
         //내용 레이아웃
-        holder.review_content_layout.setPadding(0,(int)(size.y * 0.006),0,0);
+        holder.review_content_layout.setPadding(0, (int) (size.y * 0.006), 0, 0);
 
         //아래와 같이 마진을 주기 위해서는 마진을 주려는 객체가 최상의 view이면 안되고 해당 객체를 감싸는 LinearLayout이 필요하다
         //마진값 주기 위한 처리
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) holder.written_review_item_layout.getLayoutParams();
-        layoutParams.topMargin = (int)(size.y * 0.03);
-        layoutParams.bottomMargin = (int)(size.y * 0.03);
+        layoutParams.topMargin = (int) (size.y * 0.03);
+        layoutParams.bottomMargin = (int) (size.y * 0.03);
         holder.written_review_item_layout.setLayoutParams(layoutParams); //아이템 전체 레이아웃 마진값 설정
 
 //        holder.written_review_detail_layout.setPadding(0,0,0,(int)(size.y * 0.));

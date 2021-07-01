@@ -29,6 +29,10 @@ public class MoreViewModel extends AndroidViewModel
     {
         apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
         final MutableLiveData<String> data = new MutableLiveData<>();
+        Log.e(TAG, "token : " + token);
+        Log.e(TAG, "session : " + session);
+        Log.e(TAG, "page : " + page);
+        Log.e(TAG, "assist_method : " + assist_method);
         apiInterface.moreViewWelfareLogin(token, session, page, assist_method)
                 .enqueue(new Callback<String>()
                 {
@@ -56,11 +60,12 @@ public class MoreViewModel extends AndroidViewModel
     }
 
     /* 비로그인일 때 메인에서 더보기를 누르면 호출되는 메서드 */
-    public MutableLiveData<String> moreViewWelfareNotLogin(String page, String theme, String gender, String age, String local)
+    public MutableLiveData<String> moreViewWelfareNotLogin(String page, String assist_method, String gender, String age, String local)
     {
+        Log.e(TAG, "비로그인 시 데이터 가져오는 메서드 호출");
         apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
         final MutableLiveData<String> data = new MutableLiveData<>();
-        apiInterface.moreViewWelfareNotLogin(page, theme, gender, age, local)
+        apiInterface.moreViewWelfareNotLogin(page, assist_method, gender, age, local)
                 .enqueue(new Callback<String>()
                 {
                     @Override

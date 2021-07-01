@@ -1,60 +1,62 @@
  package com.psj.welfare.test;
 
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.graphics.Point;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
+ import android.app.ProgressDialog;
+ import android.content.Context;
+ import android.content.Intent;
+ import android.content.SharedPreferences;
+ import android.database.Cursor;
+ import android.graphics.Point;
+ import android.os.Bundle;
+ import android.os.Handler;
+ import android.os.Message;
+ import android.util.Log;
+ import android.util.TypedValue;
+ import android.view.LayoutInflater;
+ import android.view.View;
+ import android.view.ViewGroup;
+ import android.widget.Button;
+ import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
-import androidx.viewpager2.widget.CompositePageTransformer;
-import androidx.viewpager2.widget.MarginPageTransformer;
-import androidx.viewpager2.widget.ViewPager2;
+ import androidx.annotation.NonNull;
+ import androidx.annotation.Nullable;
+ import androidx.cardview.widget.CardView;
+ import androidx.constraintlayout.widget.ConstraintLayout;
+ import androidx.fragment.app.Fragment;
+ import androidx.lifecycle.Observer;
+ import androidx.lifecycle.ViewModelProvider;
+ import androidx.recyclerview.widget.LinearLayoutManager;
+ import androidx.recyclerview.widget.RecyclerView;
+ import androidx.room.Room;
+ import androidx.viewpager2.widget.CompositePageTransformer;
+ import androidx.viewpager2.widget.MarginPageTransformer;
+ import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.psj.welfare.AppDatabase;
-import com.psj.welfare.BannerDetail;
-import com.psj.welfare.CategoryDao;
-import com.psj.welfare.CategoryData;
-import com.psj.welfare.DetailTabLayoutActivity;
-import com.psj.welfare.MainBannerAdapter;
-import com.psj.welfare.MainBannerData;
-import com.psj.welfare.R;
-import com.psj.welfare.ScreenSize;
-import com.psj.welfare.activity.YoutubeActivity;
-import com.psj.welfare.activity.YoutubeMoreActivity;
-import com.psj.welfare.adapter.MainDownAdapter;
-import com.psj.welfare.adapter.MainHorizontalYoutubeAdapter;
-import com.psj.welfare.data.HorizontalYoutubeItem;
-import com.psj.welfare.data.MainThreeDataItem;
-import com.psj.welfare.util.DBOpenHelper;
-import com.psj.welfare.viewmodel.MainViewModel;
+ import com.google.firebase.analytics.FirebaseAnalytics;
+ import com.psj.welfare.AppDatabase;
+ import com.psj.welfare.BannerDetail;
+ import com.psj.welfare.CategoryDao;
+ import com.psj.welfare.CategoryData;
+ import com.psj.welfare.DetailTabLayoutActivity;
+ import com.psj.welfare.MainBannerAdapter;
+ import com.psj.welfare.MainBannerData;
+ import com.psj.welfare.R;
+ import com.psj.welfare.ScreenSize;
+ import com.psj.welfare.activity.LoginActivity;
+ import com.psj.welfare.activity.YoutubeActivity;
+ import com.psj.welfare.activity.YoutubeMoreActivity;
+ import com.psj.welfare.adapter.MainDownAdapter;
+ import com.psj.welfare.adapter.MainHorizontalYoutubeAdapter;
+ import com.psj.welfare.data.HorizontalYoutubeItem;
+ import com.psj.welfare.data.MainThreeDataItem;
+ import com.psj.welfare.util.DBOpenHelper;
+ import com.psj.welfare.viewmodel.MainViewModel;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+ import org.json.JSONArray;
+ import org.json.JSONException;
+ import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
+ import java.util.ArrayList;
+ import java.util.List;
 
 /* 구현 완료 시 MainFragment로 옮긴다 */
 public class TestFragment extends Fragment
@@ -303,8 +305,17 @@ public class TestFragment extends Fragment
             }
         });
 
+        /* 비로그인 시 나타나는 로그인 버튼(나에게 맞는 혜택 찾기) */
+        notlogin_button.setOnClickListener(v -> moveOtherActivity(getActivity(), LoginActivity.class));
+
     }
 
+    /* 액티비티 이동 메서드, 1번 인자로 현재 액티비티와 2번 인자로 "액티비티명.class"를 넣는다 */
+    private void moveOtherActivity(Context packageContext, Class<?> cls)
+    {
+        Intent intent = new Intent(packageContext, cls);
+        startActivity(intent);
+    }
 
     private Runnable sliderRunnable = new Runnable() {
         @Override

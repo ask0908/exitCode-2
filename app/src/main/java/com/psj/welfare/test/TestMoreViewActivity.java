@@ -142,8 +142,32 @@ public class TestMoreViewActivity extends AppCompatActivity
             sessionId = sharedPreferences.getString("sessionId", "");
             isLogin = sharedPreferences.getBoolean("logout", false);
 
-            // 처음 화면에 들어오면 start, 1을 인자로 넘겨서 값을 가져와 all_10 안의 값들을 보여준다
-            moreViewWelfareLogin(1, "start");
+            /* 로그인 상태에 따른 더보기 리스트 예외처리 */
+            // 로그인 상태를 확인할 수 있는 값을 가져와야 한다
+            String token = sharedPreferences.getString("token", "");
+            boolean isLogout = sharedPreferences.getBoolean("logout", false);   // true : 로그아웃 상태, false : 로그인 상태
+
+            // 로그아웃 시 토큰, isLogout 값 확인
+            Log.e(TAG, "token : " + token + ", 로그아웃 여부(true - 로그아웃 / false - 로그인) : " + isLogout);
+
+            // 토큰이 없고 isLogout이 true인 경우 = 비로그인시 더보기 데이터 가져오는 메서드 호출
+            if (token.equals("") && isLogout)
+            {
+                Log.e(TAG, "비로그인 시 호출될 걸로 예상됨");
+                // 연령대, 성별, 지역이 저장돼있지 않으면 보낸다?
+                String age_group = sharedPreferences.getString("age_group", "");
+                String gender = sharedPreferences.getString("gender", "");
+                String area = sharedPreferences.getString("user_area", "");
+                Log.e(TAG, "연령대 : " + age_group + ", 성별 : " + gender + ", 지역 : " + area);
+                moreViewWelfareNotLogin(String.valueOf(page), getString(R.string.assist_method_start), gender, age_group, area);
+            }
+            // 토큰이 있고 isLogout이 false인 경우 = 로그인 시 더보기 데이터 가져오는 메서드 호출
+            else if (!token.equals("") && !isLogout)
+            {
+                Log.e(TAG, "로그인 시 호출될 걸로 예상됨");
+                moreViewWelfareLogin(page, getString(R.string.assist_method_start));
+            }
+
             // 리사이클러뷰 페이징 처리
             moreViewPaging();
         }
@@ -151,7 +175,7 @@ public class TestMoreViewActivity extends AppCompatActivity
         {
             // 인터넷 연결이 되지 않은 상태일 경우
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("네트워크가 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
+            builder.setMessage("인터넷에 연결되어 있지 않습니다\nWi-Fi 또는 데이터를 활성화 해주세요")
                     .setCancelable(false)
                     .setPositiveButton("예", new DialogInterface.OnClickListener()
                     {
@@ -476,15 +500,10 @@ public class TestMoreViewActivity extends AppCompatActivity
             }
         }
 
-//        for (int i = 0; i < noRepeat.size(); i++)
-//        {
-//            Log.e(TAG, "noRepeat 안의 지원 유형들 : " + noRepeat.get(i).getAssist_method());
-//        }
-
     }
 
     /* 비로그인 시 더보기 눌렀을 경우 호출돼 데이터를 가져오는 메서드 */
-    private void moreViewWelfareNotLogin(String page, String assist_method)
+    private void moreViewWelfareNotLogin(String page, String assist_method, String gender, String age_group, String area)
     {
         final ProgressDialog dialog = new ProgressDialog(this);
         dialog.setMax(100);
@@ -512,7 +531,7 @@ public class TestMoreViewActivity extends AppCompatActivity
 
         // theme : 상단 리사이클러뷰에서 선택한 카테고리 이름을 넣는다
         // gender, age, local : 미리보기 부분의 파일이 없어 하드코딩으로 대신
-        moreViewModel.moreViewWelfareNotLogin(page, assist_method, "남성", "20", "서울")
+        moreViewModel.moreViewWelfareNotLogin(page, assist_method, gender, age_group, area)
                 .observe(this, moreViewObserver);
     }
 

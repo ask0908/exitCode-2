@@ -207,7 +207,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         login_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         sendUserTypeAndPlatform();
                         login_intent.putExtra("user_token", server_token);
-                        login_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(login_intent);
                         finish();
                     }
