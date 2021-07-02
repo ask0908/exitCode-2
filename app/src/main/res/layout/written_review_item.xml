@@ -112,7 +112,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintWidth_percent=".6"/>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/written_review_detail_layout"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -121,7 +121,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintWidth_percent=".28"
+                app:layout_constraintWidth_percent=".35"
                 android:gravity="end">
 
                 <TextView
@@ -134,14 +134,15 @@
                     android:gravity="end|bottom"
                     android:lineSpacingExtra="6sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias=".87"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintWidth_percent=".2" />
+                    app:layout_constraintRight_toLeftOf="@+id/go_welf_detail"
+                    app:layout_constraintWidth_percent=".2"
+                    app:layout_constraintHorizontal_bias=".87"
+                    android:text="혜택 보러 가기"/>
 
                 <ImageView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/go_welf_detail"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="bottom"
                     android:src="@drawable/bookmark_right_arrow"
@@ -151,9 +152,9 @@
                     app:layout_constraintHorizontal_bias="1"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintWidth_percent=".1" />
+                    app:layout_constraintWidth_percent="0.23" />
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

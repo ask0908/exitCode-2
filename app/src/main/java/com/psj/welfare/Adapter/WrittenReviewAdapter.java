@@ -171,7 +171,8 @@ public class WrittenReviewAdapter extends RecyclerView.Adapter<WrittenReviewAdap
 
     public static class WrittenReviewViewHolder extends RecyclerView.ViewHolder
     {
-        LinearLayout written_review_item_layout, written_review_detail_layout;
+        ConstraintLayout written_review_detail_layout;
+        LinearLayout written_review_item_layout;
         com.hedgehog.ratingbar.RatingBar written_review_star;
         TextView written_review_welf_name, written_review_option, written_review_writer, written_review_date, written_review_content;
         OnItemClickListener itemClickListener;
