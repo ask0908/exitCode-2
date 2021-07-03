@@ -658,9 +658,6 @@ public interface ApiInterface
     /**
      * 관심사를 선택한 유저에게 보여줄 전체 혜택 리스트와 유튜브 영상을 SELECT하는 메서드
      * 비로그인일 시 나이, 성별, 지역이 필수 인자고 로그인했을 시 로그인 토큰이 필수다
-     * @param age - 사용자 나이대(20, 30처럼 숫자만 넣음)
-     * @param gender - 사용자 성별 (남성, 여성)
-     * @param local - 사용자 지역(서울, 경기) <- 전국 넣어도 나오는데 이건 이상한 듯
      * @param type - "main" 고정
      * @param token - 로그인 시 서버에서 받는 토큰
      * @return - {
@@ -700,11 +697,11 @@ public interface ApiInterface
      */
     @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/welf")
     Call<String> showWelfareAndYoutubeLogin(
-            @Query("age") String age,
-            @Query("gender") String gender,
-            @Query("local") String local,
+//            @Query("age") String age,
+//            @Query("gender") String gender,
+//            @Query("local") String local,
             @Query("type") String type,
-            @Query("logintoken") String token
+            @Header("logintoken") String token
     );
 
     /* ↓ 람다로 바뀐 후 새로 추가된 검색 메서드

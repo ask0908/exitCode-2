@@ -1,12 +1,21 @@
 package com.psj.welfare.viewmodel;
 
 import android.app.Application;
+import android.database.Cursor;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.repository.MainRepository;
+import com.psj.welfare.util.DBOpenHelper;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /* 뷰모델의 유일한 책임 : UI 데이터를 관리하는 것. 뷰 계층 구조에 액세스하거나 액티비티/프래그먼트에 대한 참조 변수를 가져선 안 된다
 * 참고 : https://medium.com/teachmind/necessity-of-viewmodel-and-difference-between-mutablelivedata-and-mediatorlivedata-f1c30df27232 */
@@ -16,11 +25,28 @@ public class MainViewModel extends AndroidViewModel
     private MainRepository mainRepository;
     private MutableLiveData<String> mainLiveData;
 
+    private ApiInterface apiInterface;
+    DBOpenHelper helper;
+    String sqlite_token;
+
     public MainViewModel(@NonNull Application application)
     {
         super(application);
 
         mainRepository = new MainRepository();
+        apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
+        helper = new DBOpenHelper(application.getApplicationContext());
+        helper.openDatabase();
+        helper.create();
+
+        Cursor cursor = helper.selectColumns();
+        if (cursor != null)
+        {
+            while (cursor.moveToNext())
+            {
+                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+            }
+        }
         this.mainLiveData = mainRepository.getAllDatas();
     }
 
@@ -31,6 +57,36 @@ public class MainViewModel extends AndroidViewModel
     public MutableLiveData<String> getAllData()
     {
         return mainLiveData;
+    }
+
+    public MutableLiveData<String> showWelfareAndYoutubeLogin(String type,
+                                                              String logintoken)
+    {
+        final MutableLiveData<String> data = new MutableLiveData<>();
+        apiInterface.showWelfareAndYoutubeLogin(type, logintoken)
+                .enqueue(new Callback<String>()
+                {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response)
+                    {
+                        if (response.isSuccessful() && response.body() != null)
+                        {
+                            String result = response.body();
+                            data.setValue(result);
+                        }
+                        else
+                        {
+                            Log.e(TAG, "뷰모델에서 로그인 시 데이터 가져오기 실패");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t)
+                    {
+                        Log.e(TAG, "뷰모델에서 로그인 시 데이터 가져오기 에러 : " + t.getMessage());
+                    }
+                });
+        return data;
     }
 
 }
