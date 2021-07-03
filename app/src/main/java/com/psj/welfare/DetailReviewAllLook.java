@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 
@@ -244,7 +245,8 @@ public class DetailReviewAllLook extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-                    responseParse(result);
+//                    responseParse(result);
+                    GsonResponseParse(result);
                 }
                 else
                 {
@@ -258,12 +260,36 @@ public class DetailReviewAllLook extends AppCompatActivity {
                 Log.e(TAG, "비로그인일 시 데이터 가져오기 에러 : " + t.getMessage());
             }
         });
+    }
 
 
+    //Gson으로 파싱
+    private void GsonResponseParse(String result){
+        Gson gson = new Gson();
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            JSONArray jsonArray = jsonObject.getJSONArray("message");
+
+            for (int i = 0; i < jsonArray.length(); i++){
+                //DetailReviewDataGson.class 타입으로 변경 (타입을 String, int, jsonArray등 일반 데이터 타입으로 받을 수도 있다
+                DetailReviewData data = gson.fromJson(jsonArray.getJSONObject(i).toString(),DetailReviewData.class);
+//                Log.e(TAG,"data.getNickName : " + data.getNickName());
+//                Log.e(TAG,"data.getStar_count : " + data.getStar_count());
+//                Log.e(TAG,"data.getIs_me : " + data.getIs_me());
+
+                allreviewList.add(data);
+                allreview_adapter.notifyDataSetChanged();
+            }
+            dialog.dismiss();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
     }
 
-    //서버로부터 받아온 유튜브데이터 파싱
+
+
+    //서버로부터 받아온 유튜브데이터 파싱, GsonResponseParse() 메소드와 같은 기능
     private void responseParse(String result) {
         try
         {
@@ -296,8 +322,8 @@ public class DetailReviewAllLook extends AppCompatActivity {
                 ReviewData.setIs_me(boolean_isme);
                 ReviewData.setNickName(writer);
                 ReviewData.setContent(content);
-//                Log.e(TAG,"star_count : " + star_count);
                 float star = Float.parseFloat(star_count);
+                Log.e(TAG,"star : " + star);
                 ReviewData.setStar_count(star);
                 ReviewData.setDifficulty_level(difficulty_level);
                 ReviewData.setSatisfaction(satisfaction);
