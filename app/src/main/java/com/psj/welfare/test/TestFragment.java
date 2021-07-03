@@ -224,19 +224,19 @@ public class TestFragment extends Fragment
 
         /* 로그인 상태에 따른 메인에서 데이터 보여주는 메서드 구분 처리 */
         loggedOut = app_pref.getBoolean("logout", false);
-        if (loggedOut)
-        {
-            // loggedOut이 true = 로그아웃 상태
-            Log.e(TAG, "로그아웃 상태일 것");
-            showWelfareAndYoutubeNotLogin();
-        }
-        else
-        {
-            // loggedOut이 false = 로그인 상태
-            Log.e(TAG, "로그인 상태일 것");
-            showWelfareAndYoutubeLogin();
-        }
-//        showWelfareAndYoutubeNotLogin();
+//        if (loggedOut)
+//        {
+//            // loggedOut이 true = 로그아웃 상태
+//            Log.e(TAG, "로그아웃 상태일 것");
+//            showWelfareAndYoutubeNotLogin();
+//        }
+//        else
+//        {
+//            // loggedOut이 false = 로그인 상태
+//            Log.e(TAG, "로그인 상태일 것");
+//            showWelfareAndYoutubeLogin();
+//        }
+        showWelfareAndYoutubeNotLogin();
 
         // view 100+ -> view 0으로 변경
         // 편집하기 각각 왼쪽, 오른쪽 간격 수정

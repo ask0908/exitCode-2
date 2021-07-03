@@ -151,7 +151,7 @@ public class TestMoreViewActivity extends AppCompatActivity
             Log.e(TAG, "token : " + token + ", 로그아웃 여부(true - 로그아웃 / false - 로그인) : " + isLogout);
 
             // 토큰이 없고 isLogout이 true인 경우 = 비로그인시 더보기 데이터 가져오는 메서드 호출
-            if (token.equals("") && isLogout)
+            if (token.equals("") || isLogout)
             {
                 Log.e(TAG, "비로그인 시 호출될 걸로 예상됨");
                 // 연령대, 성별, 지역이 저장돼있지 않으면 보낸다?
@@ -162,7 +162,7 @@ public class TestMoreViewActivity extends AppCompatActivity
                 moreViewWelfareNotLogin(String.valueOf(page), getString(R.string.assist_method_start), gender, age_group, area);
             }
             // 토큰이 있고 isLogout이 false인 경우 = 로그인 시 더보기 데이터 가져오는 메서드 호출
-            else if (!token.equals("") && !isLogout)
+            else
             {
                 Log.e(TAG, "로그인 시 호출될 걸로 예상됨");
                 moreViewWelfareLogin(page, getString(R.string.assist_method_start));
@@ -520,6 +520,7 @@ public class TestMoreViewActivity extends AppCompatActivity
                 if (str != null)
                 {
                     Log.e(TAG, "비로그인 상태에서 더보기 눌러 데이터 가져온 결과 : " + str);
+                    firstEntranceParsing(str);
                     dialog.dismiss();
                 }
                 else
