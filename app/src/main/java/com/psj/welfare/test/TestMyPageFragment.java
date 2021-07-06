@@ -55,9 +55,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -70,7 +67,7 @@ public class TestMyPageFragment extends Fragment
 
 
     SharedPreferences sharedPreferences;
-    boolean isLogout;
+    boolean isLogin;
 
     DBOpenHelper helper;
     String sqlite_token, message;
@@ -154,25 +151,30 @@ public class TestMyPageFragment extends Fragment
         binding.mypageWithdrawTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"탈퇴하기"
         binding.mypageWithdrawTextview.setPadding((int) (size.x * 0.04),(int) (size.y * 0.02),(int) (size.x * 0.04),(int) (size.y * 0.02));
 
-
+        binding.mypageLoginTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 25);
         binding.mypageLoginButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 21);
 
-
+        // 마이페이지에 들어온 순간 내 닉네임을 보여준다
         checkMyNickname("show_name");
 
         /* 쉐어드에서 로그인 상태값을 가져와 로그인, 비로그인일 경우 보이는 UI를 각각 다르게 해야 한다 */
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        // 비로그인, 로그인 상태에 따라 다른 뷰를 보여주는 처리부
-        isLogout = sharedPreferences.getBoolean("logout", false);   // logout 키가 없음
-        if (isLogout)
+        /* 비로그인, 로그인 상태에 따라 다른 뷰를 보여주는 처리부
+        * 카카오 로그인 버튼을 눌러 로그인했을 때 쉐어드에 true 값을 저장하고, 마이페이지에서 로그아웃 다이얼로그의 "예"를 클릭한 경우 false를 저장한다 */
+        isLogin = sharedPreferences.getBoolean("user_login", false);
+
+        // 로그인한 경우
+        if (isLogin)
         {
-            notLoginView();
+            Log.e(TAG, "로그인함");
+            loginView();
         }
         else
         {
-            loginView();
+            Log.e(TAG, "로그인 안함");
+            notLoginView();
         }
 
         // 기기 설정값에 따라 스위치의 T/F 값을 바꿔 보여주는 처리부
@@ -256,6 +258,7 @@ public class TestMyPageFragment extends Fragment
                                     public void onCompleteLogout()
                                     {
                                         editor.putBoolean("logout", true);
+                                        editor.putBoolean("user_login", false);
                                         editor.remove("user_nickname");
                                         editor.apply();
                                         Bundle bundle = new Bundle();
@@ -488,27 +491,34 @@ public class TestMyPageFragment extends Fragment
             e.printStackTrace();
         }
 
-//        Log.e(TAG, "닉네임 변경 요청 후 서버에서 받은 message : " + message);
-        if (message.equals("계정 정보가 존재하지 않습니다.") || message.equals("data is empty"))
+        if (message.equals(getString(R.string.not_exist)) || message.equals(getString(R.string.data_is_empty)))
         {
             //
         }
         else
         {
-            Observable.just(message)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(data ->
-                    {
-                        if (message.equals(getString(R.string.change_complete)))
-                        {
-                            binding.mypageMyId.setText(receivedNickname);
-                        }
-                        else
-                        {
-                            binding.mypageMyId.setText(message);
-                        }
-                    });
+            if (message.equals(getString(R.string.change_complete)))
+            {
+                binding.mypageMyId.setText(receivedNickname);
+            }
+            else
+            {
+                binding.mypageMyId.setText(message);
+            }
+//            Observable.just(message)
+//                    .subscribeOn(Schedulers.io())
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribe(data ->
+//                    {
+//                        if (message.equals(getString(R.string.change_complete)))
+//                        {
+//                            binding.mypageMyId.setText(receivedNickname);
+//                        }
+//                        else
+//                        {
+//                            binding.mypageMyId.setText(message);
+//                        }
+//                    });
         }
     }
 

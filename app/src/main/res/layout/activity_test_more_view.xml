@@ -36,7 +36,7 @@
                 android:fontFamily="@font/notosanskr_bold"
                 android:textColor="@color/colorMainWhite"
                 android:layout_gravity="center"
-                android:gravity="center_horizontal"/>
+                android:gravity="center|top"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

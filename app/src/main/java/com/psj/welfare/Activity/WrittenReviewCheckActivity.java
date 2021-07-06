@@ -406,17 +406,9 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onResume()
-    {
-        super.onResume();
-        Log.e(TAG, "onResume() 호출");
-    }
-
-    @Override
     protected void onRestart()
     {
         super.onRestart();
-        Log.e(TAG, "onRestart() 호출");
         checkNetworkStatus();
     }
 }

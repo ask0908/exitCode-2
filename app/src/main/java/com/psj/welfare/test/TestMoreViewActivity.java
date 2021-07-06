@@ -25,6 +25,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
 import com.psj.welfare.DetailTabLayoutActivity;
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
@@ -77,7 +78,7 @@ public class TestMoreViewActivity extends AppCompatActivity
 
     // 하단 리사이클러뷰에 넣을 값을 담을 변수, total_page는 서버에서 받은 전체 페이지 수다
     String welf_id, welf_name, welf_tag, welf_count;
-    int total_page;
+    int total_page, total_num;
     // 상단 리사이클러뷰에 넣을 값을 담을 변수
     String top_assist_method;
     // all_10 안의 값들을 담을 변수
@@ -128,7 +129,9 @@ public class TestMoreViewActivity extends AppCompatActivity
 
             // 하단 리사이클러뷰 패딩 설정
             more_view_bottom_recyclerview.setPadding((int) (size.x * 0.058), 0, (int) (size.x * 0.015), 0);
-            more_view_result_count.setTextSize((int) (size.x * 0.022));
+
+            // "맞춤 혜택 총 n개" 글자 크기 설정
+            more_view_result_count.setTextSize((int) (size.x * 0.017));
 
             // 상, 하단 리사이클러뷰에 사용할 리스트 초기화
             up_list = new ArrayList<>();
@@ -143,28 +146,28 @@ public class TestMoreViewActivity extends AppCompatActivity
             isLogin = sharedPreferences.getBoolean("logout", false);
 
             /* 로그인 상태에 따른 더보기 리스트 예외처리 */
-            // 로그인 상태를 확인할 수 있는 값을 가져와야 한다
-            String token = sharedPreferences.getString("token", "");
-            boolean isLogout = sharedPreferences.getBoolean("logout", false);   // true : 로그아웃 상태, false : 로그인 상태
-
-            // 로그아웃 시 토큰, isLogout 값 확인
-            Log.e(TAG, "token : " + token + ", 로그아웃 여부(true - 로그아웃 / false - 로그인) : " + isLogout);
-
-            // 토큰이 없고 isLogout이 true인 경우 = 비로그인시 더보기 데이터 가져오는 메서드 호출
-            if (token.equals("") || isLogout)
+            String gender = sharedPreferences.getString("gender", "");
+            String age = sharedPreferences.getString("age_group", "");
+            String area = sharedPreferences.getString("user_area", "");
+            if (gender != null && age != null && area != null)
             {
-                Log.e(TAG, "비로그인 시 호출될 걸로 예상됨");
-                // 연령대, 성별, 지역이 저장돼있지 않으면 보낸다?
-                String age_group = sharedPreferences.getString("age_group", "");
-                String gender = sharedPreferences.getString("gender", "");
-                String area = sharedPreferences.getString("user_area", "");
-                Log.e(TAG, "연령대 : " + age_group + ", 성별 : " + gender + ", 지역 : " + area);
-                moreViewWelfareNotLogin(String.valueOf(page), getString(R.string.assist_method_start), gender, age_group, area);
+                if (!gender.equals("") && !age.equals("") && !area.equals(""))
+                {
+                    // 로그인 x, 관심사 o인 경우 여기로 이동된다
+                    Log.e(TAG, "비로그인일 때만 여기로 이동하나???");
+                    moreViewWelfareNotLogin(String.valueOf(page), getString(R.string.assist_method_start), gender, age, area);
+                }
+                else
+                {
+                    // 로그인한 경우
+                    Log.e(TAG, "로그인했을 때만 여기로 이동하나???");
+                    moreViewWelfareLogin(page, getString(R.string.assist_method_start));
+                }
             }
-            // 토큰이 있고 isLogout이 false인 경우 = 로그인 시 더보기 데이터 가져오는 메서드 호출
+            // 로그인 했을 때는 else 안으로 빠진다
             else
             {
-                Log.e(TAG, "로그인 시 호출될 걸로 예상됨");
+                Log.e(TAG, "로그인했을 때만 여기로 이동하나22???");
                 moreViewWelfareLogin(page, getString(R.string.assist_method_start));
             }
 
@@ -192,9 +195,9 @@ public class TestMoreViewActivity extends AppCompatActivity
 
     }   // onCreate() end
 
-    /* 상단 리사이클러뷰의 지원 형태를 눌렀을 경우 데이터를 가져오는 메서드
+    /* 관심사 o, 로그인 x일 때 상단 리사이클러뷰의 지원 형태를 눌렀을 경우 데이터를 가져오는 메서드
      * 이 메서드에선 페이징 처리를 해줘야 한다 */
-    private void getDataFromFormOfSupport(String page, String assist_method)
+    private void getDataFromFormOfSupportNotLogin(String page, String assist_method, String gender, String age, String local)
     {
         final ProgressDialog dialog = new ProgressDialog(this);
         dialog.setMax(100);
@@ -222,6 +225,40 @@ public class TestMoreViewActivity extends AppCompatActivity
             }
         };
 
+        moreViewModel.moreViewWelfareNotLogin(sessionId, page, assist_method, gender, age, local)
+                .observe(this, getDataFromFormObserver);
+    }
+
+    /* 상단 리사이클러뷰의 지원 형태를 눌렀을 경우 데이터를 가져오는 메서드, 토큰을 서버로 넘겨야 하기 때문에 로그인 시에만 호출한다
+     * 이 메서드에선 페이징 처리를 해줘야 한다 */
+    private void getDataFromFormOfSupport(String page, String assist_method)
+    {
+        final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setMax(100);
+        dialog.setMessage("잠시만 기다려 주세요...");
+        dialog.setCancelable(false);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.show();
+
+        moreViewModel = new ViewModelProvider(this).get(MoreViewModel.class);
+        final Observer<String> getDataFromFormObserver = new Observer<String>()
+        {
+            @Override
+            public void onChanged(String str)
+            {
+                if (str != null)
+                {
+                    Log.e(TAG, "로그인 후 태그 눌러 데이터 가져온 결과 : " + str);
+                    parseDataFromForm(str);
+                    dialog.dismiss();
+                }
+                else
+                {
+                    Log.e(TAG, "태그 눌러 데이터 가져온 결과가 null입니다");
+                }
+            }
+        };
+
         moreViewModel.moreViewWelfareLogin(sqlite_token, sessionId, page, assist_method)
                 .observe(this, getDataFromFormObserver);
     }
@@ -235,20 +272,21 @@ public class TestMoreViewActivity extends AppCompatActivity
         {
             JSONObject jsonObject = new JSONObject(str);
             total_page = jsonObject.getInt("total_page");
+            total_num = jsonObject.getInt("total_num");
             JSONArray jsonArray = jsonObject.getJSONArray("message");
             for (int i = 0; i < jsonArray.length(); i++)
             {
                 JSONObject inner_json = jsonArray.getJSONObject(i);
                 support_id = inner_json.getString("welf_id");
                 support_name = inner_json.getString("welf_name");
-                support_assist_method = inner_json.getString("assist_method");
+//                support_assist_method = inner_json.getString("assist_method");
                 support_tag = inner_json.getString("welf_tag");
                 support_count = inner_json.getString("welf_count");
 
                 SeeMoreItem item = new SeeMoreItem();
                 item.setWelf_id(support_id);
                 item.setWelf_name(support_name);
-                item.setAssist_method(support_assist_method);
+//                item.setAssist_method(support_assist_method);
                 item.setWelf_tag(support_tag);
                 item.setWelf_count(support_count);
                 list.add(item);
@@ -257,6 +295,15 @@ public class TestMoreViewActivity extends AppCompatActivity
         catch (JSONException e)
         {
             e.printStackTrace();
+        }
+
+        for (int i = 0; i < list.size(); i++)
+        {
+            Log.e(TAG, "list - getAssist_method : " + list.get(i).getAssist_method());
+            Log.e(TAG, "list - getWelf_count : " + list.get(i).getWelf_count());
+            Log.e(TAG, "list - getWelf_id : " + list.get(i).getWelf_id());
+            Log.e(TAG, "list - getWelf_name : " + list.get(i).getWelf_name());
+            Log.e(TAG, "list - getWelf_tag : " + list.get(i).getWelf_tag());
         }
 
         // 하단 리사이클러뷰에 보여주는 데이터 개수만큼 텍스트뷰에 총 몇개인지 보여준다
@@ -324,6 +371,8 @@ public class TestMoreViewActivity extends AppCompatActivity
     private void firstEntranceParsing(String result)
     {
         Log.e(TAG, "처음 더보기 화면 들어오고 firstEntranceParsing() 호출##");
+        Log.e(TAG, "firstEntranceParsing()으로 들어온 값 : " + result);
+        Gson gson = new Gson();
         try
         {
             JSONObject jsonObject = new JSONObject(result);
@@ -339,36 +388,46 @@ public class TestMoreViewActivity extends AppCompatActivity
             // 상단 리사이클러뷰에 보여줄 지원형태들, assist_method_10 안의 데이터 중 assist_method만 보여준다
             for (int i = 0; i < assist_method_array.length(); i++)
             {
-                JSONObject assist_obj = assist_method_array.getJSONObject(i);
-                welf_id = assist_obj.getString("welf_id");
-                welf_name = assist_obj.getString("welf_name");
-                welf_tag = assist_obj.getString("welf_tag");
-                top_assist_method = assist_obj.getString("assist_method");
-
-                MoreViewItem item = new MoreViewItem();
-                item.setWelf_id(welf_id);
-                item.setWelf_name(welf_name);
-                item.setWelf_tag(welf_tag);
-                item.setAssist_method(top_assist_method);
+//                JSONObject assist_obj = assist_method_array.getJSONObject(i);
+//                welf_id = assist_obj.getString("welf_id");
+//                welf_name = assist_obj.getString("welf_name");
+//                welf_tag = assist_obj.getString("welf_tag");
+//                welf_count = assist_obj.getString("welf_count");
+//                top_assist_method = assist_obj.getString("assist_method");
+//
+//                MoreViewItem item = new MoreViewItem();
+//                item.setWelf_id(welf_id);
+//                item.setWelf_name(welf_name);
+//                item.setWelf_tag(welf_tag);
+//                item.setWelf_count(welf_count);
+//                item.setAssist_method(top_assist_method);
+                MoreViewItem item = gson.fromJson(assist_method_array.getJSONObject(i).toString(), MoreViewItem.class);
+                /* 아래 로그는 작동한다 */
+//                Log.e(TAG, "item - getAssist_method() : " + item.getAssist_method());
+//                Log.e(TAG, "item - getWelf_name() : " + item.getWelf_name());
+//                Log.e(TAG, "item - getWelf_tag() : " + item.getWelf_tag());
+//                Log.e(TAG, "item - getWelf_id() : " + item.getWelf_id());
+//                Log.e(TAG, "item - getWelf_count() : " + item.getWelf_count());
                 up_list.add(item);
             }
 
-            /* 처음 더보기 화면에 들어왔을 때 - start, 1을 인자로 넘겨서 가져온 데이터 중 all_10 안의 데이터만 보여준다 */
+            /* 처음 더보기 화면에 들어왔을 때 - start, 1을 인자로 넘겨서 가져온 데이터 중 all_10 안의 데이터만 하단 리사이클러뷰에 보여준다 */
             // 하단 리사이클러뷰에 보여줄 혜택들, all_10 안의 혜택들만 보여준다
             for (int i = 0; i < all_10_array.length(); i++)
             {
-                JSONObject all_10_object = all_10_array.getJSONObject(i);
-                ten_id = all_10_object.getString("welf_id");
-                ten_name = all_10_object.getString("welf_name");
-                ten_tag = all_10_object.getString("welf_tag");
-                ten_assist_method = all_10_object.getString("assist_method");
-                ten_count = all_10_object.getString("welf_count");
-
-                SeeMoreItem bottom_item = new SeeMoreItem();
-                bottom_item.setWelf_id(ten_id);
-                bottom_item.setWelf_name(ten_name);
-                bottom_item.setWelf_tag(ten_tag);
-                bottom_item.setWelf_count(ten_count);
+                SeeMoreItem bottom_item = gson.fromJson(all_10_array.getJSONObject(i).toString(), SeeMoreItem.class);
+//                JSONObject all_10_object = all_10_array.getJSONObject(i);
+//                ten_id = all_10_object.getString("welf_id");
+//                ten_name = all_10_object.getString("welf_name");
+//                ten_tag = all_10_object.getString("welf_tag");
+//                ten_assist_method = all_10_object.getString("assist_method");
+//                ten_count = all_10_object.getString("welf_count");
+//
+//                SeeMoreItem bottom_item = new SeeMoreItem();
+//                bottom_item.setWelf_id(ten_id);
+//                bottom_item.setWelf_name(ten_name);
+//                bottom_item.setWelf_tag(ten_tag);
+//                bottom_item.setWelf_count(ten_count);
                 list.add(bottom_item);
             }
 
@@ -399,6 +458,14 @@ public class TestMoreViewActivity extends AppCompatActivity
         }
         else
         {
+//            for (int i = 0; i < list.size(); i++)
+//            {
+//                Log.e(TAG, "list - getAssist_method : " + list.get(i).getAssist_method());
+//                Log.e(TAG, "list - getWelf_tag : " + list.get(i).getWelf_tag());
+//                Log.e(TAG, "list - getWelf_name : " + list.get(i).getWelf_name());
+//                Log.e(TAG, "list - getWelf_id : " + list.get(i).getWelf_id());
+//                Log.e(TAG, "list - getWelf_count : " + list.get(i).getWelf_count());
+//            }
             /* 서버 응답 코드가 200(성공)인 경우 */
             Flowable.just(list.size())
                     .observeOn(Schedulers.io())
@@ -415,7 +482,7 @@ public class TestMoreViewActivity extends AppCompatActivity
                 // 상단 리사이클러뷰에서 선택한 지원형태의 이름을 변수에 담는다
                 String name = noRepeat.get(pos).getAssist_method();
                 Log.e(TAG, "상단 리사이클러뷰에서 선택한 카테고리명 : " + name);  // 로그로 상단 리사이클러뷰 클릭 이벤트 작동 확인
-                // 쉐어드에 클릭한 지원형태명 저장
+                // 쉐어드에 클릭한 지원형태명 저장(페이징 시 사용)
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("assist_method", name);
                 editor.apply();
@@ -423,18 +490,44 @@ public class TestMoreViewActivity extends AppCompatActivity
                 // 상단 리사이클러뷰 아이템을 클릭할 때마다 다른 값들을 보여줘야 하기 때문에 하단 리사이클러뷰 초기화에 쓰이는 list는 clear해준다
                 list.clear();
 
-                // 선택한 이름이 전체가 아닐 경우 = 다른 지원형태명을 클릭한 경우
-                if (!name.equals("전체"))
+                // 관심사 o, 로그인 x일 때 더보기 리스트로 들어온 경우
+                if (sharedPreferences.getString("first_visit", "").equals("1"))
                 {
-                    // 아래 메서드를 호출하면 하단 리사이클러뷰 초기화에 쓰이는 list에 새로 값들이 들어간다
-                    getDataFromFormOfSupport(String.valueOf(page), sharedPreferences.getString("assist_method", ""));
-                }
+                    String gender = sharedPreferences.getString("gender", "");
+                    String age = sharedPreferences.getString("age_group", "");
+                    String local = sharedPreferences.getString("user_area", "");
+                    // first_visit이 1이다 = 아직 로그인을 안했다는 뜻
+                    if (!name.equals("전체"))
+                    {
+                        Log.e(TAG, "관심사 o, 로그인 x인 경우##");
+                        // 아래 메서드를 호출하면 하단 리사이클러뷰 초기화에 쓰이는 list에 새로 값들이 들어간다
+                        getDataFromFormOfSupportNotLogin(String.valueOf(page), sharedPreferences.getString("assist_method", ""), gender, age, local);
+                    }
 
-                // 전체를 클릭한 경우에만 이곳으로 빠진다
+                    // 전체를 클릭한 경우에만 이곳으로 빠진다
+                    else
+                    {
+                        Log.e(TAG, "관심사 o, 로그인 x인 경우 전체 클릭%%");
+                        getDataFromFormOfSupportNotLogin(String.valueOf(page), "all", gender, age, local);
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+                // 로그인 후 더보기 리스트로 들어온 경우
                 else
                 {
-                    getDataFromFormOfSupport(String.valueOf(page), "all");
-                    adapter.notifyDataSetChanged();
+                    // 선택한 이름이 전체가 아닐 경우 = 다른 지원형태명을 클릭한 경우
+                    if (!name.equals("전체"))
+                    {
+                        // 아래 메서드를 호출하면 하단 리사이클러뷰 초기화에 쓰이는 list에 새로 값들이 들어간다
+                        getDataFromFormOfSupport(String.valueOf(page), sharedPreferences.getString("assist_method", ""));
+                    }
+
+                    // 전체를 클릭한 경우에만 이곳으로 빠진다
+                    else
+                    {
+                        getDataFromFormOfSupport(String.valueOf(page), "all");
+                        adapter.notifyDataSetChanged();
+                    }
                 }
             }); // 상단 리사이클러뷰 클릭 리스너 end
             more_view_top_recyclerview.setAdapter(up_adapter);
@@ -511,6 +604,16 @@ public class TestMoreViewActivity extends AppCompatActivity
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.show();
 
+        /* ↓ context를 사용하는 AVM이 아니라 일반 VM을 쓰면 이렇게 해야 함 */
+//        moreViewModel.moreViewWelfareNoLogin().observe(this, new Observer<String>()
+//        {
+//            @Override
+//            public void onChanged(String s)
+//            {
+//
+//            }
+//        });
+
         moreViewModel = new ViewModelProvider(this).get(MoreViewModel.class);
         final Observer<String> moreViewObserver = new Observer<String>()
         {
@@ -532,55 +635,153 @@ public class TestMoreViewActivity extends AppCompatActivity
 
         // theme : 상단 리사이클러뷰에서 선택한 카테고리 이름을 넣는다
         // gender, age, local : 미리보기 부분의 파일이 없어 하드코딩으로 대신
-        moreViewModel.moreViewWelfareNotLogin(page, assist_method, gender, age_group, area)
+        moreViewModel.moreViewWelfareNotLogin(sessionId, page, assist_method, gender, age_group, area)
                 .observe(this, moreViewObserver);
     }
 
     // 리사이클러뷰 스크롤이 마지막에 도달하면 이벤트 발생
     private void moreViewPaging()
     {
-        more_view_bottom_recyclerview.addOnScrollListener(new RecyclerView.OnScrollListener()
+        String token_from_server = sharedPreferences.getString("token", "");
+        if (token_from_server.equals(""))
         {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy)
+            // 토큰이 없다 = 비로그인
+            String gender = sharedPreferences.getString("gender", "");
+            String age = sharedPreferences.getString("age_group", "");
+            String area = sharedPreferences.getString("user_area", "");
+            more_view_bottom_recyclerview.addOnScrollListener(new RecyclerView.OnScrollListener()
             {
-                super.onScrolled(recyclerView, dx, dy);
-
-                LinearLayoutManager layoutManager = LinearLayoutManager.class.cast(recyclerView.getLayoutManager());
-                if (layoutManager != null)
+                @Override
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy)
                 {
-                    if (layoutManager.getItemCount() == 0)
-                    {
-                        //
-                    }
-                    else
-                    {
-                        int totalItemCount = layoutManager.getItemCount();
-                        int lastVisible = layoutManager.findLastCompletelyVisibleItemPosition();
+                    super.onScrolled(recyclerView, dx, dy);
 
-                        if (lastVisible >= totalItemCount - 1 && page < total_page)
+                    LinearLayoutManager layoutManager = LinearLayoutManager.class.cast(recyclerView.getLayoutManager());
+                    if (layoutManager != null)
+                    {
+                        if (layoutManager.getItemCount() == 0)
                         {
-                            page++;
-                            if (sharedPreferences.getString("assist_method", "").equals("전체"))
-                            {
-                                getDataFromFormOfSupport(String.valueOf(page), "all");
-                                Log.e(TAG, "현재 서버에 요청하는 페이지 : " + page + ", 지원형태명 : all");
-                            }
-                            else
-                            {
-                                getDataFromFormOfSupport(String.valueOf(page), sharedPreferences.getString("assist_method", ""));
-                                Log.e(TAG, "현재 서버에 요청하는 페이지 : " + page + ", 지원형태명 : " +
-                                        sharedPreferences.getString("assist_method", ""));
-                            }
+                            //
                         }
                         else
                         {
-                            Log.e(TAG, "서버에서 불러올 데이터가 없음");
+                            int totalItemCount = layoutManager.getItemCount();
+                            int lastVisible = layoutManager.findLastCompletelyVisibleItemPosition();
+
+                            if (lastVisible >= totalItemCount - 1 && page < total_page)
+                            {
+                                page++;
+                                if (sharedPreferences.getString("assist_method", "").equals("전체"))
+                                {
+                                    getDataFromFormOfSupportNotLogin(String.valueOf(page), "all", gender, age, area);
+                                    Log.e(TAG, "비로그인 상태에서 페이징 시도 / 성별 : " + gender + ", 나이 : " + age + ", 지역 : " + area);
+                                    Log.e(TAG, "현재 서버에 요청하는 페이지 : " + page + ", 지원형태명 : all");
+                                }
+                                else
+                                {
+                                    getDataFromFormOfSupportNotLogin(String.valueOf(page), sharedPreferences.getString("assist_method", ""),
+                                            gender, age, area);
+                                    Log.e(TAG, "비로그인 상태에서 페이징 시도 / 성별 : " + gender + ", 나이 : " + age + ", 지역 : " + area);
+                                    Log.e(TAG, "현재 서버에 요청하는 페이지 : " + page + ", 지원형태명 : " +
+                                            sharedPreferences.getString("assist_method", ""));
+                                }
+                            }
+                            else
+                            {
+                                Log.e(TAG, "서버에서 불러올 데이터가 없음");
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+        }
+        else
+        {
+            more_view_bottom_recyclerview.addOnScrollListener(new RecyclerView.OnScrollListener()
+            {
+                @Override
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy)
+                {
+                    super.onScrolled(recyclerView, dx, dy);
+
+                    LinearLayoutManager layoutManager = LinearLayoutManager.class.cast(recyclerView.getLayoutManager());
+                    if (layoutManager != null)
+                    {
+                        if (layoutManager.getItemCount() == 0)
+                        {
+                            //
+                        }
+                        else
+                        {
+                            int totalItemCount = layoutManager.getItemCount();
+                            int lastVisible = layoutManager.findLastCompletelyVisibleItemPosition();
+
+                            if (lastVisible >= totalItemCount - 1 && page < total_page)
+                            {
+                                page++;
+                                if (sharedPreferences.getString("assist_method", "").equals("전체"))
+                                {
+                                    getDataFromFormOfSupport(String.valueOf(page), "all");
+                                    Log.e(TAG, "현재 서버에 요청하는 페이지 : " + page + ", 지원형태명 : all");
+                                }
+                                else
+                                {
+                                    getDataFromFormOfSupport(String.valueOf(page), sharedPreferences.getString("assist_method", ""));
+                                    Log.e(TAG, "현재 서버에 요청하는 페이지 : " + page + ", 지원형태명 : " +
+                                            sharedPreferences.getString("assist_method", ""));
+                                }
+                            }
+                            else
+                            {
+                                Log.e(TAG, "서버에서 불러올 데이터가 없음");
+                            }
+                        }
+                    }
+                }
+            });
+        }
+//        more_view_bottom_recyclerview.addOnScrollListener(new RecyclerView.OnScrollListener()
+//        {
+//            @Override
+//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy)
+//            {
+//                super.onScrolled(recyclerView, dx, dy);
+//
+//                LinearLayoutManager layoutManager = LinearLayoutManager.class.cast(recyclerView.getLayoutManager());
+//                if (layoutManager != null)
+//                {
+//                    if (layoutManager.getItemCount() == 0)
+//                    {
+//                        //
+//                    }
+//                    else
+//                    {
+//                        int totalItemCount = layoutManager.getItemCount();
+//                        int lastVisible = layoutManager.findLastCompletelyVisibleItemPosition();
+//
+//                        if (lastVisible >= totalItemCount - 1 && page < total_page)
+//                        {
+//                            page++;
+//                            if (sharedPreferences.getString("assist_method", "").equals("전체"))
+//                            {
+//                                getDataFromFormOfSupport(String.valueOf(page), "all");
+//                                Log.e(TAG, "현재 서버에 요청하는 페이지 : " + page + ", 지원형태명 : all");
+//                            }
+//                            else
+//                            {
+//                                getDataFromFormOfSupport(String.valueOf(page), sharedPreferences.getString("assist_method", ""));
+//                                Log.e(TAG, "현재 서버에 요청하는 페이지 : " + page + ", 지원형태명 : " +
+//                                        sharedPreferences.getString("assist_method", ""));
+//                            }
+//                        }
+//                        else
+//                        {
+//                            Log.e(TAG, "서버에서 불러올 데이터가 없음");
+//                        }
+//                    }
+//                }
+//            }
+//        });
     }
 
     public void setStatusBarGradiant(Activity activity)

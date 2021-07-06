@@ -16,8 +16,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -149,24 +147,86 @@ public class AllPushFragment extends Fragment
     /* 서버에서 푸시 데이터들을 가져오는 메서드 */
     private void getPushData()
     {
-        pushViewModel = new ViewModelProvider(getActivity()).get(PushViewModel.class);
-        final Observer<String> pushObserver = new Observer<String>()
+        ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
+        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+        helper = new DBOpenHelper(getActivity());
+        helper.openDatabase();
+        helper.create();
+
+        Cursor cursor = helper.selectColumns();
+        if (cursor != null)
+        {
+            while (cursor.moveToNext())
+            {
+                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+            }
+        }
+        String session = sharedPreferences.getString("sessionId", "");
+
+        Log.e(TAG, "token : " + sqlite_token);
+        Log.e(TAG, "세션 : " + session);
+        Log.e(TAG, "type : pushList");
+        Call<String> call = apiInterface.getPushData(sqlite_token, session, "pushList");
+        call.enqueue(new Callback<String>()
         {
             @Override
-            public void onChanged(String str)
+            public void onResponse(Call<String> call, Response<String> response)
             {
-                if (str != null)
+                if (response.isSuccessful() && response.body() != null)
                 {
-                    Log.e(TAG, "서버에서 받은 푸시 목록 : " + str);
-                    messageParsing(str);
+                    String result = response.body();
+                    Log.e(TAG, "푸시 결과 : " + result);
                 }
                 else
                 {
-                    Log.e(TAG, "str이 null입니다");
+                    Log.e(TAG, "푸시 실패 : " + response.body());
                 }
             }
-        };
-        pushViewModel.getPushDatas().observe(getActivity(), pushObserver);
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "푸시 에러 : " + t.getMessage());
+            }
+        });
+
+//        Call<String> call = apiInterface.getPushData(sqlite_token, session, "pushList")
+//                .enqueue(new Callback<String>()
+//                {
+//                    @Override
+//                    public void onResponse(Call<String> call, Response<String> response)
+//                    {
+//                        if (response.isSuccessful() && response.body() != null)
+//                        {
+//                            String result = response.body();
+//                            Log.e(TAG, "레포지토리에서 받은 푸시값 : " + result);
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<String> call, Throwable t)
+//                    {
+//                        Log.e(TAG, "에러 : " + t.getMessage());
+//                    }
+//                });
+//        pushViewModel = new ViewModelProvider(getActivity()).get(PushViewModel.class);
+//        final Observer<String> pushObserver = new Observer<String>()
+//        {
+//            @Override
+//            public void onChanged(String str)
+//            {
+//                if (str != null)
+//                {
+//                    Log.e(TAG, "서버에서 받은 푸시 목록 : " + str);
+//                    messageParsing(str);
+//                }
+//                else
+//                {
+//                    Log.e(TAG, "str이 null입니다");
+//                }
+//            }
+//        };
+//        pushViewModel.getPushDatas().observe(getActivity(), pushObserver);
     }
 
     /* 서버에서 받은 값들을 파싱해서 리사이클러뷰에 뿌리는 메서드 */

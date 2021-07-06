@@ -187,6 +187,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void onSuccess(MeV2Response result)
                 {
+                    Log.e(TAG, "카카오 로그인 성공###");
                     // 카카오 계정에 저장된 이메일을 가져온다
                     if (result.getKakaoAccount().hasEmail() == OptionalBoolean.TRUE)
                     {
@@ -194,39 +195,60 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     }
                     app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
                     SharedPreferences.Editor editor = app_pref.edit();
+                    Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
+                    editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
+                    editor.putString(getString(R.string.get_kakao_name), result.getNickname());
+                    editor.putString("kakao_email", result.getKakaoAccount().getEmail());
+                    /* 로그인 여부를 확인하기 위한 boolean 값을 쉐어드에 저장한다
+                     * 이 값으로 마이페이지에서 로그인 시 어떤 뷰를 보여줄지 결정한다 */
+                    editor.putString("first_visit", "0");
+                    editor.putBoolean("user_login", true);
+                    editor.apply();
+                    intent.putExtra("name", result.getNickname());
+                    intent.putExtra("profile", result.getProfileImagePath());
+                    intent.putExtra("email", result.getKakaoAccount().getEmail());
+                    sendUserTypeAndPlatform();
+                    intent.putExtra("user_token", server_token);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    finish();
                     /* 사용자 정보(관심사)를 입력받기 위해 이동한다. 기존에 입력된 정보가 있으면 MainTabLayoutActivity로 이동한다 */
-                    if (!app_pref.getString("interest", "").equals(""))
-                    {
-                        Intent login_intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
-                        editor.putString(getString(R.string.get_kakao_name), result.getNickname());
-                        editor.putString("kakao_email", result.getKakaoAccount().getEmail());
-                        editor.putBoolean("is_leaved", false);
-                        editor.apply();
-                        login_intent.putExtra("name", result.getNickname());
-                        login_intent.putExtra("email", result.getKakaoAccount().getEmail());
-                        login_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        sendUserTypeAndPlatform();
-                        login_intent.putExtra("user_token", server_token);
-                        startActivity(login_intent);
-                        finish();
-                    }
-                    // 사용자 정보가 없으면 정보 받는 화면으로 이동한다
-                    else if (app_pref.getString("interest", "").equals(""))
-                    {
-                        Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
-                        editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
-                        editor.putString(getString(R.string.get_kakao_name), result.getNickname());
-                        editor.putString("kakao_email", result.getKakaoAccount().getEmail());
-                        editor.apply();
-                        intent.putExtra("name", result.getNickname());
-                        intent.putExtra("profile", result.getProfileImagePath());
-                        intent.putExtra("email", result.getKakaoAccount().getEmail());
-                        sendUserTypeAndPlatform();
-                        intent.putExtra("user_token", server_token);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
-                        finish();
-                    }
+//                    if (!app_pref.getString("interest", "").equals(""))
+//                    {
+//                        Intent login_intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
+//                        editor.putString(getString(R.string.get_kakao_name), result.getNickname());
+//                        editor.putString("kakao_email", result.getKakaoAccount().getEmail());
+//                        editor.putBoolean("is_leaved", false);
+//                        editor.apply();
+//                        login_intent.putExtra("name", result.getNickname());
+//                        login_intent.putExtra("email", result.getKakaoAccount().getEmail());
+//                        login_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                        sendUserTypeAndPlatform();
+//                        login_intent.putExtra("user_token", server_token);
+//                        startActivity(login_intent);
+//                        finish();
+//                    }
+//                    // 사용자 정보가 없으면 정보 받는 화면으로 이동한다
+//                    else if (app_pref.getString("interest", "").equals(""))
+//                    {
+//                        Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
+//                        editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
+//                        editor.putString(getString(R.string.get_kakao_name), result.getNickname());
+//                        editor.putString("kakao_email", result.getKakaoAccount().getEmail());
+//                        /* 로그인 여부를 확인하기 위한 boolean 값을 쉐어드에 저장한다
+//                         * 이 값으로 마이페이지에서 로그인 시 어떤 뷰를 보여줄지 결정한다 */
+//                        editor.putString("first_visit", "첫 방문임");
+//                        editor.putBoolean("user_login", true);
+//                        editor.apply();
+//                        intent.putExtra("name", result.getNickname());
+//                        intent.putExtra("profile", result.getProfileImagePath());
+//                        intent.putExtra("email", result.getKakaoAccount().getEmail());
+//                        sendUserTypeAndPlatform();
+//                        intent.putExtra("user_token", server_token);
+//                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                        startActivity(intent);
+//                        finish();
+//                    }
                 }
             });
         }
@@ -247,8 +269,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String platform = getString(R.string.main_platform);
 
         encode("카카오 로그인 시도");
+
+        // 로그인하기 위해 api가 요구하는 매개변수들을 JSON으로 만든다
+        JSONObject jsonObject = new JSONObject();
+        try
+        {
+            jsonObject.put("email", kakao_email);
+            jsonObject.put("fcm_token", token);
+            jsonObject.put("osType", getString(R.string.login_os));
+            jsonObject.put("platform", getString(R.string.main_platform));
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.sendUserTypeAndPlatform(email, token, os_type, platform);
+//        Call<String> call = apiInterface.sendUserTypeAndPlatform(jsonObject.toString());
+        Call<String> call = apiInterface.sendUserTypeAndPlatform(kakao_email, token, getString(R.string.login_os), getString(R.string.main_platform));
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -257,18 +295,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
+                    Log.e(TAG, "로그인 결과 : " + result);
                     tokenParsing(result);
                 }
                 else
                 {
-                    Log.e(TAG, "실패 = " + response.body());
+                    Log.e(TAG, "로그인 실패 : " + response.body());
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t)
             {
-                Log.e(TAG, "에러 = " + t.getMessage());
+                Log.e(TAG, "로그인 에러 : " + t.getMessage());
             }
         });
     }
@@ -351,6 +390,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     /* 로그인 시 서버에서 넘어오는 토큰값을 저장하는 메서드 */
     private void tokenParsing(String data)
     {
+        Log.e(TAG, "로그인 액티비티에서 로그인 메서드 진입");
         // 서버에서 발급받은 토큰값을 저장할 쉐어드 준비
         app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
         SharedPreferences.Editor editor = app_pref.edit();
@@ -364,6 +404,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         {
             e.printStackTrace();
         }
+
+        Log.e(TAG, "로그인하고 서버에서 받은 토큰 : " + server_token);
 
         /* 다른 액티비티/프래그먼트에서도 활용해야 하기 때문에 서버에서 받은 토큰값을 쉐어드에 저장해 사용한다 */
         editor.putString("token", server_token);

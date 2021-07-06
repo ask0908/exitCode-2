@@ -22,6 +22,8 @@
             android:id="@+id/banner_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/notosanskr_bold"
+            android:includeFontPadding="false"
             tools:text="청년구직활동지원금"
             android:textColor="@color/colorBlack"
             android:textStyle="bold"/>
@@ -30,6 +32,8 @@
             android:id="@+id/banner_tag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/notosanskr_medium"
+            android:includeFontPadding="false"
             tools:text="#청년 #취업/창업"
             android:visibility="visible"/>
 
@@ -37,6 +41,8 @@
             android:id="@+id/banner_contents"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/notosanskr_medium"
+            android:includeFontPadding="false"
             tools:text="청년들을 위한 많은 정책이 시행 중에 있습니다"
             android:textColor="@color/colorBlack" />
 
@@ -54,15 +60,17 @@
                 android:id="@+id/banner_btn_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/notosanskr_medium"
+                android:includeFontPadding="false"
                 android:text="혜택 자세히 보기 "
-                android:textColor="#FFFFFF" />
+                android:textColor="@color/colorMainWhite" />
 
             <ImageView
                 android:id="@+id/banner_btn_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/arrow_right_black"
-                android:backgroundTint="@color/white" />
+                android:backgroundTint="@color/colorMainWhite" />
 
         </LinearLayout>
     </LinearLayout>

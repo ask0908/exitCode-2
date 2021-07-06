@@ -39,7 +39,7 @@ public class BannerDetail extends AppCompatActivity {
     private ImageView bannerdetail_image; //배너 이미지
     private ImageButton back_btn; //뒤로가기 버튼
     private ConstraintLayout back_btn_layout; //뒤로가기 버튼 레이아웃
-    private TextView banner_title_first; //배너 타이틀 첫벌째 줄
+    private TextView banner_title_first; //배너 타이틀 첫번째 줄
     private TextView banner_title_second; //배너 타이틀 두번째 줄
 
     //리사이클러뷰 사용하기 위한 변수 선언
@@ -270,7 +270,7 @@ public class BannerDetail extends AppCompatActivity {
         Point size = screen.getScreenSize(BannerDetail.this);
 
         //배너 이미지
-        bannerdetail_image.getLayoutParams().width = (int) (size.x);
+        bannerdetail_image.getLayoutParams().width = size.x;
         bannerdetail_image.getLayoutParams().height = (int) (size.y * 0.37);
         //뒤로 가기 버튼
         back_btn.getLayoutParams().width = (int) (size.x * 0.1);

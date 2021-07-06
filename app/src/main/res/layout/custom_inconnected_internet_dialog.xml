@@ -2,64 +2,69 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="#FFFFFF"
-    android:layout_gravity="center"
     android:layout_width="340dp"
     android:layout_height="wrap_content"
-    tools:context=".CustomTutorialDialog"
-    android:orientation="vertical">
+    android:layout_gravity="center"
+    android:background="@color/colorMainWhite"
+    android:orientation="vertical"
+    tools:context=".CustomTutorialDialog">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:orientation="vertical">
 
-
         <TextView
             android:id="@+id/internet_text1"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginTop="30dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:fontFamily="@font/notosanskr_bold"
+            android:includeFontPadding="false"
+            android:text="@string/network_error_occured"
             android:textColor="#595959"
-            android:textStyle="bold"
-            android:text="네트워크 오류!"
-            android:textSize="20dp"/>
+            android:textSize="20sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/internet_text2"
-            app:layout_constraintTop_toBottomOf="@+id/internet_text1"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#595959"
             android:layout_margin="20dp"
+            android:fontFamily="@font/notosanskr_medium"
             android:gravity="center"
-            android:text="네트워크 이상이 발생하였습니다\n확인 후 다시 시도하세요"
-            android:textSize="17dp" />
+            android:includeFontPadding="false"
+            android:text="@string/check_network_error"
+            android:textColor="#595959"
+            android:textSize="17sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/internet_text1" />
 
         <LinearLayout
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_width="match_parent"
             android:layout_height="45dp"
+            android:layout_gravity="end"
             android:orientation="horizontal"
-            android:layout_gravity="right">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
 
             <Button
                 android:id="@+id/BtnOk"
-                android:text="확인"
-                android:textSize="15dp"
-                android:textStyle="bold"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/layout_background_start_gradation"
+                android:fontFamily="@font/notosanskr_bold"
+                android:includeFontPadding="false"
                 android:scaleType="center"
-                android:background="#FF7088"/>
+                android:text="확인"
+                android:textColor="@color/colorMainWhite"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 

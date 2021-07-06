@@ -2,6 +2,7 @@ package com.psj.welfare.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -15,13 +16,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
+import com.psj.welfare.api.ApiClient;
+import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.CustomInterestDialog;
+import com.psj.welfare.data.MyInterest;
+import com.psj.welfare.util.DBOpenHelper;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /* 첫 번째 관심사 선택 화면 */
 public class ChooseFirstInterestActivity extends AppCompatActivity
@@ -31,6 +46,7 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
     ImageView first_interest_back_image;
     TextView first_select_interest_textview, first_interest_top_textview, age_text, area_text;
     // 나이대
+    ConstraintLayout age_button_layout, local_button_layout;
     Button under_teenage_button, teenage_button, twenty_button, thirty_button, forty_button, fifty_button, over_sixty_button;
 
     // 지역
@@ -51,12 +67,34 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
     // 선택 완료 버튼을 눌렀을 경우 첫 번째 선택 화면을 종료해야 하기 때문에 선언한 변수
     public static Activity activity;
 
+    DBOpenHelper helper;
+    String sqlite_token;
+    ArrayList<MyInterest> list;
+
+    String user_age, user_local;
+    ArrayList<String> age_list, local_list;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setStatusBarGradiant(this);
         setContentView(R.layout.activity_choose_first_interest);
+
+        list = new ArrayList<>();
+
+        helper = new DBOpenHelper(this);
+        helper.openDatabase();
+        helper.create();
+
+        Cursor cursor = helper.selectColumns();
+        if (cursor != null)
+        {
+            while (cursor.moveToNext())
+            {
+                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+            }
+        }
 
         activity = ChooseFirstInterestActivity.this;
 
@@ -66,6 +104,8 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
         age = new ArrayList<>();
         area = new ArrayList<>();
 
+        // 서버에 저장된 내 관심사 조회
+        selectMyInterest();
 
         ScreenSize screen = new ScreenSize();
         Point size = screen.getScreenSize(this);
@@ -109,6 +149,558 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
                 finish();
             }
         });
+
+    }
+
+    // 관심사 조회 메서드
+    // "관심사 선택" 버튼을 눌러 이 화면으로 들어오면 show를 인자로 넘겨서 서버에 저장돼 있는 관심사 데이터들을 가져온다
+    private void selectMyInterest()
+    {
+        ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
+        Call<String> call = apiInterface.checkAndModifyInterest(sqlite_token, null, null, null, null, "show");
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "서버에 저장된 내 관심사 : " + result);
+                    parseInterest(result);
+                }
+                else
+                {
+                    Log.e(TAG, "관심사 조회 실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "관심사 조회 에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    private void parseInterest(String result)
+    {
+        try
+        {
+            JSONObject jsonObject = new JSONObject(result);
+            JSONArray jsonArray = jsonObject.getJSONArray("message");
+            for (int i = 0; i < jsonArray.length(); i++)
+            {
+                JSONObject inner_json = jsonArray.getJSONObject(i);
+                user_age = inner_json.getString("age");
+                user_local = inner_json.getString("local");
+            }
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
+        Log.e(TAG, "user_age : " + user_age);
+        Log.e(TAG, "user_local : " + user_local);
+        String[] age_arr = user_age.split("\\|");   // "|"을 split하려면 이스케이프 문자를 2번 넣어줘야 한다
+        String[] local_arr = user_local.split("\\|");
+        Log.e(TAG, "age_arr : " + Arrays.toString(age_arr));
+        Log.e(TAG, "local_arr : " + Arrays.toString(local_arr));
+        age_list = new ArrayList<>(Arrays.asList(age_arr));
+        local_list = new ArrayList<>(Arrays.asList(local_arr));
+
+        for (int i = 0; i < local_list.size(); i++)
+        {
+            Log.e(TAG, "local_list : " + local_list.get(i));
+        }
+
+        Button age_btn;
+        Button local_btn;
+        for (int i = 0; i < local_button_layout.getChildCount(); i++)
+        {
+            local_btn = (Button) local_button_layout.getChildAt(i);
+
+            for (int j = 0; j < local_list.size(); j++)
+            {
+                if (local_btn.getText().toString().equals(local_list.get(j)))
+                {
+                    Log.e(TAG, "일치하는 것 : " + local_btn.getText().toString());
+                    if (local_btn.getText().toString().equals(interest_seoul_btn.getText().toString()))
+                    {
+                        String value = "서울";
+                        arr[7]++;
+                        if (arr[7] % 2 == 0)
+                        {
+                            interest_seoul_btn.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            interest_seoul_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            area.remove(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                        else
+                        {
+                            interest_seoul_btn.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            interest_seoul_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            area.add(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                    }
+                    else if (local_btn.getText().toString().equals(interest_gangwon_btn.getText().toString()))
+                    {
+                        String value = "강원";
+                        arr[8]++;
+                        if (arr[8] % 2 == 0)
+                        {
+                            interest_gangwon_btn.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            interest_gangwon_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            area.remove(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                        else
+                        {
+                            interest_gangwon_btn.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            interest_gangwon_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            area.add(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                    }
+                    else if (local_btn.getText().toString().equals(interest_gyonggi_btn.getText().toString()))
+                    {
+                        String value = "경기";
+                        arr[9]++;
+                        if (arr[9] % 2 == 0)
+                        {
+                            interest_gyonggi_btn.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            interest_gyonggi_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            area.remove(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                        else
+                        {
+                            interest_gyonggi_btn.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            interest_gyonggi_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            area.add(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                    }
+                    else if (local_btn.getText().toString().equals(interest_gyongnam_btn.getText().toString()))
+                    {
+                        String value = "경남";
+                        arr[10]++;
+                        if (arr[10] % 2 == 0)
+                        {
+                            interest_gyongnam_btn.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            interest_gyongnam_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            area.remove(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                        else
+                        {
+                            interest_gyongnam_btn.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            interest_gyongnam_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            area.add(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                    }
+                    else if (local_btn.getText().toString().equals(interest_gyongbuk_btn.getText().toString()))
+                    {
+                        String value = "경북";
+                        arr[11]++;
+                        if (arr[11] % 2 == 0)
+                        {
+                            interest_gyongbuk_btn.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            interest_gyongbuk_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            area.remove(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                        else
+                        {
+                            interest_gyongbuk_btn.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            interest_gyongbuk_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            area.add(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                    }
+                    else if (local_btn.getText().toString().equals(interest_gwangju_btn.getText().toString()))
+                    {
+                        String value = "광주";
+                        arr[12]++;
+                        if (arr[12] % 2 == 0)
+                        {
+                            interest_gwangju_btn.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            interest_gwangju_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            area.remove(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                        else
+                        {
+                            interest_gwangju_btn.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            interest_gwangju_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            area.add(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                    }
+                    else if (local_btn.getText().toString().equals(interest_daegu_btn.getText().toString()))
+                    {
+                        String value = "대구";
+                        arr[13]++;
+                        if (arr[13] % 2 == 0)
+                        {
+                            interest_daegu_btn.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            interest_daegu_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            area.remove(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                        else
+                        {
+                            interest_daegu_btn.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            interest_daegu_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            area.add(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                    }
+                    else if (local_btn.getText().toString().equals(interest_daejeon_btn.getText().toString()))
+                    {
+                        String value = "대전";
+                        arr[14]++;
+                        if (arr[14] % 2 == 0)
+                        {
+                            interest_daejeon_btn.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            interest_daejeon_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            area.remove(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                        else
+                        {
+                            interest_daejeon_btn.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            interest_daejeon_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            area.add(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                    }
+                    else if (local_btn.getText().toString().equals(interest_busan_btn.getText().toString()))
+                    {
+                        String value = "부산";
+                        arr[15]++;
+                        if (arr[15] % 2 == 0)
+                        {
+                            interest_busan_btn.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            interest_busan_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            area.remove(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                        else
+                        {
+                            interest_busan_btn.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            interest_busan_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            area.add(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                    }
+                    else if (local_btn.getText().toString().equals(interest_sejong_btn.getText().toString()))
+                    {
+                        String value = "세종";
+                        arr[16]++;
+                        if (arr[16] % 2 == 0)
+                        {
+                            interest_sejong_btn.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            interest_sejong_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            area.remove(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                        else
+                        {
+                            interest_sejong_btn.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            interest_sejong_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            area.add(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                    }
+                    else if (local_btn.getText().toString().equals(interest_ulsan_btn.getText().toString()))
+                    {
+                        String value = "울산";
+                        arr[17]++;
+                        if (arr[17] % 2 == 0)
+                        {
+                            interest_ulsan_btn.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            interest_ulsan_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            area.remove(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                        else
+                        {
+                            interest_ulsan_btn.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            interest_ulsan_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            area.add(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                    }
+                    else if (local_btn.getText().toString().equals(interest_incheon_btn.getText().toString()))
+                    {
+                        String value = "인천";
+                        arr[18]++;
+                        if (arr[18] % 2 == 0)
+                        {
+                            interest_incheon_btn.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            interest_incheon_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            area.remove(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                        else
+                        {
+                            interest_incheon_btn.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            interest_incheon_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            area.add(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                    }
+                    else if (local_btn.getText().toString().equals(interest_jeonnam_btn.getText().toString()))
+                    {
+                        String value = "전남";
+                        arr[19]++;
+                        if (arr[19] % 2 == 0)
+                        {
+                            interest_jeonnam_btn.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            interest_jeonnam_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            area.remove(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                        else
+                        {
+                            interest_jeonnam_btn.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            interest_jeonnam_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            area.add(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                    }
+                    else if (local_btn.getText().toString().equals(interest_jeonbuk_btn.getText().toString()))
+                    {
+                        String value = "전북";
+                        arr[20]++;
+                        if (arr[20] % 2 == 0)
+                        {
+                            interest_jeonbuk_btn.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            interest_jeonbuk_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            area.remove(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                        else
+                        {
+                            interest_jeonbuk_btn.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            interest_jeonbuk_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            area.add(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                    }
+                    else if (local_btn.getText().toString().equals(interest_jeju_btn.getText().toString()))
+                    {
+                        String value = "제주";
+                        arr[21]++;
+                        if (arr[21] % 2 == 0)
+                        {
+                            interest_jeju_btn.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            interest_jeju_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            area.remove(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                        else
+                        {
+                            interest_jeju_btn.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            interest_jeju_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            area.add(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                    }
+                    else if (local_btn.getText().toString().equals(interest_chungnam_btn.getText().toString()))
+                    {
+                        String value = "충남";
+                        arr[22]++;
+                        if (arr[22] % 2 == 0)
+                        {
+                            interest_chungnam_btn.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            interest_chungnam_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            area.remove(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                        else
+                        {
+                            interest_chungnam_btn.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            interest_chungnam_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            area.add(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                    }
+                    else if (local_btn.getText().toString().equals(interest_chungbuk_btn.getText().toString()))
+                    {
+                        String value = "충북";
+                        arr[23]++;
+                        if (arr[23] % 2 == 0)
+                        {
+                            interest_chungbuk_btn.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            interest_chungbuk_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            area.remove(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                        else
+                        {
+                            interest_chungbuk_btn.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            interest_chungbuk_btn.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            area.add(value);
+                            Log.e(TAG, "if 안 area list : " + area);
+                        }
+                    }
+                }
+            }
+        }
+
+        /* 나이대 */
+        for (int i = 0; i < age_button_layout.getChildCount(); i++)
+        {
+            // 레이아웃의 자식 레이아웃 개수만큼 반복하는데 자식 레이아웃 중 버튼만 가져온다
+            age_btn = (Button) age_button_layout.getChildAt(i);
+
+            // age_list 안의 값과 버튼의 이름이 같다면, 그 같은 이름의 버튼 글자색과 테두리색을 바꾼다
+            for (int j = 0; j < age_list.size(); j++)
+            {
+                if (age_btn.getText().toString().equals(age_list.get(j)))
+                {
+                    Log.e(TAG, "일치하는 것 : " + age_btn.getText().toString());
+                    if (age_btn.getText().toString().equals(under_teenage_button.getText().toString()))
+                    {
+                        String value = "10대 미만";
+                        arr[0]++;
+                        if (arr[0] % 2 == 0)
+                        {
+                            under_teenage_button.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            under_teenage_button.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            age.remove(value);
+                            Log.e(TAG, "if 안 age list : " + age);
+                        }
+                        else
+                        {
+                            under_teenage_button.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            under_teenage_button.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            age.add(value);
+                            Log.e(TAG, "else 안 age list : " + age);
+                        }
+                    }
+                    else if (age_btn.getText().toString().equals(teenage_button.getText().toString()))
+                    {
+                        String value = "10대";
+                        arr[1]++;
+                        if (arr[1] % 2 == 0)
+                        {
+                            teenage_button.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            teenage_button.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            age.remove(value);
+                            Log.e(TAG, "if 안 age list : " + age);
+                        }
+                        else
+                        {
+                            teenage_button.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            teenage_button.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            age.add(value);
+                            Log.e(TAG, "else 안 age list : " + age);
+                        }
+                    }
+                    else if (age_btn.getText().toString().equals(twenty_button.getText().toString()))
+                    {
+                        String value = "20대";
+                        arr[2]++;
+                        if (arr[2] % 2 == 0)
+                        {
+                            twenty_button.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            twenty_button.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            age.remove(value);
+                            Log.e(TAG, "if 안 age list : " + age);
+                        }
+                        else
+                        {
+                            twenty_button.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            twenty_button.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            age.add(value);
+                            Log.e(TAG, "else 안 age list : " + age);
+                        }
+                    }
+                    else if (age_btn.getText().toString().equals(thirty_button.getText().toString()))
+                    {
+                        String value = "30대";
+                        arr[3]++;
+                        if (arr[3] % 2 == 0)
+                        {
+                            thirty_button.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            thirty_button.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            age.remove(value);
+                            Log.e(TAG, "if 안 age list : " + age);
+                        }
+                        else
+                        {
+                            thirty_button.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            thirty_button.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            age.add(value);
+                            Log.e(TAG, "else 안 age list : " + age);
+                        }
+                    }
+                    else if (age_btn.getText().toString().equals(forty_button.getText().toString()))
+                    {
+                        String value = "40대";
+                        arr[4]++;
+                        if (arr[4] % 2 == 0)
+                        {
+                            forty_button.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            forty_button.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            age.remove(value);
+                            Log.e(TAG, "if 안 age list : " + age);
+                        }
+                        else
+                        {
+                            forty_button.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            forty_button.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            age.add(value);
+                            Log.e(TAG, "else 안 age list : " + age);
+                        }
+                    }
+                    else if (age_btn.getText().toString().equals(fifty_button.getText().toString()))
+                    {
+                        String value = "50대";
+                        arr[5]++;
+                        if (arr[5] % 2 == 0)
+                        {
+                            fifty_button.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            fifty_button.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            age.remove(value);
+                            Log.e(TAG, "if 안 age list : " + age);
+                        }
+                        else
+                        {
+                            fifty_button.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            fifty_button.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            age.add(value);
+                            Log.e(TAG, "else 안 age list : " + age);
+                        }
+                    }
+                    else if (age_btn.getText().toString().equals(over_sixty_button.getText().toString()))
+                    {
+                        String value = "60대 이상";
+                        arr[6]++;
+                        if (arr[6] % 2 == 0)
+                        {
+                            over_sixty_button.setTextColor(ContextCompat.getColor(this, R.color.colorGray_B));
+                            over_sixty_button.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_unselected));
+                            age.remove(value);
+                            Log.e(TAG, "if 안 age list : " + age);
+                        }
+                        else
+                        {
+                            over_sixty_button.setTextColor(ContextCompat.getColor(this, R.color.layout_background_start_gradation));
+                            over_sixty_button.setBackground(ContextCompat.getDrawable(this, R.drawable.interest_selected));
+                            age.add(value);
+                            Log.e(TAG, "else 안 age list : " + age);
+                        }
+                    }
+                }
+            }
+        }
 
     }
 
@@ -603,6 +1195,9 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
     // findViewById() 모아놓은 메서드
     private void init()
     {
+        age_button_layout = findViewById(R.id.age_button_layout);
+        local_button_layout = findViewById(R.id.local_button_layout);
+
         first_interest_back_image = findViewById(R.id.first_interest_back_image);
         first_select_interest_textview = findViewById(R.id.first_select_interest_textview);
         first_interest_top_textview = findViewById(R.id.first_interest_top_textview);

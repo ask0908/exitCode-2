@@ -2,7 +2,6 @@ package com.psj.welfare.api;
 
 import androidx.annotation.Nullable;
 
-import io.reactivex.Flowable;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -155,29 +154,28 @@ public interface ApiInterface
     );
 
 
-    /* ↓ 로그인 알림 메서드 */
+    /* ↓ 로그인 메서드 */
     // ===================================================================================================
 
-    /**
-     * LoginActivity에서 카카오 로그인 시 서버로 OS 이름, 플랫폼, fcm 토큰값, 유저 이메일 정보를 보내 저장하는 메서드
-     * LoginActivity에서 사용
-     *
-     * @param email     - 카카오 로그인 시 확인할 수 있는 카카오 계정(이메일)
-     * @param fcm_token - 로그인 시 서버에서 받는 토큰
-     * @param osType    - "android" 고정
-     * @param platform  - "kakao" 고정
-     * @return
-     */
     @FormUrlEncoded
     @POST("https://www.hyemo.com/login")
     Call<String> sendUserTypeAndPlatform(
-//         @Header("SessionId") String sessionId,
-//         @Header("Action") String action,
             @Field("email") String email,
             @Field("fcm_token") String fcm_token,
             @Field("osType") String osType,
             @Field("platform") String platform
     );
+
+//    /**
+//     * LoginActivity에서 카카오 로그인 시 서버로 OS 이름, 플랫폼, fcm 토큰값, 유저 이메일 정보를 보내 저장하는 메서드
+//     * 장고 사용으로 인해 어노테이션, 매개변수 변경됨
+//     * @param login_information - email, fcm_token, osType, platform 값들을 JSON으로 묶어 toString()한 것
+//     * @return
+//     */
+//    @POST("http://www.hyemo.com:8080/login/login_request")
+//    Call<String> sendUserTypeAndPlatform(
+//            @Body String login_information
+//    );
 
     /* ↓ 푸시 관련 메서드 */
     // ===================================================================================================
@@ -198,13 +196,13 @@ public interface ApiInterface
             @Query("type") String type
     );
 
-    /* Observable<Call> 테스트 */
-    @GET("https://www.hyemo.com/push")
-    Flowable<Call<String>> gotPushData(
-            @Header("LoginToken") String token,
-            @Header("SessionId") String session,
-            @Query("type") String type
-    );
+//    /* Observable<Call> 테스트 */
+//    @GET("https://www.hyemo.com/push")
+//    Flowable<Call<String>> gotPushData(
+//            @Header("LoginToken") String token,
+//            @Header("SessionId") String session,
+//            @Query("type") String type
+//    );
 
     /**
      * 사용자가 알림을 수신받을 경우 수신 상태값 변경하는 메서드
@@ -656,6 +654,23 @@ public interface ApiInterface
     );
 
     /**
+     * 관심사 선택했지만 로그인하지 않은 유저에게 보여줄 데이터
+     * 로그인 토큰이 없으면 ""을 넣어보자
+     * @param age - 나이(10대 미만~60대 이상)
+     * @param gender - 남성 / 여성
+     * @param local - 지역
+     * @param type - "main" 고정
+     * @return
+     */
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/welf")
+    Call<String> showDataForNotLoginAndChoseInterest(
+            @Query("age") String age,
+            @Query("gender") String gender,
+            @Query("local") String local,
+            @Query("type") String type
+    );
+
+    /**
      * 관심사를 선택한 유저에게 보여줄 전체 혜택 리스트와 유튜브 영상을 SELECT하는 메서드
      * 비로그인일 시 나이, 성별, 지역이 필수 인자고 로그인했을 시 로그인 토큰이 필수다
      * @param type - "main" 고정
@@ -705,7 +720,7 @@ public interface ApiInterface
     );
 
     /* ↓ 람다로 바뀐 후 새로 추가된 검색 메서드
-    * TestSearchFragment(바꾸고 있는 검색 화면)에서 사용한다 */
+    * TestSearchFragment에서 사용한다 */
     // ===================================================================================================
 
     /**
@@ -760,6 +775,12 @@ public interface ApiInterface
     Call<String> searchRecommendTag(
             @Query("keyword") String keyword,
             @Query("page") String page,
+            @Query("logintoken") String token,
+            @Query("sessionid") String sessionId,
+            @Query("category") String category,
+            @Query("local") String local,
+            @Query("age") String age,
+            @Query("provide_type") String provideType,
             @Query("type") String type
     );
 
@@ -789,6 +810,7 @@ public interface ApiInterface
      */
     @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/welf-more")
     Call<String> moreViewWelfareNotLogin(
+            @Header("sessionid") String session,
             @Query("page") String page,
             @Query("assist_method") String assist_method,
             @Query("gender") String gender,
@@ -1013,6 +1035,44 @@ public interface ApiInterface
             @Query("category") String category
     );
 
+    /**
+     * 마이페이지에서 관심사를 확인하고 수정할 수 있는 메서드
+     * @param token - 로그인 시 서버에서 받는 토큰
+     * @param age - 관심 나이대 (여러 개일 경우 '-'로 열거)
+     * @param local - 관심 지역 (여러 개일 경우 '-'로 열거)
+     * @param family - 관심 가구 형태 (여러 개일 경우 '-'로 열거)
+     * @param category - 관심 카테고리 (여러 개일 경우 '-'로 열거)
+     * @param type - show : 유저의 관심사 리턴 / modify : 관심사 수정, 조회할 때는 type과 헤더에 token만 넣어주면 된다!!!
+     * @return -
+     * // 관심사 확인
+     * {
+     *     "statusCode": 200,
+     *     "message": [
+     *         {
+     *             "age": "20대|30대",
+     *             "local": "서울|경기|인천",
+     *             "category": "군인/보훈대상자|농축산인|여성",
+     *             "family": "다문화|다자녀|소년소녀가장"
+     *         }
+     *     ]
+     * }
+     *
+     * // 관심사 수정
+     * {
+     *     "statusCode": 200,
+     *     "message": "관심사 수정이 완료됐습니다."
+     * }
+     */
+    @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/modify-interest")
+    Call<String> checkAndModifyInterest(
+            @Header("logintoken") String token,
+            @Query("age") String age,
+            @Query("local") String local,
+            @Query("family") String family,
+            @Query("category") String category,
+            @Query("type") String type
+    );
+
     /* 회원탈퇴 메서드 */
     // ===================================================================================================
 
@@ -1028,6 +1088,13 @@ public interface ApiInterface
             @Header("logintoken") String token,
             @Query("type") String type,
             @Query("leave_reason") String reason
+    );
+
+    // 리뷰 작성 테스트
+    @POST("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/review")
+    Call<String> reviewWrite(
+            @Header("logintoken") String LoginToken,
+            @Body String review
     );
 
 }

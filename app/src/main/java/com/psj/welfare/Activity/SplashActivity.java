@@ -52,6 +52,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/* @Keep : 이 어노테이션이 적인 클래스 파일은 암호화하지 말라는 의미
+* 왜냐면 이 클래스가 실행되어 onCreate()가 호출되면 FCM 토큰을 받아오는데 이 토큰이 암호화되버려서, FCM이 오지 않거나 앱이 죽는 현상이 발생했다
+* 그래서 추가한 어노테이션 */
 @Keep
 public class SplashActivity extends AppCompatActivity
 {
@@ -72,57 +75,100 @@ public class SplashActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
-
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);         // 상태바(상태표시줄) 글자색 검정색으로 바꾸기
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorMainWhite));    // 상태바(상태표시줄) 배경 흰색으로 설정
-
-        //상태표시줄 색상변경
-//        setStatusBarGradiant(SplashActivity.this);
-
-        intent = getIntent();
-
+        /* 강제종료 확인하는 서비스 실행
+        * 보통 앱이 어느 지점에서 강제종료됐는지 확인하려면 먼저 앱의 시작점부터 서비스를 시작해야 한다
+        * 우리 앱의 시작점은 스플래시 화면이기 때문에 onCreate()가 시작하자마자 startService()를 갈겼다 */
         sharedPreferences = getSharedPreferences("app_pref", 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
+        setContentView(R.layout.activity_splash);
+//        startService(new Intent(this, UnCatchTaskService.class));
 
-        //미리보기 했는지 여부
-        SharedPreferences shared = getSharedPreferences("welf_preview",MODE_PRIVATE);
-        being_preview = shared.getBoolean("being_preview",false);
+        if (sharedPreferences.getBoolean("force_stopped", false))
+        {
+            Log.e(TAG, "강제종료한 기록 있음");
+            FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>()
+            {
+                @Override
+                public void onComplete(@NonNull Task<InstanceIdResult> task)
+                {
+                    if (!task.isSuccessful())
+                    {
+                        Log.e("FCM LOG", "getInstanceId failed", task.getException());
+                        return;
+                    }
+                    token = task.getResult().getToken();
+//                Log.e(TAG, "스플래시 화면에서 받은 fcm token : " + token);
+                    editor.putString("fcm_token", token);
+                    editor.apply();
+                }
+            });
+
+            //room데이터가 있는지 확인
+            beingRoomData();
+
+            onNewIntent(intent);
+            // 강제종료하면 여기로 빠진다. 여기서 인텐트 써서 TutorialCategory로 계속 보내자
+//            Intent intent = new Intent(this, TutorialWelcome.class);
+//            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//            startActivity(intent);
+//            finish();
+        }
+        else
+        {
+            Log.e(TAG, "강제종료한 기록 없음");
+            // 강제종료한 적이 없으면 여기로 빠진다. 그냥 스플래시 화면에서 진행하는 로직을 여기로 가져오자
+            // 첫 로그인 여부를 구별하기 위한 값을 쉐어드에 저장
+            editor.putString("first_visit", "1");
+            editor.apply();
+
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);         // 상태바(상태표시줄) 글자색 검정색으로 바꾸기
+            getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorMainWhite));    // 상태바(상태표시줄) 배경 흰색으로 설정
+
+            //상태표시줄 색상변경
+//        setStatusBarGradiant(SplashActivity.this);
+
+            intent = getIntent();
+
+            //미리보기 했는지 여부
+            SharedPreferences shared = getSharedPreferences("welf_preview",MODE_PRIVATE);
+            being_preview = shared.getBoolean("being_preview",false);
 //        Log.e("being_preview",String.valueOf(being_preview));
 
-        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>()
-        {
-            @Override
-            public void onComplete(@NonNull Task<InstanceIdResult> task)
+            FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>()
             {
-                if (!task.isSuccessful())
+                @Override
+                public void onComplete(@NonNull Task<InstanceIdResult> task)
                 {
-                    Log.e("FCM LOG", "getInstanceId failed", task.getException());
-                    return;
-                }
-                token = task.getResult().getToken();
+                    if (!task.isSuccessful())
+                    {
+                        Log.e("FCM LOG", "getInstanceId failed", task.getException());
+                        return;
+                    }
+                    token = task.getResult().getToken();
 //                Log.e(TAG, "스플래시 화면에서 받은 fcm token : " + token);
-                editor.putString("fcm_token", token);
-                editor.apply();
-            }
-        });
+                    editor.putString("fcm_token", token);
+                    editor.apply();
+                }
+            });
 
-        /* 아래 코드를 쓰면 토큰이 항상 refresh되지만 이 토큰으로 fcm을 받을 수 있을지? */
-        FirebaseInstallations.getInstance().getToken(true).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>()
-        {
-            @Override
-            public void onComplete(@NonNull Task<InstallationTokenResult> task)
+            /* 아래 코드를 쓰면 토큰이 항상 refresh되지만 이 토큰으로 fcm을 받을 수 있을지? */
+            FirebaseInstallations.getInstance().getToken(true).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>()
             {
+                @Override
+                public void onComplete(@NonNull Task<InstallationTokenResult> task)
+                {
 //                Log.e(TAG, "task : " + task);
 //                Log.e(TAG, "task.getResult() : " + task.getResult());
 //                Log.e(TAG, "task.getResult().getToken() : " + task.getResult().getToken());
-            }
-        });
+                }
+            });
 
-        //room데이터가 있는지 확인
-        beingRoomData();
+            //room데이터가 있는지 확인
+            beingRoomData();
 
-        onNewIntent(intent);
+            onNewIntent(intent);
+        }
+
     }
 
     void beingRoomData()
@@ -186,18 +232,18 @@ public class SplashActivity extends AppCompatActivity
             if (intent != null && intent.getExtras() != null) //푸시 알림 눌러 실행시켰을 때
             {
                 String aaa = intent.getExtras().getString("push_clicked");
-                if (aaa == null)
+                if (aaa != null)
                 {
                     isPushClicked = true;
                     Handler handler = new Handler();
-                    handler.postDelayed(new SplashHandler(), 1500);
+                    handler.postDelayed(new SplashHandler(), 1200);
                 }
             }
             else
             {
                 //일반적으로 앱을 실행시켰을 때
                 Handler handler = new Handler();
-                handler.postDelayed(new NormalHandler(), 1500);
+                handler.postDelayed(new NormalHandler(), 1200);
             }
         }
         super.onNewIntent(intent);
@@ -269,6 +315,7 @@ public class SplashActivity extends AppCompatActivity
         }
     }
 
+    // 사용자가 앱에 들어왔을 때 세션 id값을 받아오는 메서드
     void userLog()
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
@@ -299,6 +346,7 @@ public class SplashActivity extends AppCompatActivity
         });
     }
 
+    // 서버에서 받은 세션 id를 파싱해서 쉐어드에 저장하는 메서드
     private void sessionParsing(String result)
     {
         try
@@ -321,6 +369,7 @@ public class SplashActivity extends AppCompatActivity
         // 이 메서드를 재정의하고 비워두면 스플래시 화면에서 백버튼을 눌러도 뒤로가기가 되지 않는다
     }
 
+    // 네트워크 연결 상태 확인 메서드
     public boolean isNetworkConnected(Context context)
     {
         ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -391,5 +440,4 @@ public class SplashActivity extends AppCompatActivity
             }
         }
     }
-
 }

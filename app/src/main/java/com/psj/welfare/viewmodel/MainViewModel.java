@@ -59,6 +59,40 @@ public class MainViewModel extends AndroidViewModel
         return mainLiveData;
     }
 
+    /* 관심사 o, 로그인 x 유저에게 보여줄 전체 혜택 리스트와 유튜브 데이터를 보여주는 기능 */
+    public MutableLiveData<String> showDataForNotLoginAndChoseInterest(String age,
+                                                                 String gender,
+                                                                 String local,
+                                                                 String type)
+    {
+        final MutableLiveData<String> data = new MutableLiveData<>();
+        apiInterface.showDataForNotLoginAndChoseInterest(age, gender, local, type)
+                .enqueue(new Callback<String>()
+                {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response)
+                    {
+                        if (response.isSuccessful() && response.body() != null)
+                        {
+                            String result = response.body();
+                            Log.e(TAG, "서버에서 가져온 데이터 : " + result);
+                            data.setValue(result);
+                        }
+                        else
+                        {
+                            Log.e(TAG, "관심사 선택한 유저에게 보여줄 데이터 가져오기 실패 : " + response.body());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t)
+                    {
+                        Log.e(TAG, "관심사 선택한 유저에게 보여줄 데이터 가져오기 에러 : " + t.getMessage());
+                    }
+                });
+        return data;
+    }
+
     public MutableLiveData<String> showWelfareAndYoutubeLogin(String type,
                                                               String logintoken)
     {

@@ -66,11 +66,14 @@ public class SeeMoreBottomAdapter extends RecyclerView.Adapter<SeeMoreBottomAdap
 //        params.setMargins((int) (size.x * 0.03), (int) (size.y * 0.02), (int) (size.x * 0.03), (int) (size.y * 0.02));
 //        holder.bottom_result_layout.setLayoutParams(params);
 
-        if(position != list.size()-1){ //마지막 데이터가 아닐 때
+        if (position != list.size() - 1)
+        { //마지막 데이터가 아닐 때
             RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.bottom_result_layout.getLayoutParams();
             params.setMargins((int) (size.x * 0.03), (int) (size.y * 0.02), (int) (size.x * 0.03), (int) (size.y * 0.02));
             holder.bottom_result_layout.setLayoutParams(params);
-        } else if( position == (list.size()-1)) { //마지막 데이터 일 때
+        }
+        else if (position == (list.size() - 1))
+        { //마지막 데이터 일 때
             RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.bottom_result_layout.getLayoutParams();
             params.setMargins((int) (size.x * 0.03), (int) (size.y * 0.02), (int) (size.x * 0.03), (int) (size.y * 0.043));
             holder.bottom_result_layout.setLayoutParams(params);
@@ -91,7 +94,7 @@ public class SeeMoreBottomAdapter extends RecyclerView.Adapter<SeeMoreBottomAdap
         }
         else if (!item.getWelf_tag().equals(""))
         {
-            String before = item.getWelf_tag().replace(" ","");
+            String before = item.getWelf_tag().replace(" ", "");
             String else_str = "#" + before;
             holder.bottom_result_tag.setText(else_str);
         }

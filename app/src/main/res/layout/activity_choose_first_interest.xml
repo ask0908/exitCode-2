@@ -110,116 +110,155 @@
                 android:textColor="@color/colorBlack"
                 android:text="1. 나이대"
                 android:gravity="center"
-                android:fontFamily="@font/notosanskr_medium"
+                android:fontFamily="@font/notosanskr_bold"
                 android:autoSizeTextType="uniform"
                 android:includeFontPadding="false"/>
 
             <!-- 나이대 버튼들을 모아둔 레이아웃 -->
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:orientation="vertical"
                 app:layout_constraintVertical_bias="0.03"
                 app:layout_constraintWidth_percent=".84"
+                app:layout_constraintHeight_percent=".3"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/age_text"
                 app:layout_constraintBottom_toBottomOf="parent">
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/age_button_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="1">
+                    android:layout_height="match_parent">
 
                     <Button
                         android:id="@+id/under_teenage_button"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight=".5"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".5"
+                        app:layout_constraintHeight_percent=".25"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintVertical_bias="0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:textColor="@color/colorGray_B"
-                        android:text="10대 미만" />
+                        android:text="10대 미만"/>
 
                     <Button
                         android:id="@+id/teenage_button"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight=".5"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".5"
+                        app:layout_constraintHeight_percent=".25"
+                        app:layout_constraintHorizontal_bias="1"
+                        app:layout_constraintVertical_bias="0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="10대"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="1">
 
                     <Button
                         android:id="@+id/twenty_button"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight=".5"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".5"
+                        app:layout_constraintHeight_percent=".25"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintVertical_bias=".34"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="20대"/>
 
                     <Button
                         android:id="@+id/thirty_button"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight=".5"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".5"
+                        app:layout_constraintHeight_percent=".25"
+                        app:layout_constraintHorizontal_bias="1"
+                        app:layout_constraintVertical_bias=".34"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="30대"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="1">
 
                     <Button
                         android:id="@+id/forty_button"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight=".5"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".5"
+                        app:layout_constraintHeight_percent=".25"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintVertical_bias=".67"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="40대"/>
 
                     <Button
                         android:id="@+id/fifty_button"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight=".5"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".5"
+                        app:layout_constraintHeight_percent=".25"
+                        app:layout_constraintHorizontal_bias="1"
+                        app:layout_constraintVertical_bias=".67"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="50대"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="1">
 
                     <Button
                         android:id="@+id/over_sixty_button"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight=".5"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".5"
+                        app:layout_constraintHeight_percent=".25"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintVertical_bias="1"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="60대 이상"/>
 
-                </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
 
@@ -237,7 +276,7 @@
                 android:textColor="@color/colorBlack"
                 android:text="2. 지역"
                 android:gravity="center"
-                android:fontFamily="@font/notosanskr_medium"
+                android:fontFamily="@font/notosanskr_bold"
                 android:autoSizeTextType="uniform"
                 android:includeFontPadding="false"/>
 
@@ -253,213 +292,318 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent">
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/local_button_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_weight="3">
+                    android:layout_height="match_parent">
 
                     <Button
                         android:id="@+id/interest_seoul_btn"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".333"
+                        app:layout_constraintHeight_percent=".16"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintVertical_bias="0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="서울"/>
 
                     <Button
                         android:id="@+id/interest_gangwon_btn"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".333"
+                        app:layout_constraintHeight_percent=".16"
+                        app:layout_constraintHorizontal_bias=".5"
+                        app:layout_constraintVertical_bias="0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="강원"/>
 
                     <Button
                         android:id="@+id/interest_gyonggi_btn"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".333"
+                        app:layout_constraintHeight_percent=".16"
+                        app:layout_constraintHorizontal_bias="1"
+                        app:layout_constraintVertical_bias="0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="경기"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_weight="3">
 
                     <Button
                         android:id="@+id/interest_gyongnam_btn"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".333"
+                        app:layout_constraintHeight_percent=".16"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintVertical_bias=".19"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="경남"/>
 
                     <Button
                         android:id="@+id/interest_gyongbuk_btn"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".333"
+                        app:layout_constraintHeight_percent=".16"
+                        app:layout_constraintHorizontal_bias=".5"
+                        app:layout_constraintVertical_bias=".19"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="경북"/>
 
                     <Button
                         android:id="@+id/interest_gwangju_btn"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".333"
+                        app:layout_constraintHeight_percent=".16"
+                        app:layout_constraintHorizontal_bias="1"
+                        app:layout_constraintVertical_bias=".19"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="광주"/>
-
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_weight="3">
 
                     <Button
                         android:id="@+id/interest_daegu_btn"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".333"
+                        app:layout_constraintHeight_percent=".16"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintVertical_bias=".38"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="대구"/>
 
                     <Button
                         android:id="@+id/interest_daejeon_btn"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".333"
+                        app:layout_constraintHeight_percent=".16"
+                        app:layout_constraintHorizontal_bias=".5"
+                        app:layout_constraintVertical_bias=".38"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="대전"/>
 
                     <Button
                         android:id="@+id/interest_busan_btn"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".333"
+                        app:layout_constraintHeight_percent=".16"
+                        app:layout_constraintHorizontal_bias="1"
+                        app:layout_constraintVertical_bias=".38"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="부산"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_weight="3">
 
                     <Button
                         android:id="@+id/interest_sejong_btn"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".333"
+                        app:layout_constraintHeight_percent=".16"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintVertical_bias=".57"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="세종"/>
 
                     <Button
                         android:id="@+id/interest_ulsan_btn"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".333"
+                        app:layout_constraintHeight_percent=".16"
+                        app:layout_constraintHorizontal_bias=".5"
+                        app:layout_constraintVertical_bias=".57"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="울산"/>
 
                     <Button
                         android:id="@+id/interest_incheon_btn"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".333"
+                        app:layout_constraintHeight_percent=".16"
+                        app:layout_constraintHorizontal_bias="1"
+                        app:layout_constraintVertical_bias=".57"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="인천"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_weight="3">
 
                     <Button
                         android:id="@+id/interest_jeonnam_btn"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".333"
+                        app:layout_constraintHeight_percent=".16"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintVertical_bias=".76"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="전남"/>
 
                     <Button
                         android:id="@+id/interest_jeonbuk_btn"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".333"
+                        app:layout_constraintHeight_percent=".16"
+                        app:layout_constraintHorizontal_bias=".5"
+                        app:layout_constraintVertical_bias=".76"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="전북"/>
 
                     <Button
                         android:id="@+id/interest_jeju_btn"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".333"
+                        app:layout_constraintHeight_percent=".16"
+                        app:layout_constraintHorizontal_bias="1"
+                        app:layout_constraintVertical_bias=".76"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="제주"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_weight="3">
 
                     <Button
                         android:id="@+id/interest_chungnam_btn"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".333"
+                        app:layout_constraintHeight_percent=".16"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintVertical_bias=".95"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="충남"/>
 
                     <Button
                         android:id="@+id/interest_chungbuk_btn"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="0dp"
+                        app:layout_constraintWidth_percent=".333"
+                        app:layout_constraintHeight_percent=".16"
+                        app:layout_constraintHorizontal_bias=".5"
+                        app:layout_constraintVertical_bias=".95"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@drawable/interest_unselected"
                         android:textColor="@color/colorGray_B"
+                        android:fontFamily="@font/notosanskr_medium"
+                        android:includeFontPadding="false"
                         android:text="충북"/>
 
-                    <Button
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:visibility="invisible"
-                        android:layout_weight="1"/>
-
-                </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
 

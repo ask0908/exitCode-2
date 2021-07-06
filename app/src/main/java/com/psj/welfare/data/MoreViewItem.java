@@ -1,12 +1,19 @@
 package com.psj.welfare.data;
 
+import com.google.gson.annotations.SerializedName;
+
 /* TestMoreViewActivity(더보기 리스트 화면)의 리사이클러뷰에 쓸 아이템 */
 public class MoreViewItem
 {
+    @SerializedName("welf_id")
     private String welf_id;
+    @SerializedName("welf_name")
     private String welf_name;
+    @SerializedName("welf_tag")
     private String welf_tag;
+    @SerializedName("assist_method")
     private String assist_method;
+    @SerializedName("welf_count")
     private String welf_count;
 
     public MoreViewItem()

@@ -2,6 +2,7 @@ package com.psj.welfare;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -20,8 +21,12 @@ import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 
 import com.psj.welfare.activity.MainTabLayoutActivity;
+import com.psj.welfare.util.DBOpenHelper;
 
+/* 미리보기 첫 화면에서 "알아보기" 버튼 눌러 이동하는 나이, 성별, 지역 선택 화면 */
 public class TutorialCategory extends AppCompatActivity {
+
+    private final String TAG = this.getClass().getSimpleName();
 
     private ImageButton BtnMinus, BtnPlus; //나이 선택 버튼(-, +)
     private Button BtnGenderMan, BtnGenderWoman; //남성 선택 버튼, 여성 선택 버튼
@@ -40,6 +45,9 @@ public class TutorialCategory extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
 
+    DBOpenHelper helper;
+    String sqlite_token;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +55,20 @@ public class TutorialCategory extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences("app_pref", 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        helper = new DBOpenHelper(this);
+        helper.openDatabase();
+        helper.create();
+
+        // Room DB에서 토큰 가져와 변수에 대입
+        Cursor cursor = helper.selectColumns();
+        if (cursor != null)
+        {
+            while (cursor.moveToNext())
+            {
+                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+            }
+        }
 
         BtnMinus = findViewById(R.id.BtnMinus); //나이대 - 버튼
         BtnPlus = findViewById(R.id.BtnPlus); //나이대 - 버튼
@@ -57,7 +79,7 @@ public class TutorialCategory extends AppCompatActivity {
 
         PickerHome = findViewById(R.id.PickerHome); //지역 선택 picker
         PickerHome.setDisplayedValues(PickerString); //numberpicker를 string값으로 한다
-        PickerHome.setMaxValue(PickerString.length -1); //최대값
+        PickerHome.setMaxValue(PickerString.length - 1); //최대값
         PickerHome.setMinValue(0); //최소값
         PickerHome.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS); //피커 선택 했을 때 소프트키 나오는 기능 막기
 
@@ -113,6 +135,8 @@ public class TutorialCategory extends AppCompatActivity {
                 editor.putString("age_group", TextAge.getText().toString());
                 editor.putString("user_area", PickerString[PickerHome.getValue()]);
                 editor.apply();
+
+                // 받은 값들을 서버로 보낸다
 
                 new Thread(() -> { //Room은 메인 스레드에서 실행시키면 오류가 난다
                     //Room을 쓰기위해 데이터베이스 객체 만들기

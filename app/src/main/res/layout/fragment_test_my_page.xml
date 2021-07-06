@@ -308,7 +308,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         android:fontFamily="@font/notosanskr_bold"
                         android:includeFontPadding="false"
-                        android:text="관심사 선택" />
+                        android:text="@string/mypage_interest" />
 
 
                     <LinearLayout
@@ -331,7 +331,7 @@
                             android:layout_weight=".6"
                             android:fontFamily="@font/notosanskr_bold"
                             android:includeFontPadding="false"
-                            android:text="푸시 알림 설정"
+                            android:text="@string/mypage_push_setting"
                             android:textColor="@color/gray" />
 
                         <Switch
@@ -425,7 +425,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         android:fontFamily="@font/notosanskr_bold"
                         android:includeFontPadding="false"
-                        android:text="로그아웃" />
+                        android:text="@string/mypage_logout" />
 
                     <TextView
                         android:id="@+id/mypage_withdraw_textview"
@@ -439,7 +439,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         android:fontFamily="@font/notosanskr_bold"
                         android:includeFontPadding="false"
-                        android:text="탈퇴하기" />
+                        android:text="@string/mypage_withdraw" />
 
                     <!-- 비로그인 시에만 보여야 하는 레이아웃
                     로그인 시에는 GONE으로 바꾼다 -->
@@ -463,7 +463,7 @@
                             android:id="@+id/mypage_login_textview"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:layout_weight=".3"
+                            android:layout_weight=".4"
                             android:gravity="center"
                             app:layout_constraintWidth_percent=".8"
                             app:layout_constraintHeight_percent=".06"
@@ -475,7 +475,7 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             android:fontFamily="@font/notosanskr_medium"
                             android:includeFontPadding="false"
-                            android:text="로그인하고 더 많은 기능을 만나보세요" />
+                            android:text="@string/login_button_above_textview" />
 
                         <View
                             android:id="@+id/mypage_bottom_divider"
@@ -487,11 +487,11 @@
                             android:id="@+id/mypage_login_button"
                             android:layout_width="230dp"
                             android:layout_height="0dp"
-                            android:layout_weight=".6"
+                            android:layout_weight=".5"
                             android:background="@drawable/btn_keyword_selected"
                             android:fontFamily="@font/notosanskr_bold"
                             android:includeFontPadding="false"
-                            android:text="로그인하러 가기"
+                            android:text="@string/go_login"
                             android:textColor="@color/colorMainWhite"/>
 
                     </LinearLayout>

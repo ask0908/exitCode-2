@@ -399,38 +399,48 @@ public class DetailReviewWrite extends AppCompatActivity
             e.printStackTrace();
         }
 
-        String URL = "https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/"; //연결하고자 하는 서버의 url, 반드시 /로 끝나야 함
-        ApiInterfaceTest apiInterfaceTest = ApiClientTest.ApiClient(URL).create(ApiInterfaceTest.class); //레트로핏 인스턴스로 인터페이스 객체 구현
-        Call<String> call = apiInterfaceTest.ReviewWrite(token, jsonObject.toString()); //인터페이스에서 사용할 메소드 선언
+        ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
+        Call<String> call = apiInterface.reviewWrite(token, jsonObject.toString());
         call.enqueue(new Callback<String>()
-        { //enqueue로 비동기 통신 실행, 통신 완료 후 이벤트 처리 위한 callback 리스너 등록
+        {
             @Override
-            public void onResponse(Call<String> call, retrofit2.Response<String> response)
-            { //onResponse 통신 성공시 callback
-                try
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
                 {
-                    JSONObject jsonObject = new JSONObject(response.body());
-//                    Log.e("test",jsonObject.toString());
-                    Intent intent = new Intent(DetailReviewWrite.this, DetailTabLayoutActivity.class);
-                    //STACK 정리, 기존의 상세보기 페이지가 stack에 맨위에 있으면 기존 액티비티는 종료하고 새로운 액티비티를 띄운다
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    intent.putExtra("being_id", true);
-                    intent.putExtra("review_write", true);
-                    intent.putExtra("welf_id", welf_id);
-                    finish();
-                    startActivity(intent);
+                    String result = response.body();
+                    Log.e(TAG, "리뷰 작성 결과 : " + result);
+                    try
+                    {
+                        JSONObject jsonObject = new JSONObject(result);
+                        Log.e("test", jsonObject.toString());
+                        Intent intent = new Intent(DetailReviewWrite.this, DetailTabLayoutActivity.class);
+                        //STACK 정리, 기존의 상세보기 페이지가 stack에 맨위에 있으면 기존 액티비티는 종료하고 새로운 액티비티를 띄운다
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intent.putExtra("being_id", true);
+                        intent.putExtra("review_write", true);
+                        intent.putExtra("welf_id", welf_id);
+                        finish();
+                        startActivity(intent);
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
-                catch (JSONException e)
+                else
                 {
-                    e.printStackTrace();
+                    Log.e(TAG, "리뷰 작성 실패 : " + response.body());
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t)
             {
+                Log.e(TAG, "리뷰 작성 에러 : " + t.getMessage());
             }
         });
+
     }
 
     //자바 변수와 xml 변수 연결

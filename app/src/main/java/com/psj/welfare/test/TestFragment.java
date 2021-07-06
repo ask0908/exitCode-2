@@ -1,62 +1,62 @@
- package com.psj.welfare.test;
+package com.psj.welfare.test;
 
- import android.app.ProgressDialog;
- import android.content.Context;
- import android.content.Intent;
- import android.content.SharedPreferences;
- import android.database.Cursor;
- import android.graphics.Point;
- import android.os.Bundle;
- import android.os.Handler;
- import android.os.Message;
- import android.util.Log;
- import android.util.TypedValue;
- import android.view.LayoutInflater;
- import android.view.View;
- import android.view.ViewGroup;
- import android.widget.Button;
- import android.widget.TextView;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Point;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
- import androidx.annotation.NonNull;
- import androidx.annotation.Nullable;
- import androidx.cardview.widget.CardView;
- import androidx.constraintlayout.widget.ConstraintLayout;
- import androidx.fragment.app.Fragment;
- import androidx.lifecycle.Observer;
- import androidx.lifecycle.ViewModelProvider;
- import androidx.recyclerview.widget.LinearLayoutManager;
- import androidx.recyclerview.widget.RecyclerView;
- import androidx.room.Room;
- import androidx.viewpager2.widget.CompositePageTransformer;
- import androidx.viewpager2.widget.MarginPageTransformer;
- import androidx.viewpager2.widget.ViewPager2;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
+import androidx.viewpager2.widget.CompositePageTransformer;
+import androidx.viewpager2.widget.MarginPageTransformer;
+import androidx.viewpager2.widget.ViewPager2;
 
- import com.google.firebase.analytics.FirebaseAnalytics;
- import com.psj.welfare.AppDatabase;
- import com.psj.welfare.BannerDetail;
- import com.psj.welfare.CategoryDao;
- import com.psj.welfare.CategoryData;
- import com.psj.welfare.DetailTabLayoutActivity;
- import com.psj.welfare.MainBannerAdapter;
- import com.psj.welfare.MainBannerData;
- import com.psj.welfare.R;
- import com.psj.welfare.ScreenSize;
- import com.psj.welfare.activity.LoginActivity;
- import com.psj.welfare.activity.YoutubeActivity;
- import com.psj.welfare.activity.YoutubeMoreActivity;
- import com.psj.welfare.adapter.MainDownAdapter;
- import com.psj.welfare.adapter.MainHorizontalYoutubeAdapter;
- import com.psj.welfare.data.HorizontalYoutubeItem;
- import com.psj.welfare.data.MainThreeDataItem;
- import com.psj.welfare.util.DBOpenHelper;
- import com.psj.welfare.viewmodel.MainViewModel;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.psj.welfare.AppDatabase;
+import com.psj.welfare.BannerDetail;
+import com.psj.welfare.CategoryDao;
+import com.psj.welfare.CategoryData;
+import com.psj.welfare.DetailTabLayoutActivity;
+import com.psj.welfare.MainBannerAdapter;
+import com.psj.welfare.MainBannerData;
+import com.psj.welfare.R;
+import com.psj.welfare.ScreenSize;
+import com.psj.welfare.activity.LoginActivity;
+import com.psj.welfare.activity.YoutubeActivity;
+import com.psj.welfare.activity.YoutubeMoreActivity;
+import com.psj.welfare.adapter.MainDownAdapter;
+import com.psj.welfare.adapter.MainHorizontalYoutubeAdapter;
+import com.psj.welfare.data.HorizontalYoutubeItem;
+import com.psj.welfare.data.MainThreeDataItem;
+import com.psj.welfare.util.DBOpenHelper;
+import com.psj.welfare.viewmodel.MainViewModel;
 
- import org.json.JSONArray;
- import org.json.JSONException;
- import org.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
- import java.util.ArrayList;
- import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 
 /* 구현 완료 시 MainFragment로 옮긴다 */
 public class TestFragment extends Fragment
@@ -81,7 +81,7 @@ public class TestFragment extends Fragment
     private TextView youtube_title_text; //"유튜버들의 혜택 리뷰"
 
     //로그인 여부를 확인하기 위해 사용하는 쉐어드
-    private SharedPreferences app_pref;
+    private SharedPreferences sharedPreferences;
     private String age = null; //미리보기 나이
     private String gender = null; //미리보기 성별
     private String local = null; //미리보기 지역
@@ -195,8 +195,8 @@ public class TestFragment extends Fragment
         youtube_list = new ArrayList<>();
         other_list = new ArrayList<>();
 
-        app_pref = getActivity().getSharedPreferences("app_pref", 0);
-        changed_nickname = app_pref.getString("changed_nickname", "");
+        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+        changed_nickname = sharedPreferences.getString("changed_nickname", "");
 
         MainWelfdata.setLayoutManager(new LinearLayoutManager(getActivity()));
         downAdapter = new MainDownAdapter(getActivity(), down_list, downClickListener);
@@ -209,38 +209,52 @@ public class TestFragment extends Fragment
         //메인 배너 뷰페이저 셋팅
         bannerList = new ArrayList<>(); //메인 배너 담을 리스트
         DefaultList = new ArrayList<>(); //메인 배너 담을 리스트(서버에서 받은 최초 데이터)
-        bannerAdapter = new MainBannerAdapter(bannerList,getActivity(),bannerListener,MainBannerViewpager2,DefaultList);
+        bannerAdapter = new MainBannerAdapter(bannerList, getActivity(), bannerListener, MainBannerViewpager2, DefaultList);
         MainBannerViewpager2.setAdapter(bannerAdapter);
 
-        //싱글톤 패턴
+        // Room DB 안의 데이터를 조회하기 위한 커서 생성
         Cursor cursor = helper.selectColumns();
         if (cursor != null)
-            {
+        {
             while (cursor.moveToNext())
             {
                 sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
             }
         }
 
-        /* 로그인 상태에 따른 메인에서 데이터 보여주는 메서드 구분 처리 */
-        loggedOut = app_pref.getBoolean("logout", false);
-//        if (loggedOut)
-//        {
-//            // loggedOut이 true = 로그아웃 상태
-//            Log.e(TAG, "로그아웃 상태일 것");
-//            showWelfareAndYoutubeNotLogin();
-//        }
-//        else
-//        {
-//            // loggedOut이 false = 로그인 상태
-//            Log.e(TAG, "로그인 상태일 것");
-//            showWelfareAndYoutubeLogin();
-//        }
-        showWelfareAndYoutubeNotLogin();
+        if (sharedPreferences.getBoolean("user_login", false))
+        {
+            // 로그인 o, 관심사 o인 경우
+            showWelfareAndYoutubeLogin();
+        }
+        else
+        {
+            // 로그인 x, 관심사 o인 경우
+            String gender = sharedPreferences.getString("gender", "");
+            String age = sharedPreferences.getString("age_group", "");
+            String area = sharedPreferences.getString("user_area", "");
+            if (gender != null && age != null && area != null)
+            {
+                if (!gender.equals("") && !age.equals("") && !area.equals(""))
+                {
+                    // 이 부분도 로그인 x, 관심사 o인 경우 이동된다
+                    showDataForNotLoginAndChoseInterest();
+                }
+                else
+                {
+                    // 로그인 x, 관심사 x인 경우
+                    showWelfareAndYoutubeNotLoginAndNotInterest();
+                }
+            }
+            // 로그인 x, 관심사 x
+            else
+            {
+                Log.e(TAG, "로그인 x, 관심사 x인가?");
+                showWelfareAndYoutubeNotLoginAndNotInterest();
+            }
+        }
 
-        // view 100+ -> view 0으로 변경
-        // 편집하기 각각 왼쪽, 오른쪽 간격 수정
-
+        // 구글 애널리틱스 초기화
         if (getActivity() != null)
         {
             analytics = FirebaseAnalytics.getInstance(getActivity());
@@ -257,9 +271,11 @@ public class TestFragment extends Fragment
 
 
         //배너 아이템 클릭
-        bannerAdapter.setbannerClickListener(new MainBannerAdapter.BannerListener() {
+        bannerAdapter.setbannerClickListener(new MainBannerAdapter.BannerListener()
+        {
             @Override
-            public void bannerClick(View v, int pos) {
+            public void bannerClick(View v, int pos)
+            {
                 Intent intent = new Intent(getActivity(), BannerDetail.class);
                 intent.putExtra("banner_title", bannerList.get(pos % bannercount).getTitle());
                 startActivity(intent);
@@ -267,31 +283,36 @@ public class TestFragment extends Fragment
         });
 
         //혜택 아이템 클릭
-        downAdapter.setOnItemClickListener(new MainDownAdapter.ItemClickListener(){
+        downAdapter.setOnItemClickListener(new MainDownAdapter.ItemClickListener()
+        {
             @Override
-            public void onMainThreeClick(View v, int pos) {
-                    Intent intent = new Intent(getActivity(), DetailTabLayoutActivity.class);
-                    intent.putExtra("welf_id", down_list.get(pos).getWelf_id());
-                    intent.putExtra("being_id",true);
-                    startActivity(intent);
+            public void onMainThreeClick(View v, int pos)
+            {
+                Intent intent = new Intent(getActivity(), DetailTabLayoutActivity.class);
+                intent.putExtra("welf_id", down_list.get(pos).getWelf_id());
+                intent.putExtra("being_id", true);
+                startActivity(intent);
             }
         });
 
         //혜택 더보기 클릭
-        more_see_textview.setOnClickListener(v -> {
+        more_see_textview.setOnClickListener(v ->
+        {
             Intent intent = new Intent(getActivity(), TestMoreViewActivity.class);
             startActivity(intent);
         });
 
         //자동 스크롤
-        MainBannerViewpager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-
+        MainBannerViewpager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback()
+        {
             @Override
-            public void onPageSelected(int position) {
+            public void onPageSelected(int position)
+            {
                 super.onPageSelected(position);
 //                Log.e(TAG,"position" + position);
                 //처음 메인에 들어올 때 자동 스크롤 되도록
-                if(position == startBannerPosition){
+                if (position == startBannerPosition)
+                {
 //                    sliderHandler.removeCallbacks(sliderRunnable);
 //                    sliderHandler.postDelayed(sliderRunnable, 3500);
                     autoScrollStart();
@@ -299,16 +320,20 @@ public class TestFragment extends Fragment
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {
+            public void onPageScrollStateChanged(int state)
+            {
                 super.onPageScrollStateChanged(state);
-                switch (state) {
-                    case ViewPager2.SCROLL_STATE_IDLE: {// 스크롤이 끝났다거나, 뷰페이저에서 손 떼었을때
+                switch (state)
+                {
+                    case ViewPager2.SCROLL_STATE_IDLE:
+                    {// 스크롤이 끝났다거나, 뷰페이저에서 손 떼었을때
 //                        sliderHandler.removeCallbacks(sliderRunnable); //액티비티가 일시정지일때 Handler를 정지시켜주고, 액티비티가 재시작될 때 다시 실행
 //                        sliderHandler.postDelayed(sliderRunnable, 3500);
                         autoScrollStart();
                         break;
                     }
-                    case ViewPager2.SCROLL_STATE_DRAGGING: { // 사용자가 손으로 뷰페이저 움직이는 중
+                    case ViewPager2.SCROLL_STATE_DRAGGING:
+                    { // 사용자가 손으로 뷰페이저 움직이는 중
 //                        sliderHandler.removeMessages(0); // 핸들러를 중지시킴
                         autoScrollStop();
                         break;
@@ -319,7 +344,6 @@ public class TestFragment extends Fragment
 
         /* 비로그인 시 나타나는 로그인 버튼(나에게 맞는 혜택 찾기) */
         notlogin_button.setOnClickListener(v -> moveOtherActivity(getActivity(), LoginActivity.class));
-
     }
 
     /* 액티비티 이동 메서드, 1번 인자로 현재 액티비티와 2번 인자로 "액티비티명.class"를 넣는다 */
@@ -329,27 +353,31 @@ public class TestFragment extends Fragment
         startActivity(intent);
     }
 
-    private Runnable sliderRunnable = new Runnable() {
+    private Runnable sliderRunnable = new Runnable()
+    {
         @Override
-        public void run() {
+        public void run()
+        {
             MainBannerViewpager2.setCurrentItem(MainBannerViewpager2.getCurrentItem() + 1);
         }
     };
 
     //배너 자동 스크롤 시작
-    private void autoScrollStart(){
+    private void autoScrollStart()
+    {
         sliderHandler.removeCallbacks(sliderRunnable); //액티비티가 일시정지일때 Handler를 정지시켜주고, 액티비티가 재시작될 때 다시 실행
         sliderHandler.postDelayed(sliderRunnable, 3500);
     }
 
     //배너 자동 스크롤 멈춤
-    private void autoScrollStop(){
+    private void autoScrollStop()
+    {
         sliderHandler.removeMessages(0); // 핸들러를 중지시킴
     }
 
-
     //배너 뷰페이저
-    private void setviewpager() {
+    private void setviewpager()
+    {
         // ViewPager에서 양쪽 페이지를 미리보는 기능을 만들려면 clipToPadding, clipChilderen 값을 false로 지정해주고
         //setOffscreenPageLimit() 값을 설정해줍니다.
         // 그리고 setPageTransformer() 메서드 에서 값을 설정해줘야 합니다.
@@ -360,9 +388,11 @@ public class TestFragment extends Fragment
 
         CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
         compositePageTransformer.addTransformer(new MarginPageTransformer(10));
-        compositePageTransformer.addTransformer(new ViewPager2.PageTransformer() {
+        compositePageTransformer.addTransformer(new ViewPager2.PageTransformer()
+        {
             @Override
-            public void transformPage(@NonNull View page, float position) {
+            public void transformPage(@NonNull View page, float position)
+            {
                 float r = 1 - Math.abs(position);
                 page.setScaleY(0.85f + r * 0.15f);
             }
@@ -383,44 +413,48 @@ public class TestFragment extends Fragment
     }
 
     //xml크기를 동적으로 변환
-    private void setsize() {
+    private void setsize()
+    {
         //size에 저장되는 가로/세로 길이의 단위는 픽셀(Pixel)입니다.
         ScreenSize screen = new ScreenSize();
         //context의 스크린 사이즈를 구함
         Point size = screen.getScreenSize(getActivity());
 
         //상단 타이틀
-        MainTop.getLayoutParams().height = (int)(size.y * 0.14);
+        MainTop.getLayoutParams().height = (int) (size.y * 0.14);
         //뷰페이저 크기
-        MainBannerViewpager2.getLayoutParams().height = (int)(size.y * 0.275);
-        MainBannerViewpager2.setPadding((int)(size.x * 0.1),(int)(size.y * 0.007),(int)(size.x * 0.1),(int)(size.y * 0.007));
+        MainBannerViewpager2.getLayoutParams().height = (int) (size.y * 0.275);
+        MainBannerViewpager2.setPadding((int) (size.x * 0.1), (int) (size.y * 0.007), (int) (size.x * 0.1), (int) (size.y * 0.007));
         //닉네임 첫번째줄 텍스트
-        Welfdata_first_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.y * 0.027));
+        Welfdata_first_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.027));
         //닉네임 두번째줄 텍스트
-        Welfdata_second_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.y * 0.027));
+        Welfdata_second_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.027));
         //맞춤혜텍 아이템
-        MainWelfdata.setPadding((int)(size.x * 0.05),0,(int)(size.x * 0.05),0);
+        MainWelfdata.setPadding((int) (size.x * 0.05), 0, (int) (size.x * 0.05), 0);
         //관심사 선택 카드뷰
-        notlogin_card.getLayoutParams().height = (int)(size.y * 0.22);
+        notlogin_card.getLayoutParams().height = (int) (size.y * 0.22);
         //맞춤 혜택 보여주기 레이아웃
-        welfdata_layout.getLayoutParams().height = (int)(size.y * 0.515);
+        welfdata_layout.getLayoutParams().height = (int) (size.y * 0.515);
         //유튜버 혜택 리뷰 타이틀 레이아웃
-        youtube_title_layout.getLayoutParams().height = (int)(size.y * 0.0415);
+        youtube_title_layout.getLayoutParams().height = (int) (size.y * 0.0415);
         //유튜브 혜택 타이틀 텍스트
-        youtube_title_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.y * 0.025));
+        youtube_title_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.025));
         //유튜브 리사이클러뷰
-        youtube_video_recyclerview.getLayoutParams().height = (int)(size.y * 0.3);
+        youtube_video_recyclerview.getLayoutParams().height = (int) (size.y * 0.3);
         //"나에게 맞는 혜택 찾기" 버튼 텍스트 크기
-        notlogin_button.setTextSize(TypedValue.COMPLEX_UNIT_PX,(int)(size.y * 0.021));
+        notlogin_button.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.021));
         //메인 타이틀 "혜택모아" 텍스트
-        title_text.setTextSize(TypedValue.COMPLEX_UNIT_PX,(int)(size.y * 0.035));
+        title_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.035));
     }
 
     //selected_interest_textview(제목) 값 넣기
     //room데이터 이용은 메인 쓰레드에서 하면 안된다
-    void settitle(){
-        new Thread(() -> {
-            try{
+    void settitle()
+    {
+        new Thread(() ->
+        {
+            try
+            {
                 //Room을 쓰기위해 데이터베이스 객체 만들기
                 AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(), AppDatabase.class, "Firstcategory")
                         .fallbackToDestructiveMigration()
@@ -430,27 +464,30 @@ public class TestFragment extends Fragment
                 CategoryDao categoryDao = database.getcategoryDao();
 
                 List<CategoryData> alldata = categoryDao.findAll();
-                for (CategoryData data : alldata) {
+                for (CategoryData data : alldata)
+                {
                     age = data.age;
                     gender = data.gender;
                     local = data.home;
                 }
 //                Log.e("age",alldata.get(0).age);
                 benefit = age + ", " + local + ", " + gender;
-            }catch(Exception e){
+            }
+            catch (Exception e)
+            {
                 e.printStackTrace();
             }
 
             //로그인 했는지 여부 확인하기위한 쉐어드
-            app_pref = getActivity().getSharedPreferences(getString(R.string.shared_name), 0);
-            boolean being_logout = app_pref.getBoolean("logout",true); //로그인 했는지 여부 확인하기
-            String user_nickname = app_pref.getString("user_nickname",""); //닉네임 받아오기
+            sharedPreferences = getActivity().getSharedPreferences(getString(R.string.shared_name), 0);
+            boolean being_logout = sharedPreferences.getBoolean("logout", true); //로그인 했는지 여부 확인하기
+            String user_nickname = sharedPreferences.getString("user_nickname", ""); //닉네임 받아오기
 
             Message message = handler.obtainMessage();
             Bundle bundle = new Bundle();
             bundle.putString("age", age);
             bundle.putString("benefit", benefit);
-            bundle.putBoolean("being_logout",being_logout);
+            bundle.putBoolean("being_logout", being_logout);
             bundle.putString("user_nickname", user_nickname);
             message.setData(bundle);
             //sendMessage가 되면 이 handler가 해당되는 핸들러객체가(ValueHandler) 자동으로 호출된다.
@@ -463,7 +500,8 @@ public class TestFragment extends Fragment
     class ValueHandler extends Handler
     {
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(Message msg)
+        {
             super.handleMessage(msg);
             Bundle bundle = msg.getData();
             String age = bundle.getString("age");
@@ -471,7 +509,8 @@ public class TestFragment extends Fragment
             String user_nickname = bundle.getString("user_nickname");
             boolean being_logout = bundle.getBoolean("being_logout");
 
-            if(!being_logout){ //로그인 했다면
+            if (!being_logout)
+            { //로그인 했다면
                 if (!changed_nickname.equals(""))
                 {
                     Welfdata_first_title.setText(changed_nickname + "님");
@@ -482,19 +521,58 @@ public class TestFragment extends Fragment
                 }
                 notlogin_card.setVisibility(View.GONE);
                 welfdata_layout.setVisibility(View.VISIBLE);
-            } else if(age != null){ //미리보기 관심사를 선택했다면
+            }
+            else if (age != null)
+            { //미리보기 관심사를 선택했다면
                 Welfdata_first_title.setText(benefit);
                 notlogin_card.setVisibility(View.GONE);
                 welfdata_layout.setVisibility(View.VISIBLE);
-            } else { //비로그인 + 관심사 선택 X
+            }
+            else
+            { //비로그인 + 관심사 선택 X
                 notlogin_card.setVisibility(View.VISIBLE);
                 welfdata_layout.setVisibility(View.GONE);
             }
         }
     }
 
+    /* 관심사 o, 로그인 x인 유저에게 데이터 가져와 보여주는 메서드 */
+    private void showDataForNotLoginAndChoseInterest()
+    {
+        final ProgressDialog dialog = new ProgressDialog(getActivity());
+        dialog.setMax(100);
+        dialog.setMessage("잠시만 기다려 주세요...");
+        dialog.setCancelable(false); //"false"면 다이얼로그 나올 때 dismiss 띄우기 전까지 안사라짐
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.show();
+
+        String age = sharedPreferences.getString("age_group", "");
+        String gender = sharedPreferences.getString("gender", "");
+        String local = sharedPreferences.getString("user_area", "");
+
+        mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
+        final Observer<String> mainObserver = new Observer<String>()
+        {
+            @Override
+            public void onChanged(String str)
+            {
+                if (str != null)
+                {
+                    responseParse(str);
+                }
+                else
+                {
+                    Log.e(TAG, "str(결과값)이 null입니다");
+                }
+                dialog.dismiss();
+            }
+        };
+        mainViewModel.showDataForNotLoginAndChoseInterest(age, gender, local, "main")
+                .observe(getActivity(), mainObserver);
+    }
+
     /* 비로그인 시 혜택, 유튜브 데이터 가져와 보여주는 메서드 */
-    private void showWelfareAndYoutubeNotLogin()
+    private void showWelfareAndYoutubeNotLoginAndNotInterest()
     {
         //서버로부터 데이터를 받아오는데 걸리는 시간동안 보여줄 프로그래스 바
         final ProgressDialog dialog = new ProgressDialog(getActivity());
@@ -513,7 +591,7 @@ public class TestFragment extends Fragment
                 if (str != null)
                 {
                     responseParse(str);
-                    Log.e(TAG,"비로그인 상태로 가져온 혜택, 유튜브 데이터들 : " + str);
+                    Log.e(TAG, "비로그인 상태로 가져온 혜택, 유튜브 데이터들 : " + str);
                 }
                 else
                 {
@@ -554,6 +632,7 @@ public class TestFragment extends Fragment
                 dialog.dismiss();
             }
         };
+        Log.e(TAG, "sqlite_token : " + sqlite_token);
         mainViewModel.showWelfareAndYoutubeLogin("main", sqlite_token).observe(getActivity(), mainObserver);
     }
 
@@ -649,7 +728,7 @@ public class TestFragment extends Fragment
                 }
 
                 //무한 스크롤 처럼 보이도록 트릭을 사용(데이터를 여러개 넣고 그중 가운데 값부터 시작) (이 작업을 하면 배너가 늦게뜸)
-                MainBannerViewpager2.setCurrentItem(startBannerPosition,false);
+                MainBannerViewpager2.setCurrentItem(startBannerPosition, false);
             }
         }
         catch (JSONException e)
@@ -658,24 +737,11 @@ public class TestFragment extends Fragment
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 //        /* 유튜브 해시맵에 영상 이름과 videoId 값을 넣어서 인텐트로 넘길 준비를 한다 */
 //        for (int i = 0; i < youtube_list.size(); i++)
 //        {
 //            youtube_hashmap.put(youtube_list.get(i).getYoutube_name(), youtube_list.get(i).getYoutube_videoId());
 //        }
-
 
 
 //        /* 상단 리사이클러뷰에 들어갈 테마(교육, 공부 등)의 중복처리 로직 시작 */
@@ -743,10 +809,6 @@ public class TestFragment extends Fragment
 //        }
 
 
-
-
-
-
 //        downAdapter = new MainDownAdapter(getActivity(), down_list, downClickListener);
 //        downAdapter.setOnItemClickListener((view, pos) ->
 //        {
@@ -761,7 +823,6 @@ public class TestFragment extends Fragment
 //        });
 
 
-
 //        downAdapter = new MainDownAdapter(getActivity(), other_list, downClickListener);
 //        downAdapter.setOnItemClickListener((view, pos) ->
 //        {
@@ -771,15 +832,6 @@ public class TestFragment extends Fragment
 //            startActivity(intent);
 //        });
 //        MainWelfdata.setAdapter(downAdapter);
-
-
-
-
-
-
-
-
-
 
 
 //        // 상단 리사이클러뷰에 붙일 어댑터 초기화
@@ -836,7 +888,6 @@ public class TestFragment extends Fragment
 //        up_recycler.setAdapter(upAdapter);
 
 
-
         youtubeAdapter = new MainHorizontalYoutubeAdapter(getActivity(), youtube_list, youtubeClickListener);
         youtubeAdapter.setOnItemClickListener(new MainHorizontalYoutubeAdapter.ItemClickListener()
         {
@@ -885,14 +936,16 @@ public class TestFragment extends Fragment
     }
 
     @Override
-    public void onPause() {
+    public void onPause()
+    {
         super.onPause();
         // 다른 페이지로 떠나있는 동안 스크롤이 동작할 필요는 없음. 정지
         autoScrollStop();
     }
 
     @Override
-    public void onResume() {
+    public void onResume()
+    {
         super.onResume();
         // 다른 페이지 갔다가 돌아오면 다시 스크롤 시작
         autoScrollStart();

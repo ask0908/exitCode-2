@@ -270,4 +270,18 @@
     <string name="alert_remove_text_two">정말 뒤로 가시겠어요?</string>
     <string name="assist_method_start">start</string>
 
+    <!-- 마이페이지 -->
+    <string name="login_button_above_textview">로그인하고 더 많은 기능을 만나보세요</string>
+    <string name="go_login">로그인하러 가기</string>
+
+    <!-- 서버에서 받는 에러 문구 -->
+    <string name="not_exist">계정 정보가 존재하지 않습니다.</string>
+    <string name="data_is_empty">data is empty</string>
+    <string name="mypage_logout">로그아웃</string>
+    <string name="mypage_withdraw">탈퇴하기</string>
+    <string name="mypage_push_setting">푸시 알림 설정</string>
+    <string name="mypage_interest">관심사 선택</string>
+    <string name="check_network_error">네트워크 이상이 발생하였습니다\n확인 후 다시 시도하세요</string>
+    <string name="network_error_occured">네트워크 오류!</string>
+
 </resources>
