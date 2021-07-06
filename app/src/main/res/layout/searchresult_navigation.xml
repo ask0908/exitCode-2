@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.navigation.NavigationView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/search_result_drawer"
+    android:layout_width="240dp"
+    android:layout_height="match_parent"
+    android:layout_gravity="end"
+    android:orientation="vertical">
+
+    <!-- 드로어 레이아웃 안에 세로로 접고 펼 수 있는 리사이클러뷰를 둬서 필터 4종을 구현한다 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".1"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/filter_textview"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight=".6"
+                android:fontFamily="@font/notosanskr_medium"
+                android:gravity="center_vertical"
+                android:includeFontPadding="false"
+                android:paddingStart="20dp"
+                android:paddingTop="30dp"
+                android:text="필터" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/expanderRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="right"
+            android:layout_weight=".83"
+            android:orientation="vertical" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".001" />
+
+        <Button
+            android:id="@+id/filter_button"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="14dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginBottom="12dp"
+            android:layout_weight=".075"
+            android:background="@drawable/btn_keyword_selected"
+            android:fontFamily="@font/notosanskr_bold"
+            android:includeFontPadding="false"
+            android:text="필터 적용"
+            android:textColor="@color/colorMainWhite" />
+
+    </LinearLayout>
+
+
+</com.google.android.material.navigation.NavigationView>

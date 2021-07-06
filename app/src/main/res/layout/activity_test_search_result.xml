@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".test.TestSearchResultActivity">
+    tools:context=".test.TestSearchResultActivity"
+    android:id="@+id/search_drawerlayout">
+
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -14,76 +16,79 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <com.google.android.material.navigation.NavigationView
-                android:id="@+id/search_result_drawer"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:visibility="gone"
-                app:layout_constraintWidth_percent=".5"
-                app:layout_constraintHeight_percent="1"
-                app:layout_constraintHorizontal_bias="1"
-                tools:openDrawer="end"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
+<!--            <com.google.android.material.navigation.NavigationView-->
+<!--                android:id="@+id/search_result_drawer"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="0dp"-->
+<!--                app:layout_constraintWidth_percent=".5"-->
+<!--                app:layout_constraintHeight_percent="1"-->
+<!--                app:layout_constraintHorizontal_bias="1"-->
+<!--                android:visibility="gone"-->
+<!--                tools:openDrawer="end"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent">-->
 
-                <!-- 드로어 레이아웃 안에 세로로 접고 펼 수 있는 리사이클러뷰를 둬서 필터 4종을 구현한다 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:weightSum="1"
-                    android:orientation="vertical">
+<!--                &lt;!&ndash; 드로어 레이아웃 안에 세로로 접고 펼 수 있는 리사이클러뷰를 둬서 필터 4종을 구현한다 &ndash;&gt;-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:weightSum="1"-->
+<!--                    android:orientation="vertical">-->
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight=".1"
-                        android:weightSum="1"
-                        android:orientation="horizontal">
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="0dp"-->
+<!--                        android:layout_weight=".1"-->
+<!--                        android:weightSum="1"-->
+<!--                        android:orientation="horizontal">-->
 
-                        <TextView
-                            android:id="@+id/filter_textview"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight=".6"
-                            android:text="필터"
-                            android:paddingStart="20dp"
-                            android:paddingTop="30dp"
-                            android:gravity="center_vertical"/>
+<!--                        <TextView-->
+<!--                            android:id="@+id/filter_textview"-->
+<!--                            android:layout_width="0dp"-->
+<!--                            android:layout_height="match_parent"-->
+<!--                            android:layout_weight=".6"-->
+<!--                            android:text="필터"-->
+<!--                            android:paddingStart="20dp"-->
+<!--                            android:paddingTop="30dp"-->
+<!--                            android:gravity="center_vertical"-->
+<!--                            android:fontFamily="@font/notosanskr_medium"-->
+<!--                            android:includeFontPadding="false"/>-->
 
-                    </LinearLayout>
+<!--                    </LinearLayout>-->
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/expanderRecyclerView"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight=".83"
-                        android:layout_gravity="right"
-                        android:orientation="vertical"/>
+<!--                    <androidx.recyclerview.widget.RecyclerView-->
+<!--                        android:id="@+id/expanderRecyclerView"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="0dp"-->
+<!--                        android:layout_weight=".83"-->
+<!--                        android:layout_gravity="right"-->
+<!--                        android:orientation="vertical"/>-->
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight=".001"/>
+<!--                    <View-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="0dp"-->
+<!--                        android:layout_weight=".001"/>-->
 
-                    <Button
-                        android:id="@+id/filter_button"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight=".075"
-                        android:layout_marginTop="12dp"
-                        android:layout_marginBottom="12dp"
-                        android:layout_marginStart="14dp"
-                        android:layout_marginEnd="14dp"
-                        android:fontFamily="@font/jalnan"
-                        android:background="@drawable/btn_keyword_selected"
-                        android:text="필터 적용"
-                        android:textColor="@color/colorMainWhite"/>
+<!--                    <Button-->
+<!--                        android:id="@+id/filter_button"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="0dp"-->
+<!--                        android:layout_weight=".075"-->
+<!--                        android:layout_marginTop="12dp"-->
+<!--                        android:layout_marginBottom="12dp"-->
+<!--                        android:layout_marginStart="14dp"-->
+<!--                        android:layout_marginEnd="14dp"-->
+<!--                        android:fontFamily="@font/notosanskr_bold"-->
+<!--                        android:includeFontPadding="false"-->
+<!--                        android:background="@drawable/btn_keyword_selected"-->
+<!--                        android:text="필터 적용"-->
+<!--                        android:textColor="@color/colorMainWhite"/>-->
 
-                </LinearLayout>
+<!--                </LinearLayout>-->
 
-            </com.google.android.material.navigation.NavigationView>
+<!--            </com.google.android.material.navigation.NavigationView>-->
 
             <!-- 검색창 있는 상단 레이아웃 -->
 
@@ -103,11 +108,55 @@
                 app:layout_constraintVertical_bias="0.0"
                 app:layout_constraintWidth_percent="1">
 
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/result_tag_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHeight_percent=".4"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias=".28"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/result_tag_backimage"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:src="@drawable/back_arrow"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintHorizontal_bias=".04"
+                        app:layout_constraintWidth_percent=".1"
+                        app:layout_constraintHeight_percent="0.9"/>
+
+                    <TextView
+                        android:id="@+id/result_tag_textview"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintWidth_percent=".7"
+                        app:layout_constraintHeight_percent=".75"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:gravity="center"
+                        tools:text="#노인"
+                        android:textColor="@color/colorMainWhite"
+                        android:fontFamily="@font/notosanskr_bold"
+                        android:includeFontPadding="false"
+                        android:autoSizeTextType="uniform"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
                 <EditText
                     android:id="@+id/search_result_edittext"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_margin="10dp"
                     android:background="@drawable/renewal_search_edittext"
                     android:drawableEnd="@drawable/edittext_end_pink"
                     android:imeOptions="actionSearch"
@@ -119,8 +168,9 @@
                     app:layout_constraintHeight_percent=".4"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias=".2"
-                    app:layout_constraintWidth_percent=".85" />
+                    app:layout_constraintVertical_bias=".28"
+                    app:layout_constraintWidth_percent=".85"
+                    android:visibility="visible"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -144,7 +194,7 @@
                     android:layout_height="0dp"
                     android:orientation="horizontal"
                     app:layout_constraintWidth_percent=".9"
-                    app:layout_constraintHeight_percent=".064"
+                    app:layout_constraintHeight_percent=".068"
                     android:weightSum="1"
                     app:layout_constraintVertical_bias=".02"
                     app:layout_constraintStart_toStartOf="parent"
@@ -169,13 +219,11 @@
                         android:id="@+id/search_result_filter"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:paddingTop="4dp"
-                        android:paddingBottom="4dp"
                         android:background="@drawable/search_pink_radius"
-                        android:layout_weight=".25"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="10dp"
-                        android:orientation="horizontal">
+                        android:layout_weight=".24"
+                        android:orientation="horizontal"
+                        android:layout_gravity="center"
+                        tools:padding="5dp">
 
                         <ImageView
                             android:id="@+id/filter_layout_image"
@@ -183,26 +231,26 @@
                             android:layout_height="0dp"
                             app:layout_constraintWidth_percent="0.3"
                             app:layout_constraintHeight_percent="0.65"
-                            app:layout_constraintHorizontal_bias=".1"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            android:src="@drawable/search_filter_pink" />
+                            app:layout_constraintRight_toLeftOf="@+id/filter_layout_text"
+                            android:src="@drawable/search_filter_pink"/>
 
                         <TextView
                             android:id="@+id/filter_layout_text"
                             android:layout_width="0dp"
                             android:layout_height="0dp"
                             app:layout_constraintWidth_percent=".5"
-                            app:layout_constraintHorizontal_bias=".93"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHeight_percent=".95"
+                            app:layout_constraintRight_toRightOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintLeft_toRightOf="@+id/filter_layout_image"
+                            android:autoSizeTextType="uniform"
                             android:text="필터"
-                            android:textColor="@color/layout_background_start_gradation"
-                            android:gravity="start|center"
+                            android:textColor="#E66881"
+                            android:gravity="center"
                             android:fontFamily="@font/notosanskr_bold"
                             android:includeFontPadding="false"/>
 
@@ -235,12 +283,12 @@
                     android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHeight_percent=".86"
+                    app:layout_constraintHeight_percent=".88"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/result_filter_layout"
-                    app:layout_constraintVertical_bias="0.282"
-                    app:layout_constraintWidth_percent="1" />
+                    app:layout_constraintVertical_bias="0.15"
+                    app:layout_constraintWidth_percent="1"/>
 
                 <ImageView
                     android:id="@+id/search_result_no_image"
@@ -286,5 +334,9 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </FrameLayout>
+
+    <!-- 드러우 레이아웃을 액티비티에 포함시킨다 -->
+    <!-- 드러우 레이아웃이 맨 마지막에 선언 되어야지 드로우뷰를 정상적으로 작동 시킬 수 있다 -->
+    <include layout="@layout/searchresult_navigation"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>

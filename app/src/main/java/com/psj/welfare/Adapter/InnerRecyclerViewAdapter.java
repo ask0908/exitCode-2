@@ -17,7 +17,7 @@ import java.util.List;
 
 public class InnerRecyclerViewAdapter extends RecyclerView.Adapter<InnerRecyclerViewAdapter.ViewHolder>
 {
-    private final String TAG = InnerRecyclerViewAdapter.class.getSimpleName();
+    public final String TAG = InnerRecyclerViewAdapter.class.getSimpleName();
 
     public ArrayList<String> nameList;  // 모든 값이 필터 구분 없이 들어있는 리스트
     public static ArrayList<String> mCategoryList = new ArrayList<>();
@@ -29,6 +29,7 @@ public class InnerRecyclerViewAdapter extends RecyclerView.Adapter<InnerRecycler
     // 액티비티에서 어댑터 안의 리스트에 들어간 아이템을 가져올 때 쓰는 메서드
     public static String getAllValues()
     {
+
         StringBuilder categoryBuilder = new StringBuilder();
         StringBuilder localBuilder = new StringBuilder();
         StringBuilder provideTypeBuilder = new StringBuilder();
@@ -96,7 +97,14 @@ public class InnerRecyclerViewAdapter extends RecyclerView.Adapter<InnerRecycler
             lastProvideType = null;
         }
 
-        Log.e("provideTypeBuilder",provideTypeBuilder.toString());
+
+        //한번 호출 하면 값 초기화 해줘야 한다
+        mCategoryList.clear();
+        mLocalList.clear();
+        mProvideTypeList.clear();
+        mAgeList.clear();
+
+
         return lastCategory + "zz" + lastLocal + "zz" + lastAge + "zz" + lastProvideType;
     }
 
@@ -104,17 +112,6 @@ public class InnerRecyclerViewAdapter extends RecyclerView.Adapter<InnerRecycler
     {
         this.nameList = nameList;
         this.list = list;
-
-
-//        Log.e(TAG,"------------------7777777-------------------");
-//        for (int i = 0; i < nameList.size(); i++){
-//            Log.e(TAG,"nameList" + nameList.get(i).toString());
-//        }
-//
-//        for (int i = 0; i < list.size(); i++){
-//            Log.e(TAG,"list" + list.get(i).toString());
-//        }
-
     }
 
     @NonNull
@@ -128,7 +125,14 @@ public class InnerRecyclerViewAdapter extends RecyclerView.Adapter<InnerRecycler
     @Override
     public void onBindViewHolder(ViewHolder holder, int position)
     {
+
 //        holder.checkBox.setTag(position);
+        for (int i = 0; i < position; i++){
+            Log.e(TAG,"체크박스 " + position + " : " + holder.checkBox.isChecked());
+        }
+
+
+
         holder.checkBox.setText(nameList.get(position));
         holder.checkBox.setOnClickListener(v -> {
             // 체크박스 체크 값을 가져와서

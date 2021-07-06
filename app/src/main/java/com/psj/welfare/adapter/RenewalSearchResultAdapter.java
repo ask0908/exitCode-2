@@ -67,7 +67,7 @@ public class RenewalSearchResultAdapter extends RecyclerView.Adapter<RenewalSear
             SearchResultItem item = list.get(position);
             holder.search_result_name.setText(item.getWelf_name());
             holder.search_result_views.setText("View " + item.getWelf_count());
-            if (item.getWelf_tag().contains("-"))
+            if (item.getWelf_tag().contains("-")) //태그가 두개 이상
             {
                 String before = item.getWelf_tag().replace(" ", "");
                 String str = "#" + before;
@@ -76,6 +76,8 @@ public class RenewalSearchResultAdapter extends RecyclerView.Adapter<RenewalSear
                 String s2 = s1.replace("- ", " #");
                 String s3 = s2.replace(" - ", " #");
                 holder.search_result_subject.setText(s3);
+            } else if(!item.getWelf_tag().equals("")) { //태그가 한개라면
+                holder.search_result_subject.setText("#" + item.getWelf_tag());
             }
         }
         else

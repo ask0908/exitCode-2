@@ -29,6 +29,9 @@ public class SearchViewModel extends AndroidViewModel
 
     DBOpenHelper helper;
 
+    Cursor cursor;
+    String session;
+
     public SearchViewModel(@NonNull Application application)
     {
         super(application);
@@ -37,21 +40,11 @@ public class SearchViewModel extends AndroidViewModel
     // 검색
     public MutableLiveData<String> renewalSearchKeyword(String keyword, String page, String category, String local, String age, String provideType)
     {
-        apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
-        sharedPreferences = getApplication().getApplicationContext().getSharedPreferences("app_pref", 0);
-        helper = new DBOpenHelper(getApplication().getApplicationContext());
-        helper.openDatabase();
-        helper.create();
+        Log.e(TAG,"333");
 
-        Cursor cursor = helper.selectColumns();
-        if (cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-            }
-        }
-        String session = sharedPreferences.getString("sessionId", "");
+        //로그인 토큰 가져오기
+        getlogin_token();
+
 
         final MutableLiveData<String> data = new MutableLiveData<>();
         apiInterface.renewalKeywordSearch(keyword, page, sqlite_token, session, category, local, age, provideType, "search")
@@ -81,12 +74,17 @@ public class SearchViewModel extends AndroidViewModel
 
 
     // 추천 태그 검색 메서드
-    public MutableLiveData<String> searchRecommendTag(String keyword, String page)
+    public MutableLiveData<String> searchRecommendTag(String keyword, String page, String category, String local, String age, String provideType)
     {
-//        Log.e(TAG,"type : " + type);
+        Log.e(TAG,"000");
+
+        //로그인 토큰 가져오기
+        getlogin_token();
+
+
         apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
         final MutableLiveData<String> data = new MutableLiveData<>();
-        apiInterface.searchRecommendTag(keyword, page, "tag")
+        apiInterface.searchRecommendTag(keyword, page, sqlite_token, session, category, local, age, provideType, "tag")
                 .enqueue(new Callback<String>()
                 {
                     @Override
@@ -111,4 +109,22 @@ public class SearchViewModel extends AndroidViewModel
         return data;
     }
 
+    //토큰 값 가져오기
+    public void getlogin_token(){
+        apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
+        sharedPreferences = getApplication().getApplicationContext().getSharedPreferences("app_pref", 0);
+        helper = new DBOpenHelper(getApplication().getApplicationContext());
+        helper.openDatabase();
+        helper.create();
+
+        cursor = helper.selectColumns();
+        if (cursor != null)
+        {
+            while (cursor.moveToNext())
+            {
+                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+            }
+        }
+        session = sharedPreferences.getString("sessionId", "");
+    }
 }

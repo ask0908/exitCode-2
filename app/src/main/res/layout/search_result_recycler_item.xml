@@ -34,7 +34,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="저소득 재가노인 식사 및 빝반찬 배달 지원"/>
+            tools:text="저소득 재가노인 식사 및 밑반찬 배달 지원"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bottom_tag_layout"
@@ -55,6 +55,8 @@
                 android:fontFamily="@font/notosanskr_medium"
                 android:includeFontPadding="false"
                 android:gravity="center_vertical"
+                android:ellipsize="end"
+                android:maxLines="1"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHeight_percent=".215"
@@ -62,8 +64,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias=".8"
-                app:layout_constraintWidth_percent=".6"
-                tools:text="#영유아 #장애인 #군인/보훈대상자" />
+                app:layout_constraintWidth_percent=".75"
+                tools:text="#영유아 #장애인 #군인/보훈대상자 " />
 
             <TextView
                 android:id="@+id/search_result_views"
