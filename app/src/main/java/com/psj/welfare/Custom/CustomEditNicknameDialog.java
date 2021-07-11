@@ -13,7 +13,6 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -21,6 +20,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 
+import com.orhanobut.logger.Logger;
 import com.psj.welfare.R;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
@@ -95,18 +95,15 @@ public class CustomEditNicknameDialog
                     spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#CC0033")), 0, spannableString.length(),
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     binding.goodOrBadTextview.setText(spannableString);
-                    binding.goodOrBadTextview.setVisibility(View.VISIBLE);
                 }
                 else
                 {
-                    binding.goodOrBadTextview.setVisibility(View.GONE);
                     duplicationCheck(binding.editNicknameEdittext.getText().toString(), "check");
                     dialogListener.onDuplicatedCheck(!isDuplicated);
                     SpannableString spannableString = new SpannableString("사용할 수 있는 닉네임이에요");
                     spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#99FF33")), 0, spannableString.length(),
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     binding.goodOrBadTextview.setText(spannableString);
-                    binding.goodOrBadTextview.setVisibility(View.VISIBLE);
                 }
             });
 
@@ -121,9 +118,9 @@ public class CustomEditNicknameDialog
                 // 이모티콘, 특수문자 들어왔는지 확인
                 if (unicodeOutliers.matcher(input).matches())
                 {
-                    Log.e(TAG, "이모티콘이 입력됐어요");
                     cannotUseThis();
                 }
+
                 // 닉네임 변경 버튼을 누르면 다이얼로그에서 프래그먼트로 값을 넘긴다
                 if (TextUtils.isEmpty(input))
                 {
@@ -178,7 +175,6 @@ public class CustomEditNicknameDialog
         spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#CC0033")), 0, spannableString.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         binding.goodOrBadTextview.setText(spannableString);
-        binding.goodOrBadTextview.setVisibility(View.VISIBLE);
     }
 
     // 닉네임 중복 검사
@@ -194,7 +190,7 @@ public class CustomEditNicknameDialog
         }
         ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
         Call<String> call = apiInterface.editNickname(sqlite_token, nickname, type);
-        Log.e(TAG, "token : " + sqlite_token + ", 변경할 닉네임 : " + nickname + ", type : " + type);
+        Logger.d("token : " + sqlite_token + ", 변경할 닉네임 : " + nickname + ", type : " + type);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -203,19 +199,19 @@ public class CustomEditNicknameDialog
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-                    Log.e(TAG, "닉네임 중복 확인 결과 : " + result);
+                    Logger.t("닉네임 중복 확인 결과 : ").json(result);
                     duplicateParsing(result);
                 }
                 else
                 {
-                    Log.e(TAG, "닉네임 중복 확인 실패 : " + response.body());
+                    Logger.d("닉네임 중복 확인 실패 : " + response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
             {
-                Log.e(TAG, "닉네임 중복 확인 에러 : " + t.getMessage());
+                Logger.d("닉네임 중복 확인 에러 : " + t.getMessage());
             }
         });
     }
@@ -234,13 +230,11 @@ public class CustomEditNicknameDialog
         isDuplicated = !message.equals("사용 가능한 닉네임 입니다.");
         if (message.equals("중복된 닉네임 입니다."))
         {
-            binding.goodOrBadTextview.setText("");
             SpannableString spannableString = new SpannableString("다른 사용자가 이미 사용중이에요");
-            spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#CC0033")), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#CC0033")), 0, spannableString.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             binding.goodOrBadTextview.setText(spannableString);
-            binding.goodOrBadTextview.setVisibility(View.VISIBLE);
         }
-//        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
 }

@@ -22,6 +22,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,UnusedAttribute">
+        <activity android:name=".activity.AppMainTabActivity"></activity>
         <activity android:name=".BannerDetail" />
         <activity android:name=".activity.WithdrawActivity" />
         <activity android:name=".activity.ChooseSecondInterestActivity" />
@@ -33,7 +34,15 @@
         <activity android:name=".DetailReviewWrite" />
         <activity android:name=".TutorialResult" />
         <activity android:name=".TutorialCategory" />
-        <activity android:name=".TutorialWelcome" />
+        <activity android:name=".TutorialWelcome">
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
+        </activity>
         <activity android:name=".DetailTabLayoutActivity" />
         <activity android:name=".test.TestMoreViewActivity" />
         <activity
@@ -104,6 +113,9 @@
                 android:name="com.google.firebase.components:com.google.firebase.iid.Registrar"
                 android:value="com.google.firebase.components.ComponentRegistrar" />
         </service>
+        <service
+            android:name=".util.UnCatchTaskService"
+            android:exported="false" />
     </application>
 
 </manifest>

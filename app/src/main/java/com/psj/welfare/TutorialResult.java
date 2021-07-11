@@ -2,6 +2,7 @@ package com.psj.welfare;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
+import com.orhanobut.logger.Logger;
 import com.psj.welfare.activity.MainTabLayoutActivity;
 
 import org.json.JSONArray;
@@ -35,7 +37,8 @@ public class TutorialResult extends AppCompatActivity {
     private TextView BenefitTag1, BenefitTag2, BenefitTag3; //혜택태그
     private TextView BenefitText; //혜택 설명 텍스트
 
-
+    SharedPreferences sharedPreferences;
+    String force_stop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +54,10 @@ public class TutorialResult extends AppCompatActivity {
         BenefitTag3 = findViewById(R.id.BenefitTag3); //혜택태그3
 
         BenefitText = findViewById(R.id.BenefitText); //혜택 설명 텍스트
+
+        sharedPreferences = getSharedPreferences("app_pref", 0);
+        force_stop = sharedPreferences.getString("force_stopped", "");
+        Logger.d("강제종료 값 확인 : " + force_stop);
 
         //혜택 데이터 가져오기
         LodingBenefit();

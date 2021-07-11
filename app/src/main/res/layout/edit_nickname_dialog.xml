@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable
             name="editNicknameDialog"
             type="com.psj.welfare.custom.CustomEditNicknameDialog" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/edit_nickname_dialog_radius"
         android:backgroundTint="@color/colorMainWhite"
-        android:orientation="vertical"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/edit_nickname_textview"
@@ -100,7 +100,7 @@
             android:layout_marginStart="35dp"
             android:layout_marginTop="10dp"
             android:gravity="center_vertical"
-            android:text="문자/숫자만 가능 (2~10자리)"/>
+            android:text="문자/숫자만 가능 (2~10자리)" />
 
         <LinearLayout
             android:id="@+id/edit_nickname_button_layout"

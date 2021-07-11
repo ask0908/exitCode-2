@@ -1,5 +1,7 @@
 package com.psj.welfare;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -20,8 +22,10 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 
+import com.orhanobut.logger.Logger;
 import com.psj.welfare.activity.MainTabLayoutActivity;
 import com.psj.welfare.util.DBOpenHelper;
+import com.psj.welfare.util.UnCatchTaskService;
 
 /* 미리보기 첫 화면에서 "알아보기" 버튼 눌러 이동하는 나이, 성별, 지역 선택 화면 */
 public class TutorialCategory extends AppCompatActivity {
@@ -52,6 +56,7 @@ public class TutorialCategory extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial_category);
+        Logger.d("TutorialCategory에서 UnCatchTaskService가 실행중인가? : " + isMyServiceRunning(UnCatchTaskService.class));
 
         sharedPreferences = getSharedPreferences("app_pref", 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -177,11 +182,22 @@ public class TutorialCategory extends AppCompatActivity {
 
     }
 
+    /* 서비스가 실행중인지 확인해서 T/F를 리턴하는 메서드 */
+    private boolean isMyServiceRunning(Class<?> serviceClass)
+    {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))
+        {
+            if (serviceClass.getName().equals(service.service.getClassName()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     public void onBackPressed() {
-//        super.onBackPressed();
-
         AlertDialog.Builder TutorialDialog = new AlertDialog.Builder(TutorialCategory.this);
         View dialogview = getLayoutInflater().inflate(R.layout.custom_tutorial_dialog,null); //다이얼로그의 xml뷰 담기
         Button BtbCancle = dialogview.findViewById(R.id.BtbCancle); //취소 버튼
@@ -205,9 +221,9 @@ public class TutorialCategory extends AppCompatActivity {
             Intent intent = new Intent(TutorialCategory.this, MainTabLayoutActivity.class); //CategoryWelcome페이지로 가기
 
             //미리보기 했는지
-            SharedPreferences shared = getSharedPreferences("welf_preview",MODE_PRIVATE);
+            SharedPreferences shared = getSharedPreferences("welf_preview", 0);
             SharedPreferences.Editor editor = shared.edit();
-            editor.putBoolean("being_preview",true); //미리보기 건너뛰기를 했거나 미리보기 화면에 들어갔다면
+            editor.putBoolean("being_preview", true); //미리보기 건너뛰기를 했거나 미리보기 화면에 들어갔다면
             editor.apply();
 
             startActivity(intent);

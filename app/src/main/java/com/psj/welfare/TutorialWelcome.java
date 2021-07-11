@@ -1,5 +1,7 @@
 package com.psj.welfare;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
@@ -13,7 +15,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.orhanobut.logger.Logger;
 import com.psj.welfare.activity.MainTabLayoutActivity;
+import com.psj.welfare.util.UnCatchTaskService;
 
 public class TutorialWelcome extends AppCompatActivity {
 
@@ -26,6 +30,11 @@ public class TutorialWelcome extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial_welcome);
+        /* 강제종료 확인하는 서비스 실행
+         * 보통 앱이 어느 지점에서 강제종료됐는지 확인하려면 먼저 앱의 시작점부터 서비스를 시작해야 한다
+         * 앱의 시작점은 스플래시 화면이지만 스플래시보다 여기부터 서비스를 작동시켜서 확인하는 게 더 낫다고 생각했다 */
+//        startService(new Intent(this, UnCatchTaskService.class));
+        Logger.d("TutorialWelcome에서 UnCatchTaskService가 실행중인가? : " + isMyServiceRunning(UnCatchTaskService.class));
 
         analytics = FirebaseAnalytics.getInstance(this); //firebase 애널리틱스
 
@@ -52,9 +61,9 @@ public class TutorialWelcome extends AppCompatActivity {
             Intent intent = new Intent(TutorialWelcome.this, MainTabLayoutActivity.class);
 
             //미리보기 했는지
-            SharedPreferences shared = getSharedPreferences("welf_preview",MODE_PRIVATE);
-            SharedPreferences.Editor editor = shared.edit();
-            editor.putBoolean("being_preview",true); //미리보기 건너뛰기를 했거나 미리보기 화면에 들어갔다면
+            SharedPreferences sharedPreferences = getSharedPreferences("welf_preview", 0);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("being_preview", true); //미리보기 건너뛰기를 했거나 미리보기 화면에 들어갔다면
             editor.apply();
 
             startActivity(intent);
@@ -75,4 +84,17 @@ public class TutorialWelcome extends AppCompatActivity {
         BtnTutorial.setTextSize(TypedValue.COMPLEX_UNIT_PX,size.x/15);
     }
 
+    /* 서비스가 실행중인지 확인해서 T/F를 리턴하는 메서드 */
+    private boolean isMyServiceRunning(Class<?> serviceClass)
+    {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))
+        {
+            if (serviceClass.getName().equals(service.service.getClassName()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

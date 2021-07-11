@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
+import com.orhanobut.logger.Logger;
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
 import com.psj.welfare.api.ApiClient;
@@ -77,6 +78,10 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
     // 가구 형태, 카테고리 값 담을 ArrayList
     ArrayList<String> category_list, family_list;
 
+    // 강제종료해서 관심사 선택으로 온 건지 구별할 때 사용할 인텐트, 변수
+    Intent force_stopped_intent;
+    int force_stopped_value = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -88,6 +93,9 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
         helper.openDatabase();
         helper.create();
 
+        family = new ArrayList<>();
+        category = new ArrayList<>();
+
         Cursor cursor = helper.selectColumns();
         if (cursor != null)
         {
@@ -97,89 +105,121 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
             }
         }
 
-        // findViewById() 모아놓은 메서드
-        init();
-
-        Intent intent = getIntent();
-        age = (ArrayList<String>) intent.getSerializableExtra("age");
-        area = (ArrayList<String>) intent.getSerializableExtra("area");
-        family = new ArrayList<>();
-        category = new ArrayList<>();
-
-        selectMyInterest();
-
-        ScreenSize screen = new ScreenSize();
-        Point size = screen.getScreenSize(this);
-
-        second_interest_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-        second_select_interest_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 17);
-        household_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
-        category_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
-        choose_complete_button.setTextSize(TypedValue.COMPLEX_UNIT_PX,(float) (size.x*0.055));
-
-        // 가구 형태, 카테고리 버튼 클릭 리스너 모음
-        buttonsClickListener();
-
-        // 선택 완료 버튼
-        choose_complete_button.setOnClickListener(v ->
+        if (getIntent().hasExtra("force_stopped"))
         {
-            // 4개 리스트 안의 값들 사이에 "-"를 붙여서 String으로 만든다
-            // 그 후 api 인자로 넘겨서 관심사 선택 마무리
-            StringBuilder age_builder = new StringBuilder();
-            StringBuilder local_builder = new StringBuilder();
-            StringBuilder household_builder = new StringBuilder();
-            StringBuilder category_builder = new StringBuilder();
+            // findViewById() 모아놓은 메서드
+            init();
 
-            if (age.size() == 0 || area.size() == 0 || family.size() == 0 || category.size() == 0)
+            // 가구 형태, 카테고리 버튼 클릭 리스너 모음
+            buttonsClickListener();
+
+            force_stopped_intent = getIntent();
+            force_stopped_value = force_stopped_intent.getIntExtra("force_stopped", -1);
+            Logger.d("강제종료했다면 오른쪽의 숫자는 404여야 한다 : " + force_stopped_value);
+
+            // 선택 완료 버튼
+            choose_complete_button.setOnClickListener(v ->
             {
-                Toast.makeText(this, "가구 형태와 카테고리 모두 1개라도 선택해 주셔야 해요", Toast.LENGTH_SHORT).show();
+                // 4개 리스트 안의 값들 사이에 "-"를 붙여서 String으로 만든다
+                // 그 후 api 인자로 넘겨서 관심사 선택 마무리
+                StringBuilder age_builder = new StringBuilder();
+                StringBuilder local_builder = new StringBuilder();
+                StringBuilder household_builder = new StringBuilder();
+                StringBuilder category_builder = new StringBuilder();
+
+                Intent intent = getIntent();
+                age = (ArrayList<String>) intent.getSerializableExtra("age");
+                area = (ArrayList<String>) intent.getSerializableExtra("area");
+
+                // findViewById() 모아놓은 메서드
+                init();
+
+                // 가구 형태, 카테고리 버튼 클릭 리스너 모음
+                buttonsClickListener();
+
+                if (age.size() == 0 || area.size() == 0 || family.size() == 0 || category.size() == 0)
+                {
+                    Toast.makeText(this, "가구 형태와 카테고리 모두 1개라도 선택해 주셔야 해요", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    /* 서버로 넘기기 위해 각 4개 리스트 요소 사이에 "-" 추가 */
+                    // 나이
+                    for (String str : age)
+                    {
+                        age_builder.append(str);
+                        age_builder.append("-");
+                    }
+                    send_age = age_builder.toString();
+                    send_age = send_age.substring(0, send_age.length() - 1);
+
+                    // 지역
+                    for (String str : area)
+                    {
+                        local_builder.append(str);
+                        local_builder.append("-");
+                    }
+                    send_local = local_builder.toString();
+                    send_local = send_local.substring(0, send_local.length() - 1);
+
+                    // 가구 형태
+                    for (String str : family)
+                    {
+                        household_builder.append(str);
+                        household_builder.append("-");
+                    }
+                    send_family = household_builder.toString();
+                    send_family = send_family.substring(0, send_family.length() - 1);
+
+                    // 카테고리
+                    for (String str : category)
+                    {
+                        category_builder.append(str);
+                        category_builder.append("-");
+                    }
+                    send_category = category_builder.toString();
+                    send_category = send_category.substring(0, send_category.length() - 1);
+
+                    modifyMyInterest();
+                }
+
+            });
+        }
+        else
+        {
+            Intent intent = getIntent();
+            age = (ArrayList<String>) intent.getSerializableExtra("age");
+            area = (ArrayList<String>) intent.getSerializableExtra("area");
+
+            // findViewById() 모아놓은 메서드
+            init();
+
+            // 가구 형태, 카테고리 버튼 클릭 리스너 모음
+            buttonsClickListener();
+
+            selectMyInterest();
+
+            ScreenSize screen = new ScreenSize();
+            Point size = screen.getScreenSize(this);
+
+            second_interest_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+            second_select_interest_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 17);
+            household_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
+            category_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
+            choose_complete_button.setTextSize(TypedValue.COMPLEX_UNIT_PX,(float) (size.x*0.055));
+        }
+
+        // 뒤로 가기 이미지
+        second_interest_back_image.setOnClickListener(v -> {
+            if (force_stopped_value == 404)
+            {
+                //
             }
             else
             {
-                /* 서버로 넘기기 위해 각 4개 리스트 요소 사이에 "-" 추가 */
-                // 나이
-                for (String str : age)
-                {
-                    age_builder.append(str);
-                    age_builder.append("-");
-                }
-                send_age = age_builder.toString();
-                send_age = send_age.substring(0, send_age.length() - 1);
-
-                // 지역
-                for (String str : area)
-                {
-                    local_builder.append(str);
-                    local_builder.append("-");
-                }
-                send_local = local_builder.toString();
-                send_local = send_local.substring(0, send_local.length() - 1);
-
-                // 가구 형태
-                for (String str : family)
-                {
-                    household_builder.append(str);
-                    household_builder.append("-");
-                }
-                send_family = household_builder.toString();
-                send_family = send_family.substring(0, send_family.length() - 1);
-
-                // 카테고리
-                for (String str : category)
-                {
-                    category_builder.append(str);
-                    category_builder.append("-");
-                }
-                send_category = category_builder.toString();
-                send_category = send_category.substring(0, send_category.length() - 1);
-
-                modifyMyInterest();
+                finish();
             }
-
         });
-
-        // 뒤로 가기 이미지
-        second_interest_back_image.setOnClickListener(v -> finish());
 
     }
 
@@ -227,16 +267,37 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        if (msg != null && !msg.equals(""))
+        // 강제종료한 상태고 여기서 관심사 선택을 완료했다면 저장 버튼을 눌렀을 때 화면을 종료하고 메인 화면으로 이동해야 한다
+        if (force_stopped_value == 404)
         {
-            Toast.makeText(this, "관심사 수정이 완료됐어요", Toast.LENGTH_SHORT).show();
-            ChooseFirstInterestActivity firstInterestActivity = (ChooseFirstInterestActivity) ChooseFirstInterestActivity.activity;
-            firstInterestActivity.finish();
-            finish();
+            // 강제종료한 상태에서 저장 버튼을 눌렀을 때 서버에서 받은 메시지가 있다면
+            if (msg != null && !msg.equals(""))
+            {
+                Intent intent = new Intent(this, MainTabLayoutActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                ChooseFirstInterestActivity firstInterestActivity = (ChooseFirstInterestActivity) ChooseFirstInterestActivity.activity;
+                firstInterestActivity.finish();
+                finish();
+            }
+            else
+            {
+                Toast.makeText(this, "일시적인 오류가 발생했어요. 잠시 후 다시 시도해 주세요", Toast.LENGTH_SHORT).show();
+            }
         }
         else
         {
-            Toast.makeText(this, "일시적인 오류가 발생했어요. 잠시 후 다시 시도해 주세요", Toast.LENGTH_SHORT).show();
+            if (msg != null && !msg.equals(""))
+            {
+                Toast.makeText(this, "관심사 수정이 완료됐어요", Toast.LENGTH_SHORT).show();
+                ChooseFirstInterestActivity firstInterestActivity = (ChooseFirstInterestActivity) ChooseFirstInterestActivity.activity;
+                firstInterestActivity.finish();
+                finish();
+            }
+            else
+            {
+                Toast.makeText(this, "일시적인 오류가 발생했어요. 잠시 후 다시 시도해 주세요", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

@@ -84,7 +84,7 @@ public class SeeMoreBottomAdapter extends RecyclerView.Adapter<SeeMoreBottomAdap
         holder.bottom_result_name.setText(item.getWelf_name());
         // 임신/출산, 다문화 등 태그
         // 구분자를 다른 특수문자로 바꿔서 아이템에 set
-        if (item.getWelf_tag().contains("-"))
+        if (item.getWelf_tag().contains("-"))   // TODO : 대균씨 폰에서 더보기 눌렀을 때 여기서 에러 남
         {
             String before = item.getWelf_tag().replace(" ", "");
             String str = "#" + before;

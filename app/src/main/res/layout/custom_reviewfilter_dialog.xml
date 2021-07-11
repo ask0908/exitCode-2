@@ -61,7 +61,7 @@
         app:layout_constraintWidth_percent="0.88"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/withdraw_title_layout">
+        app:layout_constraintTop_toBottomOf="@+id/reviewfilter_layout">
 
         <LinearLayout
             android:id="@+id/withdraw_radiogroup"

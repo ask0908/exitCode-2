@@ -21,15 +21,15 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.psj.welfare.DetailTabLayoutActivity;
+import com.orhanobut.logger.Logger;
 import com.psj.welfare.R;
+import com.psj.welfare.activity.DetailBenefitActivity;
 import com.psj.welfare.activity.LoginActivity;
 import com.psj.welfare.adapter.PushGatherAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.data.PushGatherItem;
 import com.psj.welfare.util.DBOpenHelper;
-import com.psj.welfare.viewmodel.PushViewModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -68,8 +68,6 @@ public class AllPushFragment extends Fragment
     String sqlite_token;
 
     DBOpenHelper helper;
-
-    PushViewModel pushViewModel;
 
     public AllPushFragment()
     {
@@ -153,19 +151,9 @@ public class AllPushFragment extends Fragment
         helper.openDatabase();
         helper.create();
 
-        Cursor cursor = helper.selectColumns();
-        if (cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-            }
-        }
         String session = sharedPreferences.getString("sessionId", "");
 
-        Log.e(TAG, "token : " + sqlite_token);
-        Log.e(TAG, "세션 : " + session);
-        Log.e(TAG, "type : pushList");
+        Logger.d("token : " + sqlite_token + ",\nsession : " + session + ",\ntype : pushList");
         Call<String> call = apiInterface.getPushData(sqlite_token, session, "pushList");
         call.enqueue(new Callback<String>()
         {
@@ -175,67 +163,29 @@ public class AllPushFragment extends Fragment
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-                    Log.e(TAG, "푸시 결과 : " + result);
+                    Logger.t("푸시 받아온 결과 : ").json(result);
+                    parseGetPush(result);
                 }
                 else
                 {
-                    Log.e(TAG, "푸시 실패 : " + response.body());
+                    Logger.t("푸시 받아오기 실패 : ").json(response.body());
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t)
             {
-                Log.e(TAG, "푸시 에러 : " + t.getMessage());
+                Logger.d("푸시 받아오기 에러 : " + t.getMessage());
             }
         });
-
-//        Call<String> call = apiInterface.getPushData(sqlite_token, session, "pushList")
-//                .enqueue(new Callback<String>()
-//                {
-//                    @Override
-//                    public void onResponse(Call<String> call, Response<String> response)
-//                    {
-//                        if (response.isSuccessful() && response.body() != null)
-//                        {
-//                            String result = response.body();
-//                            Log.e(TAG, "레포지토리에서 받은 푸시값 : " + result);
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<String> call, Throwable t)
-//                    {
-//                        Log.e(TAG, "에러 : " + t.getMessage());
-//                    }
-//                });
-//        pushViewModel = new ViewModelProvider(getActivity()).get(PushViewModel.class);
-//        final Observer<String> pushObserver = new Observer<String>()
-//        {
-//            @Override
-//            public void onChanged(String str)
-//            {
-//                if (str != null)
-//                {
-//                    Log.e(TAG, "서버에서 받은 푸시 목록 : " + str);
-//                    messageParsing(str);
-//                }
-//                else
-//                {
-//                    Log.e(TAG, "str이 null입니다");
-//                }
-//            }
-//        };
-//        pushViewModel.getPushDatas().observe(getActivity(), pushObserver);
     }
 
-    /* 서버에서 받은 값들을 파싱해서 리사이클러뷰에 뿌리는 메서드 */
-    void messageParsing(String response)
+    private void parseGetPush(String result)
     {
         List<PushGatherItem> list = new ArrayList<>();
         try
         {
-            JSONObject jsonObject = new JSONObject(response);
+            JSONObject jsonObject = new JSONObject(result);
             // 알림이 없으면 토스트 알림을 띄우기 위해 상태값 쉐어드에 저장
             if (!jsonObject.getString("Status").equals(""))
             {
@@ -244,6 +194,7 @@ public class AllPushFragment extends Fragment
                 editor.putString("push_status", status);
                 editor.apply();
             }
+            status = jsonObject.getString("Status");
             JSONArray jsonArray = jsonObject.getJSONArray("Message");
             for (int i = 0; i < jsonArray.length(); i++)
             {
@@ -278,11 +229,10 @@ public class AllPushFragment extends Fragment
             welf_local = list.get(position).getWelf_local();
             // 혜택 이름을 뽑고 푸시를 클릭하면 해당 액티비티로 이동하도록 한다
             // 알림 클릭 시 해당 알림의 id와 일치하는 알림 데이터의 수신 상태값을 바꾼다
-            // 이동은 하게 했지만 API에서 welf_id를 주지 않아 혜택 정보가 나오지 않는 현상 있음
             checkUserWatchedPush();
-            Intent intent = new Intent(getActivity(), DetailTabLayoutActivity.class);
+            Intent intent = new Intent(getActivity(), DetailBenefitActivity.class);
             intent.putExtra("name", welf_name);
-            intent.putExtra("welf_id", welf_local);
+            intent.putExtra("welf_local", welf_local);
             startActivity(intent);
         });
         activity_list = adapter.getList();
@@ -292,10 +242,10 @@ public class AllPushFragment extends Fragment
         if (adapter.getItemCount() == 0)
         {
             // 어댑터에 값이 없으면 알림이 없는 것이니 리사이클러뷰를 숨기고 텍스트뷰를 보여준다
-            push_bell_textview.setVisibility(View.VISIBLE);
             push_bell_textview.setText("도착한 혜택 알림이 없어요");
+            push_bell_textview.setVisibility(View.VISIBLE);
             push_bell_image.setVisibility(View.VISIBLE);
-            push_recyclerview.setVisibility(View.VISIBLE);
+            push_recyclerview.setVisibility(View.GONE);
         }
         else
         {
@@ -362,18 +312,18 @@ public class AllPushFragment extends Fragment
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    Log.e(TAG, "알림 클릭 후 수신 알림값 변경 확인 : " + response.body());
+                    Logger.t("알림 클릭 후 수신 알림값 변경 확인 : ").json(response.body());
                 }
                 else
                 {
-                    Log.e(TAG, "수신 알림값 변경 실패 : " + response.body());
+                    Logger.t("수신 알림값 변경 실패 : ").json(response.body());
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t)
             {
-                Log.e(TAG, "에러 : " + t.getMessage());
+                Logger.d("수신 알림값 변경 에러 : " + t.getMessage());
             }
         });
     }

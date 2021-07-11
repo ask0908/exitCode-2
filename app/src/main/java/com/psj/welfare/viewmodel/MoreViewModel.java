@@ -47,7 +47,7 @@ public class MoreViewModel extends AndroidViewModel
                         }
                         else
                         {
-                            Log.e(TAG, "로그인 상태에서 더보기 눌러 데이터 가져오기 실패 : " + response.body());
+                            Log.e(TAG, "로그인 상태에서 더보기 눌러 데이터 가져오기 실패 : " + response.body()); // TODO : 여기서 null 나옴
                         }
                     }
 

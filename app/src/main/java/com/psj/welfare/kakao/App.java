@@ -3,12 +3,19 @@ package com.psj.welfare.kakao;
 import android.app.Application;
 import android.content.Context;
 
+import androidx.annotation.Nullable;
+
 import com.kakao.auth.ApprovalType;
 import com.kakao.auth.AuthType;
 import com.kakao.auth.IApplicationConfig;
 import com.kakao.auth.ISessionConfig;
 import com.kakao.auth.KakaoAdapter;
 import com.kakao.auth.KakaoSDK;
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.BuildConfig;
+import com.orhanobut.logger.FormatStrategy;
+import com.orhanobut.logger.Logger;
+import com.orhanobut.logger.PrettyFormatStrategy;
 
 public class App extends Application
 {
@@ -98,6 +105,20 @@ public class App extends Application
     public void onCreate()
     {
         super.onCreate();
+        /* 여기에 로그가 어떻게 찍혀 나올지 커스텀한 다음 addLogAdapter()를 호출한 다음 액티비티 등에서 Logger.d()를 사용하면 로그가 찍혀나온다
+        * 매니페스트의 <application> 에서 name 속성에 이미 이 클래스가 지정돼 있기 때문에 이런 처리가 가능하다 */
+        FormatStrategy strategy = PrettyFormatStrategy.newBuilder()
+                .tag("혜택모아 :: ")    // 로그 좌측에 찍혀지는 문장 (기본값 : PRETTY__LOGGER)
+                .build();
+        Logger.addLogAdapter(new AndroidLogAdapter(strategy));
+        Logger.addLogAdapter(new AndroidLogAdapter()
+        {
+            @Override
+            public boolean isLoggable(int priority, @Nullable String tag)
+            {
+                return BuildConfig.DEBUG;
+            }
+        });
         instance = this;
 
         KakaoSDK.init(new KakaoSDKAdapter());

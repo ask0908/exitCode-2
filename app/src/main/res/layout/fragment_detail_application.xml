@@ -23,7 +23,6 @@
                 android:gravity="center"
                 app:cardCornerRadius="15dp"
                 app:cardElevation="5dp"
-                app:layout_constraintBottom_toTopOf="@+id/contents_cardview"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
+import com.orhanobut.logger.Logger;
 import com.psj.welfare.DetailTabLayoutActivity;
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
@@ -154,20 +155,20 @@ public class TestMoreViewActivity extends AppCompatActivity
                 if (!gender.equals("") && !age.equals("") && !area.equals(""))
                 {
                     // 로그인 x, 관심사 o인 경우 여기로 이동된다
-                    Log.e(TAG, "비로그인일 때만 여기로 이동하나???");
-                    moreViewWelfareNotLogin(String.valueOf(page), getString(R.string.assist_method_start), gender, age, area);
+                    Logger.d("비로그인으로 들어옴\n페이지 : " + page + ", assist_method : " + getString(R.string.assist_method_all));
+                    getDataFromFormOfSupport(String.valueOf(page), getString(R.string.assist_method_all));
                 }
                 else
                 {
                     // 로그인한 경우
-                    Log.e(TAG, "로그인했을 때만 여기로 이동하나???");
+                    Logger.d("로그인으로 들어왔지만 나이, 성별, 지역이 없음");
                     moreViewWelfareLogin(page, getString(R.string.assist_method_start));
                 }
             }
             // 로그인 했을 때는 else 안으로 빠진다
             else
             {
-                Log.e(TAG, "로그인했을 때만 여기로 이동하나22???");
+                Logger.d("로그인해서 들어왔고 나이, 성별, 지역값 있음\n나이 : " + age + ", 성별 : " + gender + ", 지역 : " + area);
                 moreViewWelfareLogin(page, getString(R.string.assist_method_start));
             }
 
@@ -297,14 +298,14 @@ public class TestMoreViewActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        for (int i = 0; i < list.size(); i++)
-        {
-            Log.e(TAG, "list - getAssist_method : " + list.get(i).getAssist_method());
-            Log.e(TAG, "list - getWelf_count : " + list.get(i).getWelf_count());
-            Log.e(TAG, "list - getWelf_id : " + list.get(i).getWelf_id());
-            Log.e(TAG, "list - getWelf_name : " + list.get(i).getWelf_name());
-            Log.e(TAG, "list - getWelf_tag : " + list.get(i).getWelf_tag());
-        }
+//        for (int i = 0; i < list.size(); i++)
+//        {
+//            Log.e(TAG, "list - getAssist_method : " + list.get(i).getAssist_method());
+//            Log.e(TAG, "list - getWelf_count : " + list.get(i).getWelf_count());
+//            Log.e(TAG, "list - getWelf_id : " + list.get(i).getWelf_id());
+//            Log.e(TAG, "list - getWelf_name : " + list.get(i).getWelf_name());
+//            Log.e(TAG, "list - getWelf_tag : " + list.get(i).getWelf_tag());
+//        }
 
         // 하단 리사이클러뷰에 보여주는 데이터 개수만큼 텍스트뷰에 총 몇개인지 보여준다
         Flowable.just(list.size())
@@ -321,7 +322,7 @@ public class TestMoreViewActivity extends AppCompatActivity
             String assist_method = list.get(pos).getAssist_method();
             String tag = list.get(pos).getWelf_tag();
             String count = list.get(pos).getWelf_count();
-            Log.e(TAG, "하단 리사이클러뷰의 아이템 이름 : " + name + ", 조회수 : " + count + ", id : " + id + ", 태그 : " + tag + ", 지원 형태 : " + assist_method);
+            Logger.d("하단 리사이클러뷰의 아이템 이름 : " + name + ", 조회수 : " + count + ", id : " + id + ", 태그 : " + tag + ", 지원 형태 : " + assist_method);
             Intent intent = new Intent(this, DetailTabLayoutActivity.class);
             intent.putExtra("welf_id", id);
             startActivity(intent);
@@ -388,26 +389,7 @@ public class TestMoreViewActivity extends AppCompatActivity
             // 상단 리사이클러뷰에 보여줄 지원형태들, assist_method_10 안의 데이터 중 assist_method만 보여준다
             for (int i = 0; i < assist_method_array.length(); i++)
             {
-//                JSONObject assist_obj = assist_method_array.getJSONObject(i);
-//                welf_id = assist_obj.getString("welf_id");
-//                welf_name = assist_obj.getString("welf_name");
-//                welf_tag = assist_obj.getString("welf_tag");
-//                welf_count = assist_obj.getString("welf_count");
-//                top_assist_method = assist_obj.getString("assist_method");
-//
-//                MoreViewItem item = new MoreViewItem();
-//                item.setWelf_id(welf_id);
-//                item.setWelf_name(welf_name);
-//                item.setWelf_tag(welf_tag);
-//                item.setWelf_count(welf_count);
-//                item.setAssist_method(top_assist_method);
                 MoreViewItem item = gson.fromJson(assist_method_array.getJSONObject(i).toString(), MoreViewItem.class);
-                /* 아래 로그는 작동한다 */
-//                Log.e(TAG, "item - getAssist_method() : " + item.getAssist_method());
-//                Log.e(TAG, "item - getWelf_name() : " + item.getWelf_name());
-//                Log.e(TAG, "item - getWelf_tag() : " + item.getWelf_tag());
-//                Log.e(TAG, "item - getWelf_id() : " + item.getWelf_id());
-//                Log.e(TAG, "item - getWelf_count() : " + item.getWelf_count());
                 up_list.add(item);
             }
 
@@ -416,18 +398,6 @@ public class TestMoreViewActivity extends AppCompatActivity
             for (int i = 0; i < all_10_array.length(); i++)
             {
                 SeeMoreItem bottom_item = gson.fromJson(all_10_array.getJSONObject(i).toString(), SeeMoreItem.class);
-//                JSONObject all_10_object = all_10_array.getJSONObject(i);
-//                ten_id = all_10_object.getString("welf_id");
-//                ten_name = all_10_object.getString("welf_name");
-//                ten_tag = all_10_object.getString("welf_tag");
-//                ten_assist_method = all_10_object.getString("assist_method");
-//                ten_count = all_10_object.getString("welf_count");
-//
-//                SeeMoreItem bottom_item = new SeeMoreItem();
-//                bottom_item.setWelf_id(ten_id);
-//                bottom_item.setWelf_name(ten_name);
-//                bottom_item.setWelf_tag(ten_tag);
-//                bottom_item.setWelf_count(ten_count);
                 list.add(bottom_item);
             }
 

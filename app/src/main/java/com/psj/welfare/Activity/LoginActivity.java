@@ -264,10 +264,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     /* 카카오 로그인 시 서버로 osType, platform, FCM 토큰값 정보를 보내는 메서드 */
     void sendUserTypeAndPlatform()
     {
-        String email = kakao_email;
-        String os_type = getString(R.string.login_os);
-        String platform = getString(R.string.main_platform);
-
         encode("카카오 로그인 시도");
 
         // 로그인하기 위해 api가 요구하는 매개변수들을 JSON으로 만든다

@@ -123,6 +123,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
                 switch (position)
                 {
                     case 0:
+                        // 홈 프래그먼트로 들어왔을 때 혜택, 유튜브 데이터들을 보여준다
                         String token = sharedPreferences.getString("token", "");
                         userOrderedWelfare(token);
                         break;

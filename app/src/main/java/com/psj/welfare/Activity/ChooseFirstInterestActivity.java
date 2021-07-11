@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
+import com.orhanobut.logger.Logger;
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
 import com.psj.welfare.api.ApiClient;
@@ -74,6 +75,10 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
     String user_age, user_local;
     ArrayList<String> age_list, local_list;
 
+    // 강제종료해서 관심사 선택으로 온 건지 구별할 때 사용할 인텐트, 변수
+    Intent force_stopped_intent;
+    int force_stopped_value = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -81,31 +86,14 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
         setStatusBarGradiant(this);
         setContentView(R.layout.activity_choose_first_interest);
 
-        list = new ArrayList<>();
-
-        helper = new DBOpenHelper(this);
-        helper.openDatabase();
-        helper.create();
-
-        Cursor cursor = helper.selectColumns();
-        if (cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-            }
-        }
+        // findViewById() 모아놓은 메서드
+        init();
+        buttonsClickListener();
 
         activity = ChooseFirstInterestActivity.this;
 
-        // findViewById() 모아놓은 메서드
-        init();
-
         age = new ArrayList<>();
         area = new ArrayList<>();
-
-        // 서버에 저장된 내 관심사 조회
-        selectMyInterest();
 
         ScreenSize screen = new ScreenSize();
         Point size = screen.getScreenSize(this);
@@ -114,41 +102,95 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
         first_interest_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
         age_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
         area_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
-        go_second_interest_btn.setTextSize(TypedValue.COMPLEX_UNIT_PX,(float) (size.x*0.055)); //버튼 텍스트 크기
+        go_second_interest_btn.setTextSize(TypedValue.COMPLEX_UNIT_PX,(float) (size.x * 0.055));
 
-        buttonsClickListener();
-
-        /* 버튼 클릭 시 테두리와 글자 색이 바뀌고 해당 값이 변수에 저장돼야 한다
-         * 나이대, 지역에서 여러 값을 선택하면 값들 사이에 "-"를 붙인다 -> 다음 버튼 누르면 리스트에 저장되게 하자 */
-        go_second_interest_btn.setOnClickListener(v ->
+        if (getIntent().hasExtra("force_stopped"))
         {
-            if (age.size() == 0 || area.size() == 0)
-            {
-                // 나이, 지역 중 아무것도 선택하지 않았으면 선택하도록 유도
-                Toast.makeText(activity, "나이와 지역 모두 1개라도 선택해 주셔야 해요", Toast.LENGTH_SHORT).show();
-            }
-            else
-            {
-                Intent intent = new Intent(this, ChooseSecondInterestActivity.class);
-                intent.putStringArrayListExtra("age", age);
-                intent.putStringArrayListExtra("area", area);
-                startActivity(intent);
-            }
-        });
+            force_stopped_intent = getIntent();
+            force_stopped_value = force_stopped_intent.getIntExtra("force_stopped", -1);
+            Logger.d("강제종료했다면 오른쪽의 숫자는 404여야 한다 : " + force_stopped_value);
 
-        // 뒤로가기 이미지 클릭 시
-        first_interest_back_image.setOnClickListener(v ->
+            // 다음 버튼
+            go_second_interest_btn.setOnClickListener(v ->
+            {
+                if (age.size() == 0 || area.size() == 0)
+                {
+                    // 나이, 지역 중 아무것도 선택하지 않았으면 선택하도록 유도
+                    Toast.makeText(activity, "나이와 지역 모두 1개라도 선택해 주셔야 해요", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Intent intent = new Intent(this, ChooseSecondInterestActivity.class);
+                    intent.putStringArrayListExtra("age", age);
+                    intent.putStringArrayListExtra("area", area);
+                    intent.putExtra("force_stopped", 404);
+                    Logger.d("나이 : " + age + "\n지역 : " + area + "\n같이 보낼 값 : " + 404);
+                    startActivity(intent);
+                }
+            });
+        }
+        else
         {
-            if (age.size() > 0 || area.size() > 0)
+            list = new ArrayList<>();
+
+            helper = new DBOpenHelper(this);
+            helper.openDatabase();
+            helper.create();
+
+            Cursor cursor = helper.selectColumns();
+            if (cursor != null)
             {
-                CustomInterestDialog dialog = new CustomInterestDialog(this);
-                dialog.showDialog();
+                while (cursor.moveToNext())
+                {
+                    sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+                }
             }
-            else
+
+            // 서버에 저장된 내 관심사 조회
+            selectMyInterest();
+
+            /* 버튼 클릭 시 테두리와 글자 색이 바뀌고 해당 값이 변수에 저장돼야 한다
+             * 나이대, 지역에서 여러 값을 선택하면 값들 사이에 "-"를 붙인다 -> 다음 버튼 누르면 리스트에 저장되게 하자 */
+            // 다음 버튼
+            go_second_interest_btn.setOnClickListener(v ->
             {
-                finish();
-            }
-        });
+                if (age.size() == 0 || area.size() == 0)
+                {
+                    // 나이, 지역 중 아무것도 선택하지 않았으면 선택하도록 유도
+                    Toast.makeText(activity, "나이와 지역 모두 1개라도 선택해 주셔야 해요", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Intent intent = new Intent(this, ChooseSecondInterestActivity.class);
+                    intent.putStringArrayListExtra("age", age);
+                    intent.putStringArrayListExtra("area", area);
+                    Logger.d("나이 : " + age + "\n지역 : " + area);
+                    startActivity(intent);
+                }
+            });
+
+            // 뒤로가기 이미지 클릭 시
+            first_interest_back_image.setOnClickListener(v ->
+            {
+                if (force_stopped_value == 404)
+                {
+                    // 강제종료했다면 뒤로가기 이미지를 눌러도 아무 일도 일어나지 않는다
+                }
+                else
+                {
+                    // 강제종료하지 않았다면 기존 로직을 그대로 실행한다
+                    if (age.size() > 0 || area.size() > 0)
+                    {
+                        CustomInterestDialog dialog = new CustomInterestDialog(this);
+                        dialog.showDialog();
+                    }
+                    else
+                    {
+                        finish();
+                    }
+                }
+            });
+        }
 
     }
 
@@ -1245,14 +1287,22 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-        if (age.size() > 0 || area.size() > 0)
+        if (force_stopped_value == 404)
         {
-            CustomInterestDialog dialog = new CustomInterestDialog(this);
-            dialog.showDialog();
+            // 강제종료했다면 여기로 온다. onBackPressed()는 재정의한 후 아무것도 쓰지 않으면 백버튼을 눌러도 동작하지 않는다다
         }
-        else
+       else
         {
-            finish();
+            // 강제종료하지 않았다면 여기로 올 것이다
+            if (age.size() > 0 || area.size() > 0)
+            {
+                CustomInterestDialog dialog = new CustomInterestDialog(this);
+                dialog.showDialog();
+            }
+            else
+            {
+                finish();
+            }
         }
     }
 }

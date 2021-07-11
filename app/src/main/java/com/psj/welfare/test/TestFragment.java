@@ -32,6 +32,7 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.orhanobut.logger.Logger;
 import com.psj.welfare.AppDatabase;
 import com.psj.welfare.BannerDetail;
 import com.psj.welfare.CategoryDao;
@@ -226,6 +227,7 @@ public class TestFragment extends Fragment
         {
             // 로그인 o, 관심사 o인 경우
             showWelfareAndYoutubeLogin();
+            Logger.d("로그인하고 showWelfareAndYoutubeLogin() 호출됨");
         }
         else
         {
@@ -233,23 +235,31 @@ public class TestFragment extends Fragment
             String gender = sharedPreferences.getString("gender", "");
             String age = sharedPreferences.getString("age_group", "");
             String area = sharedPreferences.getString("user_area", "");
+            Logger.d("로그인하지 않았지만 관심사는 선택함\n성별 : " + gender + ", 연령대 : " + age + ", 지역 : " + area);
             if (gender != null && age != null && area != null)
             {
-                if (!gender.equals("") && !age.equals("") && !area.equals(""))
+                // 성별, 나이, 지역 정보가 다 공백인 경우 ->
+                if (gender.equals("") && age.equals("") && area.equals(""))
                 {
+                    Logger.d("성별, 나이, 지역 정보 없음");
                     // 이 부분도 로그인 x, 관심사 o인 경우 이동된다
-                    showDataForNotLoginAndChoseInterest();
+//                    showDataForNotLoginAndChoseInterest();
                 }
-                else
-                {
-                    // 로그인 x, 관심사 x인 경우
-                    showWelfareAndYoutubeNotLoginAndNotInterest();
-                }
+                showDataForNotLoginAndChoseInterest(age, gender, area);
+                Logger.d(age + ", " + gender + ", " + area + " :: 이 정보로 서버에 혜택, 유튜브 데이터 요청함");
+//                else
+//                {
+//                    Logger.d("로그인하지 않았고 관심사도 없음");
+//                    showDataForNotLoginAndChoseInterest(age, gender, area);
+//                    // 로그인 x, 관심사 x인 경우
+////                    showWelfareAndYoutubeNotLoginAndNotInterest();
+//                }
             }
             // 로그인 x, 관심사 x
             else
             {
-                Log.e(TAG, "로그인 x, 관심사 x인가?");
+                Logger.d("로그인 x, 관심사 x");
+//                Log.e(TAG, "로그인 x, 관심사 x인가?");
                 showWelfareAndYoutubeNotLoginAndNotInterest();
             }
         }
@@ -537,7 +547,7 @@ public class TestFragment extends Fragment
     }
 
     /* 관심사 o, 로그인 x인 유저에게 데이터 가져와 보여주는 메서드 */
-    private void showDataForNotLoginAndChoseInterest()
+    private void showDataForNotLoginAndChoseInterest(String age, String gender, String local)
     {
         final ProgressDialog dialog = new ProgressDialog(getActivity());
         dialog.setMax(100);
@@ -546,9 +556,9 @@ public class TestFragment extends Fragment
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.show();
 
-        String age = sharedPreferences.getString("age_group", "");
-        String gender = sharedPreferences.getString("gender", "");
-        String local = sharedPreferences.getString("user_area", "");
+//        String age = sharedPreferences.getString("age_group", "");
+//        String gender = sharedPreferences.getString("gender", "");
+//        String local = sharedPreferences.getString("user_area", "");
 
         mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         final Observer<String> mainObserver = new Observer<String>()
@@ -622,8 +632,8 @@ public class TestFragment extends Fragment
             {
                 if (str != null)
                 {
+                    Logger.d("로그인 후 가져온 혜택, 유튜브 데이터 : " + str);
                     responseParse(str);
-                    Log.e(TAG, "로그인하고 가져온 혜택, 유튜브 데이터들 : " + str);
                 }
                 else
                 {
@@ -632,7 +642,6 @@ public class TestFragment extends Fragment
                 dialog.dismiss();
             }
         };
-        Log.e(TAG, "sqlite_token : " + sqlite_token);
         mainViewModel.showWelfareAndYoutubeLogin("main", sqlite_token).observe(getActivity(), mainObserver);
     }
 
@@ -642,17 +651,14 @@ public class TestFragment extends Fragment
         {
             JSONObject jsonObject = new JSONObject(result);
             JSONArray jsonArray = jsonObject.getJSONArray("message");
-//            Log.e(TAG,"jsonArray : " + jsonArray);
             for (int i = 0; i < jsonArray.length(); i++)
             {
                 JSONObject inner_json = jsonArray.getJSONObject(i);
 
-//                Log.e(TAG, "data : " + inner_json);
                 /* 유튜브 데이터 */
                 JSONArray arr = inner_json.getJSONArray("youtube");
                 for (int j = 0; j < arr.length(); j++)
                 {
-
                     JSONObject final_json = arr.getJSONObject(j);
                     youtube_id = final_json.getString("id");
                     youtube_title = final_json.getString("title");
@@ -665,9 +671,7 @@ public class TestFragment extends Fragment
                     item.setYoutube_thumbnail(youtube_thumbnail);
                     item.setYoutube_videoId(youtube_videoId);
                     youtube_list.add(item);
-
                 }
-
 
                 /* 메인에 보여줄 3개 혜택 데이터 */
                 JSONArray welf_datas = inner_json.getJSONArray("welf_data");
@@ -699,18 +703,13 @@ public class TestFragment extends Fragment
 //                    keyword_list.add(item);
                     down_list.add(item);
                     downAdapter.notifyDataSetChanged();
-
                 }
-
-
 
                 /* 배너에 보여줄 데이터 */
                 JSONArray banner = inner_json.getJSONArray("banner");
                 bannercount = banner.length(); //서버에서 받은 배너 데이터 갯수
-//                Log.e(TAG,"bannercount : " + bannercount);
                 for (int k = 0; k < banner.length(); k++)
                 {
-//                    Log.e(TAG,"banner : " + banner);
                     JSONObject banner_json = banner.getJSONObject(k);
                     banner_image = banner_json.getString("img_url"); //배너 이미지
                     banner_title = banner_json.getString("banner_text"); //배너 타이틀
@@ -722,9 +721,6 @@ public class TestFragment extends Fragment
                     bannerList.add(bannerData);
                     DefaultList.add(bannerData);
                     bannerAdapter.notifyDataSetChanged();
-
-//                    Log.e(TAG,"banner_image : " + banner_image);
-//                    Log.e(TAG,"banner_title : " + banner_title);
                 }
 
                 //무한 스크롤 처럼 보이도록 트릭을 사용(데이터를 여러개 넣고 그중 가운데 값부터 시작) (이 작업을 하면 배너가 늦게뜸)
@@ -735,158 +731,6 @@ public class TestFragment extends Fragment
         {
             e.printStackTrace();
         }
-
-
-//        /* 유튜브 해시맵에 영상 이름과 videoId 값을 넣어서 인텐트로 넘길 준비를 한다 */
-//        for (int i = 0; i < youtube_list.size(); i++)
-//        {
-//            youtube_hashmap.put(youtube_list.get(i).getYoutube_name(), youtube_list.get(i).getYoutube_videoId());
-//        }
-
-
-//        /* 상단 리사이클러뷰에 들어갈 테마(교육, 공부 등)의 중복처리 로직 시작 */
-//        // ArrayList 안의 데이터를 중복처리하기 위해 먼저 StringBuilder에 넣는다
-//        StringBuilder stringBuilder = new StringBuilder();
-//        StringBuilder welfareNameBuilder = new StringBuilder();
-//        StringBuilder welfareFieldBuilder = new StringBuilder();
-//        StringBuilder welfareTagBuilder = new StringBuilder();
-//
-//        /* 상단 리사이클러뷰에 쓰는 리스트의 크기만큼 반복해서 'OO 지원' 사이사이에 ';;'을 붙인다 */
-//
-//        for (int i = 0; i < keyword_list.size(); i++)
-//        {
-//            stringBuilder.append(keyword_list.get(i).getWelf_field()).append(";;");
-//            welfareTagBuilder.append(keyword_list.get(i).getWelf_tag()).append(";;");
-//        }
-//
-////        Log.e(TAG,"getWelf_field" + stringBuilder.toString());
-////        Log.e(TAG,"getWelf_tag" + welfareTagBuilder.toString());
-//
-//        /* 하단 리사이클러뷰에 쓰는 리스트 크기만큼 반복해 혜택명 사이에 ';;'을 붙인다 */
-//
-//        for (int i = 0; i < down_list.size(); i++)
-//        {
-//            welfareNameBuilder.append(down_list.get(i).getWelf_name()).append(";;");
-//            welfareFieldBuilder.append(down_list.get(i).getWelf_field()).append(";;");
-//        }
-//
-////        Log.e(TAG,"stringBuilder" + stringBuilder.toString());
-//
-//        // ";;"가 섞인 문자열을 구분자로 각각 split
-//        String[] nameArr = welfareNameBuilder.toString().split(";;");
-//        String[] fieldArr = welfareFieldBuilder.toString().split(";;");
-//        String[] tagArr = welfareTagBuilder.toString().split(";;");
-//
-//        // 중복되는 것들을 없애기 위해 HashSet 사용
-//        nameArr = new LinkedHashSet<>(Arrays.asList(nameArr)).toArray(new String[0]);
-//        fieldArr = new HashSet<>(Arrays.asList(fieldArr)).toArray(new String[0]);
-//
-//        keyword_list.clear();
-//
-//        for (int i = 0; i < fieldArr.length; i++)
-//        {
-//            all_item = new MainThreeDataItem();
-//            MainThreeDataItem item = new MainThreeDataItem();
-//            item.setWelf_field(fieldArr[i]);
-//            item.setWelf_name(nameArr[i]);
-//            item.setWelf_tag(tagArr[i]);
-//            all_item.setWelf_field(fieldArr[i]);
-//            all_item.setWelf_name(nameArr[i]);
-//            all_item.setWelf_tag(tagArr[i]);
-//            keyword_list.add(item);
-//            other_list.add(all_item);
-//
-////            Log.e(TAG,"nameArr : " + nameArr[i]);
-////            Log.e(TAG,"tagArr : " + tagArr[i]);
-////            Log.e(TAG,"-------------------------");
-//        }
-//
-//        // 아래 처리를 하지 않으면 이 액티비티로 들어올 때마다 전체 카테고리 개수가 1개씩 증가한다
-//        // keyword_list 크기가 0일 경우 아래에서 에러가 발생한다
-//        if (!keyword_list.get(0).getWelf_field().equals("전체") && !keyword_list.contains("전체"))
-//        {
-//            keyword_list.add(0, new MainThreeDataItem("전체"));
-//        }
-
-
-//        downAdapter = new MainDownAdapter(getActivity(), down_list, downClickListener);
-//        downAdapter.setOnItemClickListener((view, pos) ->
-//        {
-//            Intent intent = new Intent(getActivity(), DetailTabLayoutActivity.class);
-//            intent.putExtra("welf_id", welfare_id);
-//            intent.putExtra("being_id",true);
-//            Log.e(TAG,"pos : " + pos);
-//            Log.e(TAG,"id : " + down_list.get(pos).getWelf_id());
-//            Log.e(TAG,"name : " + down_list.get(pos).getWelf_name());
-//
-//            startActivity(intent);
-//        });
-
-
-//        downAdapter = new MainDownAdapter(getActivity(), other_list, downClickListener);
-//        downAdapter.setOnItemClickListener((view, pos) ->
-//        {
-//            Intent intent = new Intent(getActivity(), DetailTabLayoutActivity.class);
-//            intent.putExtra("welf_id", welfare_id);
-//            intent.putExtra("being_id",true);
-//            startActivity(intent);
-//        });
-//        MainWelfdata.setAdapter(downAdapter);
-
-
-//        // 상단 리사이클러뷰에 붙일 어댑터 초기화
-//        upAdapter = new MainCategoryAdapter(getActivity(), keyword_list, up_clickListener);
-//        upAdapter.setOnItemClickListener(((view, pos) ->
-//        {
-//            /* 상단 리사이클러뷰에서 전체를 클릭한 경우
-//             * 메서드를 한번 더 호출하지 않고 랜덤하게 3개의 데이터를 뽑아서 하단 리사이클러뷰에 데이터를 set해야 한다 */
-//            if (keyword_list.get(pos).getWelf_field().equals("전체"))
-//            {
-//                // 전체 필터를 눌렀을 때는 모든 데이터가 들어있는 리스트를 어댑터 초기화 시 넘겨줌으로써 더보기를 눌러도 모든 데이털르 볼 수 있도록 한다
-//                downAdapter = new MainDownAdapter(getActivity(), down_list, downClickListener);
-//                downAdapter.setOnItemClickListener((view1, pos1) ->
-//                {
-//                    Intent intent = new Intent(getActivity(), DetailTabLayoutActivity.class);
-//                    intent.putExtra("welf_id",welfare_id);
-//                    intent.putExtra("being_id",true);
-//                    startActivity(intent);
-//                });
-//                MainWelfdata.setAdapter(downAdapter);
-//            }
-//            else
-//            {
-//                /* 상단 리사이클러뷰에서 전체 이외의 필터를 클릭한 경우
-//                 * 여기서 선택한 'OO 지원'에 맞는 혜택들로 하단 리사이클러뷰 어댑터 초기화 시 사용되는 리스트를 채워야 한다 */
-//                other_list.clear();
-//
-//                /* 선택한 OO 지원에 속하는 혜택들만을 리사이클러뷰에 보여주는 처리 시작 */
-//                // 현금 지원을 선택했으면 전체 데이터가 담긴 리스트에서 welf_category가 현금 지원인 혜택들을 리스트에 담아서 하단 리사이클러뷰 어댑터에 넣어야 한다
-//                for (int i = 0; i < down_list.size(); i++)
-//                {
-//                    MainThreeDataItem item = new MainThreeDataItem();
-//                    if (down_list.get(i).getWelf_field().contains(keyword_list.get(pos).getWelf_field()))
-//                    {
-//                        item.setWelf_field(keyword_list.get(pos).getWelf_field());
-//                        item.setWelf_name(down_list.get(i).getWelf_name());
-//                        item.setWelf_tag(down_list.get(i).getWelf_tag());
-//                        other_list.add(item);
-//                    }
-//                }
-//
-//                // 하단 리사이클러뷰에 어댑터 set
-//                downAdapter = new MainDownAdapter(getActivity(), other_list, downClickListener);
-//                downAdapter.setOnItemClickListener((view1, pos1) ->
-//                {
-//                    Intent intent = new Intent(getActivity(), DetailTabLayoutActivity.class);
-//                    intent.putExtra("welf_id",welfare_id);
-//                    intent.putExtra("being_id",true);
-//                    startActivity(intent);
-//                });
-//                MainWelfdata.setAdapter(downAdapter);
-//            }
-//        }));
-//        up_recycler.setAdapter(upAdapter);
-
 
         youtubeAdapter = new MainHorizontalYoutubeAdapter(getActivity(), youtube_list, youtubeClickListener);
         youtubeAdapter.setOnItemClickListener(new MainHorizontalYoutubeAdapter.ItemClickListener()
@@ -931,7 +775,6 @@ public class TestFragment extends Fragment
             }
         });
         youtube_video_recyclerview.setAdapter(youtubeAdapter);
-
 
     }
 

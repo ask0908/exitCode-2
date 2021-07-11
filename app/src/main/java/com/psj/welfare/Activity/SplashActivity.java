@@ -32,6 +32,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.installations.FirebaseInstallations;
 import com.google.firebase.installations.InstallationTokenResult;
+import com.orhanobut.logger.Logger;
 import com.psj.welfare.AppDatabase;
 import com.psj.welfare.CategoryDao;
 import com.psj.welfare.CategoryData;
@@ -40,6 +41,7 @@ import com.psj.welfare.TutorialWelcome;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.util.LogUtil;
+import com.psj.welfare.util.UnCatchTaskService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,103 +72,121 @@ public class SplashActivity extends AppCompatActivity
     boolean being_preview = false; //미리보기 했는지
 
     String age = ""; // room데이터가 있는지 확인하기 위해 임시로 데이터를 담는 변수
+    // 쉐어드에 저장된 미리보기의 성별, 나이, 지역 정보
+    String user_age, user_gender, user_area;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        /* 강제종료 확인하는 서비스 실행
-        * 보통 앱이 어느 지점에서 강제종료됐는지 확인하려면 먼저 앱의 시작점부터 서비스를 시작해야 한다
-        * 우리 앱의 시작점은 스플래시 화면이기 때문에 onCreate()가 시작하자마자 startService()를 갈겼다 */
+        setContentView(R.layout.activity_splash);
+        startService(new Intent(this, UnCatchTaskService.class));
+
         sharedPreferences = getSharedPreferences("app_pref", 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        setContentView(R.layout.activity_splash);
-//        startService(new Intent(this, UnCatchTaskService.class));
+        editor.remove("age_group");
+        editor.remove("user_gender");
+        editor.remove("user_area");
+        editor.apply();
 
-        if (sharedPreferences.getBoolean("force_stopped", false))
+        String force_stopped = sharedPreferences.getString("force_stopped", "");
+        user_age = sharedPreferences.getString("age_group", "");
+        user_gender = sharedPreferences.getString("user_gender", "");
+        user_area = sharedPreferences.getString("user_area", "");
+        Logger.d("강제종료값 확인 : " + force_stopped + "\n나이 : " + user_age + "\n성별 : " + user_gender + "\n지역 : " + user_area);
+        if (force_stopped != null)
         {
-            Log.e(TAG, "강제종료한 기록 있음");
-            FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>()
+            if (force_stopped.equals("강제종료됨"))
             {
-                @Override
-                public void onComplete(@NonNull Task<InstanceIdResult> task)
+                // 강제종료한 적이 있고 나이, 성별, 지역값이 없으면 스플래시 이후 계속 관심사 선택 화면으로 보낸다
+                if (user_age.equals("") || user_gender.equals("") || user_area.equals(""))
                 {
-                    if (!task.isSuccessful())
-                    {
-                        Log.e("FCM LOG", "getInstanceId failed", task.getException());
-                        return;
-                    }
-                    token = task.getResult().getToken();
-//                Log.e(TAG, "스플래시 화면에서 받은 fcm token : " + token);
-                    editor.putString("fcm_token", token);
-                    editor.apply();
+                    Logger.d("interestHandler 실행됨!!");
+                    Handler handler = new Handler();
+                    handler.postDelayed(new interestHandler(), 1200);
                 }
-            });
+                else
+                {
+                    // 강제종료한 적이 있고 나이, 성별, 지역값이 있으면 바로 메인으로 보낸다
+                    Logger.d("강제종료한 기록 있고 성별, 나이, 지역값 모두 있음");
+                    FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>()
+                    {
+                        @Override
+                        public void onComplete(@NonNull Task<InstanceIdResult> task)
+                        {
+                            if (!task.isSuccessful())
+                            {
+                                Log.e("FCM LOG", "getInstanceId failed", task.getException());
+                                return;
+                            }
+                            token = task.getResult().getToken();
+//                Log.e(TAG, "스플래시 화면에서 받은 fcm token : " + token);
+                            editor.putString("fcm_token", token);
+                            editor.apply();
+                        }
+                    });
 
-            //room데이터가 있는지 확인
-            beingRoomData();
+                    beingRoomData();
 
-            onNewIntent(intent);
-            // 강제종료하면 여기로 빠진다. 여기서 인텐트 써서 TutorialCategory로 계속 보내자
-//            Intent intent = new Intent(this, TutorialWelcome.class);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//            startActivity(intent);
-//            finish();
-        }
-        else
-        {
-            Log.e(TAG, "강제종료한 기록 없음");
-            // 강제종료한 적이 없으면 여기로 빠진다. 그냥 스플래시 화면에서 진행하는 로직을 여기로 가져오자
-            // 첫 로그인 여부를 구별하기 위한 값을 쉐어드에 저장
-            editor.putString("first_visit", "1");
-            editor.apply();
+                    onNewIntent(intent);
+                }
 
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);         // 상태바(상태표시줄) 글자색 검정색으로 바꾸기
-            getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorMainWhite));    // 상태바(상태표시줄) 배경 흰색으로 설정
+            }
+            else
+            {
+                Log.e(TAG, "강제종료한 기록 없음");
+                // 강제종료한 적이 없으면 여기로 빠진다. 그냥 스플래시 화면에서 진행하는 로직을 여기로 가져오자
+                // 첫 로그인 여부를 구별하기 위한 값을 쉐어드에 저장
+                editor.putString("first_visit", "1");
+                editor.apply();
 
-            //상태표시줄 색상변경
+                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);         // 상태바(상태표시줄) 글자색 검정색으로 바꾸기
+                getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorMainWhite));    // 상태바(상태표시줄) 배경 흰색으로 설정
+
+                //상태표시줄 색상변경
 //        setStatusBarGradiant(SplashActivity.this);
 
-            intent = getIntent();
+                intent = getIntent();
 
-            //미리보기 했는지 여부
-            SharedPreferences shared = getSharedPreferences("welf_preview",MODE_PRIVATE);
-            being_preview = shared.getBoolean("being_preview",false);
+                //미리보기 했는지 여부
+                SharedPreferences shared = getSharedPreferences("welf_preview", 0);
+                being_preview = shared.getBoolean("being_preview",false);
 //        Log.e("being_preview",String.valueOf(being_preview));
 
-            FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>()
-            {
-                @Override
-                public void onComplete(@NonNull Task<InstanceIdResult> task)
+                FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>()
                 {
-                    if (!task.isSuccessful())
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task)
                     {
-                        Log.e("FCM LOG", "getInstanceId failed", task.getException());
-                        return;
-                    }
-                    token = task.getResult().getToken();
+                        if (!task.isSuccessful())
+                        {
+                            Log.e("FCM LOG", "getInstanceId failed", task.getException());
+                            return;
+                        }
+                        token = task.getResult().getToken();
 //                Log.e(TAG, "스플래시 화면에서 받은 fcm token : " + token);
-                    editor.putString("fcm_token", token);
-                    editor.apply();
-                }
-            });
+                        editor.putString("fcm_token", token);
+                        editor.apply();
+                    }
+                });
 
-            /* 아래 코드를 쓰면 토큰이 항상 refresh되지만 이 토큰으로 fcm을 받을 수 있을지? */
-            FirebaseInstallations.getInstance().getToken(true).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>()
-            {
-                @Override
-                public void onComplete(@NonNull Task<InstallationTokenResult> task)
+                /* 아래 코드를 쓰면 토큰이 항상 refresh되지만 이 토큰으로 fcm을 받을 수 있을지? */
+                FirebaseInstallations.getInstance().getToken(true).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>()
                 {
+                    @Override
+                    public void onComplete(@NonNull Task<InstallationTokenResult> task)
+                    {
 //                Log.e(TAG, "task : " + task);
 //                Log.e(TAG, "task.getResult() : " + task.getResult());
 //                Log.e(TAG, "task.getResult().getToken() : " + task.getResult().getToken());
-                }
-            });
+                    }
+                });
 
-            //room데이터가 있는지 확인
-            beingRoomData();
+                //room데이터가 있는지 확인
+                beingRoomData();
 
-            onNewIntent(intent);
+                onNewIntent(intent);
+            }
         }
 
     }
@@ -231,8 +251,9 @@ public class SplashActivity extends AppCompatActivity
 
             if (intent != null && intent.getExtras() != null) //푸시 알림 눌러 실행시켰을 때
             {
-                String aaa = intent.getExtras().getString("push_clicked");
-                if (aaa != null)
+                String push_clicked = intent.getExtras().getString("push_clicked");
+                Logger.d("푸시가 클릭됐는가 : " + push_clicked);
+                if (push_clicked != null)
                 {
                     isPushClicked = true;
                     Handler handler = new Handler();
@@ -310,6 +331,50 @@ public class SplashActivity extends AppCompatActivity
                     startActivity(intent);
                 }
 
+                SplashActivity.this.finish();
+            }
+        }
+    }
+
+    // 미리보기에서 입력한 정보가 없는 채 앱을 켰을 때는 관심사 선택 화면으로 보내서 선택하게 한다
+    // 이 때 관심사 선택 화면에서는 뒤로가기 이미지를 누를 수 없고 백버튼을 눌러도 나갈 수 없게 한다 (관심사 2번 화면에선 관심사 1번 화면으로 이동할 수 있게는 한다)
+    private class interestHandler implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            boolean isConnected = isNetworkConnected(SplashActivity.this);
+            if (!isConnected)
+            {
+                AlertDialog.Builder builder = new AlertDialog.Builder(SplashActivity.this);
+                builder.setMessage("인터넷 연결이 원활하지 않습니다")
+                        .setCancelable(false)
+                        .setPositiveButton("종료", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                finishAffinity();
+                            }
+                        }).show();
+            }
+            else
+            {
+//                if (age.equals(null))
+//                { //room데이터 값이 없다면
+//                    Intent intent = new Intent(SplashActivity.this, TutorialWelcome.class);
+//                    intent.putExtra("push", 100);
+//                    startActivity(intent);
+//                }
+//                else
+//                { //room데이터 값이 있다면
+//                    Intent intent = new Intent(SplashActivity.this, MainTabLayoutActivity.class);
+//                    intent.putExtra("push", 100);
+//                    startActivity(intent);
+//                }
+                Intent intent = new Intent(SplashActivity.this, ChooseFirstInterestActivity.class);
+                intent.putExtra("force_stopped", 404);
+                startActivity(intent);
                 SplashActivity.this.finish();
             }
         }
