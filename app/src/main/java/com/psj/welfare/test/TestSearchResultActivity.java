@@ -56,6 +56,7 @@ import java.util.ArrayList;
 public class TestSearchResultActivity extends AppCompatActivity
 //        implements NavigationView.OnNavigationItemSelectedListener
 {
+
     public final String TAG = this.getClass().getSimpleName();
 
     private ConstraintLayout result_tag_layout; //어떤 태그인지 알려주는 텍스트 레이아웃
@@ -93,7 +94,9 @@ public class TestSearchResultActivity extends AppCompatActivity
 //    NavigationView search_result_drawer;
     //    DrawerLayout search_result_drawer;
     // 오른쪽에서 나오는 드로어블 레이아웃에 먹일 확장 리사이클러뷰
-    RecyclerView expanderRecyclerView;
+    private RecyclerView expanderRecyclerView;
+    private ExpandableRecyclerViewAdapter expandableAdapter;
+
 
     ConstraintLayout search_result_filter;
     private Button filter_button;
@@ -107,10 +110,10 @@ public class TestSearchResultActivity extends AppCompatActivity
     ArrayList<String> categoryList = new ArrayList<>();
     // 지역을 담을 ArrayList
     ArrayList<String> localList = new ArrayList<>();
-    // 지원 형태를 담을 ArrayList
-    ArrayList<String> provideTypeList = new ArrayList<>();
     // 나이대를 담을 ArrayList
     ArrayList<String> ageList = new ArrayList<>();
+    // 지원 형태를 담을 ArrayList
+    ArrayList<String> provideTypeList = new ArrayList<>();
     // 선택한 체크박스 값들을 모두 담을 리스트
     ArrayList<String> childList = new ArrayList<>();
 
@@ -133,8 +136,9 @@ public class TestSearchResultActivity extends AppCompatActivity
     //필터값 담는 stringbuilder + //페이징 하기 위한 데이터
     StringBuilder thema = new StringBuilder();
     StringBuilder local = new StringBuilder();
-    StringBuilder provideType = new StringBuilder();
     StringBuilder age = new StringBuilder();
+    StringBuilder provideType = new StringBuilder();
+
 
     //필터 적용 했는지
     boolean isfilter = false;
@@ -143,6 +147,18 @@ public class TestSearchResultActivity extends AppCompatActivity
     private DrawerLayout drawerLayout;
     //include한 searchresult_navigation.xml 안에 뷰
     private View drawerView;
+    
+    //필터 데이터를 서버로 보낼 데이터를 담을 변수
+    ArrayList<String> category_local = new ArrayList<>(); //지역
+    ArrayList<String> category_age = new ArrayList<>(); //나이
+    ArrayList<String> category_provideType = new ArrayList<>(); //지원방법
+
+    //필터를 선택 했는지 판단하기 위한 병수
+    ArrayList<Boolean> filter_local = new ArrayList<>(); //지역
+    ArrayList<Boolean> filter_age = new ArrayList<>(); //나이
+    ArrayList<Boolean> filter_provideType = new ArrayList<>(); //지원방법
+
+    private ExpandableRecyclerViewAdapter expandablelistAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -225,6 +241,7 @@ public class TestSearchResultActivity extends AppCompatActivity
         });
     }
 
+
     //기본 progressbar 설정
     private void setprogressbar(){
         dialog = new ProgressDialog(TestSearchResultActivity.this);
@@ -232,6 +249,7 @@ public class TestSearchResultActivity extends AppCompatActivity
         dialog.setCancelable(false);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
     }
+
 
     // editText에서 검색되도록 처리
     private void search_welf(){
@@ -242,11 +260,14 @@ public class TestSearchResultActivity extends AppCompatActivity
             {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) //IME_ACTION_SEARCH -> 키보드가 올라왔다는 정보
                 {
-                    // 네비게이션뷰 리사이클러뷰 초기화
-                    ExpandableRecyclerViewAdapter expandableCategoryRecyclerViewAdapter =
-                            new ExpandableRecyclerViewAdapter(TestSearchResultActivity.this, parentList, categoryList, ageList, localList, provideTypeList, childListHolder, childList);
-                    expanderRecyclerView.setLayoutManager(new LinearLayoutManager(TestSearchResultActivity.this));
-                    expanderRecyclerView.setAdapter(expandableCategoryRecyclerViewAdapter);
+                    // 검색 후 네비게이션뷰 필터 초기화
+                    initiateExpander();
+//                    expandableAdapter =
+//                            new ExpandableRecyclerViewAdapter(TestSearchResultActivity.this, parentList, categoryList, ageList, localList, provideTypeList, childListHolder, filter_local, filter_age, filter_provideType);
+//                    expanderRecyclerView.setLayoutManager(new LinearLayoutManager(TestSearchResultActivity.this));
+//                    expanderRecyclerView.setAdapter(expandableAdapter);
+
+
                     //검색 후 네비게이션뷰 안보이도록
                     drawerLayout.closeDrawer(drawerView);
 //                    search_result_drawer.setVisibility(View.GONE);
@@ -291,6 +312,7 @@ public class TestSearchResultActivity extends AppCompatActivity
     }
 
 
+
     // 리사이클러뷰 페이징 처리
     private void recyclerView_paging(){
         // 리사이클러뷰 페이징 처리
@@ -325,20 +347,17 @@ public class TestSearchResultActivity extends AppCompatActivity
                                 progressbar.setVisibility(View.VISIBLE);
                                 current_page = String.valueOf(integer_page);
 
-//                                Log.e(TAG,"type03 : " +  type);
-//                                Log.e(TAG,"isfilter" + isfilter);
-
                                 // 태그 눌렀는지 검색 했는지
                                 if(type.equals("tag")){
                                     if(isfilter){ //필터 적용 했다면
-                                        searchRecommendTag(keyword, current_page, thema.toString(), local.toString(), age.toString(), provideType.toString());
+                                        searchRecommendTag(keyword, current_page, null, local.toString(), age.toString(), provideType.toString());
                                     } else {
                                         searchRecommendTag(keyword, current_page, null, null, null, null);
                                     }
 
                                 } else if (type.equals("search")){
-                                    if(isfilter){
-                                        renewalKeywordSearch(keyword, current_page, thema.toString(), local.toString(), age.toString(), provideType.toString());
+                                    if(isfilter){ //필터 적용 했다면
+                                        renewalKeywordSearch(keyword, current_page, null, local.toString(), age.toString(), provideType.toString());
                                     } else {
                                         renewalKeywordSearch(keyword, current_page, null, null, null, null);
                                     }
@@ -369,9 +388,6 @@ public class TestSearchResultActivity extends AppCompatActivity
             //검색 타입 "filter"
             isfilter = true;
 
-            //필터 적용 누르면 새로 필터를 적용 시킨다(이전에 필터를 적용 했을 때 다시 적용하기 위함)
-            allList.clear();
-
             // 선택한 필터들이 보이는 리사이클러뷰을 VISIBLE로 바꾸고
             // 하단 리사이클러뷰의 머리를 이 리사이클러뷰의 밑으로 연결짓는다
             selected_filter_recyclerview.setVisibility(View.VISIBLE);
@@ -381,64 +397,55 @@ public class TestSearchResultActivity extends AppCompatActivity
             String gainedValues = InnerRecyclerViewAdapter.getAllValues();
             String[] arr = gainedValues.split("zz");
 
-
             //필터 적용 할 때마다 필터값 초기화
-            thema.setLength(0);
             local.setLength(0);
             provideType.setLength(0);
             age.setLength(0);
-
             //InnerRecyclerViewAdapter.getAllValues() 값이 null을 "null"로 받아옴
+
             if(!arr[0].equals("null")){
-                thema.append(arr[0]);
+                local.append(arr[0]);
             }
 
             if(!arr[1].equals("null")){
-                local.append(arr[1]);
+                age.append(arr[1]);
             }
 
             if(!arr[2].equals("null")){
-                age.append(arr[2]);
-            }
-
-            if(!arr[3].equals("null")){
-                provideType.append(arr[3]);
+                provideType.append(arr[2]);
             }
 
             //필터를 하나도 선택하지 않았다면
-            if(arr[0].equals("null") && arr[1].equals("null") && arr[2].equals("null") && arr[3].equals("null")){
+            if( arr[0].equals("null") && arr[1].equals("null") && arr[2].equals("null")){
                 Toast.makeText(TestSearchResultActivity.this,"필터를 선택해 주세요",Toast.LENGTH_SHORT).show();
             } else {
+                //필터 적용 누르면 새로 필터를 적용 시킨다(이전에 필터를 적용 했을 때 다시 적용하기 위함)
+                allList.clear();
 
                 //혜택 데이터 초기화
                 list.clear();
                 // 필터에서 선택한 값들을 토대로 서버에 다시 쿼리
-                if(type.equals("tag")){
-                    searchRecommendTag(keyword, "1", thema.toString(), local.toString(), age.toString(), provideType.toString());
-                } else if(type.equals("search")){
-                    renewalKeywordSearch(keyword, "1", thema.toString(), local.toString(), age.toString(), provideType.toString());
-                }
 
-//                Log.e(TAG,"thema.toString() : " + thema.toString());
-//                Log.e(TAG,"local.toString() : " + local.toString());
-//                Log.e(TAG,"age.toString() : " + age.toString());
-//                Log.e(TAG,"provideType.toString() : " + provideType.toString());
+
+                if(type.equals("tag")){
+                    searchRecommendTag(keyword, "1", null, local.toString(), age.toString(), provideType.toString());
+                } else if(type.equals("search")){
+                    renewalKeywordSearch(keyword, "1", null, local.toString(), age.toString(), provideType.toString());
+                }
 
                 //데이터 리사이클러뷰를 필터리사이클러뷰에 붙인다
                 recyclerview_chainfilter();
 
                 //필터 적용 후 네비게이션뷰 안보이도록
                 drawerLayout.closeDrawer(drawerView);
-//                search_result_drawer.setVisibility(View.GONE);
             }
 
-//            Log.e(TAG,"type05 : " +  type);
 
-            //서버로 보낼 데이터를 담을 변수
-            ArrayList<String> category_thema = new ArrayList<>(); //테마
-            ArrayList<String> category_local = new ArrayList<>(); //지역
-            ArrayList<String> category_provideType = new ArrayList<>(); //지원방법
-            ArrayList<String> category_age = new ArrayList<>(); //나이
+            //새로운 필터값을 적용하기 위해 데이터 초기화
+            //필터값을 초기화 하지 않으면 서버에 연결할 때 데이터를 이전의 값하고 같이 줌
+            category_local.clear();
+            category_provideType.clear();
+            category_age.clear();
 
             //InnerRecyclerViewAdapter 에서 받은 배열 데이터 + '-' 구분자 split 안한 데이터를 split해서 하나하나씩 allList에 담음
             for (int i = 0; i < arr.length; i++){
@@ -447,17 +454,13 @@ public class TestSearchResultActivity extends AppCompatActivity
                     String[] filter_category = arr[i].split("-");
                     if (i == 0) {
                         for (int j = 0; j < filter_category.length; j++) {
-                            category_thema.add(filter_category[j]);
+                            category_local.add(filter_category[j]);
                         }
                     } else if (i == 1) {
                         for (int j = 0; j < filter_category.length; j++) {
-                            category_local.add(filter_category[j]);
-                        }
-                    } else if (i == 2) {
-                        for (int j = 0; j < filter_category.length; j++) {
                             category_age.add(filter_category[j]);
                         }
-                    } else if (i == 3) {
+                    } else if (i == 2) {
                         for (int j = 0; j < filter_category.length; j++) {
                             category_provideType.add(filter_category[j]);
                         }
@@ -471,28 +474,31 @@ public class TestSearchResultActivity extends AppCompatActivity
             }
 
 
-//            String a = "b";
-            //액티비티에서 인터페이스를 만들어서 어댑터에서 구현, 인터페이스
-
-
+            //필터 선택했는지 확인하는 메소드
+            select_filter();
+            expandableAdapter.notifyDataSetChanged();
 
             // 선택한 필터들을 리사이클러뷰에 보여준다
             filter_adapter = new SearchResultHorizontalAdapter(this, allList, filter_clickListener);
-//            // 클릭 리스너 추가 -> 필터를 선택할 때마다 선택한 값들이 삭제되고 남아있는 값들로 다시 서버에 쿼리해야 한다
-//            // TODO : 필터 클릭 시 삭제 후 재쿼리하는 처리 진행 중
+            // 클릭 리스너 추가 -> 필터를 선택할 때마다 선택한 값들이 삭제되고 남아있는 값들로 다시 서버에 쿼리해야 한다
+            // TODO : 필터 클릭 시 삭제 후 재쿼리하는 처리 진행 중
             filter_adapter.setOnItemClickListener(pos ->
             {
+                //InnerRecyclerViewAdapter 안에 있는 선택한 필터를 담은 데이터 초기화
+                InnerRecyclerViewAdapter.resetfilter();
+
                 //페이지 1부터 다시 시작
                 integer_page = 1;
 
-                for (int i = 0; i < category_thema.size(); i++){
-                    if(category_thema.get(i).equals(allList.get(pos))){
-                        category_thema.remove(i);
-                    }
-                }
                 for (int i = 0; i < category_local.size(); i++){
                     if(category_local.get(i).equals(allList.get(pos))){
                         category_local.remove(i);
+                    }
+//                    Log.e(TAG,"category_local : " + category_local.get(i));
+                }
+                for (int i = 0; i < category_age.size(); i++){
+                    if(category_age.get(i).equals(allList.get(pos))){
+                        category_age.remove(i);
                     }
                 }
                 for (int i = 0; i < category_provideType.size(); i++){
@@ -500,25 +506,16 @@ public class TestSearchResultActivity extends AppCompatActivity
                         category_provideType.remove(i);
                     }
                 }
-                for (int i = 0; i < category_age.size(); i++){
-                    if(category_age.get(i).equals(allList.get(pos))){
-                        category_age.remove(i);
-                    }
-                }
+
+
+                //필터 선택했는지 확인하는 메소드
+                select_filter();
+                expandableAdapter.notifyDataSetChanged();
 
                 //초기화 하는 방법중 setLength(0)제일 빠르다고 함
-                thema.setLength(0);
                 local.setLength(0);
                 provideType.setLength(0);
                 age.setLength(0);
-
-                for (int i = 0; i < category_thema.size(); i++){
-                    if((category_thema.size() -1) != i){
-                        thema.append(category_thema.get(i) + "-");
-                    } else {
-                        thema.append(category_thema.get(i));
-                    }
-                }
 
                 for (int i = 0; i < category_local.size(); i++){
                     if((category_local.size() -1) != i){
@@ -552,18 +549,11 @@ public class TestSearchResultActivity extends AppCompatActivity
                 list.clear();
 
 
-//                Log.e(TAG,"thema.toString() : " + thema.toString());
-//                Log.e(TAG,"local.toString() : " + local.toString());
-//                Log.e(TAG,"age.toString() : " + age.toString());
-//                Log.e(TAG,"provideType.toString() : " + provideType.toString());
-
-
-
                 // 필터에서 선택한 값들을 토대로 서버에 다시 쿼리
                 if(type.equals("tag")){
-                    searchRecommendTag(keyword, "1", thema.toString(), local.toString(), age.toString(), provideType.toString());
+                    searchRecommendTag(keyword, "1", null, local.toString(), age.toString(), provideType.toString());
                 } else if(type.equals("search")){
-                    renewalKeywordSearch(keyword, "1", thema.toString(), local.toString(), age.toString(), provideType.toString());
+                    renewalKeywordSearch(keyword, "1", null, local.toString(), age.toString(), provideType.toString());
                 }
 
                 //필터 다 지우면 필터쪽 리사이클러뷰 안보이도록
@@ -625,6 +615,43 @@ public class TestSearchResultActivity extends AppCompatActivity
         result_constraint_Set.applyTo(result_constraint_layout);
     }
 
+    //필터를 선택했는지 여부 확인하는 메소드
+    private void select_filter(){
+        //필터 선택한 값을 초기화 한다
+        filter_local.clear();
+        //필터를 선택했는지 판단하는 로직
+        for (int i = 0; i < localList.size(); i++){
+            filter_local.add(false);
+            for (int j = 0; j < category_local.size(); j++){
+                //필터를 선택했다면 해당 값을 true로 바꿈
+                if(localList.get(i).equals(category_local.get(j))){
+                    filter_local.set(i,true);
+                }
+            }
+        }
+
+        filter_age.clear();
+        for (int i = 0; i < ageList.size(); i++){
+            filter_age.add(false);
+            for (int j = 0; j < category_age.size(); j++){
+                //필터를 선택했다면 해당 값을 true로 바꿈
+                if(ageList.get(i).equals(category_age.get(j))){
+                    filter_age.set(i,true);
+                }
+            }
+        }
+
+        filter_provideType.clear();
+        for (int i = 0; i < provideTypeList.size(); i++){
+            filter_provideType.add(false);
+            for (int j = 0; j < category_provideType.size(); j++){
+                //필터를 선택했다면 해당 값을 true로 바꿈
+                if(provideTypeList.get(i).equals(category_provideType.get(j))){
+                    filter_provideType.set(i,true);
+                }
+            }
+        }
+    }
 
     /* 필터 내용 초기화 */
     private void initiateExpander()
@@ -646,7 +673,7 @@ public class TestSearchResultActivity extends AppCompatActivity
         localList.add("전북");
         localList.add("전남");
         localList.add("제주");
-        childList.addAll(localList);
+//        childList.addAll(localList);
 
         childListHolder.add(localList);
 
@@ -657,7 +684,7 @@ public class TestSearchResultActivity extends AppCompatActivity
         ageList.add("40대");
         ageList.add("50대");
         ageList.add("60대 이상");
-        childList.addAll(ageList);
+//        childList.addAll(ageList);
 
         childListHolder.add(ageList);
 
@@ -676,17 +703,32 @@ public class TestSearchResultActivity extends AppCompatActivity
         provideTypeList.add("일자리 지원");
         provideTypeList.add("융자 지원");
         provideTypeList.add("면제 지원");
-        childList.addAll(provideTypeList);
+//        childList.addAll(provideTypeList);
 
         childListHolder.add(provideTypeList);
 
 
+
+        for (int i = 0; i < localList.size(); i++){
+            filter_local.add(false);
+        }
+
+        for (int i = 0; i < ageList.size(); i++){
+            filter_age.add(false);
+        }
+
+        filter_provideType.clear();
+        for (int i = 0; i < provideTypeList.size(); i++){
+            filter_provideType.add(false);
+        }
+
+        
         // 값이 담긴 리스트들을 어댑터 생성자에 넣어 초기화
         // 어댑터 안에서 값이 들어오는지 확인
-        ExpandableRecyclerViewAdapter expandableCategoryRecyclerViewAdapter =
-                new ExpandableRecyclerViewAdapter(TestSearchResultActivity.this, parentList, categoryList, ageList, localList, provideTypeList, childListHolder, childList);
+       expandableAdapter =
+                new ExpandableRecyclerViewAdapter(TestSearchResultActivity.this, parentList, categoryList, ageList, localList, provideTypeList, childListHolder, filter_local, filter_age, filter_provideType);
         expanderRecyclerView.setLayoutManager(new LinearLayoutManager(TestSearchResultActivity.this));
-        expanderRecyclerView.setAdapter(expandableCategoryRecyclerViewAdapter);
+        expanderRecyclerView.setAdapter(expandableAdapter);
     }
 
 
@@ -775,7 +817,7 @@ public class TestSearchResultActivity extends AppCompatActivity
     @SuppressLint("CheckResult")
     private void responseParsing(String result)
     {
-        Log.e(TAG,"result" + result);
+//        Log.e(TAG,"result" + result);
         try
         {
             JSONObject jsonObject = new JSONObject(result);
@@ -869,33 +911,6 @@ public class TestSearchResultActivity extends AppCompatActivity
         search_result_recyclerview.setAdapter(adapter);
         search_result_recyclerview.getLayoutManager().onRestoreInstanceState(recyclerViewState);
     }
-
-
-//    @Override
-//    public boolean onOptionsItemSelected(@NonNull MenuItem item)
-//    {
-//        Log.e(TAG,"test00002");
-//        switch (item.getItemId())
-//        {
-//            case android.R.id.home:
-//                finish();
-//                return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
-
-//    @Override
-//    public boolean onNavigationItemSelected(@NonNull MenuItem item)
-//    {
-//        Log.e(TAG,"test00001");
-//        int id = item.getItemId();
-//        switch (id)
-//        {
-//            //
-//
-//        }
-//        return false;
-//    }
 
 
     //초기화 작업

@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
@@ -76,6 +77,10 @@ public class DetailTabLayoutActivity extends AppCompatActivity
     boolean being_id; //혜택 아이디가 있는지
     boolean review_write; //리뷰 작성 했는지
 
+    //공유하기 버튼 중복 클릭 방지 시간 설정 ( 해당 시간 이후에 다시 클릭 가능 )
+    private static final long MIN_CLICK_INTERVAL = 600;
+    private long mLastClickTime = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,7 +137,17 @@ public class DetailTabLayoutActivity extends AppCompatActivity
 
         //공유하기
         share_btn.setOnClickListener(v ->{
-            ShareBenefit();
+
+            //공유하기 버튼 중복클릭 방지
+            long currentClickTime = SystemClock.uptimeMillis();
+            long elapsedTime = currentClickTime - mLastClickTime;
+            mLastClickTime = currentClickTime;
+
+            // 중복클릭 아닌 경우
+            if (elapsedTime > MIN_CLICK_INTERVAL) {
+                Log.e(TAG,"0000000000");
+                ShareBenefit();
+            }
         });
 
         //내용 버튼 눌렀을 때
@@ -288,13 +303,6 @@ public class DetailTabLayoutActivity extends AppCompatActivity
 
     //북마크 하기
     private void SetBookmark() {
-//        if (!being_logout) {
-//            Log.e("token", token);
-//            Log.e("SessionId", SessionId);
-//            Log.e("welf_id", welf_id);
-//        } else {
-//            Log.e("00", "00");
-//        }
 
 
         //서버에서 값을 받는걸 기다리기에는 적용이 너무 느림
@@ -325,9 +333,9 @@ public class DetailTabLayoutActivity extends AppCompatActivity
         });
     }
 
+
     //상세페이지 내용 데이터 서버로부터 받아오기
     void LoadBenefitDetail() {
-
 //        Log.e(TAG, "LoadBenefitDetail() 호출");
         //서버로부터 데이터를 받아오는데 걸리는 시간동안 보여줄 프로그래스 바
         final ProgressDialog dialog = new ProgressDialog(this);
@@ -370,7 +378,6 @@ public class DetailTabLayoutActivity extends AppCompatActivity
                         JSONObject jsonObject_welf_name = jsonArray_welf_data.getJSONObject(0);
                         welf_name = jsonObject_welf_name.getString("welf_name");
                         BenefitTitle.setText(welf_name);
-
 
                         detail_bundle.putString("message", String.valueOf(message)); //bundle안에 혜택 상세 데이터 담기
                         detail_bundle.putString("TotalCount", TotalCount); //bundle안에 리뷰 갯수 담기
@@ -462,4 +469,5 @@ public class DetailTabLayoutActivity extends AppCompatActivity
         detail_application_button.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x / 23); //신청버튼 텍스트 크기
         detail_review_button.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x / 23); //리뷰버튼 텍스트 크기
     }
+
 }

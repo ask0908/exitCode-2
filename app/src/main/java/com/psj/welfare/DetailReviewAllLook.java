@@ -85,7 +85,10 @@ public class DetailReviewAllLook extends AppCompatActivity {
 
         //뒤로가기 버튼
         back_btn.setOnClickListener(v->{
-            finish();
+            // 뒤로가기 버튼 누르면 강제로 리뷰 상세보기 화면으로 넘기기
+            // 데이터 갱신하기 위함, DetailTabLayoutActivity 화면에서 생명주기로 데이터 다시받아오면 데이터가 겹쳐짐
+            goto_review();
+//            finish();
         });
 
         //리뷰 필터 아이콘
@@ -101,6 +104,30 @@ public class DetailReviewAllLook extends AppCompatActivity {
             public void repairClick(View v, int pos) { //리뷰 수정 버튼
 //                Toast.makeText(DetailReviewAllLook.this,"수정",Toast.LENGTH_SHORT).show();
 //                Log.e(TAG,"수정");
+                Intent intent = new Intent(DetailReviewAllLook.this, DetailReviewWrite.class);
+
+                intent.putExtra("welf_id", welf_id);
+                intent.putExtra("welf_name", welf_name);
+                intent.putExtra("review_id", allreviewList.get(pos).getReview_id());
+
+                intent.putExtra("Star_count", allreviewList.get(pos).getStar_count());
+                intent.putExtra("satisfaction", allreviewList.get(pos).getSatisfaction());
+                intent.putExtra("difficulty_level", allreviewList.get(pos).getDifficulty_level());
+                intent.putExtra("content", allreviewList.get(pos).getContent());
+
+//                Log.e(TAG," welf_id : "+ welf_id);
+//                Log.e(TAG," welf_name : "+ welf_name);
+//                Log.e(TAG," review_id : "+ allreviewList.get(pos).getReview_id());
+//
+//                Log.e(TAG," Star_count : "+ allreviewList.get(pos).getStar_count());
+//                Log.e(TAG," satisfaction : "+ allreviewList.get(pos).getSatisfaction());
+//                Log.e(TAG," difficulty_level : "+ allreviewList.get(pos).getDifficulty_level());
+//                Log.e(TAG," content : "+ allreviewList.get(pos).getContent());
+
+
+
+                intent.putExtra("review_edit", 100);
+                startActivity(intent);
             }
 
             @Override
@@ -182,17 +209,7 @@ public class DetailReviewAllLook extends AppCompatActivity {
         if (status.equals("200"))
         {
             Toast.makeText(DetailReviewAllLook.this, "리뷰가 성공적으로 삭제됐어요", Toast.LENGTH_SHORT).show();
-//        Log.e(TAG,"tttt");
             LoadReview();
-
-//            Intent intent = new Intent(DetailReviewAllLook.this,DetailTabLayoutActivity.class);
-//            //STACK 정리, 기존의 상세보기 페이지가 stack에 맨위에 있으면 기존 액티비티는 종료하고 새로운 액티비티를 띄운다
-//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//            intent.putExtra("being_id",true);
-//            intent.putExtra("review_write",true);
-//            intent.putExtra("welf_id",welf_id);
-//            finish();
-//            startActivity(intent);
         }
     }
 
@@ -219,13 +236,13 @@ public class DetailReviewAllLook extends AppCompatActivity {
         if (being_id) {
             welf_id = intent.getStringExtra("welf_id"); //혜택id
             welf_name = intent.getStringExtra("welf_name"); //혜택명
+            benefit_title.setText(welf_name);
         }
     }
 
 
     //서버로부터 리뷰 데이터 가져오기
     private void LoadReview() {
-
         //서버로부터 데이터를 받아오는데 걸리는 시간동안 보여줄 프로그래스 바
         dialog = new ProgressDialog(this);
         dialog.setMax(100);
@@ -245,7 +262,6 @@ public class DetailReviewAllLook extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-//                    responseParse(result);
                     GsonResponseParse(result);
                 }
                 else
@@ -289,57 +305,53 @@ public class DetailReviewAllLook extends AppCompatActivity {
 
 
 
-    //서버로부터 받아온 유튜브데이터 파싱, GsonResponseParse() 메소드와 같은 기능
-    private void responseParse(String result) {
-        try
-        {
-            JSONObject jsonObject = new JSONObject(result);
-            JSONArray jsonArray = jsonObject.getJSONArray("message");
-            review_count.setText("사용자 리뷰 " + jsonArray.length() + "개");
-            for (int i = 0; i < jsonArray.length(); i++)
-            {
-                JSONObject inner_json = jsonArray.getJSONObject(i);
-//                Log.e(TAG,"inner_json : " + inner_json);
 
-                String id = inner_json.getString("id");
-                String writer = inner_json.getString("writer");
-                String is_me = inner_json.getString("is_me"); //내가 쓴 리뷰인지
-                boolean boolean_isme = Boolean.parseBoolean(is_me);
-//                Log.e(TAG,"is_me : " + is_me);
-                String content = inner_json.getString("content");
-                String star_count = inner_json.getString("star_count");
-                String difficulty_level = inner_json.getString("difficulty_level");
-                String satisfaction = inner_json.getString("satisfaction");
-                String create_date = inner_json.getString("create_date");
+    //리뷰 필터
+    private void setReview_filter(){
+        AlertDialog.Builder TutorialDialog = new AlertDialog.Builder(DetailReviewAllLook.this);
+        View dialogview = getLayoutInflater().inflate(R.layout.custom_reviewfilter_dialog,null); //다이얼로그의 xml뷰 담기
 
-//                Log.e(TAG,"id : " + id);
-//                Log.e(TAG,"writer : " + writer);
-//                Log.e(TAG,"content : " + content);
+        ConstraintLayout reviewfilter_dialog = dialogview.findViewById(R.id.reviewfilter_dialog); //다이얼로그 전체 크기
+        TextView newest = dialogview.findViewById(R.id.newest); //최신 순
+        TextView high_star = dialogview.findViewById(R.id.high_star); //별점 높은 순
+        TextView low_star = dialogview.findViewById(R.id.low_star); //별점 낮은 순
 
-                DetailReviewData ReviewData = new DetailReviewData();
-                ReviewData.setReview_id(Integer.parseInt(id));
-//                ReviewData.setLogin_id(login_id);
-                ReviewData.setIs_me(boolean_isme);
-                ReviewData.setNickName(writer);
-                ReviewData.setContent(content);
-                float star = Float.parseFloat(star_count);
-                Log.e(TAG,"star : " + star);
-                ReviewData.setStar_count(star);
-                ReviewData.setDifficulty_level(difficulty_level);
-                ReviewData.setSatisfaction(satisfaction);
-                ReviewData.setCreate_date(create_date);
+        TutorialDialog.setView(dialogview); //alertdialog에 view 넣기
+        final AlertDialog alertDialog = TutorialDialog.create(); //다이얼로그 객체로 만들기
+        alertDialog.show(); //다이얼로그 보여주기
 
-                allreviewList.add(ReviewData);
-                allreview_adapter.notifyDataSetChanged();
+        reviewfilter_dialog.getLayoutParams().height = (int) (size.y*0.3); //다이얼로그 전체 레이아웃 동적으로 크기
+        newest.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.04));
+        high_star.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.04));
+        low_star.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.04));
 
-            }
+        newest.setOnClickListener(v->{ //리뷰 최신순
+            filter = "newest";
+            allreviewList.clear();
+            //서버로부터 리뷰 데이터 가져오기
+            LoadReview();
+            alertDialog.dismiss();
+            filter_text.setText("최신순");
+        });
 
-            dialog.dismiss();
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
+        high_star.setOnClickListener(v->{ //리뷰 최신순
+            filter = "high_star";
+            allreviewList.clear();
+            //서버로부터 리뷰 데이터 가져오기
+            LoadReview();
+            alertDialog.dismiss();
+            filter_text.setText("별점 높은 순");
+        });
+
+        low_star.setOnClickListener(v->{ //리뷰 최신순
+            filter = "low_star";
+            allreviewList.clear();
+            //서버로부터 리뷰 데이터 가져오기
+            LoadReview();
+            alertDialog.dismiss();
+            filter_text.setText("별점 낮은 순");
+        });
+
     }
 
 
@@ -394,67 +406,34 @@ public class DetailReviewAllLook extends AppCompatActivity {
         allreview_recycler.setPadding(size.x / 30, (int)(size.x*0.01), size.x / 30, size.x / 30); //레이아웃 패딩값 적용
     }
 
-    //리뷰 필터
-    private void setReview_filter(){
-        AlertDialog.Builder TutorialDialog = new AlertDialog.Builder(DetailReviewAllLook.this);
-        View dialogview = getLayoutInflater().inflate(R.layout.custom_reviewfilter_dialog,null); //다이얼로그의 xml뷰 담기
-
-        ConstraintLayout reviewfilter_dialog = dialogview.findViewById(R.id.reviewfilter_dialog); //다이얼로그 전체 크기
-        TextView newest = dialogview.findViewById(R.id.newest); //최신 순
-        TextView high_star = dialogview.findViewById(R.id.high_star); //별점 높은 순
-        TextView low_star = dialogview.findViewById(R.id.low_star); //별점 낮은 순
-
-        TutorialDialog.setView(dialogview); //alertdialog에 view 넣기
-        final AlertDialog alertDialog = TutorialDialog.create(); //다이얼로그 객체로 만들기
-        alertDialog.show(); //다이얼로그 보여주기
-
-        reviewfilter_dialog.getLayoutParams().height = (int) (size.y*0.3); //다이얼로그 전체 레이아웃 동적으로 크기
-        newest.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.04));
-        high_star.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.04));
-        low_star.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.04));
-
-        newest.setOnClickListener(v->{ //리뷰 최신순
-            filter = "newest";
-            allreviewList.clear();
-            //서버로부터 리뷰 데이터 가져오기
-            LoadReview();
-            alertDialog.dismiss();
-            filter_text.setText("최신순");
-        });
-
-        high_star.setOnClickListener(v->{ //리뷰 최신순
-            filter = "high_star";
-            allreviewList.clear();
-            //서버로부터 리뷰 데이터 가져오기
-            LoadReview();
-            alertDialog.dismiss();
-            filter_text.setText("별점 높은 순");
-        });
-
-        low_star.setOnClickListener(v->{ //리뷰 최신순
-            filter = "low_star";
-            allreviewList.clear();
-            //서버로부터 리뷰 데이터 가져오기
-            LoadReview();
-            alertDialog.dismiss();
-            filter_text.setText("별점 낮은 순");
-        });
-
+    //뒤로가기 눌렀을 경우 리뷰 상세보기 화면으로 가기
+    private void goto_review(){
+        Intent intent = new Intent(DetailReviewAllLook.this, DetailTabLayoutActivity.class);
+        //STACK 정리, 기존의 상세보기 페이지가 stack에 맨위에 있으면 기존 액티비티는 종료하고 새로운 액티비티를 띄운다
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("welf_name",welf_name);
+        intent.putExtra("welf_id",welf_id);
+        intent.putExtra("being_id",true);
+        intent.putExtra("review_write",true);
+        startActivity(intent);
+        finish();
     }
 
     //뒤로가기 누르면 상세보기 페이지로 넘어감
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+//        super.onBackPressed();
+        // 뒤로가기 버튼 누르면 강제로 리뷰 상세보기 화면으로 넘기기
+        // 데이터 갱신하기 위함, DetailTabLayoutActivity 화면에서 생명주기로 데이터 다시받아오면 데이터가 겹쳐짐
+        goto_review();
+    }
 
-//        Intent intent = new Intent(DetailReviewAllLook.this, DetailTabLayoutActivity.class);
-//        //STACK 정리, 기존의 상세보기 페이지가 stack에 맨위에 있으면 기존 액티비티는 종료하고 새로운 액티비티를 띄운다
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//        intent.putExtra("welf_name",welf_name);
-//        intent.putExtra("welf_id",welf_id);
-//        intent.putExtra("being_id",true);
-//        intent.putExtra("review_write",true);
-//        startActivity(intent);
-//        finish();
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+
+        //서버로부터 리뷰 데이터 가져오기
+        LoadReview();
     }
 }

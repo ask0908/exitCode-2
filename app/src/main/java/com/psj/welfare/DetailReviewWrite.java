@@ -79,7 +79,7 @@ public class DetailReviewWrite extends AppCompatActivity
     DBOpenHelper helper;
     String sqlite_token;
 
-    int checkStatus = 0;
+    int checkStatus = 0;  //어떤 액티비티에서 넘어왔는지 확인 (100 = '내가 작성한 리뷰 페이지' or '모든 리뷰 보기 페이지', 200 = '상세페이지')
     int written_review_id;
 
     String content_from_intent;
@@ -258,11 +258,12 @@ public class DetailReviewWrite extends AppCompatActivity
         //리뷰 등록 버튼 누름
         btnRegister.setOnClickListener(v ->
         {
-            // 이 화면에 들어올 때 review_edit과 100을 키밸류로 받았으면 등록 버튼을 누를 시 리뷰 수정 메서드를 호출한다
-            if (checkStatus == 100)
+            // 이 화면에 들어올 때 review_edit과 100 or 200을 키밸류로 받았으면 등록 버튼을 누를 시 리뷰 수정 메서드를 호출한다
+            if (checkStatus == 100 || checkStatus == 200)
             {
                 editReview();
             }
+
             // 그게 아니면 리뷰 작성 메서드를 호출한다
             else
             {
@@ -285,7 +286,8 @@ public class DetailReviewWrite extends AppCompatActivity
                 }
             }
         });
-    }   // onCreate() end
+    }
+
 
     // 리뷰 수정 메서드
     private void editReview()
@@ -294,8 +296,9 @@ public class DetailReviewWrite extends AppCompatActivity
 //        String star_count = String.valueOf(review_star.getRating());
         String send_id = String.valueOf(written_review_id);
         ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
-//        Log.e(TAG, "star_count : " + star_count + ", level_value : " + level_value + ", 만족도 : " + satisfaction_value + ", 리뷰의 idx : " + send_id +
+//        Log.e(TAG, "star_count_int : " + star_count_int + ", level_value : " + level_value + ", 만족도 : " + satisfaction_value + ", 리뷰의 idx : " + send_id +
 //                ", 입력한 내용 : " + review_content_edit.getText().toString() + ", 토큰 : " + sqlite_token);
+
         JSONObject jsonObject = new JSONObject();
         try
         {
@@ -327,9 +330,6 @@ public class DetailReviewWrite extends AppCompatActivity
                     {
                         e.printStackTrace();
                     }
-//                    String result = response.body();
-//                    editReviewResultParsing(result);
-//                    Log.e(TAG, "리뷰 수정 성공 : " + result);
                 }
                 else
                 {
@@ -362,24 +362,28 @@ public class DetailReviewWrite extends AppCompatActivity
         if (result_code.equals("200"))
         {
             Toast.makeText(this, "리뷰 수정이 완료됐습니다", Toast.LENGTH_SHORT).show();
-            finish();
+            if(checkStatus == 100){
+                finish();
+            } else if (checkStatus == 200){
+                goto_review();
+            }
+//
+//
+//                Log.e(TAG,"----------------");
+//                Log.e(TAG,"welf_id : " + welf_id);
+//                Intent intent = new Intent(DetailReviewWrite.this, DetailTabLayoutActivity.class);
+////                STACK 정리, 기존의 상세보기 페이지가 stack에 맨위에 있으면 기존 액티비티는 종료하고 새로운 액티비티를 띄운다
+//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                intent.putExtra("being_id", true);
+//                intent.putExtra("review_write", true);
+//                intent.putExtra("welf_id", welf_id);
+//                finish();
+//                startActivity(intent);
+//            }
         }
 
     }
 
-    //로그인 했는지 여부 확인
-    private void being_loging()
-    {
-        //로그인 했는지 여부 확인하기위한 쉐어드
-        SharedPreferences app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
-        being_logout = app_pref.getBoolean("logout", false); //로그인 했는지 여부 확인하기
-
-        if (!being_logout)
-        { //로그인 했다면
-            SessionId = app_pref.getString("sessionId", ""); //세션값 받아오기
-            token = app_pref.getString("token", ""); //토큰값 받아오기
-        }
-    }
 
     //리뷰 등록 하기
     private void UploadOpinion()
@@ -413,7 +417,7 @@ public class DetailReviewWrite extends AppCompatActivity
                     try
                     {
                         JSONObject jsonObject = new JSONObject(result);
-                        Log.e("test", jsonObject.toString());
+//                        Log.e("test", jsonObject.toString());
                         Intent intent = new Intent(DetailReviewWrite.this, DetailTabLayoutActivity.class);
                         //STACK 정리, 기존의 상세보기 페이지가 stack에 맨위에 있으면 기존 액티비티는 종료하고 새로운 액티비티를 띄운다
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -441,6 +445,116 @@ public class DetailReviewWrite extends AppCompatActivity
             }
         });
 
+    }
+
+
+    //인텐트로 받아온 welf_id값
+    private void being_intent()
+    {
+        Intent intent = getIntent();
+        if (getIntent().hasExtra("review_edit"))
+        {
+            checkStatus = intent.getIntExtra("review_edit", -1);
+            written_review_id = intent.getIntExtra("review_id", -1); //혜택id
+
+
+
+            float Star_count = intent.getFloatExtra("Star_count", -1);
+            String satisfaction = intent.getStringExtra("satisfaction");
+            String difficulty_level = intent.getStringExtra("difficulty_level");
+            content_from_intent = intent.getStringExtra("content");
+            Log.e(TAG, "being_intent에서 받은 content_from_intent : " + content_from_intent);
+
+            welf_id = intent.getStringExtra("welf_id");
+            welf_name = intent.getStringExtra("welf_name");
+
+            //만족도
+            if (satisfaction.equals("도움 돼요"))
+            {
+                good_radiobutton.setBackgroundResource(R.drawable.radius_smallround_pink_border); //핑크색 테두리 버튼
+                good_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.color_text_pink)); //핑크색 글자
+                bad_radiobutton.setBackgroundResource(R.drawable.radius_smallround_lightgray_border); //그레이 테두리 버튼
+                bad_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorGray_B)); //그레이색 글자
+                satisfaction_value = "도움 돼요";
+            }
+            else if (satisfaction.equals("도움 안 돼요"))
+            {
+                bad_radiobutton.setBackgroundResource(R.drawable.radius_smallround_pink_border); //핑크색 테두리 버튼
+                bad_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.color_text_pink)); //핑크색 글자
+                good_radiobutton.setBackgroundResource(R.drawable.radius_smallround_lightgray_border); //그레이 테두리 버튼
+                good_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorGray_B)); //그레이색 글자
+                satisfaction_value = "도움 안 돼요";
+            }
+
+            //난이도
+            if (difficulty_level.equals("쉬워요"))
+            {
+                easy_radiobutton.setBackgroundResource(R.drawable.radius_smallround_pink_border); //핑크색 테두리 버튼
+                easy_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.color_text_pink)); //핑크색 글자
+                hard_radiobutton.setBackgroundResource(R.drawable.radius_smallround_lightgray_border); //그레이 테두리 버튼
+                hard_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorGray_B)); //그레이색 글자
+                level_value = "쉬워요";
+            }
+            else if (difficulty_level.equals("어려워요"))
+            {
+                hard_radiobutton.setBackgroundResource(R.drawable.radius_smallround_pink_border); //핑크색 테두리 버튼
+                hard_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.color_text_pink)); //핑크색 글자
+                easy_radiobutton.setBackgroundResource(R.drawable.radius_smallround_lightgray_border); //그레이 테두리 버튼
+                easy_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorGray_B)); //그레이색 글자
+                level_value = "어려워요";
+            }
+
+
+            review_star.setRating(Star_count); //별점
+            review_content_edit.setText(content_from_intent); //난이도
+
+            BenefitTitle.setText(welf_name);
+        }
+        else
+        {
+            being_id = intent.getBooleanExtra("being_id", false); //혜택 데이터가 있는지
+            welf_id = intent.getStringExtra("welf_id"); //혜택id
+            welf_name = intent.getStringExtra("welf_name"); //혜택명
+            BenefitTitle.setText(welf_name);
+        }
+        /* if (being_id) 부분 때문에 혜택이름과 id를 받아오지 못해서 삭제했습니다 */
+    }
+
+
+
+    //로그인 했는지 여부 확인
+    private void being_loging()
+    {
+        //로그인 했는지 여부 확인하기위한 쉐어드
+        SharedPreferences app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
+        being_logout = app_pref.getBoolean("logout", false); //로그인 했는지 여부 확인하기
+
+        if (!being_logout)
+        { //로그인 했다면
+            SessionId = app_pref.getString("sessionId", ""); //세션값 받아오기
+            token = app_pref.getString("token", ""); //토큰값 받아오기
+        }
+    }
+
+
+    //뒤로가기 눌렀을 경우 리뷰 상세보기 화면으로 가기
+    private void goto_review(){
+        Intent intent = new Intent(DetailReviewWrite.this, DetailTabLayoutActivity.class);
+        //STACK 정리, 기존의 상세보기 페이지가 stack에 맨위에 있으면 기존 액티비티는 종료하고 새로운 액티비티를 띄운다
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("welf_name",welf_name);
+        intent.putExtra("welf_id",welf_id);
+        intent.putExtra("being_id",true);
+        intent.putExtra("review_write",true);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        CustomReviewDialog dialog = new CustomReviewDialog(this);
+        dialog.showDialog();
     }
 
     //자바 변수와 xml 변수 연결
@@ -502,10 +616,6 @@ public class DetailReviewWrite extends AppCompatActivity
         your_opinion_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.x / 21); //의견 남겨주세요
         your_opinion_textview.setPadding(0, size.y / 75, 0, size.y / 100); //의견란 패딩값 적용
 
-//        ViewGroup.LayoutParams params_star = review_star.getLayoutParams();
-//        params_star.width = size.x/7*6; params_star.height = size.y/2;
-//        review_star.setLayoutParams(params_star);
-
         ViewGroup.LayoutParams params_radiogroup = difficulty_radiogroup.getLayoutParams(); //난이도 라디오 버튼 그룹
         params_radiogroup.height = size.y / 12;
         difficulty_radiogroup.setLayoutParams(params_radiogroup);
@@ -549,82 +659,6 @@ public class DetailReviewWrite extends AppCompatActivity
         btnRegister.getLayoutParams().width = (int) (size.x * 0.835); //등록 버튼 크기 변경
         btnRegister.setPadding(0, size.y / 90, 0, size.y / 80); //등록 버튼패딩값 적용
 
-    }
-
-    //인텐트로 받아온 welf_id값
-    private void being_intent()
-    {
-        Intent intent = getIntent();
-        if (getIntent().hasExtra("review_edit"))
-        {
-            checkStatus = intent.getIntExtra("review_edit", -1);
-            written_review_id = intent.getIntExtra("review_id", -1); //혜택id
-            String welf_name = intent.getStringExtra("welf_name");
-
-            float Star_count = intent.getFloatExtra("Star_count", -1);
-            String satisfaction = intent.getStringExtra("satisfaction");
-            String difficulty_level = intent.getStringExtra("difficulty_level");
-            String content = intent.getStringExtra("content");
-            content_from_intent = intent.getStringExtra("content");
-            Log.e(TAG, "being_intent에서 받은 content_from_intent : " + content_from_intent);
-
-            //만족도
-            if (satisfaction.equals("도움 돼요"))
-            {
-                good_radiobutton.setBackgroundResource(R.drawable.radius_smallround_pink_border); //핑크색 테두리 버튼
-                good_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.color_text_pink)); //핑크색 글자
-                bad_radiobutton.setBackgroundResource(R.drawable.radius_smallround_lightgray_border); //그레이 테두리 버튼
-                bad_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorGray_B)); //그레이색 글자
-                satisfaction_value = "도움 돼요";
-            }
-            else if (satisfaction.equals("도움 안 돼요"))
-            {
-                bad_radiobutton.setBackgroundResource(R.drawable.radius_smallround_pink_border); //핑크색 테두리 버튼
-                bad_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.color_text_pink)); //핑크색 글자
-                good_radiobutton.setBackgroundResource(R.drawable.radius_smallround_lightgray_border); //그레이 테두리 버튼
-                good_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorGray_B)); //그레이색 글자
-                satisfaction_value = "도움 안 돼요";
-            }
-
-            //난이도
-            if (difficulty_level.equals("쉬워요"))
-            {
-                easy_radiobutton.setBackgroundResource(R.drawable.radius_smallround_pink_border); //핑크색 테두리 버튼
-                easy_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.color_text_pink)); //핑크색 글자
-                hard_radiobutton.setBackgroundResource(R.drawable.radius_smallround_lightgray_border); //그레이 테두리 버튼
-                hard_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorGray_B)); //그레이색 글자
-                level_value = "쉬워요";
-            }
-            else if (difficulty_level.equals("어려워요"))
-            {
-                hard_radiobutton.setBackgroundResource(R.drawable.radius_smallround_pink_border); //핑크색 테두리 버튼
-                hard_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.color_text_pink)); //핑크색 글자
-                easy_radiobutton.setBackgroundResource(R.drawable.radius_smallround_lightgray_border); //그레이 테두리 버튼
-                easy_radiobutton.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorGray_B)); //그레이색 글자
-                level_value = "어려워요";
-            }
-
-
-            review_star.setRating(Star_count); //별점
-            review_content_edit.setText(content); //난이도
-
-            BenefitTitle.setText(welf_name);
-        }
-        else
-        {
-            being_id = intent.getBooleanExtra("being_id", false); //혜택 데이터가 있는지
-            welf_id = intent.getStringExtra("welf_id"); //혜택id
-            welf_name = intent.getStringExtra("welf_name"); //혜택명
-            BenefitTitle.setText(welf_name);
-        }
-        /* if (being_id) 부분 때문에 혜택이름과 id를 받아오지 못해서 삭제했습니다 */
-    }
-
-    @Override
-    public void onBackPressed()
-    {
-        CustomReviewDialog dialog = new CustomReviewDialog(this);
-        dialog.showDialog();
     }
 
     //상단 상태표시줄 화면 ui에 맞게 그라데이션 넣기

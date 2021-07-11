@@ -114,8 +114,30 @@ public class BookmarkEditAdapter extends RecyclerView.Adapter<BookmarkEditAdapte
         }
 
 
+        if(item.getSelected()){ //북마크 체크 되었다면
+            holder.bookmark_edit_checkbox.setBackground(ContextCompat.getDrawable(context, R.drawable.bookmark_check));
+            holder.bookmark_edit_item_parent_layout.setBackgroundColor(ContextCompat.getColor(context, R.color.bookmark_recyclerview_item));
+        } else { //북마크 체크 되지 않았다면
+            holder.bookmark_edit_checkbox.setBackground(ContextCompat.getDrawable(context, R.drawable.bookmark_uncheck));
+            holder.bookmark_edit_item_parent_layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorMainWhite));
+        }
 
-
+        holder.bookmark_edit_checkbox.setOnClickListener(v -> {
+            if (!item.getSelected())
+            {
+                itemCheckListener.onItemCheck(item, position);
+                checked_count++;
+                holder.bookmark_edit_checkbox.setBackground(ContextCompat.getDrawable(context, R.drawable.bookmark_check));
+                holder.bookmark_edit_item_parent_layout.setBackgroundColor(ContextCompat.getColor(context, R.color.bookmark_recyclerview_item));
+            }
+            else
+            {
+                itemCheckListener.onItemUncheck(item, position);
+                checked_count--;
+                holder.bookmark_edit_checkbox.setBackground(ContextCompat.getDrawable(context, R.drawable.bookmark_uncheck));
+                holder.bookmark_edit_item_parent_layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorMainWhite));
+            }
+        });
 
 
 
@@ -138,16 +160,6 @@ public class BookmarkEditAdapter extends RecyclerView.Adapter<BookmarkEditAdapte
 //            Log.e(TAG,i + " : " + list.get(i).getSelected());
 //        }
 
-        if(item.getSelected()){ //북마크 체크 되었다면
-            holder.bookmark_edit_checkbox.setBackground(ContextCompat.getDrawable(context, R.drawable.bookmark_check));
-            holder.bookmark_edit_item_parent_layout.setBackgroundColor(ContextCompat.getColor(context, R.color.bookmark_recyclerview_item));
-//            Log.e(TAG,"tete");
-        } else { //북마크 체크 되지 않았다면
-            holder.bookmark_edit_checkbox.setBackground(ContextCompat.getDrawable(context, R.drawable.bookmark_uncheck));
-            holder.bookmark_edit_item_parent_layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorMainWhite));
-//            Log.e(TAG,"tete2");
-        }
-
 
 //        if(holder.bookmark_edit_checkbox.isChecked()){
 //            Log.e(TAG,"pos" + position);
@@ -160,32 +172,6 @@ public class BookmarkEditAdapter extends RecyclerView.Adapter<BookmarkEditAdapte
 //            holder.bookmark_edit_checkbox.setBackground(ContextCompat.getDrawable(context, R.drawable.bookmark_uncheck));
 //            holder.bookmark_edit_item_parent_layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorMainWhite));
 //        }
-
-
-
-
-        holder.bookmark_edit_checkbox.setOnClickListener(v -> {
-            if (!item.getSelected())
-            {
-//                Log.e(TAG,"test1");
-                itemCheckListener.onItemCheck(item, position);
-                checked_count++;
-                holder.bookmark_edit_checkbox.setBackground(ContextCompat.getDrawable(context, R.drawable.bookmark_check));
-                holder.bookmark_edit_item_parent_layout.setBackgroundColor(ContextCompat.getColor(context, R.color.bookmark_recyclerview_item));
-            }
-            else
-            {
-                itemCheckListener.onItemUncheck(item, position);
-                checked_count--;
-                holder.bookmark_edit_checkbox.setBackground(ContextCompat.getDrawable(context, R.drawable.bookmark_uncheck));
-                holder.bookmark_edit_item_parent_layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorMainWhite));
-//                Log.e(TAG,"checked_count : " + checked_count);
-            }
-        });
-
-
-
-
 
 
 
@@ -216,12 +202,6 @@ public class BookmarkEditAdapter extends RecyclerView.Adapter<BookmarkEditAdapte
 //                }
 //            }
 //        });
-
-
-
-
-
-
 
 
 

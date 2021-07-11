@@ -1,6 +1,5 @@
 package com.psj.welfare.adapter;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,32 +12,29 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.psj.welfare.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class InnerRecyclerViewAdapter extends RecyclerView.Adapter<InnerRecyclerViewAdapter.ViewHolder>
 {
     public final String TAG = InnerRecyclerViewAdapter.class.getSimpleName();
 
     public ArrayList<String> nameList;  // 모든 값이 필터 구분 없이 들어있는 리스트
-    public static ArrayList<String> mCategoryList = new ArrayList<>();
     public static ArrayList<String> mLocalList = new ArrayList<>();
-    public static ArrayList<String> mProvideTypeList = new ArrayList<>();
     public static ArrayList<String> mAgeList = new ArrayList<>();
-    public List<String> list;
+    public static ArrayList<String> mProvideTypeList = new ArrayList<>();
+
+    public String category_title; //'지역'or '나이대'or '지원형태' 를 담는 변수(카테고리 타이틀을 담는 변수)
+    public ArrayList<Boolean> filter_local; //체크박스에 체크한 지역
+    public ArrayList<Boolean> filter_age; //체크박스에 체크한 나이
+    public ArrayList<Boolean> filter_provideType; //체크박스에 체크한 지역
+
 
     // 액티비티에서 어댑터 안의 리스트에 들어간 아이템을 가져올 때 쓰는 메서드
     public static String getAllValues()
     {
-
-        StringBuilder categoryBuilder = new StringBuilder();
         StringBuilder localBuilder = new StringBuilder();
         StringBuilder provideTypeBuilder = new StringBuilder();
         StringBuilder ageBuilder = new StringBuilder();
-        for (int i = 0; i < mCategoryList.size(); i++)
-        {
-            categoryBuilder.append(mCategoryList.get(i));
-            categoryBuilder.append("-");
-        }
+
         for (int i = 0; i < mLocalList.size(); i++)
         {
             localBuilder.append(mLocalList.get(i));
@@ -55,20 +51,9 @@ public class InnerRecyclerViewAdapter extends RecyclerView.Adapter<InnerRecycler
             ageBuilder.append("-");
         }
         // 마지막의 '-' 제거
-        String lastCategory;
         String lastLocal;
         String lastAge;
         String lastProvideType;
-
-        // 아래 처리를 하지 않으면 필터를 선택하지 않았을 시 배열 관련 에러가 뜨면서 앱이 죽는다
-        if (!categoryBuilder.toString().equals(""))
-        {
-            lastCategory = categoryBuilder.toString().substring(0, categoryBuilder.toString().length() - 1);
-        }
-        else
-        {
-            lastCategory = null;
-        }
 
         if (!localBuilder.toString().equals(""))
         {
@@ -97,21 +82,31 @@ public class InnerRecyclerViewAdapter extends RecyclerView.Adapter<InnerRecycler
             lastProvideType = null;
         }
 
-
         //한번 호출 하면 값 초기화 해줘야 한다
-        mCategoryList.clear();
         mLocalList.clear();
-        mProvideTypeList.clear();
         mAgeList.clear();
+        mProvideTypeList.clear();
 
-
-        return lastCategory + "zz" + lastLocal + "zz" + lastAge + "zz" + lastProvideType;
+        return lastLocal + "zz" + lastAge + "zz" + lastProvideType;
     }
 
-    public InnerRecyclerViewAdapter(ArrayList<String> nameList, List<String> list)
+
+
+    public static void resetfilter(){
+        mLocalList.clear();
+        mAgeList.clear();
+        mProvideTypeList.clear();
+    }
+
+
+    public InnerRecyclerViewAdapter(ArrayList<String> nameList, String category_title, ArrayList<Boolean> filter_local, ArrayList<Boolean> filter_age, ArrayList<Boolean> filter_provideType)
     {
         this.nameList = nameList;
-        this.list = list;
+        this.category_title = category_title;
+
+        this.filter_local = filter_local;
+        this.filter_age = filter_age;
+        this.filter_provideType = filter_provideType;
     }
 
     @NonNull
@@ -126,10 +121,60 @@ public class InnerRecyclerViewAdapter extends RecyclerView.Adapter<InnerRecycler
     public void onBindViewHolder(ViewHolder holder, int position)
     {
 
-//        holder.checkBox.setTag(position);
-        for (int i = 0; i < position; i++){
-            Log.e(TAG,"체크박스 " + position + " : " + holder.checkBox.isChecked());
+        switch(category_title){
+            case  "지역":
+                holder.checkBox.setChecked(filter_local.get(position));
+//                if(filter_local.get(position)){
+//                    mCategoryList.add(nameList.get(position));
+////                    Log.e(TAG,position + " : " + nameList.get(position));
+//                }
+                if(holder.checkBox.isChecked()){
+                    mLocalList.add(nameList.get(position));
+                }
+                break;
+
+            case  "나이대":
+                holder.checkBox.setChecked(filter_age.get(position));
+//                if(filter_age.get(position)){
+//                    mAgeList.add(nameList.get(position));
+//                }
+                if(holder.checkBox.isChecked()){
+                    mAgeList.add(nameList.get(position));
+                }
+                break;
+
+            case  "지원 형태":
+                holder.checkBox.setChecked(filter_provideType.get(position));
+//                if(filter_provideType.get(position)){
+//                    mProvideTypeList.add(nameList.get(position));
+//                }
+                if(holder.checkBox.isChecked()){
+                    mProvideTypeList.add(nameList.get(position));
+                }
+                break;
         }
+
+        if(holder.checkBox.isChecked()){
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -142,17 +187,17 @@ public class InnerRecyclerViewAdapter extends RecyclerView.Adapter<InnerRecycler
             {
 //                Log.e(TAG, "선택된 아이템의 pos : " + nameList.get(position));
                 // 카테고리
-                if (nameList.get(position).equals("교육") || nameList.get(position).equals("건강") || nameList.get(position).equals("근로") ||
-                        nameList.get(position).equals("금융") || nameList.get(position).equals("기타") || nameList.get(position).equals("문화") ||
-                        nameList.get(position).equals("사업") || nameList.get(position).equals("주거") || nameList.get(position).equals("환경"))
-                {
-                    if (!mCategoryList.contains("교육") || !mCategoryList.contains("건강") || !mCategoryList.contains("근로") || !mCategoryList.contains("금융") ||
-                            !mCategoryList.contains("기타") || !mCategoryList.contains("문화") || !mCategoryList.contains("사업") || !mCategoryList.contains("주거") ||
-                            !mCategoryList.contains("환경"))
-                    {
-                        mCategoryList.add(nameList.get(position));
-                    }
-                }
+//                if (nameList.get(position).equals("교육") || nameList.get(position).equals("건강") || nameList.get(position).equals("근로") ||
+//                        nameList.get(position).equals("금융") || nameList.get(position).equals("기타") || nameList.get(position).equals("문화") ||
+//                        nameList.get(position).equals("사업") || nameList.get(position).equals("주거") || nameList.get(position).equals("환경"))
+//                {
+//                    if (!mCategoryList.contains("교육") || !mCategoryList.contains("건강") || !mCategoryList.contains("근로") || !mCategoryList.contains("금융") ||
+//                            !mCategoryList.contains("기타") || !mCategoryList.contains("문화") || !mCategoryList.contains("사업") || !mCategoryList.contains("주거") ||
+//                            !mCategoryList.contains("환경"))
+//                    {
+//                        mCategoryList.add(nameList.get(position));
+//                    }
+//                }
 
                 // 지역
                 if (nameList.get(position).equals("서울") || nameList.get(position).equals("경기") || nameList.get(position).equals("인천") ||
@@ -165,6 +210,17 @@ public class InnerRecyclerViewAdapter extends RecyclerView.Adapter<InnerRecycler
                             !mLocalList.contains("전북") || !mLocalList.contains("전남") || !mLocalList.contains("제주"))
                     {
                         mLocalList.add(nameList.get(position));
+                    }
+                }
+
+                // 나이대
+                if (nameList.get(position).equals("10대") || nameList.get(position).equals("20대") || nameList.get(position).equals("30대") ||
+                        nameList.get(position).equals("40대") || nameList.get(position).equals("50대") || nameList.get(position).equals("60대 이상"))
+                {
+                    if (!mAgeList.contains("10대") || !mAgeList.contains("20대") || !mAgeList.contains("30대") || !mAgeList.contains("40대") ||
+                            !mAgeList.contains("50대") || !mAgeList.contains("60대 이상"))
+                    {
+                        mAgeList.add(nameList.get(position));
                     }
                 }
 
@@ -184,21 +240,10 @@ public class InnerRecyclerViewAdapter extends RecyclerView.Adapter<InnerRecycler
                         mProvideTypeList.add(nameList.get(position));
                     }
                 }
-
-                // 나이대
-                if (nameList.get(position).equals("10대") || nameList.get(position).equals("20대") || nameList.get(position).equals("30대") ||
-                        nameList.get(position).equals("40대") || nameList.get(position).equals("50대") || nameList.get(position).equals("60대 이상"))
-                {
-                    if (!mAgeList.contains("10대") || !mAgeList.contains("20대") || !mAgeList.contains("30대") || !mAgeList.contains("40대") ||
-                            !mAgeList.contains("50대") || !mAgeList.contains("60대 이상"))
-                    {
-                        mAgeList.add(nameList.get(position));
-                    }
-                }
             }
             if (!getChecked)
             {
-                mCategoryList.remove(nameList.get(position));
+//                mCategoryList.remove(nameList.get(position));
                 mLocalList.remove(nameList.get(position));
                 mProvideTypeList.remove(nameList.get(position));
                 mAgeList.remove(nameList.get(position));

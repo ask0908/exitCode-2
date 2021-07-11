@@ -27,10 +27,13 @@ public class ExpandableRecyclerViewAdapter extends RecyclerView.Adapter<Expandab
     public static ArrayList<String> localList;
     public static ArrayList<String> categoryList;
     public static ArrayList<String> provideTypeList;
-    ArrayList<String> list;
     ArrayList<Integer> counter = new ArrayList<>();
     ArrayList<ArrayList> itemNameList;  // 필터 항목들이 들어있는 리스트
     Context context;
+
+    public ArrayList<Boolean> filter_local; //체크박스에 체크한 지역
+    public ArrayList<Boolean> filter_age; //체크박스에 체크한 나이
+    public ArrayList<Boolean> filter_provideType; //체크박스에 체크한 지역
 
     public ExpandableRecyclerViewAdapter(Context context,
                                          ArrayList<String> nameList,    // 필터들이 들어있는 리스트
@@ -39,7 +42,9 @@ public class ExpandableRecyclerViewAdapter extends RecyclerView.Adapter<Expandab
                                          ArrayList<String> localList,
                                          ArrayList<String> provideTypeList,
                                          ArrayList<ArrayList> itemNameList,
-                                         ArrayList<String> list)
+                                         ArrayList<Boolean> filter_local,
+                                         ArrayList<Boolean> filter_age,
+                                         ArrayList<Boolean> filter_provideType)
     {
         this.context = context;
         ExpandableRecyclerViewAdapter.nameList = nameList;
@@ -48,23 +53,15 @@ public class ExpandableRecyclerViewAdapter extends RecyclerView.Adapter<Expandab
         ExpandableRecyclerViewAdapter.localList = localList;
         ExpandableRecyclerViewAdapter.provideTypeList = provideTypeList;
         this.itemNameList = itemNameList;   // 선택여부에 상관없이 모든 카테고리 필터들의 값이 들어있는 리스트
-        this.list = list;
+
+        this.filter_local = filter_local;
+        this.filter_age = filter_age;
+        this.filter_provideType = filter_provideType;
 
         for (int i = 0; i < nameList.size(); i++)
         {
             counter.add(0);
         }
-
-
-//        Log.e(TAG,"-----------------0000000000-----------------");
-//        for (int i = 0; i < itemNameList.size(); i++){
-//            Log.e(TAG,"itemNameList" + itemNameList.get(i));
-//        }
-//
-//        for (int i = 0; i < list.size(); i++){
-//            Log.e(TAG,"list" + list.get(i));
-//        }
-
     }
 
     @Override
@@ -81,7 +78,7 @@ public class ExpandableRecyclerViewAdapter extends RecyclerView.Adapter<Expandab
 
         holder.name.setText(nameList.get(position));
         // 필터들이 들어있는 리스트
-        InnerRecyclerViewAdapter itemInnerRecyclerView = new InnerRecyclerViewAdapter(itemNameList.get(position), list);
+        InnerRecyclerViewAdapter itemInnerRecyclerView = new InnerRecyclerViewAdapter(itemNameList.get(position), nameList.get(position), filter_local, filter_age, filter_provideType);
         holder.cardRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         // 확장 리사이클러뷰를 접고 펼치는 로직
         holder.dropBtn.setOnClickListener(v -> {

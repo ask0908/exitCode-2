@@ -199,9 +199,8 @@ public class DetailReviewFragment extends Fragment {
             public void repairClick(View v, int pos) { //리뷰 수정 버튼
 //                Toast.makeText(getActivity(),"수정",Toast.LENGTH_SHORT).show();
 //                Log.e(TAG,"수정");
-
                 Intent intent = new Intent(getContext(), DetailReviewWrite.class);
-                intent.putExtra("welfId", welf_id);
+                intent.putExtra("welf_id", welf_id);
                 intent.putExtra("welf_name", welf_name);
                 intent.putExtra("review_id", DetailReviewList.get(pos).getReview_id());
 
@@ -214,8 +213,7 @@ public class DetailReviewFragment extends Fragment {
 //                Log.e(TAG,"satisfaction : "+ DetailReviewList.get(pos).getNickName());
 //                            Log.e(TAG,"difficulty_level : "+ list.get(position).getDifficulty_level());
 //                            Log.e(TAG,"content : "+ list.get(position).getContent());
-
-                intent.putExtra("review_edit", 100);
+                intent.putExtra("review_edit", 200);
                 startActivity(intent);
             }
 
@@ -537,9 +535,6 @@ public class DetailReviewFragment extends Fragment {
         review_recycler.setPadding(size.x / 30, size.x / 30, size.x / 30, size.x / 30); //레이아웃 패딩값 적용
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-//        Log.e(TAG,"testaskmdnmhfkjalshkdjf");
-    }
+
+
 }

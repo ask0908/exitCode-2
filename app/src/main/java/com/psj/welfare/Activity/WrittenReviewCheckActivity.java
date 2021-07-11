@@ -240,6 +240,9 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
     @SuppressLint("CheckResult")
     private void parsingResult(String result)
     {
+        //리뷰 초기화
+        list.clear();
+
         Log.e(TAG, "작성한 리뷰 : " + result);
         try
         {
@@ -410,5 +413,6 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
     {
         super.onRestart();
         checkNetworkStatus();
+//        Log.e(TAG,"TEST");
     }
 }

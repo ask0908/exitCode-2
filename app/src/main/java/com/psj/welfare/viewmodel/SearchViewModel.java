@@ -40,8 +40,6 @@ public class SearchViewModel extends AndroidViewModel
     // 검색
     public MutableLiveData<String> renewalSearchKeyword(String keyword, String page, String category, String local, String age, String provideType)
     {
-        Log.e(TAG,"333");
-
         //로그인 토큰 가져오기
         getlogin_token();
 
@@ -76,11 +74,8 @@ public class SearchViewModel extends AndroidViewModel
     // 추천 태그 검색 메서드
     public MutableLiveData<String> searchRecommendTag(String keyword, String page, String category, String local, String age, String provideType)
     {
-        Log.e(TAG,"000");
-
         //로그인 토큰 가져오기
         getlogin_token();
-
 
         apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
         final MutableLiveData<String> data = new MutableLiveData<>();
