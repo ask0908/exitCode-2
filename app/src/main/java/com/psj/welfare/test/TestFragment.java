@@ -222,15 +222,16 @@ public class TestFragment extends Fragment
                 sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
             }
         }
+        Logger.d("쉐어드의 로그인 확인 변수 : " + sharedPreferences.getBoolean("user_login", false));
 
         if (sharedPreferences.getBoolean("user_login", false))
         {
-            // 로그인 o, 관심사 o인 경우
             showWelfareAndYoutubeLogin();
-            Logger.d("로그인하고 showWelfareAndYoutubeLogin() 호출됨");
+            Logger.d("로그인하고 showWelfareAndYoutubeLogin() 호출됨"); // 로그인 시 여기로 빠지는 건 맞다
         }
         else
         {
+            /* 비로그인시에는 가운데 로그인 버튼을 보여주고 배너와 유튜브 데이터만 보여준다 */
             // 로그인 x, 관심사 o인 경우
             String gender = sharedPreferences.getString("gender", "");
             String age = sharedPreferences.getString("age_group", "");
@@ -532,12 +533,12 @@ public class TestFragment extends Fragment
                 notlogin_card.setVisibility(View.GONE);
                 welfdata_layout.setVisibility(View.VISIBLE);
             }
-            else if (age != null)
-            { //미리보기 관심사를 선택했다면
-                Welfdata_first_title.setText(benefit);
-                notlogin_card.setVisibility(View.GONE);
-                welfdata_layout.setVisibility(View.VISIBLE);
-            }
+//            else if (age != null)
+//            { //미리보기 관심사를 선택했다면
+//                Welfdata_first_title.setText(benefit);
+//                notlogin_card.setVisibility(View.GONE);
+//                welfdata_layout.setVisibility(View.VISIBLE);
+//            }
             else
             { //비로그인 + 관심사 선택 X
                 notlogin_card.setVisibility(View.VISIBLE);

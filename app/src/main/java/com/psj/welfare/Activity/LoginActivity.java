@@ -415,6 +415,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         {
             editor.putString("user_nickname", nickName);
             editor.putBoolean("logout", false);
+//            editor.putBoolean("logout", true);
         }
         editor.apply();
     }

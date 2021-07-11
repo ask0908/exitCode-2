@@ -2,6 +2,7 @@ package com.psj.welfare.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -81,6 +82,9 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
     // 강제종료해서 관심사 선택으로 온 건지 구별할 때 사용할 인텐트, 변수
     Intent force_stopped_intent;
     int force_stopped_value = 0;
+    String force_stopped;
+
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -114,76 +118,8 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
             buttonsClickListener();
 
             force_stopped_intent = getIntent();
-            force_stopped_value = force_stopped_intent.getIntExtra("force_stopped", -1);
-            Logger.d("강제종료했다면 오른쪽의 숫자는 404여야 한다 : " + force_stopped_value);
-
-            // 선택 완료 버튼
-            choose_complete_button.setOnClickListener(v ->
-            {
-                // 4개 리스트 안의 값들 사이에 "-"를 붙여서 String으로 만든다
-                // 그 후 api 인자로 넘겨서 관심사 선택 마무리
-                StringBuilder age_builder = new StringBuilder();
-                StringBuilder local_builder = new StringBuilder();
-                StringBuilder household_builder = new StringBuilder();
-                StringBuilder category_builder = new StringBuilder();
-
-                Intent intent = getIntent();
-                age = (ArrayList<String>) intent.getSerializableExtra("age");
-                area = (ArrayList<String>) intent.getSerializableExtra("area");
-
-                // findViewById() 모아놓은 메서드
-                init();
-
-                // 가구 형태, 카테고리 버튼 클릭 리스너 모음
-                buttonsClickListener();
-
-                if (age.size() == 0 || area.size() == 0 || family.size() == 0 || category.size() == 0)
-                {
-                    Toast.makeText(this, "가구 형태와 카테고리 모두 1개라도 선택해 주셔야 해요", Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    /* 서버로 넘기기 위해 각 4개 리스트 요소 사이에 "-" 추가 */
-                    // 나이
-                    for (String str : age)
-                    {
-                        age_builder.append(str);
-                        age_builder.append("-");
-                    }
-                    send_age = age_builder.toString();
-                    send_age = send_age.substring(0, send_age.length() - 1);
-
-                    // 지역
-                    for (String str : area)
-                    {
-                        local_builder.append(str);
-                        local_builder.append("-");
-                    }
-                    send_local = local_builder.toString();
-                    send_local = send_local.substring(0, send_local.length() - 1);
-
-                    // 가구 형태
-                    for (String str : family)
-                    {
-                        household_builder.append(str);
-                        household_builder.append("-");
-                    }
-                    send_family = household_builder.toString();
-                    send_family = send_family.substring(0, send_family.length() - 1);
-
-                    // 카테고리
-                    for (String str : category)
-                    {
-                        category_builder.append(str);
-                        category_builder.append("-");
-                    }
-                    send_category = category_builder.toString();
-                    send_category = send_category.substring(0, send_category.length() - 1);
-
-                    modifyMyInterest();
-                }
-
-            });
+            force_stopped = force_stopped_intent.getStringExtra("force_stopped");
+            Logger.d("force_stopped 값 : " + force_stopped);
         }
         else
         {
@@ -208,6 +144,83 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
             category_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
             choose_complete_button.setTextSize(TypedValue.COMPLEX_UNIT_PX,(float) (size.x*0.055));
         }
+
+        // 선택 완료 버튼
+        choose_complete_button.setOnClickListener(v ->
+        {
+            // 4개 리스트 안의 값들 사이에 "-"를 붙여서 String으로 만든다
+            // 그 후 api 인자로 넘겨서 관심사 선택 마무리
+            StringBuilder age_builder = new StringBuilder();
+            StringBuilder local_builder = new StringBuilder();
+            StringBuilder household_builder = new StringBuilder();
+            StringBuilder category_builder = new StringBuilder();
+
+            Intent intent = getIntent();
+            age = (ArrayList<String>) intent.getSerializableExtra("age");
+            area = (ArrayList<String>) intent.getSerializableExtra("area");
+
+            // findViewById() 모아놓은 메서드
+            init();
+
+            // 가구 형태, 카테고리 버튼 클릭 리스너 모음
+            buttonsClickListener();
+
+            if (age.size() == 0 || area.size() == 0 || family.size() == 0 || category.size() == 0)
+            {
+                Toast.makeText(this, "가구 형태와 카테고리 모두 1개라도 선택해 주셔야 해요", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                /* 서버로 넘기기 위해 각 4개 리스트 요소 사이에 "-" 추가 */
+                // 나이
+                for (String str : age)
+                {
+                    age_builder.append(str);
+                    age_builder.append("-");
+                }
+                send_age = age_builder.toString();
+                send_age = send_age.substring(0, send_age.length() - 1);
+
+                // 지역
+                for (String str : area)
+                {
+                    local_builder.append(str);
+                    local_builder.append("-");
+                }
+                send_local = local_builder.toString();
+                send_local = send_local.substring(0, send_local.length() - 1);
+
+                // 가구 형태
+                for (String str : family)
+                {
+                    household_builder.append(str);
+                    household_builder.append("-");
+                }
+                send_family = household_builder.toString();
+                send_family = send_family.substring(0, send_family.length() - 1);
+
+                // 카테고리
+                for (String str : category)
+                {
+                    category_builder.append(str);
+                    category_builder.append("-");
+                }
+                send_category = category_builder.toString();
+                send_category = send_category.substring(0, send_category.length() - 1);
+
+                sharedPreferences = getSharedPreferences("app_pref", 0);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("force_stopped", "0");
+                editor.putString("interest_age", send_age);
+                editor.putString("interest_local", send_local);
+                editor.putString("interest_family", send_family);
+                editor.putString("interest_category", send_category);
+                editor.apply();
+
+                modifyMyInterest();
+            }
+
+        });
 
         // 뒤로 가기 이미지
         second_interest_back_image.setOnClickListener(v -> {

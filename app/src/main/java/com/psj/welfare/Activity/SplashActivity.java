@@ -360,22 +360,24 @@ public class SplashActivity extends AppCompatActivity
             }
             else
             {
-//                if (age.equals(null))
-//                { //room데이터 값이 없다면
-//                    Intent intent = new Intent(SplashActivity.this, TutorialWelcome.class);
+                if (age.equals(null))
+                { //room데이터 값이 없다면
+                    Intent intent = new Intent(SplashActivity.this, TutorialWelcome.class);
+//                    intent.putExtra("push", 100); // 이 부분 때문에 앱을 켜면 알림 화면부터 나왔습니다. 이 부분은 푸시 누를 때만 호출하면 될 거 같아여
+                    startActivity(intent);
+                    finish();
+                }
+                else
+                { //room데이터 값이 있다면
+                    Intent intent = new Intent(SplashActivity.this, MainTabLayoutActivity.class);
 //                    intent.putExtra("push", 100);
-//                    startActivity(intent);
-//                }
-//                else
-//                { //room데이터 값이 있다면
-//                    Intent intent = new Intent(SplashActivity.this, MainTabLayoutActivity.class);
-//                    intent.putExtra("push", 100);
-//                    startActivity(intent);
-//                }
-                Intent intent = new Intent(SplashActivity.this, ChooseFirstInterestActivity.class);
-                intent.putExtra("force_stopped", 404);
-                startActivity(intent);
-                SplashActivity.this.finish();
+                    startActivity(intent);
+                    finish();
+                }
+//                Intent intent = new Intent(SplashActivity.this, ChooseFirstInterestActivity.class);
+//                intent.putExtra("force_stopped", 404);
+//                startActivity(intent);
+//                SplashActivity.this.finish();
             }
         }
     }
