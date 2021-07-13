@@ -97,55 +97,8 @@ public class TestSearchFragment extends Fragment
             analytics = FirebaseAnalytics.getInstance(getActivity());
         }
 
-        //size에 저장되는 가로/세로 길이의 단위는 픽셀(Pixel)입니다.
-        ScreenSize screen = new ScreenSize();
-        //context의 스크린 사이즈를 구함
-        Point size = screen.getScreenSize(getActivity());
-
-//        Display display = getActivity().getWindowManager().getDefaultDisplay();
-//        Point size = new Point();
-//        display.getRealSize(size);
-
-        //태그 전체 레이아웃
-        tag_total_layout.setPadding((int)(size.x * 0.07),0,0,0);
-        //"어떤 혜택을 찾으세요" 텍스트
-        search_fragment_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.035));
-        //검색
-        search_name_edittext.setPadding((int)(size.x * 0.06),0,(int)(size.x * 0.06),0);
-        //태그 레이아웃 첫번째 줄, 두번째 줄, 세번째 줄
-        tag_layout1.setPadding(0,(int)(size.y * 0.015),0,(int)(size.y * 0.015));
-        tag_layout2.setPadding(0,(int)(size.y * 0.015),0,(int)(size.y * 0.015));
-        tag_layout3.setPadding(0,(int)(size.y * 0.015),0,(int)(size.y * 0.015));
-        //"추천 태그" 텍스트
-        recommend_tag_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.x * 0.05));
-        recommend_tag_textview.setPadding((int)(size.x * 0.08),0,(int)(size.x * 0.08),0);
-        //태그 사이 간격
-        recommend_firstview.getLayoutParams().width = (int)(size.x * 0.05);
-        recommend_second_firstview.getLayoutParams().width = (int)(size.x * 0.05);
-        recommend_second_secondview.getLayoutParams().width = (int)(size.x * 0.05);
-        recommend_thirdview.getLayoutParams().width = (int)(size.x * 0.05);
-
-        //태그 "노인"
-        recommend_old.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
-        recommend_old.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
-        //태그 "임신/출산"
-        recommend_pregnancy.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
-        recommend_pregnancy.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
-        //태그 "주거"
-        recommend_living.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
-        recommend_living.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
-        //태그 "청년"
-        recommend_young_man.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
-        recommend_young_man.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
-        //태그 "취업/창업"
-        recommend_job.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
-        recommend_job.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
-        //태그 "코로나"
-        recommend_corona.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
-        recommend_corona.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
-        //태그 "한부모"
-        recommend_single_parent.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
-        recommend_single_parent.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
+        //xml크기를 동적으로 변환
+        setsize();
 
         // 검색창
         search_name_edittext.setOnEditorActionListener(new TextView.OnEditorActionListener()
@@ -153,7 +106,7 @@ public class TestSearchFragment extends Fragment
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
             {
-                if (search_name_edittext.length() == 0 )
+                if (search_name_edittext.length() == 0 || search_name_edittext.getText().toString().trim().equals(""))
                 {
                     Toast.makeText(getContext(), "검색어를 입력해 주세요", Toast.LENGTH_SHORT).show();
                     return true;
@@ -168,9 +121,9 @@ public class TestSearchFragment extends Fragment
             }
         });
 
+
         //키보드 환경 설정(화면에 띄워져 있는지 판단하기 위함)
         InputMethodManager keyboard = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-
         //edittext 오른쪽 drawble 아이콘 클릭
         search_name_edittext.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -182,7 +135,7 @@ public class TestSearchFragment extends Fragment
                         if(event.getX() >= (search_name_edittext.getWidth() - search_name_edittext.getPaddingRight() - drawable.getIntrinsicWidth())){
 
                             //키보드 열려 있을때만 검색 눌렀을 때 결과값 보여주기
-                            if (search_name_edittext.length() == 0 )
+                            if (search_name_edittext.length() == 0 || search_name_edittext.getText().toString().trim().equals(""))
                             {
                                 Toast.makeText(getContext(), "검색어를 입력해 주세요", Toast.LENGTH_SHORT).show();
                             } else {
@@ -255,4 +208,56 @@ public class TestSearchFragment extends Fragment
         startActivity(intent);
     }
 
+    //xml크기를 동적으로 변환
+    private void setsize() {
+        //size에 저장되는 가로/세로 길이의 단위는 픽셀(Pixel)입니다.
+        ScreenSize screen = new ScreenSize();
+        //context의 스크린 사이즈를 구함
+        Point size = screen.getScreenSize(getActivity());
+
+//        Display display = getActivity().getWindowManager().getDefaultDisplay();
+//        Point size = new Point();
+//        display.getRealSize(size);
+
+        //태그 전체 레이아웃
+        tag_total_layout.setPadding((int)(size.x * 0.07),0,0,0);
+        //"어떤 혜택을 찾으세요" 텍스트
+        search_fragment_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.035));
+        //검색
+        search_name_edittext.setPadding((int)(size.x * 0.06),0,(int)(size.x * 0.06),0);
+        //태그 레이아웃 첫번째 줄, 두번째 줄, 세번째 줄
+        tag_layout1.setPadding(0,(int)(size.y * 0.015),0,(int)(size.y * 0.015));
+        tag_layout2.setPadding(0,(int)(size.y * 0.015),0,(int)(size.y * 0.015));
+        tag_layout3.setPadding(0,(int)(size.y * 0.015),0,(int)(size.y * 0.015));
+        //"추천 태그" 텍스트
+        recommend_tag_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.x * 0.05));
+        recommend_tag_textview.setPadding((int)(size.x * 0.08),0,(int)(size.x * 0.08),0);
+        //태그 사이 간격
+        recommend_firstview.getLayoutParams().width = (int)(size.x * 0.05);
+        recommend_second_firstview.getLayoutParams().width = (int)(size.x * 0.05);
+        recommend_second_secondview.getLayoutParams().width = (int)(size.x * 0.05);
+        recommend_thirdview.getLayoutParams().width = (int)(size.x * 0.05);
+
+        //태그 "노인"
+        recommend_old.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
+        recommend_old.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
+        //태그 "임신/출산"
+        recommend_pregnancy.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
+        recommend_pregnancy.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
+        //태그 "주거"
+        recommend_living.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
+        recommend_living.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
+        //태그 "청년"
+        recommend_young_man.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
+        recommend_young_man.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
+        //태그 "취업/창업"
+        recommend_job.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
+        recommend_job.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
+        //태그 "코로나"
+        recommend_corona.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
+        recommend_corona.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
+        //태그 "한부모"
+        recommend_single_parent.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)(size.x * 0.045));
+        recommend_single_parent.setPadding((int)(size.x * 0.05),(int)(size.x * 0.025),(int)(size.x * 0.05),(int)(size.x * 0.025));
+    }
 }

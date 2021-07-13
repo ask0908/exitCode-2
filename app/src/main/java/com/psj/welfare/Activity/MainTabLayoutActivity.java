@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -25,6 +24,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.psj.welfare.R;
+import com.psj.welfare.SharedSingleton;
 import com.psj.welfare.adapter.MainViewPagerAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
@@ -63,9 +63,15 @@ public class MainTabLayoutActivity extends AppCompatActivity
     String result;
 
     DBOpenHelper helper;
-    String sqlite_token;
 
 //    DataFromActivityToFragment dataFromActivityToFragment;
+
+    //로그인 토큰 값
+    private String token;
+
+    //로그인 관련 쉐어드 singleton
+    private SharedSingleton sharedSingleton;
+
 
     @Override
     protected void onStart()
@@ -80,18 +86,23 @@ public class MainTabLayoutActivity extends AppCompatActivity
         setStatusBarGradiant(MainTabLayoutActivity.this);
         setContentView(R.layout.activity_maintablayout);
 
-        helper = new DBOpenHelper(this);
-        helper.openDatabase();
-        helper.create();
+        //쉐어드 싱글톤 사용
+        sharedSingleton = SharedSingleton.getInstance(this);
+        token = sharedSingleton.getToken();
 
-        Cursor cursor = helper.selectColumns();
-        if (cursor != null)
-        {
-            while(cursor.moveToNext())
-            {
-                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-            }
-        }
+        //sqlite 사용한 흔적
+//        helper = new DBOpenHelper(this);
+//        helper.openDatabase();
+//        helper.create();
+//
+//        Cursor cursor = helper.selectColumns();
+//        if (cursor != null)
+//        {
+//            while(cursor.moveToNext())
+//            {
+//                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+//            }
+//        }
 
         analytics = FirebaseAnalytics.getInstance(this);
 
@@ -449,7 +460,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
                     if (position == 0)
                     {
                         tab.setIcon(R.drawable.home_icon_gray);
-                        userOrderedWelfare(sqlite_token);
+                        userOrderedWelfare(token);
                     }
                     else if (position == 1)
                     {
@@ -672,14 +683,12 @@ public class MainTabLayoutActivity extends AppCompatActivity
             Toast.makeText(this, "\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT).show();
             return;
         }
-
         // 2초 이내에 뒤로가기 버튼을 한번 더 클릭 시 앱 종료
-        if (System.currentTimeMillis() <= backKeyPressedTime + 2000)
+        else if (System.currentTimeMillis() <= backKeyPressedTime + 2000)
         {
             Bundle bundle = new Bundle();
             bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "앱 종료");
             analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-//            finish();
             finishAndRemoveTask(); // 액티비티 종료 + 태스크 리스트에서 지우기
         }
     }

@@ -3,7 +3,6 @@ package com.psj.welfare;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -26,10 +25,17 @@ public class TutorialWelcome extends AppCompatActivity {
     private Button BtnTutorial; //튜토리얼 하기 버튼
     private TextView BtnMain; //메인으로 가기 버튼
 
+    //로그인관련 쉐어드 singleton
+    private SharedSingleton sharedSingleton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial_welcome);
+
+        //쉐어드 싱글톤 사용
+        sharedSingleton = SharedSingleton.getInstance(this);
+
         /* 강제종료 확인하는 서비스 실행
          * 보통 앱이 어느 지점에서 강제종료됐는지 확인하려면 먼저 앱의 시작점부터 서비스를 시작해야 한다
          * 앱의 시작점은 스플래시 화면이지만 스플래시보다 여기부터 서비스를 작동시켜서 확인하는 게 더 낫다고 생각했다 */
@@ -57,14 +63,15 @@ public class TutorialWelcome extends AppCompatActivity {
 
         //메인으로 이동
         BtnMain.setOnClickListener(v -> {
-            Toast.makeText(TutorialWelcome.this,"미리보기 건너뛰기",Toast.LENGTH_SHORT).show();
+            Toast.makeText(TutorialWelcome.this,"메인으로 가기",Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(TutorialWelcome.this, MainTabLayoutActivity.class);
 
-            //미리보기 했는지
-            SharedPreferences sharedPreferences = getSharedPreferences("welf_preview", 0);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("being_preview", true); //미리보기 건너뛰기를 했거나 미리보기 화면에 들어갔다면
-            editor.apply();
+            //미리보기 했다는 정보 입력 (건너뛰기 포함)
+            sharedSingleton.setBooleanPreview(true);
+//            SharedPreferences sharedPreferences = getSharedPreferences("welf_preview", 0);
+//            SharedPreferences.Editor editor = sharedPreferences.edit();
+//            editor.putBoolean("being_preview", true); //미리보기 건너뛰기를 했거나 미리보기 화면에 들어갔다면
+//            editor.apply();
 
             startActivity(intent);
             finish();

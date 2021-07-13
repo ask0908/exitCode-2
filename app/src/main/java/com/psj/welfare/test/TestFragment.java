@@ -1,14 +1,11 @@
 package com.psj.welfare.test;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -26,22 +23,19 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.orhanobut.logger.Logger;
-import com.psj.welfare.AppDatabase;
 import com.psj.welfare.BannerDetail;
-import com.psj.welfare.CategoryDao;
-import com.psj.welfare.CategoryData;
 import com.psj.welfare.DetailTabLayoutActivity;
 import com.psj.welfare.MainBannerAdapter;
 import com.psj.welfare.MainBannerData;
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
+import com.psj.welfare.SharedSingleton;
 import com.psj.welfare.activity.LoginActivity;
 import com.psj.welfare.activity.YoutubeActivity;
 import com.psj.welfare.activity.YoutubeMoreActivity;
@@ -49,7 +43,6 @@ import com.psj.welfare.adapter.MainDownAdapter;
 import com.psj.welfare.adapter.MainHorizontalYoutubeAdapter;
 import com.psj.welfare.data.HorizontalYoutubeItem;
 import com.psj.welfare.data.MainThreeDataItem;
-import com.psj.welfare.util.DBOpenHelper;
 import com.psj.welfare.viewmodel.MainViewModel;
 
 import org.json.JSONArray;
@@ -91,7 +84,6 @@ public class TestFragment extends Fragment
     // 최상위 핸들러 정의
     private Handler sliderHandler = new Handler();
 
-
     // 20대, 강원, 여성
     TextView Welfdata_first_title;
     // "맞춤 혜택"
@@ -123,19 +115,24 @@ public class TestFragment extends Fragment
     MainHorizontalYoutubeAdapter.ItemClickListener youtubeClickListener;
     List<HorizontalYoutubeItem> youtube_list;
 
-    DBOpenHelper helper;
-    String sqlite_token;
+    //토큰 값
+    private String token;
+    //닉네임
+    private String user_nickname;
+
+//    DBOpenHelper helper;
+//    String sqlite_token;
 
 //    HashMap<String, String> youtube_hashmap;
 
-    ValueHandler handler = new ValueHandler(); //타이틀을 사용하기 위한 핸들러
+    //로그인x, 미리보기o 일 때 타이틀을 사용하기 위한 핸들러
+//    ValueHandler handler = new ValueHandler();
 
-    int count_int;
+//    int count_int;
+//    boolean loggedOut = false;
 
-    boolean loggedOut = false;
-
-    String thumbnail, title, videoId;
-    String welf_name, welf_local, welf_category, tag, count;
+//    String thumbnail, title, videoId;
+//    String welf_name, welf_local, welf_category, tag, count;
 
     private FirebaseAnalytics analytics;
 
@@ -150,6 +147,9 @@ public class TestFragment extends Fragment
     String banner_image, banner_title;
 
     String changed_nickname;
+
+    //쉐어드 싱글톤
+    private SharedSingleton sharedSingleton;
 
     public TestFragment()
     {
@@ -190,22 +190,34 @@ public class TestFragment extends Fragment
     {
         super.onViewCreated(view, savedInstanceState);
 
+        //쉐어드 싱글톤 사용
+        sharedSingleton = SharedSingleton.getInstance(getActivity());
+
+
 //        keyword_list = new ArrayList<>();
         down_list = new ArrayList<>();
 //        youtube_hashmap = new HashMap<>();
         youtube_list = new ArrayList<>();
         other_list = new ArrayList<>();
 
+
+
+
+
+
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
         changed_nickname = sharedPreferences.getString("changed_nickname", "");
+
+
+
+
+
+
+
 
         MainWelfdata.setLayoutManager(new LinearLayoutManager(getActivity()));
         downAdapter = new MainDownAdapter(getActivity(), down_list, downClickListener);
         MainWelfdata.setAdapter(downAdapter);
-
-        helper = new DBOpenHelper(getActivity());
-        helper.openDatabase();
-        helper.create();
 
         //메인 배너 뷰페이저 셋팅
         bannerList = new ArrayList<>(); //메인 배너 담을 리스트
@@ -213,66 +225,134 @@ public class TestFragment extends Fragment
         bannerAdapter = new MainBannerAdapter(bannerList, getActivity(), bannerListener, MainBannerViewpager2, DefaultList);
         MainBannerViewpager2.setAdapter(bannerAdapter);
 
-        // Room DB 안의 데이터를 조회하기 위한 커서 생성
-        Cursor cursor = helper.selectColumns();
-        if (cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-            }
-        }
-        Logger.d("쉐어드의 로그인 확인 변수 : " + sharedPreferences.getBoolean("user_login", false));
+//        helper = new DBOpenHelper(getActivity());
+//        helper.openDatabase();
+//        helper.create();
 
-        if (sharedPreferences.getBoolean("user_login", false))
-        {
+//        // Room DB 안의 데이터를 조회하기 위한 커서 생성
+//        Cursor cursor = helper.selectColumns();
+//        if (cursor != null)
+//        {
+//            while (cursor.moveToNext())
+//            {
+//                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+////                Log.e(TAG,"sqlite_token : " + sqlite_token);
+//            }
+//        }
+//        Logger.d("쉐어드의 로그인 확인 변수 : " + sharedPreferences.getBoolean("user_login", false));
+
+        token = sharedSingleton.getToken(); //토큰 값
+        user_nickname = sharedSingleton.getNickname(); //닉네임
+
+
+
+
+
+
+
+
+
+        //로그인 했을 경우
+        if(sharedSingleton.getBooleanLogin()){
             showWelfareAndYoutubeLogin();
-            Logger.d("로그인하고 showWelfareAndYoutubeLogin() 호출됨"); // 로그인 시 여기로 빠지는 건 맞다
-        }
-        else
-        {
-            /* 비로그인시에는 가운데 로그인 버튼을 보여주고 배너와 유튜브 데이터만 보여준다 */
-            // 로그인 x, 관심사 o인 경우
-            String gender = sharedPreferences.getString("gender", "");
-            String age = sharedPreferences.getString("age_group", "");
-            String area = sharedPreferences.getString("user_area", "");
-            Logger.d("로그인하지 않았지만 관심사는 선택함\n성별 : " + gender + ", 연령대 : " + age + ", 지역 : " + area);
-            if (gender != null && age != null && area != null)
-            {
-                // 성별, 나이, 지역 정보가 다 공백인 경우 ->
-                if (gender.equals("") && age.equals("") && area.equals(""))
+
+            notlogin_card.setVisibility(View.GONE);
+            welfdata_layout.setVisibility(View.VISIBLE);
+
+            if (!changed_nickname.equals(""))
                 {
-                    Logger.d("성별, 나이, 지역 정보 없음");
-                    // 이 부분도 로그인 x, 관심사 o인 경우 이동된다
-//                    showDataForNotLoginAndChoseInterest();
+                    Welfdata_first_title.setText(changed_nickname + "님");
                 }
-                showDataForNotLoginAndChoseInterest(age, gender, area);
-                Logger.d(age + ", " + gender + ", " + area + " :: 이 정보로 서버에 혜택, 유튜브 데이터 요청함");
-//                else
-//                {
-//                    Logger.d("로그인하지 않았고 관심사도 없음");
-//                    showDataForNotLoginAndChoseInterest(age, gender, area);
-//                    // 로그인 x, 관심사 x인 경우
-////                    showWelfareAndYoutubeNotLoginAndNotInterest();
-//                }
-            }
-            // 로그인 x, 관심사 x
-            else
-            {
-                Logger.d("로그인 x, 관심사 x");
-//                Log.e(TAG, "로그인 x, 관심사 x인가?");
-                showWelfareAndYoutubeNotLoginAndNotInterest();
-            }
+                else
+                {
+                    Welfdata_first_title.setText(user_nickname + "님");
+                }
+        } else { //로그인 하지 않았을 경우
+            showWelfareAndYoutubeNotLoginAndNotInterest();
+
+            notlogin_card.setVisibility(View.VISIBLE);
+            welfdata_layout.setVisibility(View.GONE);
         }
+
+
+
+
+
+
+//        if (sharedPreferences.getBoolean("user_login", false))
+//        {
+//            showWelfareAndYoutubeLogin();
+//            Logger.d("로그인하고 showWelfareAndYoutubeLogin() 호출됨"); // 로그인 시 여기로 빠지는 건 맞다
+//        }
+//        else
+//        {
+//            /* 비로그인시에는 가운데 로그인 버튼을 보여주고 배너와 유튜브 데이터만 보여준다 */
+//            // 로그인 x, 관심사 o인 경우
+//            String gender = sharedPreferences.getString("gender", "");
+//            String age = sharedPreferences.getString("age_group", "");
+//            String area = sharedPreferences.getString("user_area", "");
+//            Logger.d("로그인하지 않았지만 관심사는 선택함\n성별 : " + gender + ", 연령대 : " + age + ", 지역 : " + area);
+//            if (gender != null && age != null && area != null)
+//            {
+//                // 성별, 나이, 지역 정보가 다 공백인 경우 ->
+//                if (gender.equals("") && age.equals("") && area.equals(""))
+//                {
+//                    Logger.d("성별, 나이, 지역 정보 없음");
+//                    // 이 부분도 로그인 x, 관심사 o인 경우 이동된다
+////                    showDataForNotLoginAndChoseInterest();
+//                }
+//                showDataForNotLoginAndChoseInterest(age, gender, area);
+//                Logger.d(age + ", " + gender + ", " + area + " :: 이 정보로 서버에 혜택, 유튜브 데이터 요청함");
+////                else
+////                {
+////                    Logger.d("로그인하지 않았고 관심사도 없음");
+////                    showDataForNotLoginAndChoseInterest(age, gender, area);
+////                    // 로그인 x, 관심사 x인 경우
+//////                    showWelfareAndYoutubeNotLoginAndNotInterest();
+////                }
+//            }
+//            // 로그인 x, 관심사 x
+//            else
+//            {
+//                Logger.d("로그인 x, 관심사 x");
+////                Log.e(TAG, "로그인 x, 관심사 x인가?");
+//                showWelfareAndYoutubeNotLoginAndNotInterest();
+//            }
+//        }
+
+
+
+
+
+
+
+        //selected_interest_textview(제목) 값 넣기
+//        settitle();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         // 구글 애널리틱스 초기화
         if (getActivity() != null)
         {
             analytics = FirebaseAnalytics.getInstance(getActivity());
         }
-
-        //selected_interest_textview(제목) 값 넣기
-        settitle();
 
         //xml크기를 동적으로 변환
         setsize();
@@ -423,175 +503,169 @@ public class TestFragment extends Fragment
 
     }
 
-    //xml크기를 동적으로 변환
-    private void setsize()
-    {
-        //size에 저장되는 가로/세로 길이의 단위는 픽셀(Pixel)입니다.
-        ScreenSize screen = new ScreenSize();
-        //context의 스크린 사이즈를 구함
-        Point size = screen.getScreenSize(getActivity());
 
-        //상단 타이틀
-        MainTop.getLayoutParams().height = (int) (size.y * 0.14);
-        //뷰페이저 크기
-        MainBannerViewpager2.getLayoutParams().height = (int) (size.y * 0.275);
-        MainBannerViewpager2.setPadding((int) (size.x * 0.1), (int) (size.y * 0.007), (int) (size.x * 0.1), (int) (size.y * 0.007));
-        //닉네임 첫번째줄 텍스트
-        Welfdata_first_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.027));
-        //닉네임 두번째줄 텍스트
-        Welfdata_second_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.027));
-        //맞춤혜텍 아이템
-        MainWelfdata.setPadding((int) (size.x * 0.05), 0, (int) (size.x * 0.05), 0);
-        //관심사 선택 카드뷰
-        notlogin_card.getLayoutParams().height = (int) (size.y * 0.22);
-        //맞춤 혜택 보여주기 레이아웃
-        welfdata_layout.getLayoutParams().height = (int) (size.y * 0.515);
-        //유튜버 혜택 리뷰 타이틀 레이아웃
-        youtube_title_layout.getLayoutParams().height = (int) (size.y * 0.0415);
-        //유튜브 혜택 타이틀 텍스트
-        youtube_title_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.025));
-        //유튜브 리사이클러뷰
-        youtube_video_recyclerview.getLayoutParams().height = (int) (size.y * 0.3);
-        //"나에게 맞는 혜택 찾기" 버튼 텍스트 크기
-        notlogin_button.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.021));
-        //메인 타이틀 "혜택모아" 텍스트
-        title_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.035));
-    }
 
-    //selected_interest_textview(제목) 값 넣기
-    //room데이터 이용은 메인 쓰레드에서 하면 안된다
-    void settitle()
-    {
-        new Thread(() ->
-        {
-            try
-            {
-                //Room을 쓰기위해 데이터베이스 객체 만들기
-                AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(), AppDatabase.class, "Firstcategory")
-                        .fallbackToDestructiveMigration()
-                        .build();
 
-                //DB에 쿼리를 던지기 위해 선언
-                CategoryDao categoryDao = database.getcategoryDao();
 
-                List<CategoryData> alldata = categoryDao.findAll();
-                for (CategoryData data : alldata)
-                {
-                    age = data.age;
-                    gender = data.gender;
-                    local = data.home;
-                }
-//                Log.e("age",alldata.get(0).age);
-                benefit = age + ", " + local + ", " + gender;
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
 
-            //로그인 했는지 여부 확인하기위한 쉐어드
-            sharedPreferences = getActivity().getSharedPreferences(getString(R.string.shared_name), 0);
-            boolean being_logout = sharedPreferences.getBoolean("logout", true); //로그인 했는지 여부 확인하기
-            String user_nickname = sharedPreferences.getString("user_nickname", ""); //닉네임 받아오기
 
-            Message message = handler.obtainMessage();
-            Bundle bundle = new Bundle();
-            bundle.putString("age", age);
-            bundle.putString("benefit", benefit);
-            bundle.putBoolean("being_logout", being_logout);
-            bundle.putString("user_nickname", user_nickname);
-            message.setData(bundle);
-            //sendMessage가 되면 이 handler가 해당되는 핸들러객체가(ValueHandler) 자동으로 호출된다.
-            handler.sendMessage(message);
 
-        }).start();
-    }
-
-    //핸들러구현한 객체(핸들러역할), 스레드에서 저장한 타이틀 값을 사용하기 위한 핸들러
-    class ValueHandler extends Handler
-    {
-        @Override
-        public void handleMessage(Message msg)
-        {
-            super.handleMessage(msg);
-            Bundle bundle = msg.getData();
-            String age = bundle.getString("age");
-            String benefit = bundle.getString("benefit");
-            String user_nickname = bundle.getString("user_nickname");
-            boolean being_logout = bundle.getBoolean("being_logout");
-
-            if (!being_logout)
-            { //로그인 했다면
-                if (!changed_nickname.equals(""))
-                {
-                    Welfdata_first_title.setText(changed_nickname + "님");
-                }
-                else
-                {
-                    Welfdata_first_title.setText(user_nickname + "님");
-                }
-                notlogin_card.setVisibility(View.GONE);
-                welfdata_layout.setVisibility(View.VISIBLE);
-            }
-//            else if (age != null)
-//            { //미리보기 관심사를 선택했다면
-//                Welfdata_first_title.setText(benefit);
+//    //room 사용 참고용
+//    //미리보기에서 선택한 값 Room으로 불러오기
+//    //selected_interest_textview(제목) 값 넣기
+//    //room데이터 이용은 메인 쓰레드에서 하면 안된다
+//    void settitle()
+//    {
+//        new Thread(() ->
+//        {
+//            try
+//            {
+//                //Room을 쓰기위해 데이터베이스 객체 만들기
+//                AppDatabase database = Room.databaseBuilder(getActivity().getApplicationContext(), AppDatabase.class, "Firstcategory")
+//                        .fallbackToDestructiveMigration()
+//                        .build();
+//
+//                //DB에 쿼리를 던지기 위해 선언
+//                CategoryDao categoryDao = database.getcategoryDao();
+//
+//                List<CategoryData> alldata = categoryDao.findAll();
+//                for (CategoryData data : alldata)
+//                {
+//                    age = data.age;
+//                    gender = data.gender;
+//                    local = data.home;
+//                }
+////                Log.e("age",alldata.get(0).age);
+//                benefit = age + ", " + local + ", " + gender;
+//            }
+//            catch (Exception e)
+//            {
+//                e.printStackTrace();
+//            }
+//
+//            //로그인 했는지 여부 확인하기위한 쉐어드
+//            sharedPreferences = getActivity().getSharedPreferences(getString(R.string.shared_name), 0);
+//            boolean being_logout = sharedPreferences.getBoolean("logout", true); //로그인 했는지 여부 확인하기
+//            String user_nickname = sharedPreferences.getString("user_nickname", ""); //닉네임 받아오기
+//
+//            Message message = handler.obtainMessage();
+//            Bundle bundle = new Bundle();
+//            bundle.putString("age", age);
+//            bundle.putString("benefit", benefit);
+//            bundle.putBoolean("being_logout", being_logout);
+//            bundle.putString("user_nickname", user_nickname);
+//            message.setData(bundle);
+//            //sendMessage가 되면 이 handler가 해당되는 핸들러객체가(ValueHandler) 자동으로 호출된다.
+//            handler.sendMessage(message);
+//
+//        }).start();
+//    }
+//
+//    //핸들러구현한 객체(핸들러역할), 스레드에서 저장한 타이틀 값을 사용하기 위한 핸들러
+//    class ValueHandler extends Handler
+//    {
+//        @Override
+//        public void handleMessage(Message msg)
+//        {
+//            super.handleMessage(msg);
+//            Bundle bundle = msg.getData();
+//            String age = bundle.getString("age");
+//            String benefit = bundle.getString("benefit");
+//            String user_nickname = bundle.getString("user_nickname");
+//            boolean being_logout = bundle.getBoolean("being_logout");
+//
+//            if (!being_logout)
+//            { //로그인 했다면
+//                if (!changed_nickname.equals(""))
+//                {
+//                    Welfdata_first_title.setText(changed_nickname + "님");
+//                }
+//                else
+//                {
+//                    Welfdata_first_title.setText(user_nickname + "님");
+//                }
 //                notlogin_card.setVisibility(View.GONE);
 //                welfdata_layout.setVisibility(View.VISIBLE);
 //            }
-            else
-            { //비로그인 + 관심사 선택 X
-                notlogin_card.setVisibility(View.VISIBLE);
-                welfdata_layout.setVisibility(View.GONE);
-            }
-        }
-    }
+////            else if (age != null)
+////            { //미리보기 관심사를 선택했다면
+////                Welfdata_first_title.setText(benefit);
+////                notlogin_card.setVisibility(View.GONE);
+////                welfdata_layout.setVisibility(View.VISIBLE);
+////            }
+//            else
+//            { //비로그인 + 관심사 선택 X
+//                notlogin_card.setVisibility(View.VISIBLE);
+//                welfdata_layout.setVisibility(View.GONE);
+//            }
+//        }
+//    }
 
-    /* 관심사 o, 로그인 x인 유저에게 데이터 가져와 보여주는 메서드 */
-    private void showDataForNotLoginAndChoseInterest(String age, String gender, String local)
-    {
-        final ProgressDialog dialog = new ProgressDialog(getActivity());
-        dialog.setMax(100);
-        dialog.setMessage("잠시만 기다려 주세요...");
-        dialog.setCancelable(false); //"false"면 다이얼로그 나올 때 dismiss 띄우기 전까지 안사라짐
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        dialog.show();
 
-//        String age = sharedPreferences.getString("age_group", "");
-//        String gender = sharedPreferences.getString("gender", "");
-//        String local = sharedPreferences.getString("user_area", "");
 
-        mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
-        final Observer<String> mainObserver = new Observer<String>()
-        {
-            @Override
-            public void onChanged(String str)
-            {
-                if (str != null)
-                {
-                    responseParse(str);
-                }
-                else
-                {
-                    Log.e(TAG, "str(결과값)이 null입니다");
-                }
-                dialog.dismiss();
-            }
-        };
-        mainViewModel.showDataForNotLoginAndChoseInterest(age, gender, local, "main")
-                .observe(getActivity(), mainObserver);
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    /* 관심사 o, 로그인 x인 유저에게 데이터 가져와 보여주는 메서드 */
+//    private void showDataForNotLoginAndChoseInterest(String age, String gender, String local)
+//    {
+////        final ProgressDialog dialog = new ProgressDialog(getActivity());
+////        dialog.setMax(100);
+////        dialog.setMessage("잠시만 기다려 주세요...");
+////        dialog.setCancelable(false); //"false"면 다이얼로그 나올 때 dismiss 띄우기 전까지 안사라짐
+////        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+////        dialog.show();
+//
+////        String age = sharedPreferences.getString("age_group", "");
+////        String gender = sharedPreferences.getString("gender", "");
+////        String local = sharedPreferences.getString("user_area", "");
+//
+//        mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
+//        final Observer<String> mainObserver = new Observer<String>()
+//        {
+//            @Override
+//            public void onChanged(String str)
+//            {
+//                if (str != null)
+//                {
+//                    responseParse(str);
+//                    Log.e(TAG,"test01 : " + str);
+//                }
+//                else
+//                {
+//                    Log.e(TAG, "str(결과값)이 null입니다");
+//                }
+////                dialog.dismiss();
+//            }
+//        };
+//        mainViewModel.showDataForNotLoginAndChoseInterest(age, gender, local, "main")
+//                .observe(getActivity(), mainObserver);
+//    }
+
+
 
     /* 비로그인 시 혜택, 유튜브 데이터 가져와 보여주는 메서드 */
     private void showWelfareAndYoutubeNotLoginAndNotInterest()
     {
         //서버로부터 데이터를 받아오는데 걸리는 시간동안 보여줄 프로그래스 바
-        final ProgressDialog dialog = new ProgressDialog(getActivity());
-        dialog.setMax(100);
-        dialog.setMessage("잠시만 기다려 주세요...");
-        dialog.setCancelable(false); //"false"면 다이얼로그 나올 때 dismiss 띄우기 전까지 안사라짐
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        dialog.show();
+//        final ProgressDialog dialog = new ProgressDialog(getActivity());
+//        dialog.setMax(100);
+//        dialog.setMessage("잠시만 기다려 주세요...");
+//        dialog.setCancelable(false); //"false"면 다이얼로그 나올 때 dismiss 띄우기 전까지 안사라짐
+//        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//        dialog.show();
 
         mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         final Observer<String> mainObserver = new Observer<String>()
@@ -603,27 +677,30 @@ public class TestFragment extends Fragment
                 {
                     responseParse(str);
                     Log.e(TAG, "비로그인 상태로 가져온 혜택, 유튜브 데이터들 : " + str);
+                    Log.e(TAG,"test02 : " + str);
                 }
                 else
                 {
                     Log.e(TAG, "str(결과값)이 null입니다");
                 }
 
-                dialog.dismiss(); //서버 연결후에 프로그래스바 숨기기
+//                dialog.dismiss(); //서버 연결후에 프로그래스바 숨기기
             }
         };
         mainViewModel.getAllData().observe(getActivity(), mainObserver);
     }
 
+
+
     /* 로그인 시 혜택, 유튜브 데이터 가져와 보여주는 메서드 */
     private void showWelfareAndYoutubeLogin()
     {
-        final ProgressDialog dialog = new ProgressDialog(getActivity());
-        dialog.setMax(100);
-        dialog.setMessage("잠시만 기다려 주세요...");
-        dialog.setCancelable(false); //"false"면 다이얼로그 나올 때 dismiss 띄우기 전까지 안사라짐
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        dialog.show();
+//        final ProgressDialog dialog = new ProgressDialog(getActivity());
+//        dialog.setMax(100);
+//        dialog.setMessage("잠시만 기다려 주세요...");
+//        dialog.setCancelable(false); //"false"면 다이얼로그 나올 때 dismiss 띄우기 전까지 안사라짐
+//        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//        dialog.show();
 
         mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         final Observer<String> mainObserver = new Observer<String>()
@@ -635,16 +712,38 @@ public class TestFragment extends Fragment
                 {
                     Logger.d("로그인 후 가져온 혜택, 유튜브 데이터 : " + str);
                     responseParse(str);
+                    Log.e(TAG,"test03 : " + str);
                 }
                 else
                 {
                     Log.e(TAG, "str이 null입니다");
                 }
-                dialog.dismiss();
+//                dialog.dismiss();
             }
         };
-        mainViewModel.showWelfareAndYoutubeLogin("main", sqlite_token).observe(getActivity(), mainObserver);
+        mainViewModel.showWelfareAndYoutubeLogin(token,"main").observe(getActivity(), mainObserver);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private void responseParse(String result)
     {
@@ -777,6 +876,41 @@ public class TestFragment extends Fragment
         });
         youtube_video_recyclerview.setAdapter(youtubeAdapter);
 
+    }
+
+    //xml크기를 동적으로 변환
+    private void setsize()
+    {
+        //size에 저장되는 가로/세로 길이의 단위는 픽셀(Pixel)입니다.
+        ScreenSize screen = new ScreenSize();
+        //context의 스크린 사이즈를 구함
+        Point size = screen.getScreenSize(getActivity());
+
+        //상단 타이틀
+        MainTop.getLayoutParams().height = (int) (size.y * 0.14);
+        //뷰페이저 크기
+        MainBannerViewpager2.getLayoutParams().height = (int) (size.y * 0.275);
+        MainBannerViewpager2.setPadding((int) (size.x * 0.1), (int) (size.y * 0.007), (int) (size.x * 0.1), (int) (size.y * 0.007));
+        //닉네임 첫번째줄 텍스트
+        Welfdata_first_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.027));
+        //닉네임 두번째줄 텍스트
+        Welfdata_second_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.027));
+        //맞춤혜텍 아이템
+        MainWelfdata.setPadding((int) (size.x * 0.05), 0, (int) (size.x * 0.05), 0);
+        //관심사 선택 카드뷰
+        notlogin_card.getLayoutParams().height = (int) (size.y * 0.22);
+        //맞춤 혜택 보여주기 레이아웃
+        welfdata_layout.getLayoutParams().height = (int) (size.y * 0.515);
+        //유튜버 혜택 리뷰 타이틀 레이아웃
+        youtube_title_layout.getLayoutParams().height = (int) (size.y * 0.0415);
+        //유튜브 혜택 타이틀 텍스트
+        youtube_title_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.025));
+        //유튜브 리사이클러뷰
+        youtube_video_recyclerview.getLayoutParams().height = (int) (size.y * 0.3);
+        //"나에게 맞는 혜택 찾기" 버튼 텍스트 크기
+        notlogin_button.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.021));
+        //메인 타이틀 "혜택모아" 텍스트
+        title_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.035));
     }
 
     @Override

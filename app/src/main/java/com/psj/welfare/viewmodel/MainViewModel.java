@@ -93,11 +93,10 @@ public class MainViewModel extends AndroidViewModel
         return data;
     }
 
-    public MutableLiveData<String> showWelfareAndYoutubeLogin(String type,
-                                                              String logintoken)
+    public MutableLiveData<String> showWelfareAndYoutubeLogin(String logintoken, String type)
     {
         final MutableLiveData<String> data = new MutableLiveData<>();
-        apiInterface.showWelfareAndYoutubeLogin(type, logintoken)
+        apiInterface.showWelfareAndYoutubeLogin(logintoken,type)
                 .enqueue(new Callback<String>()
                 {
                     @Override

@@ -1,5 +1,6 @@
 package com.psj.welfare.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
@@ -25,11 +26,11 @@ import com.kakao.usermgmt.callback.MeV2ResponseCallback;
 import com.kakao.usermgmt.response.MeV2Response;
 import com.kakao.util.OptionalBoolean;
 import com.kakao.util.exception.KakaoException;
+import com.psj.welfare.SharedSingleton;
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
-import com.psj.welfare.util.DBOpenHelper;
 import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONException;
@@ -55,14 +56,33 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private SessionCallback sessionCallback;
 
     // FCM 토큰값 저장 변수
-    String token;
+    private String FCMtoken;
+    //토큰, 세션 아이디
+    private String token, sessionId;
+
+
 
     // 로그인 시 서버에서 주는 토큰
-    String server_token, nickName;
+    String server_token, nickname;
     // 카카오 로그인 시 확인할 수 있는 카카오 이메일을 담기 위한 변수
     String kakao_email;
+
+
+//    //카카오톡에서 받은 데이터
+//    private String name; //카카오 닉네임
+//    private String profile; //카카오 프로필
+
+
+    //관심사 선택 했는지 여뷰
+    private boolean is_interest;
+
+    // 관심사 처음 선택시 관심사 선택 완료 버튼을 눌렀을 경우 로그인 화면도 같이 종료해야 하기 때문에 선언한 변수
+    public static Activity activity;
+
     // 로그아웃 상태 체크용 변수
-    boolean loggedOut;
+//    boolean loggedOut;
+
+
 
     // 혜택모아 텍스트
     TextView app_logo_text;
@@ -73,7 +93,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     // 구글 애널리틱스
     private FirebaseAnalytics analytics;
 
-    DBOpenHelper helper;
+//    DBOpenHelper helper;
+
+    //쉐어드 싱글톤
+    private SharedSingleton sharedSingleton;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -83,24 +106,53 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);         // 상태바 글자색 검정색으로 바꾸기
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorMainWhite));    // 상태바 배경 흰색으로 설정
 
-        helper = new DBOpenHelper(this);
-        helper.openDatabase();
-        helper.create();
+        //쉐어드 싱글톤 사용
+        sharedSingleton = SharedSingleton.getInstance(this);
+
+        activity = LoginActivity.this;
+
+        token = sharedSingleton.getToken();
+        sessionId = sharedSingleton.getSessionId();
+
+
+
+
+
+
+
+//        helper = new DBOpenHelper(this);
+//        helper.openDatabase();
+//        helper.create();
 
         analytics = FirebaseAnalytics.getInstance(this);
 
         app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
         // 스플래시 화면에서 받은 FCM 토큰
-        token = app_pref.getString("fcm_token", "");
+//        token = app_pref.getString("fcm_token", "");
+        FCMtoken = sharedSingleton.getFCMtoken();
+
+
+
 
         // 서버로 사용자 로그 전송
         userLog(getString(R.string.login_entry));
 
-        if (getIntent().hasExtra("loggedOut"))
-        {
-            Intent intent = getIntent();
-            loggedOut = intent.getBooleanExtra("loggedOut", false);
-        }
+
+
+
+
+
+
+//        if (getIntent().hasExtra("loggedOut"))
+//        {
+//            Intent intent = getIntent();
+//            loggedOut = intent.getBooleanExtra("loggedOut", false);
+//        }
+
+
+
+
+
 
         /* 앱 실행 시 카카오 서버의 로그인 토큰이 있으면 자동으로 로그인 수행  */
         // 카카오 SDK를 쓰기 위해 SessionCallback 객체화
@@ -193,25 +245,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     {
                         kakao_email = result.getKakaoAccount().getEmail();
                     }
-                    app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
-                    SharedPreferences.Editor editor = app_pref.edit();
-                    Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
-                    editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
-                    editor.putString(getString(R.string.get_kakao_name), result.getNickname());
-                    editor.putString("kakao_email", result.getKakaoAccount().getEmail());
+
+//                    app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
+//                    SharedPreferences.Editor editor = app_pref.edit();
+//                    editor.putString(getString(R.string.get_kakao_image), result.getProfileImagePath());
+//                    editor.putString(getString(R.string.get_kakao_name), result.getNickname());
+//                    editor.putString("kakao_email", result.getKakaoAccount().getEmail());
                     /* 로그인 여부를 확인하기 위한 boolean 값을 쉐어드에 저장한다
                      * 이 값으로 마이페이지에서 로그인 시 어떤 뷰를 보여줄지 결정한다 */
-                    editor.putString("first_visit", "0");
-                    editor.putBoolean("user_login", true);
-                    editor.apply();
-                    intent.putExtra("name", result.getNickname());
-                    intent.putExtra("profile", result.getProfileImagePath());
-                    intent.putExtra("email", result.getKakaoAccount().getEmail());
+//                    editor.putString("first_visit", "0");
+//                    editor.putBoolean("user_login", true);
+//                    editor.apply();
+
+                    //카카오에서 받은 데이터
+//                    profile = result.getProfileImagePath();
+//                    name = result.getNickname();
+
                     sendUserTypeAndPlatform();
-                    intent.putExtra("user_token", server_token);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    finish();
+
+
+
                     /* 사용자 정보(관심사)를 입력받기 위해 이동한다. 기존에 입력된 정보가 있으면 MainTabLayoutActivity로 이동한다 */
 //                    if (!app_pref.getString("interest", "").equals(""))
 //                    {
@@ -261,8 +314,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+
+
+
+
+
     /* 카카오 로그인 시 서버로 osType, platform, FCM 토큰값 정보를 보내는 메서드 */
-    void sendUserTypeAndPlatform()
+    public void sendUserTypeAndPlatform()
     {
         encode("카카오 로그인 시도");
 
@@ -270,19 +328,23 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         JSONObject jsonObject = new JSONObject();
         try
         {
-            jsonObject.put("email", kakao_email);
-            jsonObject.put("fcm_token", token);
-            jsonObject.put("osType", getString(R.string.login_os));
             jsonObject.put("platform", getString(R.string.main_platform));
+            jsonObject.put("osType", getString(R.string.login_os));
+            jsonObject.put("fcm_token", FCMtoken);
+            jsonObject.put("email", kakao_email);
         }
         catch (JSONException e)
         {
             e.printStackTrace();
         }
 
+
+        Log.e(TAG,"jsonObject.toString() : " + jsonObject.toString());
+
+
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
 //        Call<String> call = apiInterface.sendUserTypeAndPlatform(jsonObject.toString());
-        Call<String> call = apiInterface.sendUserTypeAndPlatform(kakao_email, token, getString(R.string.login_os), getString(R.string.main_platform));
+        Call<String> call = apiInterface.Login(jsonObject.toString());
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -308,23 +370,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
+
+
+
+
+
+
     /* 로그인 화면으로 들어오면 로그인 화면에 들어왔다는 로그를 만들어 보낸다 */
-    void userLog(String user_action)
+    public void userLog(String user_action)
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        app_pref = getSharedPreferences("app_pref", 0);
-        String token;
-        if (app_pref.getString("token", "").equals(""))
-        {
-            token = null;
-        }
-        else
-        {
-            token = app_pref.getString("token", "");
-        }
-        String session = app_pref.getString("sessionId", "");
         encode(user_action);
-        Call<String> call = apiInterface.userLog(token, session, "login", encode_str, null, LogUtil.getUserLog());
+        Call<String> call = apiInterface.userLog(token, sessionId, "login", encode_str, null, LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -361,6 +418,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+
     /* 화면이 완전히 종료되면 카카오 로그인 세션을 종료한다 */
     @Override
     protected void onDestroy()
@@ -383,40 +441,55 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+
+
     /* 로그인 시 서버에서 넘어오는 토큰값을 저장하는 메서드 */
     private void tokenParsing(String data)
     {
-        Log.e(TAG, "로그인 액티비티에서 로그인 메서드 진입");
-        // 서버에서 발급받은 토큰값을 저장할 쉐어드 준비
-        app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
-        SharedPreferences.Editor editor = app_pref.edit();
+//        Log.e(TAG, "로그인 액티비티에서 로그인 메서드 진입");
         try
         {
             JSONObject token_object = new JSONObject(data);
-            server_token = token_object.getString("Token");
-            nickName = token_object.getString("nickName");
+            server_token = token_object.getString("token");
+            nickname = token_object.getString("nickname");
+            is_interest = Boolean.parseBoolean(token_object.getString("is_interest"));
         }
         catch (JSONException e)
         {
             e.printStackTrace();
         }
 
-        Log.e(TAG, "로그인하고 서버에서 받은 토큰 : " + server_token);
+        //로그인했음
+        sharedSingleton.setBooleanLogin(true);
 
-        /* 다른 액티비티/프래그먼트에서도 활용해야 하기 때문에 서버에서 받은 토큰값을 쉐어드에 저장해 사용한다 */
-        editor.putString("token", server_token);
+        //토큰값 저장하기
+        sharedSingleton.setToken(server_token);
+
+        //닉네임 값 저장하기
+        sharedSingleton.setNickname(nickname);
+
+        //관심사 선택했는지 값 저장하기
+        sharedSingleton.setBooleanInterst(is_interest);
 
         /* SQLite에 저장 */
-        helper.insertColumn(server_token);
+//        helper.insertColumn(server_token);
 
-        // logout이 true라면 로그아웃한 상태에서 로그인하는 거니까 서버에서 받은 닉네임 값을 쉐어드에 저장하고 메인 화면으로 이동시킨다
-        // 이렇게 메인으로 이동한 경우 로그인했을 때처럼 맞춤 혜택을 보여줘야 한다
-        if (app_pref.getBoolean("logout", false))
-        {
-            editor.putString("user_nickname", nickName);
-            editor.putBoolean("logout", false);
-//            editor.putBoolean("logout", true);
+        //관심사 선택 안했다면
+        if(!is_interest){
+            Intent intent = new Intent(LoginActivity.this, ChooseFirstInterestActivity.class);
+            startActivity(intent);
         }
-        editor.apply();
+        //관심사 선택 했다면
+        else
+        {
+            //서버 연결해서 관심사 있는지 없는지
+            finish();
+            Intent intent = new Intent(LoginActivity.this, MainTabLayoutActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+
+        }
+
+
     }
 }

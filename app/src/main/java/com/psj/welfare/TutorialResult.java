@@ -2,7 +2,6 @@ package com.psj.welfare;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,7 +13,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
-import com.orhanobut.logger.Logger;
 import com.psj.welfare.activity.MainTabLayoutActivity;
 
 import org.json.JSONArray;
@@ -37,13 +35,16 @@ public class TutorialResult extends AppCompatActivity {
     private TextView BenefitTag1, BenefitTag2, BenefitTag3; //혜택태그
     private TextView BenefitText; //혜택 설명 텍스트
 
-    SharedPreferences sharedPreferences;
-    String force_stop;
+    //쉐어드 싱글톤
+    private SharedSingleton sharedSingleton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial_result);
+
+        //쉐어드 싱글톤 사용
+        sharedSingleton = SharedSingleton.getInstance(this);
 
         BtnGoMain = findViewById(R.id.BtnGoMain); //메인으로 가기 버튼
         BenefitTitle1 = findViewById(R.id.BenefitTitle1); //혜택명1
@@ -55,34 +56,19 @@ public class TutorialResult extends AppCompatActivity {
 
         BenefitText = findViewById(R.id.BenefitText); //혜택 설명 텍스트
 
-        sharedPreferences = getSharedPreferences("app_pref", 0);
-        force_stop = sharedPreferences.getString("force_stopped", "");
-        Logger.d("강제종료 값 확인 : " + force_stop);
-
         //혜택 데이터 가져오기
         LodingBenefit();
 
         //메인으로 가기 버튼
         BtnGoMain.setOnClickListener(v -> {
             Intent intent = new Intent(TutorialResult.this, MainTabLayoutActivity.class);
+
+            //미리보기 했다는 정보 입력
+            sharedSingleton.setBooleanPreview(true);
+
             startActivity(intent);
             finish();
         });
-
-
-//        int standardSize_X, standardSize_Y;
-//        float density;
-//
-//        ScreenSize screen = new ScreenSize();
-//        Point ScreenSize = screen.getScreenSize(this);
-//        density  = getResources().getDisplayMetrics().density;
-//
-//        standardSize_X = (int) (ScreenSize.x / density);
-//        standardSize_Y = (int) (ScreenSize.y / density);
-//
-//        BenefitTitle1.setTextSize((float) (standardSize_X / 10));
-//        BenefitTitle1.setTextSize((float) (standardSize_Y / 15));
-
 
         //버튼 및 텍스트의 사이즈를 동적으로 맞춤
         SetSize();

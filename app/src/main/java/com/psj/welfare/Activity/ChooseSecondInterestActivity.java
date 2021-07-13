@@ -3,7 +3,6 @@ package com.psj.welfare.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -20,12 +19,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
-import com.orhanobut.logger.Logger;
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
+import com.psj.welfare.SharedSingleton;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
-import com.psj.welfare.util.DBOpenHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -69,8 +67,8 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
     // 이 클릭 횟수를 통해 버튼 테두리를 바꾸거나 리스트에 값을 넣고 뺀다
     int[] arr = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-    DBOpenHelper helper;
-    String sqlite_token;
+//    DBOpenHelper helper;
+//    String sqlite_token;
     // 서버로 보낼 관심사(나이, 지역, 가구 형태, 카테고리)
     String send_age, send_local, send_family, send_category;
 
@@ -81,10 +79,17 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
 
     // 강제종료해서 관심사 선택으로 온 건지 구별할 때 사용할 인텐트, 변수
     Intent force_stopped_intent;
-    int force_stopped_value = 0;
+//    int force_stopped_value = 0;
     String force_stopped;
 
     SharedPreferences sharedPreferences;
+
+    //로그인 토큰 값
+    private String token;
+
+    //로그인 관련 쉐어드 singleton
+    private SharedSingleton sharedSingleton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -93,57 +98,44 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
         setStatusBarGradiant(this);
         setContentView(R.layout.activity_choose_second_interest);
 
-        helper = new DBOpenHelper(this);
-        helper.openDatabase();
-        helper.create();
+        //로그인 관련 쉐어드 singleton 사용
+        sharedSingleton = SharedSingleton.getInstance(this);
+        token = sharedSingleton.getToken();
 
         family = new ArrayList<>();
         category = new ArrayList<>();
 
-        Cursor cursor = helper.selectColumns();
-        if (cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-            }
-        }
+//        helper = new DBOpenHelper(this);
+//        helper.openDatabase();
+//        helper.create();
+//
+//        Cursor cursor = helper.selectColumns();
+//        if (cursor != null)
+//        {
+//            while (cursor.moveToNext())
+//            {
+//                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+//            }
+//        }
 
-        if (getIntent().hasExtra("force_stopped"))
-        {
-            // findViewById() 모아놓은 메서드
-            init();
+        // findViewById() 모아놓은 메서드
+        init();
 
-            // 가구 형태, 카테고리 버튼 클릭 리스너 모음
-            buttonsClickListener();
+        //xml크기를 동적으로 변환
+        setsize();
 
-            force_stopped_intent = getIntent();
-            force_stopped = force_stopped_intent.getStringExtra("force_stopped");
-            Logger.d("force_stopped 값 : " + force_stopped);
-        }
-        else
-        {
-            Intent intent = getIntent();
-            age = (ArrayList<String>) intent.getSerializableExtra("age");
-            area = (ArrayList<String>) intent.getSerializableExtra("area");
+        //ChooseFirstInterestActivity에서 인텐트로 받은 값 변수에 넣기
+        getintentData();
 
-            // findViewById() 모아놓은 메서드
-            init();
+        // 가구 형태, 카테고리 버튼 클릭 리스너 모음
+        buttonsClickListener();
 
-            // 가구 형태, 카테고리 버튼 클릭 리스너 모음
-            buttonsClickListener();
-
+        //이전에 관심사 선택했었다면(관심사 수정이라면)
+        if(sharedSingleton.getBooleanPreview()){
+            //관심사 조회 하기
             selectMyInterest();
-
-            ScreenSize screen = new ScreenSize();
-            Point size = screen.getScreenSize(this);
-
-            second_interest_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-            second_select_interest_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 17);
-            household_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
-            category_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
-            choose_complete_button.setTextSize(TypedValue.COMPLEX_UNIT_PX,(float) (size.x*0.055));
         }
+
 
         // 선택 완료 버튼
         choose_complete_button.setOnClickListener(v ->
@@ -155,15 +147,15 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
             StringBuilder household_builder = new StringBuilder();
             StringBuilder category_builder = new StringBuilder();
 
-            Intent intent = getIntent();
-            age = (ArrayList<String>) intent.getSerializableExtra("age");
-            area = (ArrayList<String>) intent.getSerializableExtra("area");
-
-            // findViewById() 모아놓은 메서드
-            init();
-
-            // 가구 형태, 카테고리 버튼 클릭 리스너 모음
-            buttonsClickListener();
+//            Intent intent = getIntent();
+//            age = (ArrayList<String>) intent.getSerializableExtra("age");
+//            area = (ArrayList<String>) intent.getSerializableExtra("area");
+//
+//            // findViewById() 모아놓은 메서드
+//            init();
+//
+//            // 가구 형태, 카테고리 버튼 클릭 리스너 모음
+//            buttonsClickListener();
 
             if (age.size() == 0 || area.size() == 0 || family.size() == 0 || category.size() == 0)
             {
@@ -210,37 +202,69 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
 
                 sharedPreferences = getSharedPreferences("app_pref", 0);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("force_stopped", "0");
+//                editor.putString("force_stopped", "0");
                 editor.putString("interest_age", send_age);
                 editor.putString("interest_local", send_local);
                 editor.putString("interest_family", send_family);
                 editor.putString("interest_category", send_category);
                 editor.apply();
 
-                modifyMyInterest();
-            }
 
+                //이전에 관심사 선택을 했었다면 관심사 수정
+                if(sharedSingleton.getBooleanPreview()){
+                    modifyMyInterest();
+                } else { //이전에 관심사 선택을 안했었다면 관심사 추가
+                    AddMyInterest();
+                }
+
+            }
         });
 
         // 뒤로 가기 이미지
         second_interest_back_image.setOnClickListener(v -> {
-            if (force_stopped_value == 404)
-            {
-                //
-            }
-            else
-            {
-                finish();
-            }
+            finish();
         });
 
     }
+
+
+
+    /* 관심사 추가 메서드 */
+    private void AddMyInterest()
+    {
+        ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
+        Call<String> call = apiInterface.AddMyInterest(token, send_age, send_local, send_family, send_category);
+        call.enqueue(new Callback<String>()
+        {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response)
+            {
+                if (response.isSuccessful() && response.body() != null)
+                {
+                    String result = response.body();
+                    Log.e(TAG, "관심사 수정 결과 : " + result);
+                    parseModifyResult(result);
+                }
+                else
+                {
+                    Log.e(TAG, "관심사 수정 실패 : " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t)
+            {
+                Log.e(TAG, "관심사 수정 에러 : " + t.getMessage());
+            }
+        });
+    }
+
 
     /* 관심사 수정 메서드 */
     private void modifyMyInterest()
     {
         ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
-        Call<String> call = apiInterface.checkAndModifyInterest(sqlite_token, send_age, send_local, send_family, send_category, "modify");
+        Call<String> call = apiInterface.checkAndModifyInterest(token, send_age, send_local, send_family, send_category, "modify");
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -280,45 +304,62 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        // 강제종료한 상태고 여기서 관심사 선택을 완료했다면 저장 버튼을 눌렀을 때 화면을 종료하고 메인 화면으로 이동해야 한다
-        if (force_stopped_value == 404)
+
+
+
+        if (msg != null && !msg.equals(""))
         {
-            // 강제종료한 상태에서 저장 버튼을 눌렀을 때 서버에서 받은 메시지가 있다면
-            if (msg != null && !msg.equals(""))
-            {
-                Intent intent = new Intent(this, MainTabLayoutActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            //첫 로그인시 관심사는 무조건 받아야 한다
+            //관심사 선택을 한적이 없다면
+            if(!sharedSingleton.getBooleanInterst()){
+
+                Toast.makeText(this, "관심사 선택이 완료됐어요", Toast.LENGTH_SHORT).show();
+
+                //관심사 선택 첫번째 클래스 액티비티 종료
+                ChooseFirstInterestActivity firstInterestActivity = (ChooseFirstInterestActivity) ChooseFirstInterestActivity.activity;
+                firstInterestActivity.finish();
+
+                //로그인 액티비티 종료
+                LoginActivity loginActivity = (LoginActivity) LoginActivity.activity;
+                //로그인 누르고 바로 관심사 선택으로 넘어올 수도 있지만 첫 로그인시 앱 종료후 다시 키면 관심사 선택으로 넘어온다
+                //그 때 로그인 화면 액티비티가 살아있으면 종료 시킨다
+                if(loginActivity != null){
+                    loginActivity.finish();
+                }
+                
+                //관심사 선택을 했다고 설정 바꿈
+                sharedSingleton.setBooleanInterst(true);
+
+                //첫 로그인시 관심사를 선택 했으면 메인으로 보내야 한다
+                //서버 연결해서 관심사 있는지 없는지
+                Intent intent = new Intent(ChooseSecondInterestActivity.this, MainTabLayoutActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+                finish();
+
+            }
+            else { //관심사 선택을 했었다면
+                Toast.makeText(this, "관심사 수정이 완료됐어요", Toast.LENGTH_SHORT).show();
+
+                //관심사 선택 첫번째 클래스 액티비티 종료
                 ChooseFirstInterestActivity firstInterestActivity = (ChooseFirstInterestActivity) ChooseFirstInterestActivity.activity;
                 firstInterestActivity.finish();
                 finish();
             }
-            else
-            {
-                Toast.makeText(this, "일시적인 오류가 발생했어요. 잠시 후 다시 시도해 주세요", Toast.LENGTH_SHORT).show();
-            }
+
         }
         else
         {
-            if (msg != null && !msg.equals(""))
-            {
-                Toast.makeText(this, "관심사 수정이 완료됐어요", Toast.LENGTH_SHORT).show();
-                ChooseFirstInterestActivity firstInterestActivity = (ChooseFirstInterestActivity) ChooseFirstInterestActivity.activity;
-                firstInterestActivity.finish();
-                finish();
-            }
-            else
-            {
-                Toast.makeText(this, "일시적인 오류가 발생했어요. 잠시 후 다시 시도해 주세요", Toast.LENGTH_SHORT).show();
-            }
+            Toast.makeText(this, "일시적인 오류가 발생했어요. 잠시 후 다시 시도해 주세요", Toast.LENGTH_SHORT).show();
         }
+
     }
 
     // 관심사 조회 메서드
     private void selectMyInterest()
     {
         ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
-        Call<String> call = apiInterface.checkAndModifyInterest(sqlite_token, null, null, null, null, "show");
+        Call<String> call = apiInterface.checkAndModifyInterest(token, null, null, null, null, "show");
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -687,6 +728,7 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
 
     }
 
+
     // 버튼 클릭 리스너 모아놓은 메서드
     private void buttonsClickListener()
     {
@@ -993,6 +1035,17 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
         });
     }
 
+    //ChooseFirstInterestActivity에서 인텐트로 받은 값 변수에 넣기
+    private void getintentData() {
+        Intent intent = getIntent();
+        age = (ArrayList<String>) intent.getSerializableExtra("age");
+        area = (ArrayList<String>) intent.getSerializableExtra("area");
+
+        for (int i = 0; i < age.size(); i++){
+            Log.e(TAG,"age : " + age.get(i));
+        }
+    }
+
     private void init()
     {
         household_button_layout = findViewById(R.id.household_button_layout);
@@ -1032,6 +1085,18 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(activity.getResources().getColor(android.R.color.transparent));
         window.setBackgroundDrawable(background);
+    }
+
+    //xml크기를 동적으로 변환
+    private void setsize() {
+        ScreenSize screen = new ScreenSize();
+        Point size = screen.getScreenSize(this);
+
+        second_interest_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+        second_select_interest_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 17);
+        household_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
+        category_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
+        choose_complete_button.setTextSize(TypedValue.COMPLEX_UNIT_PX,(float) (size.x*0.055));
     }
 
 }

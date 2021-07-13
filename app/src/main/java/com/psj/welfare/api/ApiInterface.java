@@ -156,7 +156,6 @@ public interface ApiInterface
 
     /* ↓ 로그인 메서드 */
     // ===================================================================================================
-
     @FormUrlEncoded
     @POST("https://www.hyemo.com/login")
     Call<String> sendUserTypeAndPlatform(
@@ -165,6 +164,15 @@ public interface ApiInterface
             @Field("osType") String osType,
             @Field("platform") String platform
     );
+
+    //로그인 메서드 장고 버전
+    @POST("https://www.hyemo.com/django/login")
+    Call<String> Login(
+            @Body String Login
+    );
+
+
+
 
 //    /**
 //     * LoginActivity에서 카카오 로그인 시 서버로 OS 이름, 플랫폼, fcm 토큰값, 유저 이메일 정보를 보내 저장하는 메서드
@@ -715,8 +723,8 @@ public interface ApiInterface
 //            @Query("age") String age,
 //            @Query("gender") String gender,
 //            @Query("local") String local,
-            @Query("type") String type,
-            @Header("logintoken") String token
+            @Header("logintoken") String token,
+            @Query("type") String type
     );
 
     /* ↓ 람다로 바뀐 후 새로 추가된 검색 메서드
@@ -1026,8 +1034,9 @@ public interface ApiInterface
      *     "message": "관심사 등록이 완료됐습니다."
      * }
      */
+    //관심사 추가 메서드
     @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/put-interest")
-    Call<String> saveMyInterest(
+    Call<String> AddMyInterest(
             @Header("logintoken") String token,
             @Query("age") String age,
             @Query("local") String local,
@@ -1063,6 +1072,7 @@ public interface ApiInterface
      *     "message": "관심사 수정이 완료됐습니다."
      * }
      */
+    //관심사 조회 or 수정 메서드
     @GET("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/modify-interest")
     Call<String> checkAndModifyInterest(
             @Header("logintoken") String token,

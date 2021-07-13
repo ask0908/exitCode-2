@@ -137,11 +137,13 @@ public class DetailTabLayoutActivity extends AppCompatActivity
 
         //공유하기
         share_btn.setOnClickListener(v ->{
-
             //공유하기 버튼 중복클릭 방지
             long currentClickTime = SystemClock.uptimeMillis();
             long elapsedTime = currentClickTime - mLastClickTime;
             mLastClickTime = currentClickTime;
+
+            Log.e(TAG,"currentClickTime : " + currentClickTime);
+            Log.e(TAG,"elapsedTime : " + elapsedTime);
 
             // 중복클릭 아닌 경우
             if (elapsedTime > MIN_CLICK_INTERVAL) {

@@ -2,12 +2,12 @@ package com.psj.welfare.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -17,16 +17,18 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.orhanobut.logger.Logger;
+import com.psj.welfare.SharedSingleton;
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.CustomInterestDialog;
 import com.psj.welfare.data.MyInterest;
-import com.psj.welfare.util.DBOpenHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -68,16 +70,23 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
     // 선택 완료 버튼을 눌렀을 경우 첫 번째 선택 화면을 종료해야 하기 때문에 선언한 변수
     public static Activity activity;
 
-    DBOpenHelper helper;
-    String sqlite_token;
+//    DBOpenHelper helper;
     ArrayList<MyInterest> list;
 
     String user_age, user_local;
     ArrayList<String> age_list, local_list;
 
-    // 강제종료해서 관심사 선택으로 온 건지 구별할 때 사용할 인텐트, 변수
-    Intent force_stopped_intent;
-    int force_stopped_value = 0;
+    //로그인 토큰 값
+    private String token;
+
+    //쉐어드 싱글톤
+    private SharedSingleton sharedSingleton;
+
+    // 구글 애널리틱스
+    private FirebaseAnalytics analytics;
+
+    //앱 종료 시간 체크
+    long backKeyPressedTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -85,6 +94,12 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setStatusBarGradiant(this);
         setContentView(R.layout.activity_choose_first_interest);
+
+        //쉐어드 싱글톤 사용
+        sharedSingleton = SharedSingleton.getInstance(this);
+
+        //구글 analytics 사용 준비
+        analytics = FirebaseAnalytics.getInstance(this);
 
         // findViewById() 모아놓은 메서드
         init();
@@ -95,111 +110,78 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
         age = new ArrayList<>();
         area = new ArrayList<>();
 
-        ScreenSize screen = new ScreenSize();
-        Point size = screen.getScreenSize(this);
+        //xml크기를 동적으로 변환
+        setsize();
 
-        first_select_interest_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 17);
-        first_interest_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
-        age_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
-        area_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
-        go_second_interest_btn.setTextSize(TypedValue.COMPLEX_UNIT_PX,(float) (size.x * 0.055));
+        list = new ArrayList<>();
 
-        if (getIntent().hasExtra("force_stopped"))
-        {
-            force_stopped_intent = getIntent();
-            force_stopped_value = force_stopped_intent.getIntExtra("force_stopped", -1);
-            Logger.d("강제종료했다면 오른쪽의 숫자는 404여야 한다 : " + force_stopped_value);
+        token = sharedSingleton.getToken();
 
-            // 다음 버튼
-            go_second_interest_btn.setOnClickListener(v ->
-            {
-                if (age.size() == 0 || area.size() == 0)
-                {
-                    // 나이, 지역 중 아무것도 선택하지 않았으면 선택하도록 유도
-                    Toast.makeText(activity, "나이와 지역 모두 1개라도 선택해 주셔야 해요", Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    Intent intent = new Intent(this, ChooseSecondInterestActivity.class);
-                    intent.putStringArrayListExtra("age", age);
-                    intent.putStringArrayListExtra("area", area);
-                    intent.putExtra("force_stopped", 404);
-                    Logger.d("나이 : " + age + "\n지역 : " + area + "\n같이 보낼 값 : " + 404);
-                    startActivity(intent);
-                }
-            });
-        }
-        else
-        {
-            list = new ArrayList<>();
+        //sqlite 사용 방법 참고용
+//        helper = new DBOpenHelper(this);
+//        helper.openDatabase();
+//        helper.create();
+//        Cursor cursor = helper.selectColumns();
+//        if (cursor != null)
+//        {
+//            while (cursor.moveToNext())
+//            {
+//                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+//            }
+//        }
 
-            helper = new DBOpenHelper(this);
-            helper.openDatabase();
-            helper.create();
-
-            Cursor cursor = helper.selectColumns();
-            if (cursor != null)
-            {
-                while (cursor.moveToNext())
-                {
-                    sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-                }
-            }
-
+        //관심사 선택을 한적이 있다면
+        if(sharedSingleton.getBooleanInterst()){
             // 서버에 저장된 내 관심사 조회
             selectMyInterest();
-
-            /* 버튼 클릭 시 테두리와 글자 색이 바뀌고 해당 값이 변수에 저장돼야 한다
-             * 나이대, 지역에서 여러 값을 선택하면 값들 사이에 "-"를 붙인다 -> 다음 버튼 누르면 리스트에 저장되게 하자 */
-            // 다음 버튼
-            go_second_interest_btn.setOnClickListener(v ->
-            {
-                if (age.size() == 0 || area.size() == 0)
-                {
-                    // 나이, 지역 중 아무것도 선택하지 않았으면 선택하도록 유도
-                    Toast.makeText(activity, "나이와 지역 모두 1개라도 선택해 주셔야 해요", Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    Intent intent = new Intent(this, ChooseSecondInterestActivity.class);
-                    intent.putStringArrayListExtra("age", age);
-                    intent.putStringArrayListExtra("area", area);
-                    Logger.d("나이 : " + age + "\n지역 : " + area);
-                    startActivity(intent);
-                }
-            });
-
-            // 뒤로가기 이미지 클릭 시
-            first_interest_back_image.setOnClickListener(v ->
-            {
-                if (force_stopped_value == 404)
-                {
-                    // 강제종료했다면 뒤로가기 이미지를 눌러도 아무 일도 일어나지 않는다
-                }
-                else
-                {
-                    // 강제종료하지 않았다면 기존 로직을 그대로 실행한다
-                    if (age.size() > 0 || area.size() > 0)
-                    {
-                        CustomInterestDialog dialog = new CustomInterestDialog(this);
-                        dialog.showDialog();
-                    }
-                    else
-                    {
-                        finish();
-                    }
-                }
-            });
+        } else {
+            // 관심사를 처음 선택 한다면 뒤로가기 버튼 안보이도록
+            first_interest_back_image.setVisibility(View.GONE);
         }
 
+        /* 버튼 클릭 시 테두리와 글자 색이 바뀌고 해당 값이 변수에 저장돼야 한다
+         * 나이대, 지역에서 여러 값을 선택하면 값들 사이에 "-"를 붙인다 -> 다음 버튼 누르면 리스트에 저장되게 하자 */
+        // 다음 버튼
+        go_second_interest_btn.setOnClickListener(v ->
+        {
+            if (age.size() == 0 || area.size() == 0)
+            {
+                // 나이, 지역 중 아무것도 선택하지 않았으면 선택하도록 유도
+                Toast.makeText(activity, "나이와 지역 모두 1개라도 선택해 주셔야 해요", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                Intent intent = new Intent(this, ChooseSecondInterestActivity.class);
+                intent.putStringArrayListExtra("age", age);
+                intent.putStringArrayListExtra("area", area);
+                Logger.d("나이 : " + age + "\n지역 : " + area);
+                startActivity(intent);
+            }
+        });
+
+        // 뒤로가기 이미지 클릭 시
+        first_interest_back_image.setOnClickListener(v ->
+        {
+            // 강제종료하지 않았다면 기존 로직을 그대로 실행한다
+            if (age.size() > 0 || area.size() > 0)
+            {
+                CustomInterestDialog dialog = new CustomInterestDialog(this);
+                dialog.showDialog();
+            }
+            else
+            {
+                finish();
+            }
+        });
     }
+
 
     // 관심사 조회 메서드
     // "관심사 선택" 버튼을 눌러 이 화면으로 들어오면 show를 인자로 넘겨서 서버에 저장돼 있는 관심사 데이터들을 가져온다
     private void selectMyInterest()
     {
         ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
-        Call<String> call = apiInterface.checkAndModifyInterest(sqlite_token, null, null, null, null, "show");
+        Call<String> call = apiInterface.checkAndModifyInterest(token, null, null, null, null, "show");
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -1284,16 +1266,35 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
         window.setBackgroundDrawable(background);
     }
 
+    private void setsize() {
+        ScreenSize screen = new ScreenSize();
+        Point size = screen.getScreenSize(this);
+
+        first_select_interest_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 17);
+        first_interest_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22);
+        age_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
+        area_text.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 24);
+        go_second_interest_btn.setTextSize(TypedValue.COMPLEX_UNIT_PX,(float) (size.x * 0.055));
+    }
+
     @Override
     public void onBackPressed()
     {
-        if (force_stopped_value == 404)
-        {
-            // 강제종료했다면 여기로 온다. onBackPressed()는 재정의한 후 아무것도 쓰지 않으면 백버튼을 눌러도 동작하지 않는다다
-        }
-       else
-        {
-            // 강제종료하지 않았다면 여기로 올 것이다
+        //한번도 관심사 선택을 하지 않았다면
+        if(!sharedSingleton.getBooleanInterst()){
+            //1번째 백버튼 클릭
+            if(System.currentTimeMillis()>backKeyPressedTime+2000){
+                backKeyPressedTime = System.currentTimeMillis();
+                Toast.makeText(this, "\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT).show();
+            }
+            //2번째 백버튼 클릭 (종료)
+            else{
+                //앱종료
+                finishAndRemoveTask(); // 액티비티 종료 + 태스크 리스트에서 지우기
+                ActivityCompat.finishAffinity(this);
+            }
+
+        } else { //관심사 선택을 전에 한번이라도 선택 했다면
             if (age.size() > 0 || area.size() > 0)
             {
                 CustomInterestDialog dialog = new CustomInterestDialog(this);
@@ -1304,5 +1305,6 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
                 finish();
             }
         }
+
     }
 }

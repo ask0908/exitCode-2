@@ -355,6 +355,7 @@ public class WithdrawActivity extends AppCompatActivity
                     String result = response.body();
                     parseResult(result);
                     Log.e(TAG, "회원탈퇴 성공 : " + result);
+                    
                 }
                 else
                 {
@@ -444,11 +445,78 @@ public class WithdrawActivity extends AppCompatActivity
                             @Override
                             public void onSuccess(Long result)
                             {
-                                SharedPreferences.Editor editor = sharedPreferences.edit();
-                                editor.putBoolean("logout", true);
-                                editor.putBoolean("is_leaved", true);
-                                editor.remove("user_nickname");
-                                editor.apply();
+                                //회원 탈퇴시 카카오 로그인 탈퇴도 같이 해야한다
+//
+                                Log.e(TAG,"카카오 탈퇴 성공");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                //쉐어드 모드 삭제는 안된다
+//                                sharedPreferences.edit().clear().apply();
+
+//                                SharedPreferences.Editor editor = sharedPreferences.edit();
+//                                editor.putBoolean("logout", true);
+//                                editor.putBoolean("is_leaved", true);
+//                                editor.remove("user_nickname");
+//                                editor.apply();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                                 /* 카카오 회원탈퇴가 완료되면 액티비티 스택을 비우고 스플래시 화면부터 시작한다 */
                                 Intent intent = new Intent(WithdrawActivity.this, SplashActivity.class);
                                 // 액티비티 스택 비우기

@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,6 +32,7 @@ import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
+import com.psj.welfare.SharedSingleton;
 import com.psj.welfare.activity.BookmarkCheckActivity;
 import com.psj.welfare.activity.ChooseFirstInterestActivity;
 import com.psj.welfare.activity.LoginActivity;
@@ -45,7 +45,6 @@ import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.CustomEditNicknameDialog;
 import com.psj.welfare.custom.MyDialogListener;
-import com.psj.welfare.util.DBOpenHelper;
 import com.psj.welfare.util.LogUtil;
 
 import org.json.JSONException;
@@ -69,12 +68,17 @@ public class TestMyPageFragment extends Fragment
     SharedPreferences sharedPreferences;
     boolean isLogin;
 
-    DBOpenHelper helper;
-    String sqlite_token, message;
+//    DBOpenHelper helper;
+    String message;
     String receivedNickname = "";
+    //토큰, 세션 아이디
+    private String token, sessionId;
 
     // 구글 애널리틱스
     private FirebaseAnalytics analytics;
+
+    //로그인관련 쉐어드 singleton
+    private SharedSingleton sharedSingleton;
 
     public TestMyPageFragment()
     {
@@ -109,50 +113,12 @@ public class TestMyPageFragment extends Fragment
             analytics = FirebaseAnalytics.getInstance(getActivity());
         }
 
-        helper = new DBOpenHelper(getActivity());
-        helper.openDatabase();
-        helper.create();
-
-        //size에 저장되는 가로/세로 길이의 단위는 픽셀(Pixel)입니다.
-        ScreenSize screen = new ScreenSize();
-        //context의 스크린 사이즈를 구함
-        Point size = screen.getScreenSize(getActivity());
-
-        binding.searchFragmentTopTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.035)); //"마이페이지" 텍스트
-        binding.mypageMyId.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.03)); //닉네임 텍스트
-        binding.nicknameEditImage.getLayoutParams().width = (int) (size.y * 0.03); //닉네임 변경 아이콘
-        binding.nicknameEditImage.getLayoutParams().height = (int) (size.y * 0.03); //닉네임 변경 아이콘
-
-        binding.bookmarkTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.02)); //"북마크 혜택" 텍스트
-        binding.recentWelfareTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.02)); //"최근본 혜택" 텍스트
-        binding.writtenReviewTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.02)); //"작성한 리뷰" 텍스트
-
-        binding.editInterestTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"관심사 선택"
-        binding.editInterestTextview.setPadding((int) (size.x * 0.04),(int) (size.y * 0.02),(int) (size.x * 0.04),(int) (size.y * 0.02));
-
-        binding.pushSettingText.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"푸시 알림 선택"
-        binding.mypagePushLayout.setPadding((int) (size.x * 0.04),(int) (size.y * 0.02),(int) (size.x * 0.04),(int) (size.y * 0.02));
-
-        binding.checkNoticeTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"공지사항 확인"
-        binding.checkNoticeTextview.setPadding((int) (size.x * 0.04),(int) (size.y * 0.02),(int) (size.x * 0.04),(int) (size.y * 0.02));
-
-        binding.checkTermTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"이용약관 확인"
-        binding.checkTermTextview.setPadding((int) (size.x * 0.04),(int) (size.y * 0.02),(int) (size.x * 0.04),(int) (size.y * 0.02));
-
-        binding.checkPrivacyTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"개인정보 처리방침 확인"
-        binding.checkPrivacyTextview.setPadding((int) (size.x * 0.04),(int) (size.y * 0.02),(int) (size.x * 0.04),(int) (size.y * 0.02));
-
-        binding.appVersionTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"버전 2.0.0"
-        binding.appVersionTextview.setPadding((int) (size.x * 0.04),(int) (size.y * 0.02),(int) (size.x * 0.04),(int) (size.y * 0.02));
-
-        binding.mypageLogoutTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"로그아웃"
-        binding.mypageLogoutTextview.setPadding((int) (size.x * 0.04),(int) (size.y * 0.02),(int) (size.x * 0.04),(int) (size.y * 0.02));
-
-        binding.mypageWithdrawTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"탈퇴하기"
-        binding.mypageWithdrawTextview.setPadding((int) (size.x * 0.04),(int) (size.y * 0.02),(int) (size.x * 0.04),(int) (size.y * 0.02));
-
-        binding.mypageLoginTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 25);
-        binding.mypageLoginButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 21);
+        //쉐어드 싱글톤 사용
+        sharedSingleton = SharedSingleton.getInstance(getActivity());
+        token = sharedSingleton.getToken(); //토큰 값
+        sessionId = sharedSingleton.getSessionId(); //세션 id
+        //xml크기를 동적으로 변환
+        setsize();
 
         // 마이페이지에 들어온 순간 내 닉네임을 보여준다
         checkMyNickname("show_name");
@@ -163,7 +129,10 @@ public class TestMyPageFragment extends Fragment
 
         /* 비로그인, 로그인 상태에 따라 다른 뷰를 보여주는 처리부
         * 카카오 로그인 버튼을 눌러 로그인했을 때 쉐어드에 true 값을 저장하고, 마이페이지에서 로그아웃 다이얼로그의 "예"를 클릭한 경우 false를 저장한다 */
-        isLogin = sharedPreferences.getBoolean("user_login", false);
+//        isLogin = sharedPreferences.getBoolean("user_login", false);
+
+        //로그인 했는지 여부
+        isLogin = sharedSingleton.getBooleanLogin();
 
         // 로그인한 경우
         if (isLogin)
@@ -226,10 +195,10 @@ public class TestMyPageFragment extends Fragment
         // 로그인
         binding.mypageLoginButton.setOnClickListener(v ->
         {
-            sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
-            SharedPreferences.Editor editor2 = sharedPreferences.edit();
-            editor2.putBoolean("logout", true);
-            editor2.apply();
+//            sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+//            SharedPreferences.Editor editor2 = sharedPreferences.edit();
+//            editor2.putBoolean("logout", true);
+//            editor2.apply();
             userLog("로그인 화면으로 이동");
             Intent intent = new Intent(getActivity(), LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -250,17 +219,24 @@ public class TestMyPageFragment extends Fragment
                             userLog("로그아웃 클릭");
                             if (Session.getCurrentSession().getTokenInfo().getAccessToken() != null)
                             {
-                                sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
-                                SharedPreferences.Editor editor = sharedPreferences.edit();
+//                                sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+//                                SharedPreferences.Editor editor = sharedPreferences.edit();
                                 UserManagement.getInstance().requestLogout(new LogoutResponseCallback()
                                 {
                                     @Override
                                     public void onCompleteLogout()
                                     {
-                                        editor.putBoolean("logout", true);
-                                        editor.putBoolean("user_login", false);
-                                        editor.remove("user_nickname");
-                                        editor.apply();
+//                                        editor.putBoolean("logout", true);
+//                                        editor.putBoolean("user_login", false);
+//                                        editor.remove("user_nickname");
+//                                        editor.apply();
+
+                                        sharedSingleton.setRemoveShared("user_nickname"); //닉네임 쉐어드 지우기
+                                        sharedSingleton.setRemoveShared("token"); //토큰 쉐어드 지우기
+                                        sharedSingleton.setRemoveShared("is_interest"); //관심사 선택 여부 쉐어드 지우기
+                                        //로그 아웃 했다는 값을 쉐어드에 저장
+                                        sharedSingleton.setBooleanLogin(false);
+
                                         Bundle bundle = new Bundle();
                                         bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "로그아웃 클릭");
                                         analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
@@ -404,16 +380,9 @@ public class TestMyPageFragment extends Fragment
     // 내 닉네임 가져와서 보여주는 메서드
     void checkMyNickname(String type)
     {
-        Cursor cursor = helper.selectColumns();
-        if (cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-            }
-        }
+
         ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
-        Call<String> call = apiInterface.editNickname(sqlite_token, "", type);
+        Call<String> call = apiInterface.editNickname(token, "", type);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -441,17 +410,8 @@ public class TestMyPageFragment extends Fragment
     // 닉네임 변경 메서드
     void changeNickname(@Nullable String nickname, String type)
     {
-        Cursor cursor = helper.selectColumns();
-        if (cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-            }
-        }
         ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
-        Call<String> call = apiInterface.editNickname(sqlite_token, nickname, type);
-//        Log.e(TAG, "token : " + sqlite_token + ", 변경할 닉네임 : " + nickname);
+        Call<String> call = apiInterface.editNickname(token, nickname, type);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -526,19 +486,19 @@ public class TestMyPageFragment extends Fragment
     void userLog(String user_action)
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
-        String token;
-        if (sharedPreferences.getString("token", "").equals(""))
-        {
-            token = null;
-        }
-        else
-        {
-            token = sharedPreferences.getString("token", "");
-        }
-        String session = sharedPreferences.getString("sessionId", "");
+//        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+//        String token;
+//        if (sharedPreferences.getString("token", "").equals(""))
+//        {
+//            token = null;
+//        }
+//        else
+//        {
+//            token = sharedPreferences.getString("token", "");
+//        }
+//        String session = sharedPreferences.getString("sessionId", "");
         String action = userAction(user_action);
-        Call<String> call = apiInterface.userLog(token, session, "myPage", action, null, LogUtil.getUserLog());
+        Call<String> call = apiInterface.userLog(token, sessionId, "myPage", action, null, LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -547,6 +507,7 @@ public class TestMyPageFragment extends Fragment
                 if (response.isSuccessful() && response.body() != null)
                 {
                     //
+                    Log.e(TAG,"userLog 작동 확인");
                 }
                 else
                 {
@@ -605,20 +566,12 @@ public class TestMyPageFragment extends Fragment
     // 푸시 알림 받을지를 설정하는 스위치의 값 변경 메서드
     void putPushSetting(boolean isPushed)
     {
-        Cursor cursor = helper.selectColumns();
-        if (cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-            }
-        }
         String is_push = String.valueOf(isPushed);
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         String action = userAction("푸시 설정값 수정");
-        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
-        String session = sharedPreferences.getString("sessionId", "");
-        Call<String> call = apiInterface.putPushSetting(session, action, sqlite_token, "push", is_push);
+//        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+//        String session = sharedPreferences.getString("sessionId", "");
+        Call<String> call = apiInterface.putPushSetting(sessionId, action, token, "push", is_push);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -640,6 +593,51 @@ public class TestMyPageFragment extends Fragment
                 Log.e("putPushSetting()", "에러 = " + t.getMessage());
             }
         });
+    }
+
+
+    //xml크기를 동적으로 변환
+    private void setsize() {
+        //size에 저장되는 가로/세로 길이의 단위는 픽셀(Pixel)입니다.
+        ScreenSize screen = new ScreenSize();
+        //context의 스크린 사이즈를 구함
+        Point size = screen.getScreenSize(getActivity());
+
+        binding.searchFragmentTopTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.035)); //"마이페이지" 텍스트
+        binding.mypageMyId.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.03)); //닉네임 텍스트
+        binding.nicknameEditImage.getLayoutParams().width = (int) (size.y * 0.03); //닉네임 변경 아이콘
+        binding.nicknameEditImage.getLayoutParams().height = (int) (size.y * 0.03); //닉네임 변경 아이콘
+
+        binding.bookmarkTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.02)); //"북마크 혜택" 텍스트
+        binding.recentWelfareTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.02)); //"최근본 혜택" 텍스트
+        binding.writtenReviewTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.02)); //"작성한 리뷰" 텍스트
+
+        binding.editInterestTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"관심사 선택"
+        binding.editInterestTextview.setPadding((int) (size.x * 0.04),(int) (size.y * 0.02),(int) (size.x * 0.04),(int) (size.y * 0.02));
+
+        binding.pushSettingText.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"푸시 알림 선택"
+        binding.mypagePushLayout.setPadding((int) (size.x * 0.04),(int) (size.y * 0.02),(int) (size.x * 0.04),(int) (size.y * 0.02));
+
+        binding.checkNoticeTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"공지사항 확인"
+        binding.checkNoticeTextview.setPadding((int) (size.x * 0.04),(int) (size.y * 0.02),(int) (size.x * 0.04),(int) (size.y * 0.02));
+
+        binding.checkTermTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"이용약관 확인"
+        binding.checkTermTextview.setPadding((int) (size.x * 0.04),(int) (size.y * 0.02),(int) (size.x * 0.04),(int) (size.y * 0.02));
+
+        binding.checkPrivacyTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"개인정보 처리방침 확인"
+        binding.checkPrivacyTextview.setPadding((int) (size.x * 0.04),(int) (size.y * 0.02),(int) (size.x * 0.04),(int) (size.y * 0.02));
+
+        binding.appVersionTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"버전 2.0.0"
+        binding.appVersionTextview.setPadding((int) (size.x * 0.04),(int) (size.y * 0.02),(int) (size.x * 0.04),(int) (size.y * 0.02));
+
+        binding.mypageLogoutTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"로그아웃"
+        binding.mypageLogoutTextview.setPadding((int) (size.x * 0.04),(int) (size.y * 0.02),(int) (size.x * 0.04),(int) (size.y * 0.02));
+
+        binding.mypageWithdrawTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 22); //"탈퇴하기"
+        binding.mypageWithdrawTextview.setPadding((int) (size.x * 0.04),(int) (size.y * 0.02),(int) (size.x * 0.04),(int) (size.y * 0.02));
+
+        binding.mypageLoginTextview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 25);
+        binding.mypageLoginButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 21);
     }
 
     @Override

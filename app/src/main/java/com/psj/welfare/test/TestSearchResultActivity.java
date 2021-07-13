@@ -12,6 +12,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -34,6 +35,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.psj.welfare.DetailTabLayoutActivity;
@@ -97,7 +99,6 @@ public class TestSearchResultActivity extends AppCompatActivity
     private RecyclerView expanderRecyclerView;
     private ExpandableRecyclerViewAdapter expandableAdapter;
 
-
     ConstraintLayout search_result_filter;
     private Button filter_button;
     private TextView filter_textview, filter_layout_text;
@@ -140,6 +141,7 @@ public class TestSearchResultActivity extends AppCompatActivity
     StringBuilder provideType = new StringBuilder();
 
 
+
     //필터 적용 했는지
     boolean isfilter = false;
 
@@ -159,6 +161,10 @@ public class TestSearchResultActivity extends AppCompatActivity
     ArrayList<Boolean> filter_provideType = new ArrayList<>(); //지원방법
 
     private ExpandableRecyclerViewAdapter expandablelistAdapter;
+
+
+    // 구글 애널리틱스
+    private FirebaseAnalytics analytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -180,6 +186,7 @@ public class TestSearchResultActivity extends AppCompatActivity
         setprogressbar();
 //        Log.e(TAG,"isfilter" + isfilter);
 
+        analytics = FirebaseAnalytics.getInstance(this);
 
         // 검색어 담긴 변수 널 체크, 검색어 or 태그로 받은 키워드
         if (getIntent().hasExtra("keyword"))
@@ -252,65 +259,115 @@ public class TestSearchResultActivity extends AppCompatActivity
 
 
     // editText에서 검색되도록 처리
+    @SuppressLint("ClickableViewAccessibility") //warning 안보이도록
     private void search_welf(){
         search_result_edittext.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
             {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) //IME_ACTION_SEARCH -> 키보드가 올라왔다는 정보
+                if (search_result_edittext.length() == 0 || search_result_edittext.getText().toString().trim().equals(""))
                 {
-                    // 검색 후 네비게이션뷰 필터 초기화
-                    initiateExpander();
-//                    expandableAdapter =
-//                            new ExpandableRecyclerViewAdapter(TestSearchResultActivity.this, parentList, categoryList, ageList, localList, provideTypeList, childListHolder, filter_local, filter_age, filter_provideType);
-//                    expanderRecyclerView.setLayoutManager(new LinearLayoutManager(TestSearchResultActivity.this));
-//                    expanderRecyclerView.setAdapter(expandableAdapter);
+                    Toast.makeText(TestSearchResultActivity.this, "검색어를 입력해 주세요", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+                else if(actionId == EditorInfo.IME_ACTION_SEARCH) //IME_ACTION_SEARCH -> 키보드가 올라왔다는 정보
+                {
+
+                    //검색어로 검색
+                    searchKeyword();
+                    return true;
+                }
+                return false;
+            }
+        });
 
 
-                    //검색 후 네비게이션뷰 안보이도록
-                    drawerLayout.closeDrawer(drawerView);
-//                    search_result_drawer.setVisibility(View.GONE);
 
-                    //필터 적용했는지 여부 초기화(false)
-                    isfilter = false;
+        //edittext 오른쪽 drawble 아이콘 클릭
+        search_result_edittext.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Drawable drawable = search_result_edittext.getCompoundDrawables()[2]; //[0] -> left아이콘, [1] -> top아이콘, [2] -> right아이콘, [3] -> bottom아이콘
+                if(event.getAction() == MotionEvent.ACTION_UP){ //edittext에서 터치를 땠을 때
+                    if (drawable != null) { //edittext에서 오른쪽 아이콘이 있을 때
+                        //edittext에서 오른쪽 아이콘 클릭 했을 때 (너비랑 아이콘 패딩, 아이콘 크기 값 으로 계산)
+                        if(event.getX() >= (search_result_edittext.getWidth() - search_result_edittext.getPaddingRight() - drawable.getIntrinsicWidth())){
 
-                    //검색 타입 "search"
-                    type = "search";
-
-                    //페이지 1부터 다시 시작
-                    integer_page = 1;
-
-                    //검색하면 다시 리스트 초기화
-                    list.clear();
-                    String keyword = search_result_edittext.getText().toString().trim();
-
-                    //검색어로 검색 했을 때
-                    renewalKeywordSearch(keyword,"1", null, null, null, null);
-                    // 검색어와 "1"을 인자로 넘긴다
-//                    performSearch(search_result_edittext.getText().toString().trim(), String.valueOf(integer_page));
-
-                    //데이터 리사이클러뷰를 혜택 개수 레이아웃에 붙인다
-                    recyclerview_chainwelfCount();
-
-                    //필터 리사이클러뷰 초기화
-                    allList.clear();
-
-                    //검색 후 키보드 내리기
-                    InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(search_result_edittext.getWindowToken(), 0);
-
-
-                    //태그 레이아웃 숨기기
-                    result_tag_layout.setVisibility(View.GONE);
-                    // 검색바 보여주기
-                    search_result_edittext.setVisibility(View.VISIBLE);
+                            if (search_result_edittext.length() == 0 || search_result_edittext.getText().toString().trim().equals(""))
+                            {
+                                Toast.makeText(TestSearchResultActivity.this, "검색어를 입력해 주세요", Toast.LENGTH_SHORT).show();
+                            }
+                            else
+                            {
+                                //검색어로 검색
+                                searchKeyword();
+                            }
+                        }
+                    }
                 }
                 return false;
             }
         });
     }
 
+
+
+
+
+
+    //검색어로 검색
+    private void searchKeyword() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "검색 결과 화면에서 키워드 검색 결과 화면으로 이동. 검색한 키워드 : " + search_result_edittext.getText().toString());
+        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+
+        // 검색 후 네비게이션뷰 필터 초기화
+        initiateExpander();
+//                    expandableAdapter =
+//                            new ExpandableRecyclerViewAdapter(TestSearchResultActivity.this, parentList, categoryList, ageList, localList, provideTypeList, childListHolder, filter_local, filter_age, filter_provideType);
+//                    expanderRecyclerView.setLayoutManager(new LinearLayoutManager(TestSearchResultActivity.this));
+//                    expanderRecyclerView.setAdapter(expandableAdapter);
+
+
+        //검색 후 네비게이션뷰 안보이도록
+        drawerLayout.closeDrawer(drawerView);
+//                    search_result_drawer.setVisibility(View.GONE);
+
+        //필터 적용했는지 여부 초기화(false)
+        isfilter = false;
+
+        //검색 타입 "search"
+        type = "search";
+
+        //페이지 1부터 다시 시작
+        integer_page = 1;
+
+        //검색하면 다시 리스트 초기화
+        list.clear();
+        String keyword = search_result_edittext.getText().toString().trim();
+
+        //검색어로 검색 했을 때
+        renewalKeywordSearch(keyword,"1", null, null, null, null);
+        // 검색어와 "1"을 인자로 넘긴다
+//                    performSearch(search_result_edittext.getText().toString().trim(), String.valueOf(integer_page));
+
+        //데이터 리사이클러뷰를 혜택 개수 레이아웃에 붙인다
+        recyclerview_chainwelfCount();
+
+        //필터 리사이클러뷰 초기화
+        allList.clear();
+
+        //검색 후 키보드 내리기
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(search_result_edittext.getWindowToken(), 0);
+
+
+        //태그 레이아웃 숨기기
+        result_tag_layout.setVisibility(View.GONE);
+        // 검색바 보여주기
+        search_result_edittext.setVisibility(View.VISIBLE);
+    }
 
 
     // 리사이클러뷰 페이징 처리

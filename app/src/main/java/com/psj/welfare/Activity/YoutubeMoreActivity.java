@@ -3,7 +3,6 @@ package com.psj.welfare.activity;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -23,6 +22,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.psj.welfare.ApiInterfaceTest;
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
+import com.psj.welfare.SharedSingleton;
 import com.psj.welfare.YoutubeMoreAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.data.HorizontalYoutubeItem;
@@ -45,9 +45,9 @@ public class YoutubeMoreActivity extends AppCompatActivity {
     private ImageButton back_btn; //뒤로가기 버튼
     private TextView YoutubeMore_count; //혜택이 총 몇개 있는지
 
-    boolean being_logout = false; //로그아웃 했는지 (true면 로그아웃, false면 로그인)
-    String SessionId = null; //세션 값
-    String token = null; //토큰 값
+    private boolean Islogin; //로그아웃 했는지
+    private String SessionId; //세션 값
+    private String token; //토큰 값
 
     String youtube_upload_date; //유튜버 업로드 날짜
     String youtube_name; //유튜버 이름
@@ -68,12 +68,17 @@ public class YoutubeMoreActivity extends AppCompatActivity {
     private ArrayList<HorizontalYoutubeItem> youtubemore_List; //강의 데이터
     private YoutubeMoreAdapter.YoutubeMoreClick youtubeclick; //유튜브 목록 클릭 리스너
 
+    //쉐어드 싱글톤
+    private SharedSingleton sharedSingleton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStatusBarGradiant(YoutubeMoreActivity.this);
         setContentView(R.layout.activity_youtube_more);
 
+        //쉐어드 싱글톤 사용
+        sharedSingleton = SharedSingleton.getInstance(this);
 
         //파이어베이스에서 그로스해킹용으로 쓰기 위한 데이터 변수 선언
         if (YoutubeActivity.class != null) {
@@ -156,7 +161,7 @@ public class YoutubeMoreActivity extends AppCompatActivity {
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.show();
 
-        if (!being_logout) //로그인 했을 경우
+        if (Islogin) //로그인 했을 경우
         {
             ApiInterfaceTest apiInterface = ApiClient.getRetrofit().create(ApiInterfaceTest.class);
             Call<String> call = apiInterface.YoutubeNonSelect_beingid(token, SessionId, "show_list", String.valueOf(page));
@@ -267,17 +272,14 @@ public class YoutubeMoreActivity extends AppCompatActivity {
         setsize();
     }
 
+
     //로그인 했는지 여부 확인
     private void being_loging() {
-        //로그인 했는지 여부 확인하기위한 쉐어드
-        SharedPreferences app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
-        being_logout = app_pref.getBoolean("logout", true); //로그인 했는지 여부 확인하기
-
-        if (!being_logout) { //로그인 했다면
-            SessionId = app_pref.getString("sessionId", ""); //세션값 받아오기
-            token = app_pref.getString("token", ""); //토큰값 받아오기
-        }
+        Islogin = sharedSingleton.getBooleanLogin();
+        SessionId = sharedSingleton.getSessionId();
+        token = sharedSingleton.getToken();
     }
+
 
 
     //xml크기를 동적으로 변환
