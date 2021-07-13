@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.psj.welfare.R;
 
-/* 뷰페이저 안 쓰고 액티비티에서 탭으로 프래그먼트들을 제어할 건데 그거 연습하기 위한 액티비티 */
+/* 뷰페이저 안 쓰고 액티비티에서 탭으로 프래그먼트들을 제어하기 위해 만든 액티비티 */
 public class AppMainTabActivity extends AppCompatActivity
 {
 

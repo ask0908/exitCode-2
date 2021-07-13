@@ -83,13 +83,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="#595959"
-                    android:text="정말로 뒤로가기 하시겠습니까?"
                     android:gravity="start" />
 
             </androidx.core.widget.NestedScrollView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

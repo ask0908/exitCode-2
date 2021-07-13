@@ -8,10 +8,10 @@ import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
@@ -37,6 +37,7 @@ import com.kakao.message.template.SocialObject;
 import com.kakao.network.ErrorResult;
 import com.kakao.network.callback.ResponseCallback;
 import com.psj.welfare.activity.LoginActivity;
+import com.psj.welfare.custom.OnSingleClickListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -135,19 +136,12 @@ public class DetailTabLayoutActivity extends AppCompatActivity
             //액티비티 스택을 추적하고싶을경우. 이런 경우엔 새액티비티를 시작할때마다 intent에 FLAG_ACTIVITY_REORDER_TO_FRONT 나 FLAG_ACTIVITY_PREVIOUS_IS_TOP 같은 플래그를 줄 수 있습니다.
         });
 
-        //공유하기
-        share_btn.setOnClickListener(v ->{
-            //공유하기 버튼 중복클릭 방지
-            long currentClickTime = SystemClock.uptimeMillis();
-            long elapsedTime = currentClickTime - mLastClickTime;
-            mLastClickTime = currentClickTime;
-
-            Log.e(TAG,"currentClickTime : " + currentClickTime);
-            Log.e(TAG,"elapsedTime : " + elapsedTime);
-
-            // 중복클릭 아닌 경우
-            if (elapsedTime > MIN_CLICK_INTERVAL) {
-                Log.e(TAG,"0000000000");
+        // 공유하기
+        share_btn.setOnClickListener(new OnSingleClickListener()
+        {
+            @Override
+            public void onSingleClick(View v)
+            {
                 ShareBenefit();
             }
         });

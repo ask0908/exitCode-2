@@ -49,6 +49,15 @@ import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
+/**
+ * 로그인했을 때만 더보기 리스트 들어갈 수 있는데
+ *
+ * 더보기 리스트 화면에 들어갔을 때 : all / 1 -> 지원형태별 10개 데이터들을 클라가 갖고 있는다
+ * 현금 지원 누르면 : 현금 지원 / 2
+ * 다시 전체를 누르면 : all / 1
+ *
+ * 이제 더보기 리스트 화면에 들어오려면 무조건 로그인한 상태여야만 한다.
+ */
 public class TestMoreViewActivity extends AppCompatActivity
 {
     private final String TAG = this.getClass().getSimpleName();
@@ -68,25 +77,24 @@ public class TestMoreViewActivity extends AppCompatActivity
     SeeMoreBottomAdapter.OnItemClickListener itemClickListener;
     List<SeeMoreItem> list;
 
+    // 상단 리사이클러뷰에 중복 없이 넣을 값들을 담을 리스트
     ArrayList<MoreViewItem> noRepeat;
 
     // 중복없는 값들을 담아서 상단 리사이클러뷰에 보여줄 리스트
     ArrayList<MoreViewItem> noDuplicateList;
 
+    // 나이, 성별, 지역값을 가져올 때 쓰는 쉐어드
     SharedPreferences sharedPreferences;
-    boolean isLogin;
+
+    // 더보기 리스트 화면에 필요한 데이터 가져오는 뷰모델
     MoreViewModel moreViewModel;
 
-    // 하단 리사이클러뷰에 넣을 값을 담을 변수, total_page는 서버에서 받은 전체 페이지 수다
-    String welf_id, welf_name, welf_tag, welf_count;
+    // 페이징에 사용할 변수, 총 데이터 개수
     int total_page, total_num;
-    // 상단 리사이클러뷰에 넣을 값을 담을 변수
-    String top_assist_method;
-    // all_10 안의 값들을 담을 변수
-    String ten_id, ten_name, ten_tag, ten_assist_method, ten_count;
     // 상단 리사이클러뷰 안의 지원형태를 눌렀을 경우 데이터를 가져와 담을 변수
-    String support_id, support_name, support_tag, support_assist_method, support_count;
+    String support_id, support_name, support_tag, support_count;
 
+    // API 호출 후 서버 응답코드
     String status;
     String sqlite_token, sessionId;
 
@@ -101,9 +109,10 @@ public class TestMoreViewActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setStatusBarGradiant(this);
         setContentView(R.layout.activity_test_more_view);
-        // 인터넷 연결 상태를 체크해서 3G, 와이파이 중 하나라도 연결돼 있다면 더보기 화면에서 필요한 로직들을 진행시킴
+        // 인터넷 연결 상태를 체크해서 3G, 와이파이 중 하나라도 연결돼 있다면 더보기 화면에서 필요한 로직들을 진행시킨다
         if (NetworkStatus.checkNetworkStatus(this) == 1 || NetworkStatus.checkNetworkStatus(this) == 2)
         {
+            /* 3G, 와이파이 중 하나라도 연결돼 있을 경우 */
             helper = new DBOpenHelper(TestMoreViewActivity.this);
             helper.openDatabase();
             helper.create();
@@ -124,7 +133,7 @@ public class TestMoreViewActivity extends AppCompatActivity
             more_view_bottom_recyclerview.setHasFixedSize(true);
             more_view_bottom_recyclerview.setLayoutManager(new LinearLayoutManager(this));
 
-            // 화면 최상단의 '맞춤 혜택 총 n개' 텍스트뷰 글자 크기, 하단 리사이클러뷰 아이템 간격 및 크기 조절
+            // 화면 최상단의 '맞춤 혜택 총 n개' 텍스트뷰 글자 크기, 하단 리사이클러뷰 아이템 등 뷰들의 간격 및 크기 조절 위한 전처리
             ScreenSize screen = new ScreenSize();
             Point size = screen.getScreenSize(TestMoreViewActivity.this);
 
@@ -139,12 +148,12 @@ public class TestMoreViewActivity extends AppCompatActivity
             list = new ArrayList<>();
             noDuplicateList = new ArrayList<>();
 
-            // 상단 리사이클러뷰의 첫 번째 아이템은 전체여야 한다. 전체를 누르면 모든 결과를 보여주고 페이징 처리한다(인자로 all 넘기기)
+            // 상단 리사이클러뷰의 첫 번째 아이템은 전체여야 하기 때문에 첫 번째 아이템이 전체가 나오도록 하드코딩
+            // 전체를 누르면 모든 결과를 보여주고 페이징 처리한다(API 인자로 all 넘기기)
             up_list.add(0, new MoreViewItem("전체"));
 
             sharedPreferences = getSharedPreferences("app_pref", 0);
             sessionId = sharedPreferences.getString("sessionId", "");
-            isLogin = sharedPreferences.getBoolean("logout", false);
 
             /* 로그인 상태에 따른 더보기 리스트 예외처리 */
             String gender = sharedPreferences.getString("gender", "");

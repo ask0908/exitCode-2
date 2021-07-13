@@ -19,6 +19,12 @@ import com.orhanobut.logger.PrettyFormatStrategy;
 
 public class App extends Application
 {
+    /* volatile : 자바 변수를 메인 메모리에 저장하겠다는 걸 명시하는 키워드, 변수 값을 읽어올 때마다 CPU 캐시에서 찾는 게 아닌 메인 메모리에서 읽어온다
+    * 변수 값을 write할 때도 메인 메모리에 작성한다
+    * 왜 쓰는가? - volatile 변수를 안 쓰는 멀티 쓰레드 어플리케이션에선 Task를 수행하는 동안 성능 향상을 위해 메인 메모리에서 읽은 변수 값을 CPU 메모리에 저장하게 된다
+    * 만약 멀티 쓰레드 환경에서 쓰레드가 변수값을 가져올 때 각각의 CPU 캐시에 저장된 값이 다르기 때문에 변수값 불일치 문제가 생길 수 있다
+    * 언제 쓰는가? - 멀티 쓰레드 환경에서 하나의 쓰레드만 read/write 하고, 나머지 쓰레드가 read 하는 상황에서 사용한다
+    * 여러 쓰레드가 write하는 상황에서 사용한다면 synchronized로 변수 값 읽기, 쓰기의 원자성(atomic)을 보장해야 함 */
     private static volatile App instance = null;
 
     private static class KakaoSDKAdapter extends KakaoAdapter
@@ -105,8 +111,15 @@ public class App extends Application
     public void onCreate()
     {
         super.onCreate();
+
+        // ========================================================================================================================
         /* 여기에 로그가 어떻게 찍혀 나올지 커스텀한 다음 addLogAdapter()를 호출한 다음 액티비티 등에서 Logger.d()를 사용하면 로그가 찍혀나온다
-        * 매니페스트의 <application> 에서 name 속성에 이미 이 클래스가 지정돼 있기 때문에 이런 처리가 가능하다 */
+        * 매니페스트의 <application> 에서 name 속성에 이미 이 클래스가 지정돼 있기 때문에 이런 처리가 가능하다
+        * application - name : 앱의 어떤 컴포넌트(액티비티, 서비스 등)보다 먼저 객체화(실행)되는 서브 클래스 */
+
+        // Logger 공식 깃허브 주소 : https://github.com/orhanobut/logger
+        // FormatStrategy : 메시지를 출력, 저장하는 방법을 결정할 때 사용되는 클래스, Logger 라이브러리에 내장된 클래스
+        // PrettyFormatStrategy : 추가 정보와 함께 로그 메시지 주변에 테두리를 그려주는 클래스
         FormatStrategy strategy = PrettyFormatStrategy.newBuilder()
                 .tag("혜택모아 :: ")    // 로그 좌측에 찍혀지는 문장 (기본값 : PRETTY__LOGGER)
                 .build();
@@ -120,6 +133,7 @@ public class App extends Application
             }
         });
         instance = this;
+        // ========================================================================================================================
 
         KakaoSDK.init(new KakaoSDKAdapter());
     }
