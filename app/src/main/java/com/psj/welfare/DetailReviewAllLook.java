@@ -2,7 +2,6 @@ package com.psj.welfare;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
@@ -55,18 +54,24 @@ public class DetailReviewAllLook extends AppCompatActivity {
     private String welf_id; //혜택 아이디 값
     private String welf_name; //혜택 명
 
-    private boolean being_logout; //로그인 했는지 여부 확인하기
-    private String SessionId = null; //세션 값
+
     private String token = null; //토큰 값
     private String status = null; //리뷰 삭제후 반환값
     private String message; //리뷰 삭제후 받을 메세지
 
     private String filter = "newest";
 
+    //쉐어드 싱글톤
+    private SharedSingleton sharedSingleton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_review_all_look);
+
+        //쉐어드 싱글톤 사용
+        sharedSingleton = SharedSingleton.getInstance(this);
+        token = sharedSingleton.getToken(); //토큰 값
 
         //자바 변수와 xml 변수 연결
         init();
@@ -74,8 +79,6 @@ public class DetailReviewAllLook extends AppCompatActivity {
         //버튼 및 텍스트의 사이즈를 동적으로 맞춤
         SetSize();
 
-        //로그인 했는지 여부 확인
-        being_loging();
 
         //인텐트로 받아온 welf_id값
         being_intent();
@@ -213,21 +216,6 @@ public class DetailReviewAllLook extends AppCompatActivity {
         }
     }
 
-
-    //로그인 했는지 여부 확인
-    private void being_loging() {
-        //로그인 했는지 여부 확인하기위한 쉐어드
-        SharedPreferences app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
-        being_logout = app_pref.getBoolean("logout", false); //로그인 했는지 여부 확인하기
-        SessionId = null;
-        token = null;
-        if (!being_logout) { //로그인 했다면
-            SessionId = app_pref.getString("sessionId", ""); //세션값 받아오기
-            token = app_pref.getString("token", ""); //토큰값 받아오기
-        }
-    }
-
-
     //인텐트로 받아온 welf_id값
     private void being_intent() {
         welf_id = ""; //혜택 아이디 값
@@ -241,7 +229,7 @@ public class DetailReviewAllLook extends AppCompatActivity {
     }
 
 
-    //서버로부터 리뷰 데이터 가져오기
+    //서버로부터 리뷰 데이터 가져오기(조회)
     private void LoadReview() {
         //서버로부터 데이터를 받아오는데 걸리는 시간동안 보여줄 프로그래스 바
         dialog = new ProgressDialog(this);
@@ -268,7 +256,6 @@ public class DetailReviewAllLook extends AppCompatActivity {
                 {
                     Log.e(TAG, "비로그인일 시 데이터 가져오기 실패 : " + response.body());
                 }
-
             }
 
             @Override
@@ -281,11 +268,15 @@ public class DetailReviewAllLook extends AppCompatActivity {
 
     //Gson으로 파싱
     private void GsonResponseParse(String result){
+        Log.e(TAG,"result : " + result);
+
         Gson gson = new Gson();
         try {
             JSONObject jsonObject = new JSONObject(result);
-            JSONArray jsonArray = jsonObject.getJSONArray("message");
 
+
+            review_count.setText("사용자 리뷰 " + jsonObject.getString("total_num") + "개");
+            JSONArray jsonArray = jsonObject.getJSONArray("message");
             for (int i = 0; i < jsonArray.length(); i++){
                 //DetailReviewDataGson.class 타입으로 변경 (타입을 String, int, jsonArray등 일반 데이터 타입으로 받을 수도 있다
                 DetailReviewData data = gson.fromJson(jsonArray.getJSONObject(i).toString(),DetailReviewData.class);
@@ -302,7 +293,6 @@ public class DetailReviewAllLook extends AppCompatActivity {
         }
 
     }
-
 
 
 

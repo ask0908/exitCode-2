@@ -76,6 +76,12 @@ public class SplashActivity extends AppCompatActivity
         setContentView(R.layout.activity_splash);
         startService(new Intent(this, UnCatchTaskService.class));
 
+
+//        SharedPreferences shared;
+//        shared = this.getSharedPreferences("app_pref", 0);
+//        shared.edit().clear().apply();
+
+
         //로그인 singleton 패턴으로 사용
         sharedSingleton = SharedSingleton.getInstance(this);
 

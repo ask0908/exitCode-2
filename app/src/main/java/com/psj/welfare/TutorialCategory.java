@@ -3,8 +3,6 @@ package com.psj.welfare;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -16,15 +14,12 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 
 import com.orhanobut.logger.Logger;
-import com.psj.welfare.activity.MainTabLayoutActivity;
-import com.psj.welfare.util.DBOpenHelper;
 import com.psj.welfare.util.UnCatchTaskService;
 
 /* 미리보기 첫 화면에서 "알아보기" 버튼 눌러 이동하는 나이, 성별, 지역 선택 화면 */
@@ -47,33 +42,35 @@ public class TutorialCategory extends AppCompatActivity {
     private String home = null; //지역
 //    private String age = "20대"; //나이대를 담는 변수(기본값 20대)
 
-    private SharedPreferences sharedPreferences;
+//    private SharedPreferences sharedPreferences;
 
-    DBOpenHelper helper;
-    String sqlite_token;
+//    DBOpenHelper helper;
+//    String sqlite_token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial_category);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR); // 상태바 글자색 검정색으로 바꾸기
+
         Logger.d("TutorialCategory에서 UnCatchTaskService가 실행중인가? : " + isMyServiceRunning(UnCatchTaskService.class));
 
-        sharedPreferences = getSharedPreferences("app_pref", 0);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        sharedPreferences = getSharedPreferences("app_pref", 0);
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        helper = new DBOpenHelper(this);
-        helper.openDatabase();
-        helper.create();
-
-        // Room DB에서 토큰 가져와 변수에 대입
-        Cursor cursor = helper.selectColumns();
-        if (cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-            }
-        }
+//        helper = new DBOpenHelper(this);
+//        helper.openDatabase();
+//        helper.create();
+//
+//        // Room DB에서 토큰 가져와 변수에 대입
+//        Cursor cursor = helper.selectColumns();
+//        if (cursor != null)
+//        {
+//            while (cursor.moveToNext())
+//            {
+//                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+//            }
+//        }
 
         BtnMinus = findViewById(R.id.BtnMinus); //나이대 - 버튼
         BtnPlus = findViewById(R.id.BtnPlus); //나이대 - 버튼
@@ -136,10 +133,10 @@ public class TutorialCategory extends AppCompatActivity {
                 Toast.makeText(this, "성별을 선택해 주세요", Toast.LENGTH_SHORT).show();
             } else { //값을 모두 선택 했다면
 
-                editor.putString("gender", gender);
-                editor.putString("age_group", TextAge.getText().toString());
-                editor.putString("user_area", PickerString[PickerHome.getValue()]);
-                editor.apply();
+//                editor.putString("gender", gender);
+//                editor.putString("age_group", TextAge.getText().toString());
+//                editor.putString("user_area", PickerString[PickerHome.getValue()]);
+//                editor.apply();
 
                 // 받은 값들을 서버로 보낸다
 
@@ -198,38 +195,45 @@ public class TutorialCategory extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        AlertDialog.Builder TutorialDialog = new AlertDialog.Builder(TutorialCategory.this);
-        View dialogview = getLayoutInflater().inflate(R.layout.custom_tutorial_dialog,null); //다이얼로그의 xml뷰 담기
-        Button BtbCancle = dialogview.findViewById(R.id.BtbCancle); //취소 버튼
-        Button BtnBack = dialogview.findViewById(R.id.BtnBack); //뒤로 가기 버튼
-        ConstraintLayout review_dialog_layout = dialogview.findViewById(R.id.review_dialog_layout);
+        //앱종료
+        finishAndRemoveTask(); // 액티비티 종료 + 태스크 리스트에서 지우기
+        ActivityCompat.finishAffinity(this);
 
-        review_dialog_layout.getLayoutParams().width = (int) (size.x*0.9);
-        review_dialog_layout.getLayoutParams().height = (int) (size.y*0.26);
 
-        TutorialDialog.setView(dialogview); //alertdialog에 view 넣기
-        final AlertDialog alertDialog = TutorialDialog.create(); //다이얼로그 객체로 만들기
-        alertDialog.show(); //다이얼로그 보여주기
 
-        //취소 버튼
-        BtbCancle.setOnClickListener(v->{
-            alertDialog.dismiss(); //다이얼로그 사라지기
-        });
-
-        //뒤로 가기 버튼
-        BtnBack.setOnClickListener(v->{
-            Intent intent = new Intent(TutorialCategory.this, MainTabLayoutActivity.class); //CategoryWelcome페이지로 가기
-
-            //미리보기 했는지
-            SharedPreferences shared = getSharedPreferences("welf_preview", 0);
-            SharedPreferences.Editor editor = shared.edit();
-            editor.putBoolean("being_preview", true); //미리보기 건너뛰기를 했거나 미리보기 화면에 들어갔다면
-            editor.apply();
-
-            startActivity(intent);
-            Toast.makeText(TutorialCategory.this,"미리보기를 취소 했습니다",Toast.LENGTH_SHORT).show();
-            alertDialog.dismiss(); //다이얼로그 사라지기
-            finish();
-        });
+        //미리보기 선택 여부 다이얼로그로 물어보기
+//        AlertDialog.Builder TutorialDialog = new AlertDialog.Builder(TutorialCategory.this);
+//        View dialogview = getLayoutInflater().inflate(R.layout.custom_tutorial_dialog,null); //다이얼로그의 xml뷰 담기
+//        Button BtbCancle = dialogview.findViewById(R.id.BtbCancle); //취소 버튼
+//        Button BtnBack = dialogview.findViewById(R.id.BtnBack); //뒤로 가기 버튼
+//        ConstraintLayout review_dialog_layout = dialogview.findViewById(R.id.review_dialog_layout);
+//
+//        review_dialog_layout.getLayoutParams().width = (int) (size.x*0.9);
+//        review_dialog_layout.getLayoutParams().height = (int) (size.y*0.26);
+//
+//        TutorialDialog.setView(dialogview); //alertdialog에 view 넣기
+//        final AlertDialog alertDialog = TutorialDialog.create(); //다이얼로그 객체로 만들기
+//        alertDialog.show(); //다이얼로그 보여주기
+//
+//        //취소 버튼
+//        BtbCancle.setOnClickListener(v->{
+//            alertDialog.dismiss(); //다이얼로그 사라지기
+//        });
+//
+//        //뒤로 가기 버튼
+//        BtnBack.setOnClickListener(v->{
+//            Intent intent = new Intent(TutorialCategory.this, MainTabLayoutActivity.class); //CategoryWelcome페이지로 가기
+//
+//            //미리보기 했는지
+////            SharedPreferences shared = getSharedPreferences("welf_preview", 0);
+////            SharedPreferences.Editor editor = shared.edit();
+////            editor.putBoolean("being_preview", true); //미리보기 건너뛰기를 했거나 미리보기 화면에 들어갔다면
+////            editor.apply();
+//
+//            startActivity(intent);
+//            Toast.makeText(TutorialCategory.this,"미리보기를 취소 했습니다",Toast.LENGTH_SHORT).show();
+//            alertDialog.dismiss(); //다이얼로그 사라지기
+//            finish();
+//        });
     }
 }

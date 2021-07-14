@@ -7,6 +7,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +33,7 @@ public class TutorialWelcome extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial_welcome);
-
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR); // 상태바 글자색 검정색으로 바꾸기
         //쉐어드 싱글톤 사용
         sharedSingleton = SharedSingleton.getInstance(this);
 

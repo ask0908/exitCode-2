@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -42,6 +43,7 @@ public class TutorialResult extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial_result);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR); // 상태바 글자색 검정색으로 바꾸기
 
         //쉐어드 싱글톤 사용
         sharedSingleton = SharedSingleton.getInstance(this);
@@ -53,8 +55,10 @@ public class TutorialResult extends AppCompatActivity {
         BenefitTag1 = findViewById(R.id.BenefitTag1); //혜택태그1
         BenefitTag2 = findViewById(R.id.BenefitTag2); //혜택태그2
         BenefitTag3 = findViewById(R.id.BenefitTag3); //혜택태그3
-
         BenefitText = findViewById(R.id.BenefitText); //혜택 설명 텍스트
+
+        //버튼 및 텍스트의 사이즈를 동적으로 맞춤
+        SetSize();
 
         //혜택 데이터 가져오기
         LodingBenefit();
@@ -70,23 +74,7 @@ public class TutorialResult extends AppCompatActivity {
             finish();
         });
 
-        //버튼 및 텍스트의 사이즈를 동적으로 맞춤
-        SetSize();
-    }
 
-    //버튼 및 텍스트의 사이즈를 동적으로 맞춤
-    void SetSize(){
-        //size에 저장되는 가로/세로 길이의 단위는 픽셀(Pixel)입니다.
-        Display display = getWindowManager().getDefaultDisplay();  // in Activity
-        /* getActivity().getWindowManager().getDefaultDisplay() */ // in Fragment
-        Point size = new Point();
-        display.getRealSize(size); // or getSize(size)
-
-        //디스플레이 값을 기준으로 버튼 텍스트 크기를 정함
-        BtnGoMain.setTextSize(TypedValue.COMPLEX_UNIT_PX,size.x/20); //메인으로 가기 버튼튼
-        BenefitTitle1.setTextSize(TypedValue.COMPLEX_UNIT_PX,size.x/25); //첫번째 혜택 혜택명
-        BenefitTitle2.setTextSize(TypedValue.COMPLEX_UNIT_PX,size.x/25); //두번째 혜택 혜택명
-        BenefitTitle3.setTextSize(TypedValue.COMPLEX_UNIT_PX,size.x/25); //세번째 혜택 혜택명
     }
 
 
@@ -178,6 +166,21 @@ public class TutorialResult extends AppCompatActivity {
             });
 
         }).start();
+    }
+
+    //버튼 및 텍스트의 사이즈를 동적으로 맞춤
+    void SetSize(){
+        //size에 저장되는 가로/세로 길이의 단위는 픽셀(Pixel)입니다.
+        Display display = getWindowManager().getDefaultDisplay();  // in Activity
+        /* getActivity().getWindowManager().getDefaultDisplay() */ // in Fragment
+        Point size = new Point();
+        display.getRealSize(size); // or getSize(size)
+
+        //디스플레이 값을 기준으로 버튼 텍스트 크기를 정함
+        BtnGoMain.setTextSize(TypedValue.COMPLEX_UNIT_PX,size.x/20); //메인으로 가기 버튼튼
+        BenefitTitle1.setTextSize(TypedValue.COMPLEX_UNIT_PX,size.x/25); //첫번째 혜택 혜택명
+        BenefitTitle2.setTextSize(TypedValue.COMPLEX_UNIT_PX,size.x/25); //두번째 혜택 혜택명
+        BenefitTitle3.setTextSize(TypedValue.COMPLEX_UNIT_PX,size.x/25); //세번째 혜택 혜택명
     }
 
 

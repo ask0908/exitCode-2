@@ -1,5 +1,6 @@
 package com.psj.welfare.test;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -76,10 +77,10 @@ public class TestFragment extends Fragment
 
     //로그인 여부를 확인하기 위해 사용하는 쉐어드
     private SharedPreferences sharedPreferences;
-    private String age = null; //미리보기 나이
-    private String gender = null; //미리보기 성별
-    private String local = null; //미리보기 지역
-    private String benefit = null; //미리보기 관심사 선택시 데이터
+//    private String age = null; //미리보기 나이
+//    private String gender = null; //미리보기 성별
+//    private String local = null; //미리보기 지역
+//    private String benefit = null; //미리보기 관심사 선택시 데이터
 
     // 최상위 핸들러 정의
     private Handler sliderHandler = new Handler();
@@ -146,8 +147,6 @@ public class TestFragment extends Fragment
     // 새 서버에서 가져온 배너 데이터를 저장할 변수
     String banner_image, banner_title;
 
-    String changed_nickname;
-
     //쉐어드 싱글톤
     private SharedSingleton sharedSingleton;
 
@@ -166,6 +165,7 @@ public class TestFragment extends Fragment
                              Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.fragment_test, container, false);
+
         youtube_title_text = view.findViewById(R.id.youtube_title_text);
         title_text = view.findViewById(R.id.title_text);
         youtube_title_layout = view.findViewById(R.id.youtube_title_layout);
@@ -193,6 +193,10 @@ public class TestFragment extends Fragment
         //쉐어드 싱글톤 사용
         sharedSingleton = SharedSingleton.getInstance(getActivity());
 
+        token = sharedSingleton.getToken(); //토큰 값
+        user_nickname = sharedSingleton.getNickname(); //닉네임
+
+
 
 //        keyword_list = new ArrayList<>();
         down_list = new ArrayList<>();
@@ -202,15 +206,8 @@ public class TestFragment extends Fragment
 
 
 
-
-
-
-        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
-        changed_nickname = sharedPreferences.getString("changed_nickname", "");
-
-
-
-
+//        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+//        changed_nickname = sharedPreferences.getString("changed_nickname", "");
 
 
 
@@ -241,8 +238,7 @@ public class TestFragment extends Fragment
 //        }
 //        Logger.d("쉐어드의 로그인 확인 변수 : " + sharedPreferences.getBoolean("user_login", false));
 
-        token = sharedSingleton.getToken(); //토큰 값
-        user_nickname = sharedSingleton.getNickname(); //닉네임
+
 
 
 
@@ -258,15 +254,17 @@ public class TestFragment extends Fragment
 
             notlogin_card.setVisibility(View.GONE);
             welfdata_layout.setVisibility(View.VISIBLE);
+            Welfdata_first_title.setText(user_nickname + "님");
 
-            if (!changed_nickname.equals(""))
-                {
-                    Welfdata_first_title.setText(changed_nickname + "님");
-                }
-                else
-                {
-                    Welfdata_first_title.setText(user_nickname + "님");
-                }
+//            if (!changed_nickname.equals(""))
+//                {
+//                    Welfdata_first_title.setText(changed_nickname + "님");
+//                }
+//                else
+//                {
+//                    Welfdata_first_title.setText(user_nickname + "님");
+//                }
+
         } else { //로그인 하지 않았을 경우
             showWelfareAndYoutubeNotLoginAndNotInterest();
 
@@ -660,12 +658,12 @@ public class TestFragment extends Fragment
     private void showWelfareAndYoutubeNotLoginAndNotInterest()
     {
         //서버로부터 데이터를 받아오는데 걸리는 시간동안 보여줄 프로그래스 바
-//        final ProgressDialog dialog = new ProgressDialog(getActivity());
-//        dialog.setMax(100);
-//        dialog.setMessage("잠시만 기다려 주세요...");
-//        dialog.setCancelable(false); //"false"면 다이얼로그 나올 때 dismiss 띄우기 전까지 안사라짐
-//        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//        dialog.show();
+        final ProgressDialog dialog = new ProgressDialog(getActivity());
+        dialog.setMax(100);
+        dialog.setMessage("잠시만 기다려 주세요...");
+        dialog.setCancelable(false); //"false"면 다이얼로그 나올 때 dismiss 띄우기 전까지 안사라짐
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.show();
 
         mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         final Observer<String> mainObserver = new Observer<String>()
@@ -684,7 +682,7 @@ public class TestFragment extends Fragment
                     Log.e(TAG, "str(결과값)이 null입니다");
                 }
 
-//                dialog.dismiss(); //서버 연결후에 프로그래스바 숨기기
+                dialog.dismiss(); //서버 연결후에 프로그래스바 숨기기
             }
         };
         mainViewModel.getAllData().observe(getActivity(), mainObserver);
@@ -695,12 +693,12 @@ public class TestFragment extends Fragment
     /* 로그인 시 혜택, 유튜브 데이터 가져와 보여주는 메서드 */
     private void showWelfareAndYoutubeLogin()
     {
-//        final ProgressDialog dialog = new ProgressDialog(getActivity());
-//        dialog.setMax(100);
-//        dialog.setMessage("잠시만 기다려 주세요...");
-//        dialog.setCancelable(false); //"false"면 다이얼로그 나올 때 dismiss 띄우기 전까지 안사라짐
-//        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//        dialog.show();
+        final ProgressDialog dialog = new ProgressDialog(getActivity());
+        dialog.setMax(100);
+        dialog.setMessage("잠시만 기다려 주세요...");
+        dialog.setCancelable(false); //"false"면 다이얼로그 나올 때 dismiss 띄우기 전까지 안사라짐
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.show();
 
         mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         final Observer<String> mainObserver = new Observer<String>()
@@ -718,29 +716,11 @@ public class TestFragment extends Fragment
                 {
                     Log.e(TAG, "str이 null입니다");
                 }
-//                dialog.dismiss();
+                dialog.dismiss();
             }
         };
         mainViewModel.showWelfareAndYoutubeLogin(token,"main").observe(getActivity(), mainObserver);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -919,6 +899,8 @@ public class TestFragment extends Fragment
         super.onPause();
         // 다른 페이지로 떠나있는 동안 스크롤이 동작할 필요는 없음. 정지
         autoScrollStop();
+
+
     }
 
     @Override
@@ -927,6 +909,13 @@ public class TestFragment extends Fragment
         super.onResume();
         // 다른 페이지 갔다가 돌아오면 다시 스크롤 시작
         autoScrollStart();
+
+        //나중에 옵저버블로 바꿔야함!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //마이페이지에서 닉네임 변경후 바로 적용할 수 있도록
+        //생명 주기 이용해서 작업중
+        Welfdata_first_title.setText(sharedSingleton.getNickname() + "님");
     }
+
+
 
 }

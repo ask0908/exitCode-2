@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -27,6 +26,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.kakao.kakaolink.v2.KakaoLinkResponse;
 import com.kakao.kakaolink.v2.KakaoLinkService;
 import com.kakao.message.template.ButtonObject;
@@ -72,11 +72,21 @@ public class DetailTabLayoutActivity extends AppCompatActivity
     Bundle detail_bundle = new Bundle(); //액티비티에서 프래그먼트로 보낼 혜택 상세 데이터
     String welf_name; //혜택 명
     String welf_id; //혜택 아이디 값
-    boolean being_logout; //로그인 했는지 여부 확인하기
-    String SessionId; //세션 값
-    String token; //토큰 값
+
     boolean being_id; //혜택 아이디가 있는지
     boolean review_write; //리뷰 작성 했는지
+
+    //토큰, 세션 아이디
+    private String token, sessionId;
+    //로그인 했는지 여부
+    boolean isLogin;
+
+    // 구글 애널리틱스
+    private FirebaseAnalytics analytics;
+
+    //로그인관련 쉐어드 singleton
+    private SharedSingleton sharedSingleton;
+
 
     //공유하기 버튼 중복 클릭 방지 시간 설정 ( 해당 시간 이후에 다시 클릭 가능 )
     private static final long MIN_CLICK_INTERVAL = 600;
@@ -106,7 +116,7 @@ public class DetailTabLayoutActivity extends AppCompatActivity
         //북마크 하기
         bookmark_btn.setOnClickListener(v -> {
 
-            if (!being_logout) { //로그인 했다면
+            if (isLogin) { //로그인 했다면
                 SetBookmark(); //북마크 하기
             } else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(DetailTabLayoutActivity.this);
@@ -272,20 +282,22 @@ public class DetailTabLayoutActivity extends AppCompatActivity
         ReviewFragment = new DetailReviewFragment();
     }
 
+
+
+
     //로그인 했는지 여부 확인
     private void being_loging() {
-        //로그인 했는지 여부 확인하기위한 쉐어드
-        SharedPreferences app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
-        being_logout = app_pref.getBoolean("logout", false); //로그인 했는지 여부 확인하기
-        SessionId = "";
-        token = "";
-
-        if (!being_logout) { //로그인 했다면
-            SessionId = app_pref.getString("sessionId", ""); //세션값 받아오기
-            token = app_pref.getString("token", ""); //토큰값 받아오기
-        }
+        //쉐어드 싱글톤 사용
+        sharedSingleton = SharedSingleton.getInstance(this);
+        token = sharedSingleton.getToken(); //토큰 값
+        sessionId = sharedSingleton.getSessionId(); //세션 id
+        //로그인 했는지 여부
+        isLogin = sharedSingleton.getBooleanLogin();
     }
 
+
+
+    //나중에 로직 정리해야함-----------------------------------------------------------------------------------
     //인텐트로 받아온 welf_id값
     private void being_intent() {
         welf_id = ""; //혜택 아이디 값
@@ -299,8 +311,6 @@ public class DetailTabLayoutActivity extends AppCompatActivity
 
     //북마크 하기
     private void SetBookmark() {
-
-
         //서버에서 값을 받는걸 기다리기에는 적용이 너무 느림
         if (isBookmark.equals("true")) { //북마크를 했었다면 북마크 취소하기
             isBookmark = "false"; //북마크 값을 false
@@ -316,7 +326,7 @@ public class DetailTabLayoutActivity extends AppCompatActivity
 
         String URL = "https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/"; //연결하고자 하는 서버의 url, 반드시 /로 끝나야 함
         ApiInterfaceTest apiInterfaceTest = ApiClientTest.ApiClient(URL).create(ApiInterfaceTest.class); //레트로핏 인스턴스로 인터페이스 객체 구현
-        Call<String> call = apiInterfaceTest.BookMark(token, SessionId, "bookmark", welf_id); //인터페이스에서 사용할 메소드 선언
+        Call<String> call = apiInterfaceTest.BookMark(token, sessionId, "bookmark", welf_id); //인터페이스에서 사용할 메소드 선언
         call.enqueue(new Callback<String>() { //enqueue로 비동기 통신 실행, 통신 완료 후 이벤트 처리 위한 callback 리스너 등록
             @Override
             public void onResponse(Call<String> call, retrofit2.Response<String> response) { //onResponse 통신 성공시 callback
@@ -345,7 +355,7 @@ public class DetailTabLayoutActivity extends AppCompatActivity
         String URL = "https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/"; //연결하고자 하는 서버의 url, 반드시 /로 끝나야 함
         ApiInterfaceTest apiInterfaceTest = ApiClientTest.ApiClient(URL).create(ApiInterfaceTest.class); //레트로핏 인스턴스로 인터페이스 객체 구현
 //        Log.e(TAG, "token : " + token + ", 세션 : " + SessionId + ", welf_id : " + welf_id);
-        Call<String> call = apiInterfaceTest.BenefitDetail(token, SessionId, "detail", welf_id); //인터페이스에서 사용할 메소드 선언
+        Call<String> call = apiInterfaceTest.BenefitDetail(token, sessionId, "detail", welf_id); //인터페이스에서 사용할 메소드 선언
         call.enqueue(new Callback<String>() { //enqueue로 비동기 통신 실행, 통신 완료 후 이벤트 처리 위한 callback 리스너 등록
             @Override
             public void onResponse(Call<String> call, retrofit2.Response<String> response) { //onResponse 통신 성공시 callback

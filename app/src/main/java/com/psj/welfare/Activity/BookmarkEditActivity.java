@@ -2,7 +2,6 @@ package com.psj.welfare.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.database.Cursor;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -27,13 +26,14 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
+import com.psj.welfare.SharedSingleton;
 import com.psj.welfare.adapter.BookmarkEditAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.data.BookmarkItem;
-import com.psj.welfare.util.DBOpenHelper;
 import com.psj.welfare.viewmodel.BookmarkViewModel;
 
 import org.json.JSONArray;
@@ -78,12 +78,22 @@ public class BookmarkEditActivity extends AppCompatActivity
     String delete_bookmark; //삭제할 북마크
     StringBuilder delete_stringBuilder; //삭제할 북마크를 잠시 담을 stringBuilder
 
-    DBOpenHelper helper;
-    String sqlite_token;
+//    DBOpenHelper helper;
+//    String sqlite_token;
 
 //    ArrayList<String> checked_welf_list;
 
 //    private List<BookmarkItem> currentSelectedItems = new ArrayList<>();    // 체크된 체크박스들을 담을 리스트
+
+
+    //토큰, 세션 아이디
+    private String token;
+
+    // 구글 애널리틱스
+    private FirebaseAnalytics analytics;
+
+    //로그인관련 쉐어드 singleton
+    private SharedSingleton sharedSingleton;
 
     @SuppressLint("CheckResult")
     @Override
@@ -93,9 +103,14 @@ public class BookmarkEditActivity extends AppCompatActivity
         setStatusBarGradiant(this);
         setContentView(R.layout.activity_bookmark_edit);
 
-        helper = new DBOpenHelper(this);
-        helper.openDatabase();
-        helper.create();
+
+        //쉐어드 싱글톤 사용
+        sharedSingleton = SharedSingleton.getInstance(this);
+        token = sharedSingleton.getToken(); //토큰 값
+
+//        helper = new DBOpenHelper(this);
+//        helper.openDatabase();
+//        helper.create();
 
         //객체 연결(초기화)
         init();
@@ -421,16 +436,23 @@ public class BookmarkEditActivity extends AppCompatActivity
     private void deleteBookmark(String type, String page, String id)
     {
         //DB에서 가져온 데이터를 쉽게 처리하기 위해서 Cursor라는 인터페이스를 사용
-        Cursor cursor = helper.selectColumns();//
-        if (cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-            }
-        }
+//        Cursor cursor = helper.selectColumns();//
+//        if (cursor != null)
+//        {
+//            while (cursor.moveToNext())
+//            {
+//                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+//            }
+//        }
+
+
+
+
+
+
+
         ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
-        Call<String> call = apiInterface.deleteBookmark(sqlite_token, type, page, id);
+        Call<String> call = apiInterface.deleteBookmark(token, type, page, id);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -525,7 +547,7 @@ public class BookmarkEditActivity extends AppCompatActivity
             }
         };
 
-        viewModel.selectBookmark(page).observe(this, bookmarkObserver);
+        viewModel.selectBookmark(token,page).observe(this, bookmarkObserver);
     }
 
     // 가져온 북마크 데이터를 파싱하는 메서드

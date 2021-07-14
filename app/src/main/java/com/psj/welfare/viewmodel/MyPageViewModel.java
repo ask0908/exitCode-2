@@ -1,7 +1,6 @@
 package com.psj.welfare.viewmodel;
 
 import android.app.Application;
-import android.database.Cursor;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -10,7 +9,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
-import com.psj.welfare.util.DBOpenHelper;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -21,32 +19,17 @@ public class MyPageViewModel extends AndroidViewModel
     private final String TAG = MyPageViewModel.class.getSimpleName();
     private ApiInterface apiInterface;
 
-    DBOpenHelper helper;
-    String sqlite_token;
-
     public MyPageViewModel(@NonNull Application application)
     {
         super(application);
 
         apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
-        helper = new DBOpenHelper(application.getApplicationContext());
-        helper.openDatabase();
-        helper.create();
-
-        Cursor cursor = helper.selectColumns();
-        if (cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-            }
-        }
     }
 
-    public MutableLiveData<String> getMyReview(String page)
+    public MutableLiveData<String> getMyReview(String token, String page)
     {
         final MutableLiveData<String> data = new MutableLiveData<>();
-        apiInterface.checkMyReview(sqlite_token, page)
+        apiInterface.checkMyReview(token, page)
                 .enqueue(new Callback<String>()
                 {
                     @Override

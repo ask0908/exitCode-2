@@ -3,8 +3,6 @@ package com.psj.welfare;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -34,10 +32,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.CustomReviewDialog;
-import com.psj.welfare.util.DBOpenHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -71,13 +69,32 @@ public class DetailReviewWrite extends AppCompatActivity
     boolean being_id; //혜택 id값이 존재 하는지
     String welf_id, welf_name, level_value, satisfaction_value; //혜택 id값, 혜택명, 난이도, 만족도
 
-    boolean being_logout; //로그인 했는지 여부 확인하기
-    String SessionId; //세션 값
-    String token; //토큰 값
+
+
+
+//    boolean being_logout; //로그인 했는지 여부 확인하기
+//    String SessionId; //세션 값
+//    String token; //토큰 값
+//    DBOpenHelper helper;
+//    String sqlite_token;
+
+
+
+
+
+    //토큰
+    private String token;
+    //로그인 했는지 여부
+    boolean isLogin;
+
+    // 구글 애널리틱스
+    private FirebaseAnalytics analytics;
+
+    //로그인관련 쉐어드 singleton
+    private SharedSingleton sharedSingleton;
+
 
     String result_code;
-    DBOpenHelper helper;
-    String sqlite_token;
 
     int checkStatus = 0;  //어떤 액티비티에서 넘어왔는지 확인 (100 = '내가 작성한 리뷰 페이지' or '모든 리뷰 보기 페이지', 200 = '상세페이지')
     int written_review_id;
@@ -95,18 +112,6 @@ public class DetailReviewWrite extends AppCompatActivity
 //        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING); //키보드가 올라가도 레이아웃이 변하지 않도록
         //android:windowSoftInputMode="adjustNothing" 매니페스트에서 이렇게 코드 입력한것과 동일한 기능
 
-        helper = new DBOpenHelper(this);
-        helper.openDatabase();
-        helper.create();
-
-        Cursor cursor = helper.selectColumns();
-        if (cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-            }
-        }
 
         //로그인 했는지 여부 확인
         being_loging();
@@ -367,8 +372,7 @@ public class DetailReviewWrite extends AppCompatActivity
             } else if (checkStatus == 200){
                 goto_review();
             }
-//
-//
+
 //                Log.e(TAG,"----------------");
 //                Log.e(TAG,"welf_id : " + welf_id);
 //                Intent intent = new Intent(DetailReviewWrite.this, DetailTabLayoutActivity.class);
@@ -402,6 +406,7 @@ public class DetailReviewWrite extends AppCompatActivity
         {
             e.printStackTrace();
         }
+
 
         ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
         Call<String> call = apiInterface.reviewWrite(token, jsonObject.toString());
@@ -444,6 +449,13 @@ public class DetailReviewWrite extends AppCompatActivity
                 Log.e(TAG, "리뷰 작성 에러 : " + t.getMessage());
             }
         });
+
+
+
+
+
+
+
 
     }
 
@@ -521,19 +533,14 @@ public class DetailReviewWrite extends AppCompatActivity
     }
 
 
-
     //로그인 했는지 여부 확인
     private void being_loging()
     {
-        //로그인 했는지 여부 확인하기위한 쉐어드
-        SharedPreferences app_pref = getSharedPreferences(getString(R.string.shared_name), 0);
-        being_logout = app_pref.getBoolean("logout", false); //로그인 했는지 여부 확인하기
-
-        if (!being_logout)
-        { //로그인 했다면
-            SessionId = app_pref.getString("sessionId", ""); //세션값 받아오기
-            token = app_pref.getString("token", ""); //토큰값 받아오기
-        }
+        //쉐어드 싱글톤 사용
+        sharedSingleton = SharedSingleton.getInstance(this);
+        token = sharedSingleton.getToken(); //토큰 값
+        //로그인 했는지 여부
+        isLogin = sharedSingleton.getBooleanLogin();
     }
 
 
@@ -550,12 +557,14 @@ public class DetailReviewWrite extends AppCompatActivity
         finish();
     }
 
+
     @Override
     public void onBackPressed()
     {
         CustomReviewDialog dialog = new CustomReviewDialog(this);
         dialog.showDialog();
     }
+
 
     //자바 변수와 xml 변수 연결
     private void init()
@@ -588,6 +597,7 @@ public class DetailReviewWrite extends AppCompatActivity
         //별점 기본값 설정
         review_star.setRating(3);
     }
+
 
     //버튼 및 텍스트의 사이즈를 동적으로 맞춤
     private void SetSize()

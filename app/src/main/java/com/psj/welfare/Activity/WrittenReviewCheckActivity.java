@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -32,13 +31,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.psj.welfare.DetailTabLayoutActivity;
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
+import com.psj.welfare.SharedSingleton;
 import com.psj.welfare.adapter.WrittenReviewAdapter;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.MyReviewListener;
 import com.psj.welfare.custom.RecyclerViewEmptySupport;
 import com.psj.welfare.data.WrittenReviewItem;
-import com.psj.welfare.util.DBOpenHelper;
 import com.psj.welfare.util.NetworkStatus;
 import com.psj.welfare.viewmodel.MyPageViewModel;
 
@@ -89,8 +88,14 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
     // 페이징에 필요한 내용
     String total, total_page;
 
-    DBOpenHelper helper;
-    String sqlite_token;
+//    DBOpenHelper helper;
+//    String sqlite_token;
+
+    //토큰 값
+    private String token;
+    //쉐어드 싱글톤
+    private SharedSingleton sharedSingleton;
+
     String message, status;
 
     private Parcelable recyclerViewState;
@@ -101,6 +106,10 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setStatusBarGradiant(this);
         setContentView(R.layout.activity_written_review_check);
+        //쉐어드 싱글톤 사용
+        sharedSingleton = SharedSingleton.getInstance(this);
+        token = sharedSingleton.getToken(); //토큰 값
+
         // 인터넷 연결 상태를 체크해서 3G, 와이파이 중 하나라도 연결돼 있다면 더보기 화면에서 필요한 로직들을 진행시킴
         checkNetworkStatus();
     }
@@ -109,22 +118,9 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
     {
         if (NetworkStatus.checkNetworkStatus(this) == 1 || NetworkStatus.checkNetworkStatus(this) == 2)
         {
-            helper = new DBOpenHelper(this);
-            helper.openDatabase();
-            helper.create();
-
             // 리사이클러뷰 초기화 시 사용할 리스트 초기화
             list = new ArrayList<>();
 
-            // Room DB에서 토큰 가져와 변수에 대입
-            Cursor cursor = helper.selectColumns();
-            if (cursor != null)
-            {
-                while (cursor.moveToNext())
-                {
-                    sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-                }
-            }
 
             written_review_back_image = findViewById(R.id.written_review_back_image);
             written_review_textview = findViewById(R.id.written_review_textview);
@@ -233,7 +229,7 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
             }
         };
 
-        viewModel.getMyReview(page).observe(this, myReviewObserver);
+        viewModel.getMyReview(token,page).observe(this, myReviewObserver);
     }
 
     /* getMyReview()로 가져온 리뷰 JSON을 파싱해서 리사이클러뷰에 set */
@@ -356,7 +352,7 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        Call<String> call = apiInterface.deleteReview(sqlite_token, jsonObject.toString());
+        Call<String> call = apiInterface.deleteReview(token, jsonObject.toString());
         call.enqueue(new Callback<String>()
         {
             @Override

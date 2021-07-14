@@ -2,7 +2,6 @@ package com.psj.welfare.custom;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.text.InputFilter;
@@ -22,10 +21,10 @@ import androidx.databinding.DataBindingUtil;
 
 import com.orhanobut.logger.Logger;
 import com.psj.welfare.R;
+import com.psj.welfare.SharedSingleton;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.databinding.EditNicknameDialogBinding;
-import com.psj.welfare.util.DBOpenHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,13 +38,19 @@ import retrofit2.Response;
 public class CustomEditNicknameDialog
 {
     private final String TAG = this.getClass().getSimpleName();
-    private String sqlite_token, message;
+    private String message;
     boolean isDuplicated = true;
-    DBOpenHelper helper;
+//    DBOpenHelper helper;
     private MyDialogListener dialogListener;
 
     private Context context;
     private EditNicknameDialogBinding binding;
+
+
+    //쉐어드 싱글톤
+    private SharedSingleton sharedSingleton;
+    //토큰
+    private String token;
 
     public void setDialogListener(MyDialogListener dialogListener)
     {
@@ -55,9 +60,11 @@ public class CustomEditNicknameDialog
     public CustomEditNicknameDialog(Context context)
     {
         this.context = context;
-        helper = new DBOpenHelper(context);
-        helper.openDatabase();
-        helper.create();
+        sharedSingleton = SharedSingleton.getInstance(context);
+        token = sharedSingleton.getToken();
+//        helper = new DBOpenHelper(context);
+//        helper.openDatabase();
+//        helper.create();
     }
 
     public void showDialog()
@@ -82,15 +89,57 @@ public class CustomEditNicknameDialog
             binding.editNicknameEdittext.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
             dialog.show();
 
-            binding.nicknameErase.setOnClickListener(v -> binding.editNicknameEdittext.setText(""));
 
-            /* 중복확인 버튼 */
+            //입력값 한글,소문자,대문자만 받기
+            binding.editNicknameEdittext.setFilters(new InputFilter[]{new InputFilter()
+            {
+                @Override
+                public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend)
+                {
+                    // 이모티콘, 특수문자 입력 방지하는 정규식
+                    // 둘 중 하나라도 입력되면 공백을 리턴한다
+                    /**
+                     * ^ : 패턴의 시작을 알리는 문자
+                     * [] : 문자의 집합 or 범위 나타냄, 두 문자 사이는 "-"로 범위를 나타낸다. 이 안에 있는 문자 중 하나라도 해당되면 정규식과 매치된다
+                     * [] 내부 : 한글, 영어, 숫자만 입력할 수 있게 하고 천지인 키보드의 .(middle dot)도 쓸 수 있도록 한다
+                     * $ : 문자열(패턴)의 종료를 알리는 문자
+                     * -> 입력되는 문자열의 시작부터 끝까지 한글, 영어, 숫자를 제외한 문자가 들어오면 공백을 리턴해서 아무것도 입력되지 않게 한다
+                     */
+                    Pattern pattern = Pattern.compile("^[a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ\\u318D\\u119E\\u11A2\\u2022\\u2025a\\u00B7\\uFE55]+$");
+                    if (source.equals("") || pattern.matcher(source).matches())
+                    {
+                        return source;
+                    }
+                    return "";
+                }
+            }, new InputFilter.LengthFilter(10)});  // 닉네임 입력은 10자까지만 된다
+
+
+            // edittext에 있는 닉네임 지우기 아이콘 클릭
+            binding.nicknameErase.setOnClickListener(v -> {
+                binding.editNicknameEdittext.setText("");
+                //텍스트 꾸미기 -> SpannableString
+                SpannableString spannableString = new SpannableString("문자/숫자만 가능 (2~10자리)");
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#757576")), 0, spannableString.length(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                binding.goodOrBadTextview.setText(spannableString);
+
+
+
+
+
+
+            });
+
+
+            /* 복확인 버튼 */
             binding.duplicateCheckBtn.setOnClickListener(v ->
             {
                 // 중복확인 버튼을 누르면 아이디가 중복되는지 체크
                 int length = binding.editNicknameEdittext.getText().toString().length();
                 if (TextUtils.isEmpty(binding.editNicknameEdittext.getText().toString()) || length == 0 || length > 11)
                 {
+                    //텍스트 꾸미기 -> SpannableString
                     SpannableString spannableString = new SpannableString("닉네임은 2~10자 문자/숫자만 가능해요");
                     spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#CC0033")), 0, spannableString.length(),
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -98,8 +147,26 @@ public class CustomEditNicknameDialog
                 }
                 else
                 {
+
+
+
+
+
+
+
                     duplicationCheck(binding.editNicknameEdittext.getText().toString(), "check");
                     dialogListener.onDuplicatedCheck(!isDuplicated);
+
+
+
+
+
+
+
+
+
+
+
                     SpannableString spannableString = new SpannableString("사용할 수 있는 닉네임이에요");
                     spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#99FF33")), 0, spannableString.length(),
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -109,6 +176,9 @@ public class CustomEditNicknameDialog
 
             // 취소 버튼
             binding.editNicknameCancel.setOnClickListener(v -> dialog.dismiss());
+
+
+
 
             // 닉네임 변경 버튼
             binding.editNicknameOk.setOnClickListener(v ->
@@ -141,30 +211,6 @@ public class CustomEditNicknameDialog
                     }
                 }
             });
-
-            binding.editNicknameEdittext.setFilters(new InputFilter[]{new InputFilter()
-            {
-                @Override
-                public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend)
-                {
-                    // 이모티콘, 특수문자 입력 방지하는 정규식
-                    // 둘 중 하나라도 입력되면 공백을 리턴한다
-                    /**
-                     * ^ : 패턴의 시작을 알리는 문자
-                     * [] : 문자의 집합 or 범위 나타냄, 두 문자 사이는 "-"로 범위를 나타낸다. 이 안에 있는 문자 중 하나라도 해당되면 정규식과 매치된다
-                     * [] 내부 : 한글, 영어, 숫자만 입력할 수 있게 하고 천지인 키보드의 .(middle dot)도 쓸 수 있도록 한다
-                     * $ : 문자열(패턴)의 종료를 알리는 문자
-                     * -> 입력되는 문자열의 시작부터 끝까지 한글, 영어, 숫자를 제외한 문자가 들어오면 공백을 리턴해서 아무것도 입력되지 않게 한다
-                     */
-                    Pattern pattern = Pattern.compile("^[a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ\\u318D\\u119E\\u11A2\\u2022\\u2025a\\u00B7\\uFE55]+$");
-                    if (source.equals("") || pattern.matcher(source).matches())
-                    {
-                        return source;
-                    }
-                    return "";
-                }
-            }, new InputFilter.LengthFilter(10)});  // 닉네임 입력은 10자까지만 된다
-
         }
     }
 
@@ -177,20 +223,33 @@ public class CustomEditNicknameDialog
         binding.goodOrBadTextview.setText(spannableString);
     }
 
+
+
+
+
+
+
+
+
+
+
     // 닉네임 중복 검사
     void duplicationCheck(String nickname, String type)
     {
-        Cursor cursor = helper.selectColumns();
-        if (cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-            }
-        }
+//        Cursor cursor = helper.selectColumns();
+//        if (cursor != null)
+//        {
+//            while (cursor.moveToNext())
+//            {
+//                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
+//            }
+//        }
+
+//        Logger.d("token : " + sqlite_token + ", 변경할 닉네임 : " + nickname + ", type : " + type);
+
+
         ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
-        Call<String> call = apiInterface.editNickname(sqlite_token, nickname, type);
-        Logger.d("token : " + sqlite_token + ", 변경할 닉네임 : " + nickname + ", type : " + type);
+        Call<String> call = apiInterface.editNickname(token, nickname, type);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -227,6 +286,23 @@ public class CustomEditNicknameDialog
         {
             e.printStackTrace();
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         isDuplicated = !message.equals("사용 가능한 닉네임 입니다.");
         if (message.equals("중복된 닉네임 입니다."))
         {
@@ -235,6 +311,14 @@ public class CustomEditNicknameDialog
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             binding.goodOrBadTextview.setText(spannableString);
         }
+
+
+
+
+
+
+
+
     }
 
 }

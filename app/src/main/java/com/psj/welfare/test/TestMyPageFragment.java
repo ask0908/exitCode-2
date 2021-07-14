@@ -66,18 +66,23 @@ public class TestMyPageFragment extends Fragment
 
 
     SharedPreferences sharedPreferences;
-    boolean isLogin;
 
 //    DBOpenHelper helper;
     String message;
-    String receivedNickname = "";
+//    String receivedNickname = "";
     //토큰, 세션 아이디
     private String token, sessionId;
+    //로그인 했는지 여부
+    private boolean isLogin;
+    //닉네임
+    private String nickname;
+    //닉네임 변경이 서버에서 정상적으로 처리 되었는지
+    private String status_code;
 
     // 구글 애널리틱스
     private FirebaseAnalytics analytics;
 
-    //로그인관련 쉐어드 singleton
+    //쉐어드 싱글톤
     private SharedSingleton sharedSingleton;
 
     public TestMyPageFragment()
@@ -108,6 +113,7 @@ public class TestMyPageFragment extends Fragment
     {
         super.onViewCreated(view, savedInstanceState);
 
+
         if (getActivity() != null)
         {
             analytics = FirebaseAnalytics.getInstance(getActivity());
@@ -117,11 +123,17 @@ public class TestMyPageFragment extends Fragment
         sharedSingleton = SharedSingleton.getInstance(getActivity());
         token = sharedSingleton.getToken(); //토큰 값
         sessionId = sharedSingleton.getSessionId(); //세션 id
+        isLogin = sharedSingleton.getBooleanLogin(); //로그인 했는지 여부
+        nickname = sharedSingleton.getNickname(); //닉네임
+
+        //닉네임 설정
+        binding.mypageMyId.setText(nickname);
+
         //xml크기를 동적으로 변환
         setsize();
 
-        // 마이페이지에 들어온 순간 내 닉네임을 보여준다
-        checkMyNickname("show_name");
+//        // 마이페이지에 들어온 순간 내 닉네임을 보여준다
+//        checkMyNickname("show_name");
 
         /* 쉐어드에서 로그인 상태값을 가져와 로그인, 비로그인일 경우 보이는 UI를 각각 다르게 해야 한다 */
         sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
@@ -131,8 +143,6 @@ public class TestMyPageFragment extends Fragment
         * 카카오 로그인 버튼을 눌러 로그인했을 때 쉐어드에 true 값을 저장하고, 마이페이지에서 로그아웃 다이얼로그의 "예"를 클릭한 경우 false를 저장한다 */
 //        isLogin = sharedPreferences.getBoolean("user_login", false);
 
-        //로그인 했는지 여부
-        isLogin = sharedSingleton.getBooleanLogin();
 
         // 로그인한 경우
         if (isLogin)
@@ -163,6 +173,11 @@ public class TestMyPageFragment extends Fragment
             editor.apply();
         }
 
+
+
+
+
+
         /* 데이터 바인딩을 적용했기 때문에 앞에 "binding."을 붙이고 뷰, 위젯의 이름들을 파스칼 표기법으로 입력해야 한다 */
         // 닉네임 수정 이미지
         binding.nicknameEditImage.setOnClickListener(v ->
@@ -179,14 +194,10 @@ public class TestMyPageFragment extends Fragment
 
                 @SuppressLint("CheckResult")
                 @Override
-                public void onPositiveClicked(String edited_str)
+                public void onPositiveClicked(String message)
                 {
-                    Log.e(TAG, "다이얼로그에서 가져온 문자열 : " + edited_str);
-                    receivedNickname = edited_str;
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("changed_nickname", receivedNickname);
-                    editor.apply();
-                    changeNickname(receivedNickname, "save");
+                    Log.e(TAG, "다이얼로그에서 가져온 문자열 : " + message);
+                    changeNickname(message, "save");
                 }
             });
             dialog.showDialog();
@@ -325,7 +336,6 @@ public class TestMyPageFragment extends Fragment
             Intent intent = new Intent(getActivity(), WithdrawActivity.class);
             startActivity(intent);
         });
-
     }
 
     // 비로그인 상태일 때 보여주는 화면
@@ -377,35 +387,39 @@ public class TestMyPageFragment extends Fragment
         constraintSet.applyTo(constraintLayout);
     }
 
-    // 내 닉네임 가져와서 보여주는 메서드
-    void checkMyNickname(String type)
-    {
 
-        ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
-        Call<String> call = apiInterface.editNickname(token, "", type);
-        call.enqueue(new Callback<String>()
-        {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response)
-            {
-                if (response.isSuccessful() && response.body() != null)
-                {
-                    String result = response.body();
-                    parseResult(result);
-                }
-                else
-                {
-                    Log.e(TAG, "서버에서 닉네임 가져오기 실패 : " + response.body());
-                }
-            }
+//    // 내 닉네임 가져와서 보여주는 메서드
+//    void checkMyNickname(String type)
+//    {
+//        ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
+//        Call<String> call = apiInterface.editNickname(token, "", type);
+//        call.enqueue(new Callback<String>()
+//        {
+//            @Override
+//            public void onResponse(Call<String> call, Response<String> response)
+//            {
+//                if (response.isSuccessful() && response.body() != null)
+//                {
+//                    String result = response.body();
+//                    parseResult(result);
+////                    Log.e(TAG,"result : " + result);
+//                }
+//                else
+//                {
+//                    Log.e(TAG, "서버에서 닉네임 가져오기 실패 : " + response.body());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<String> call, Throwable t)
+//            {
+//                Log.e(TAG, "서버에서 닉네임 가져오기 에러 : " + t.getMessage());
+//            }
+//        });
+//    }
 
-            @Override
-            public void onFailure(Call<String> call, Throwable t)
-            {
-                Log.e(TAG, "서버에서 닉네임 가져오기 에러 : " + t.getMessage());
-            }
-        });
-    }
+
+
 
     // 닉네임 변경 메서드
     void changeNickname(@Nullable String nickname, String type)
@@ -421,7 +435,7 @@ public class TestMyPageFragment extends Fragment
                 {
                     String result = response.body();
                     Log.e(TAG, "닉네임 변경 결과 : " + result);
-                    parseResult(result);
+                    parseResult(result,nickname);
                 }
                 else
                 {
@@ -437,66 +451,90 @@ public class TestMyPageFragment extends Fragment
         });
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // 가져온 내 닉네임을 텍스트뷰에 set하는 메서드
     @SuppressLint("CheckResult")
-    private void parseResult(String result)
+    private void parseResult(String result, String nickname)
     {
         try
         {
             JSONObject jsonObject = new JSONObject(result);
             message = jsonObject.getString("message");
+            status_code = jsonObject.getString("status_code");
         }
         catch (JSONException e)
         {
             e.printStackTrace();
         }
 
-        if (message.equals(getString(R.string.not_exist)) || message.equals(getString(R.string.data_is_empty)))
-        {
-            //
+        //서버에서 닉네임 변경 처리가 잘 되었다면
+        if(status_code.equals("200")){
+            //닉네임 변경을 쉐어드에 전달한다
+            sharedSingleton.setNickname(nickname);
+            binding.mypageMyId.setText(nickname);
+
+//            Log.e(TAG,"nickname : " + nickname);
         }
-        else
-        {
-            if (message.equals(getString(R.string.change_complete)))
-            {
-                binding.mypageMyId.setText(receivedNickname);
-            }
-            else
-            {
-                binding.mypageMyId.setText(message);
-            }
-//            Observable.just(message)
-//                    .subscribeOn(Schedulers.io())
-//                    .observeOn(AndroidSchedulers.mainThread())
-//                    .subscribe(data ->
-//                    {
-//                        if (message.equals(getString(R.string.change_complete)))
-//                        {
-//                            binding.mypageMyId.setText(receivedNickname);
-//                        }
-//                        else
-//                        {
-//                            binding.mypageMyId.setText(message);
-//                        }
-//                    });
-        }
+
+
+
+//        if (message.equals(getString(R.string.not_exist)) || message.equals(getString(R.string.data_is_empty)))
+//        {
+//            //
+//        }
+//        else
+//        {
+//            if (message.equals(getString(R.string.change_complete)))
+//            {
+//                binding.mypageMyId.setText(receivedNickname);
+//            }
+//            else
+//            {
+//                binding.mypageMyId.setText(message);
+//            }
+////            Observable.just(message)
+////                    .subscribeOn(Schedulers.io())
+////                    .observeOn(AndroidSchedulers.mainThread())
+////                    .subscribe(data ->
+////                    {
+////                        if (message.equals(getString(R.string.change_complete)))
+////                        {
+////                            binding.mypageMyId.setText(receivedNickname);
+////                        }
+////                        else
+////                        {
+////                            binding.mypageMyId.setText(message);
+////                        }
+////                    });
+//        }
     }
+
+
+
+
+
+
+
+
+
 
     // 사용자 로그
     void userLog(String user_action)
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-//        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
-//        String token;
-//        if (sharedPreferences.getString("token", "").equals(""))
-//        {
-//            token = null;
-//        }
-//        else
-//        {
-//            token = sharedPreferences.getString("token", "");
-//        }
-//        String session = sharedPreferences.getString("sessionId", "");
         String action = userAction(user_action);
         Call<String> call = apiInterface.userLog(token, sessionId, "myPage", action, null, LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
@@ -507,7 +545,7 @@ public class TestMyPageFragment extends Fragment
                 if (response.isSuccessful() && response.body() != null)
                 {
                     //
-                    Log.e(TAG,"userLog 작동 확인");
+                    Log.e(TAG,"userLog 작동 확인 : " + response.body());
                 }
                 else
                 {

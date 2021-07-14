@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.psj.welfare.DetailTabLayoutActivity;
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
+import com.psj.welfare.SharedSingleton;
 import com.psj.welfare.adapter.BookmarkAdapter;
 import com.psj.welfare.custom.RecyclerViewEmptySupport;
 import com.psj.welfare.data.BookmarkItem;
@@ -68,6 +69,11 @@ public class BookmarkCheckActivity extends AppCompatActivity
 
     private Parcelable recyclerViewState;
 
+    //로그인관련 쉐어드 singleton
+    private SharedSingleton sharedSingleton;
+    //토큰 값
+    private String token;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -75,6 +81,9 @@ public class BookmarkCheckActivity extends AppCompatActivity
         setStatusBarGradiant(this);
         setContentView(R.layout.activity_bookmark_check);
 
+        //쉐어드 싱글톤 사용
+        sharedSingleton = SharedSingleton.getInstance(this);
+        token = sharedSingleton.getToken(); //토큰 값
 
         init();
         list = new ArrayList<>();
@@ -83,11 +92,11 @@ public class BookmarkCheckActivity extends AppCompatActivity
         bookmark_recyclerview.setLayoutManager(new LinearLayoutManager(this));
         bookmark_recyclerview.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
 
-        /* 북마크 페이징 처리 */
-        recyclerviewScrollListener(); //리사이클러뷰가 마지막에 도달하면 이벤트 발생
-
         //버튼 및 텍스트의 사이즈를 동적으로 맞춤
         setsize();
+
+        /* 북마크 페이징 처리 */
+        recyclerviewScrollListener(); //리사이클러뷰가 마지막에 도달하면 이벤트 발생
 
         bookmark_back_image.setOnClickListener(v -> finish());
 
@@ -157,7 +166,6 @@ public class BookmarkCheckActivity extends AppCompatActivity
 //        bookmark_recyclerview.addOnScrollListener(onScrollListener);
 
 
-
         //페이징으로 추가 데이터 받아오기
         bookmark_recyclerview.addOnScrollListener(new RecyclerView.OnScrollListener()
         {
@@ -202,21 +210,6 @@ public class BookmarkCheckActivity extends AppCompatActivity
 
     }
 
-
-    //버튼 및 텍스트의 사이즈를 동적으로 맞춤
-    private void setsize(){
-        ScreenSize screen = new ScreenSize();
-        Point size = screen.getScreenSize(this);
-
-        bookmark_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 18); //"북마크" 텍스트
-        bookmark_top_textview.setPadding((int)(size.x*0.1), 0,(int)(size.x*0.07),0);
-
-        all_bookmark_count.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 23);
-        bookmark_edit_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 23);
-        bookmark_check_empty_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 20);
-    }
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
@@ -226,17 +219,6 @@ public class BookmarkCheckActivity extends AppCompatActivity
             list.clear();
             getBookmark(String.valueOf(integer_page),false);
         }
-    }
-
-    private void init()
-    {
-        bookmark_top_layout = findViewById(R.id.bookmark_top_layout);
-
-        bookmark_back_image = findViewById(R.id.bookmark_back_image);
-        bookmark_top_textview = findViewById(R.id.bookmark_top_textview);
-        all_bookmark_count = findViewById(R.id.all_bookmark_count);
-        bookmark_edit_textview = findViewById(R.id.bookmark_edit_textview);
-        bookmark_check_empty_textview = findViewById(R.id.bookmark_check_empty_textview);
     }
 
     //서버에서 북마크한 데이터 가져오기
@@ -259,26 +241,48 @@ public class BookmarkCheckActivity extends AppCompatActivity
             @Override
             public void onChanged(String s)
             {
-                if (s != null)
-                {
-                    if(!paging){ //페이징으로 서버를 연결한다면
-                        bookmarkParsing(s);
-                        dialog.dismiss();
-                    } else { //페이징이 아닌 처음 액티비티로 들어왔을 때 서버를 연결항다면
-                        bookmarkParsing(s);
-                    }
-//                    Log.e(TAG, "액티비티에서 북마크 데이터 가져온 결과 : " + s);
-                    bookmark_check_empty_textview.setVisibility(View.GONE); //"아직 북마크한 혜택이 없습니다"
+                Log.e(TAG,"bookmark result : " + s);
+
+
+                if(!paging){ //페이징으로 서버를 연결한다면
+                    bookmarkParsing(s);
+                    dialog.dismiss();
+                } else { //페이징이 아닌 처음 액티비티로 들어왔을 때 서버를 연결항다면
+                    bookmarkParsing(s);
                 }
-                else
-                {
-                    Log.e(TAG, "가져온 북마크 데이터가 없습니다");
-                    bookmark_check_empty_textview.setVisibility(View.VISIBLE); //"아직 북마크한 혜택이 없습니다"
-                }
+
+
+
+
+
+//                if (s != null)
+//                {
+//                    if(!paging){ //페이징으로 서버를 연결한다면
+//                        bookmarkParsing(s);
+//                        dialog.dismiss();
+//                    } else { //페이징이 아닌 처음 액티비티로 들어왔을 때 서버를 연결항다면
+//                        bookmarkParsing(s);
+//                    }
+////                    Log.e(TAG, "액티비티에서 북마크 데이터 가져온 결과 : " + s);
+//                    bookmark_check_empty_textview.setVisibility(View.GONE); //"아직 북마크한 혜택이 없습니다"
+//                }
+//                else
+//                {
+//                    Log.e(TAG, "가져온 북마크 데이터가 없습니다");
+//                    bookmark_check_empty_textview.setVisibility(View.VISIBLE); //"아직 북마크한 혜택이 없습니다"
+//                }
+
+
+
+
+
+
+
+
             }
         };
 
-        viewModel.selectBookmark(page).observe(this, bookmarkObserver);
+        viewModel.selectBookmark(token,page).observe(this, bookmarkObserver);
     }
 
     // 가져온 북마크 데이터를 파싱하는 메서드
@@ -351,9 +355,33 @@ public class BookmarkCheckActivity extends AppCompatActivity
         });
         bookmark_recyclerview.setAdapter(adapter);
 
-
-
         bookmark_recyclerview.getLayoutManager().onRestoreInstanceState(recyclerViewState); //리사이클러뷰 현재 위치값 저장한 데이터를 스크롤 해서 새로운 데이터를 받아왔을 때 기억하고 셋팅함
+    }
+
+
+    //요소 초기화
+    private void init()
+    {
+        bookmark_top_layout = findViewById(R.id.bookmark_top_layout);
+
+        bookmark_back_image = findViewById(R.id.bookmark_back_image);
+        bookmark_top_textview = findViewById(R.id.bookmark_top_textview);
+        all_bookmark_count = findViewById(R.id.all_bookmark_count);
+        bookmark_edit_textview = findViewById(R.id.bookmark_edit_textview);
+        bookmark_check_empty_textview = findViewById(R.id.bookmark_check_empty_textview);
+    }
+
+    //버튼 및 텍스트의 사이즈를 동적으로 맞춤
+    private void setsize(){
+        ScreenSize screen = new ScreenSize();
+        Point size = screen.getScreenSize(this);
+
+        bookmark_top_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 18); //"북마크" 텍스트
+        bookmark_top_textview.setPadding((int)(size.x*0.1), 0,(int)(size.x*0.07),0);
+
+        all_bookmark_count.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 23);
+        bookmark_edit_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 23);
+        bookmark_check_empty_textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) size.x / 20);
     }
 
     public void setStatusBarGradiant(Activity activity)

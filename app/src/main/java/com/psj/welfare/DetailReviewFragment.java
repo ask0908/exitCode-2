@@ -2,7 +2,6 @@ package com.psj.welfare;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +24,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.psj.welfare.activity.LoginActivity;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
@@ -64,10 +64,20 @@ public class DetailReviewFragment extends Fragment {
     private RecyclerView.LayoutManager layoutManager; //레이아웃 매니저
     private ArrayList<DetailReviewData> DetailReviewList; //리뷰 2개 보여주기 데이터
 
-    boolean being_logout; //로그인 했는지 여부
-    private String SessionId = null; //세션 값
-    private String token = null; //토큰 값
-    private String status = null; //리뷰 삭제후 반환값
+    //토큰
+    private String token;
+    //로그인 했는지 여부
+    boolean isLogin;
+    //리뷰 삭제후 반환값
+    private String status = null;
+
+    // 구글 애널리틱스
+    private FirebaseAnalytics analytics;
+
+    //로그인관련 쉐어드 singleton
+    private SharedSingleton sharedSingleton;
+
+
 
     String message, TotalCount, isBookmark, ReviewState; //액티비티에서 받아온 파싱 전 데이터
     String welf_id, welf_name; //혜택 id값, 혜택명
@@ -153,7 +163,7 @@ public class DetailReviewFragment extends Fragment {
 
         //리뷰 작성 하기
         btn_review_write.setOnClickListener(v -> {
-            if (!being_logout) { //로그인 했다면
+            if (isLogin) { //로그인 했다면
                 Intent intent = new Intent(getActivity(), DetailReviewWrite.class);
                 intent.putExtra("welf_id", welf_id); //혜택 id값 보내기
                 intent.putExtra("welf_name", welf_name); //혜택명 보내기
@@ -456,16 +466,11 @@ public class DetailReviewFragment extends Fragment {
 
     //로그인 했는지 여부 확인
     private void being_loging() {
-        //로그인 했는지 여부 확인하기위한 쉐어드
-        SharedPreferences app_pref = getActivity().getSharedPreferences(getString(R.string.shared_name), 0);
-        being_logout = app_pref.getBoolean("logout", false); //로그인 했는지 여부 확인하기
-
-        SessionId = null;
-        token = null;
-        if (!being_logout) { //로그인 했다면
-            SessionId = app_pref.getString("sessionId", ""); //세션값 받아오기
-            token = app_pref.getString("token", ""); //토큰값 받아오기
-        }
+        //쉐어드 싱글톤 사용
+        sharedSingleton = SharedSingleton.getInstance(getActivity());
+        token = sharedSingleton.getToken(); //토큰 값
+        //로그인 했는지 여부
+        isLogin = sharedSingleton.getBooleanLogin();
     }
 
 

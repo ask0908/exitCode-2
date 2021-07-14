@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Editable;
@@ -36,11 +35,11 @@ import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.UnLinkResponseCallback;
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
+import com.psj.welfare.SharedSingleton;
 import com.psj.welfare.api.ApiClient;
 import com.psj.welfare.api.ApiInterface;
 import com.psj.welfare.custom.CustomWithdrawDialog;
 import com.psj.welfare.custom.MyWithdrawListener;
-import com.psj.welfare.util.DBOpenHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,15 +66,22 @@ public class WithdrawActivity extends AppCompatActivity
     private LinearLayout textcount_layout; //기타 사유 글자수 레이아웃
     private TextView text_count,text_total; //기타 사유 글자수, 글자 제한
 
-    DBOpenHelper helper;
+//    DBOpenHelper helper;
 
-    public String sqlite_token, reason;
+    //탈퇴 이유
+    public String reason;
+    //토큰 값
+    private String token;
+
     String status, message;
     SharedPreferences sharedPreferences;
     // 구글 애널리틱스
     private FirebaseAnalytics analytics;
 
     private int input;
+
+    //쉐어드 싱글톤
+    private SharedSingleton sharedSingleton;
 
     @SuppressLint("CheckResult")
     @Override
@@ -88,16 +94,16 @@ public class WithdrawActivity extends AppCompatActivity
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING); //키보드가 올라가도 레이아웃이 변하지 않도록
         //android:windowSoftInputMode="adjustNothing" 매니페스트에서 이렇게 코드 입력한것과 동일한 기능
 
+        //쉐어드 싱글톤 사용
+        sharedSingleton = SharedSingleton.getInstance(this);
+        token = sharedSingleton.getToken(); //토큰 값
+
         analytics = FirebaseAnalytics.getInstance(this);
         sharedPreferences = getSharedPreferences("app_pref", 0);
         init();
 
         //버튼 및 텍스트의 사이즈를 동적으로 맞춤
         SetSize();
-
-        // Room DB에서 유저 토큰 획득
-        getUserToken();
-
 
 //        //입력 글자 수 제한
 //        reason_to_leave_edittext.setFilters(new InputFilter[]{
@@ -113,7 +119,7 @@ public class WithdrawActivity extends AppCompatActivity
 
                     switch(event.getAction() & MotionEvent.ACTION_MASK){
                       case  MotionEvent.ACTION_UP: v.getParent().requestDisallowInterceptTouchEvent(false); //부모의 터치 이벤트 false
-                          Log.e(TAG,"test edittext");
+//                          Log.e(TAG,"test edittext");
                           break;
                     }
                 }
@@ -267,7 +273,6 @@ public class WithdrawActivity extends AppCompatActivity
                     }
                 }
             });
-
         });
 
         // 탈퇴 사유 적는 editText
@@ -334,17 +339,19 @@ public class WithdrawActivity extends AppCompatActivity
                 }
             }
         });
-
         withdraw_back_image.setOnClickListener(v -> finish());
-
     }
 
     // 회원탈퇴 메서드
     private void leaveFromApp(String reason)
     {
+
+
+
+
         ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
-        Call<String> call = apiInterface.leaveFromApp(sqlite_token, "leave", reason);
-        Log.e("회원탈퇴 메서드 안", "token : " + sqlite_token + ", 탈퇴 사유 : " + reason);
+        Call<String> call = apiInterface.leaveFromApp(token, "leave", reason);
+        Log.e("회원탈퇴 메서드 안", "token : " + token + ", 탈퇴 사유 : " + reason);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -355,7 +362,6 @@ public class WithdrawActivity extends AppCompatActivity
                     String result = response.body();
                     parseResult(result);
                     Log.e(TAG, "회원탈퇴 성공 : " + result);
-                    
                 }
                 else
                 {
@@ -377,7 +383,7 @@ public class WithdrawActivity extends AppCompatActivity
         try
         {
             JSONObject jsonObject = new JSONObject(result);
-            status = jsonObject.getString("statusCode");
+            status = jsonObject.getString("status_code");
             message = jsonObject.getString("message");
         }
         catch (JSONException e)
@@ -446,38 +452,11 @@ public class WithdrawActivity extends AppCompatActivity
                             public void onSuccess(Long result)
                             {
                                 //회원 탈퇴시 카카오 로그인 탈퇴도 같이 해야한다
-//
-                                Log.e(TAG,"카카오 탈퇴 성공");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//                                Log.e(TAG,"카카오 탈퇴 성공");
+                                sharedSingleton.setRemoveShared("token");
+                                sharedSingleton.setRemoveShared("interest_select");
+                                sharedSingleton.setRemoveShared("user_login");
+                                sharedSingleton.setRemoveShared("user_nickname");
 
 
                                 //쉐어드 모드 삭제는 안된다
@@ -488,32 +467,6 @@ public class WithdrawActivity extends AppCompatActivity
 //                                editor.putBoolean("is_leaved", true);
 //                                editor.remove("user_nickname");
 //                                editor.apply();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -542,23 +495,6 @@ public class WithdrawActivity extends AppCompatActivity
                         Toast.makeText(WithdrawActivity.this, "회원탈퇴가 취소되었어요", Toast.LENGTH_SHORT).show();
                     }
                 }).show();
-    }
-
-    // Room DB에서 유저 토큰 획득
-    private void getUserToken()
-    {
-        helper = new DBOpenHelper(this);
-        helper.openDatabase();
-        helper.create();
-
-        Cursor cursor = helper.selectColumns();
-        if (cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-            }
-        }
     }
 
     // findViewById() 모아놓은 메서드
