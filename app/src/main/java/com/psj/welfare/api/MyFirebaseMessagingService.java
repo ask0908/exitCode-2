@@ -17,6 +17,7 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.psj.welfare.R;
+import com.psj.welfare.SharedSingleton;
 import com.psj.welfare.activity.SplashActivity;
 
 import retrofit2.Call;
@@ -31,9 +32,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
     String channelID = "ch_push";
     String token;
 
+    private SharedSingleton sharedSingleton;
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage)
     {
+        // FirebaseMessagingService 안에서 컨텍스트를 가져오는 방법이 뭐가 있을까 생각하다 떠올라서 써봄
+        sharedSingleton = SharedSingleton.getInstance(getApplicationContext());
+        token = sharedSingleton.getToken();
+
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         sharedPreferences = getSharedPreferences("app_pref", 0);
         boolean isPushDisabled = sharedPreferences.getBoolean("fcm_canceled", false);
@@ -97,14 +104,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
     void changePushStatus()
     {
-        sharedPreferences = getSharedPreferences("app_pref", 0);
         if (sharedPreferences.getString("token", "").equals(""))
         {
             token = null;
         }
         else
         {
-            token = sharedPreferences.getString("token", "");
+            token = sharedSingleton.getToken();
         }
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Call<String> call = apiInterface.changePushStatus(token, "customizedRecv");

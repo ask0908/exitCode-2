@@ -185,12 +185,17 @@ public interface ApiInterface
 //            @Body String login_information
 //    );
 
-    /* ↓ 푸시 관련 메서드 */
+    /* ↓ 푸시 알림 관련 메서드 */
     // ===================================================================================================
+
+    @GET("https://www.hyemo.com/django/push/users")
+    Call<String> getMyPush(
+            @Header("logintoken") String token
+    );
 
     /**
      * 로그인 시 서버에서 받는 토큰을 넘겨 푸시 알림 데이터들을 받아오는 메서드
-     * PushGatherFragment에서 사용
+     * AllPushFragment에서 사용
      *
      * @param token   - 로그인 시 서버에서 생성되는 토큰
      * @param session - 쉐어드에 저장된 세션 id
@@ -214,7 +219,7 @@ public interface ApiInterface
 
     /**
      * 사용자가 알림을 수신받을 경우 수신 상태값 변경하는 메서드
-     * PushGaterFragment에서 사용
+     * MyFirebaseMessagingService에서 사용
      *
      * @param login_token - 로그인 시 서버에서 생성되는 토큰
      * @param type        - "customizedRecv" 고정
@@ -243,6 +248,23 @@ public interface ApiInterface
             @Header("LoginToken") String token,
             @Field("pushId") String pushId,
             @Field("type") String type
+    );
+
+    /**
+     * 사용자가 알림 클릭해서 수신받을 경우 그 알림의 수신 상태값을 바꾸는 메서드
+     * @param token - 로그인 후 서버에서 받은 토큰 (헤더에 저장)
+     * @param push_id - 수신 상태값 바꾸려는 푸시 알림의 PK 값, body에 JSON 형태로 넣어야 한다 = {"push_id":2}
+     * @return -
+     * {
+     *     "status_code": 200,
+     *     "message": "알림 수신 상태가 변경되었습니다."
+     * }
+     */
+    @FormUrlEncoded
+    @POST("https://www.hyemo.com/django/push/users")
+    Call<String> changePushStatusWhenClicked(
+            @Header("logintoken") String token,
+            @Body String push_id
     );
 
     /**

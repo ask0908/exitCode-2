@@ -22,6 +22,7 @@ import com.psj.welfare.ScreenSize;
 import com.psj.welfare.fragment.AllPushFragment;
 import com.psj.welfare.fragment.LatestPushFragment;
 import com.psj.welfare.fragment.RecommendPushFragment;
+import com.psj.welfare.viewmodel.PushViewModel;
 
 import java.util.Objects;
 
@@ -42,6 +43,8 @@ public class TestPushGatherFragment extends Fragment
     Fragment AllPushFragment, LatestPushFragment, RecommendPushFragment;
     FragmentManager fragmentManager;
     FragmentTransaction transaction;
+
+    PushViewModel viewModel;
 
     public TestPushGatherFragment()
     {
@@ -160,4 +163,5 @@ public class TestPushGatherFragment extends Fragment
         LatestPushFragment = new LatestPushFragment();
         RecommendPushFragment = new RecommendPushFragment();
     }
+
 }

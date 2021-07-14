@@ -20,10 +20,10 @@ public class PushViewModel extends AndroidViewModel
 
         // getActivity()로 프래그먼트의 context를 가져와야 하지만 방법을 찾지 못해서 아래 방법으로 context 가져옴
         pushRepository = new PushRepository(getApplication().getApplicationContext());
-        this.pushLiveData = pushRepository.getPushDatas();
+        this.pushLiveData = pushRepository.getMyPush();
     }
 
-    public MutableLiveData<String> getPushDatas()
+    public MutableLiveData<String> getMyPush()
     {
         return pushLiveData;
     }
