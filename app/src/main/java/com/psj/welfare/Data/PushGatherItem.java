@@ -3,8 +3,8 @@ package com.psj.welfare.data;
 public class PushGatherItem
 {
     private String pushId;              // 푸시 알림의 id 값
+    private String welf_id;             // 혜택의 id 값
     private String welf_name;           // 복지혜택 이름
-    private String welf_local;          // 혜택 실시 지역
     private String push_gather_title;   // 받았던 푸시의 제목
     private String push_gather_desc;    // 받았던 푸시의 내용
     private String push_gather_date;    // 푸시를 받은 날(며칠 전 등)
@@ -27,6 +27,16 @@ public class PushGatherItem
         this.pushId = pushId;
     }
 
+    public String getWelf_id()
+    {
+        return welf_id;
+    }
+
+    public void setWelf_id(String welf_id)
+    {
+        this.welf_id = welf_id;
+    }
+
     public String getWelf_name()
     {
         return welf_name;
@@ -35,16 +45,6 @@ public class PushGatherItem
     public void setWelf_name(String welf_name)
     {
         this.welf_name = welf_name;
-    }
-
-    public String getWelf_local()
-    {
-        return welf_local;
-    }
-
-    public void setWelf_local(String welf_local)
-    {
-        this.welf_local = welf_local;
     }
 
     public String getPush_gather_title()

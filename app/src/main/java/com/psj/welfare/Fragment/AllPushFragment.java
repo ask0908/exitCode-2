@@ -1,7 +1,6 @@
 package com.psj.welfare.fragment;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,9 +19,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.orhanobut.logger.Logger;
+import com.psj.welfare.DetailTabLayoutActivity;
 import com.psj.welfare.R;
 import com.psj.welfare.SharedSingleton;
-import com.psj.welfare.activity.DetailBenefitActivity;
 import com.psj.welfare.activity.LoginActivity;
 import com.psj.welfare.adapter.PushGatherAdapter;
 import com.psj.welfare.api.ApiClient;
@@ -53,22 +52,16 @@ public class AllPushFragment extends Fragment
     PushGatherAdapter adapter;
     PushGatherAdapter.ItemClickListener itemClickListener;
 
-    // 로그인 여부 확인 위한 쉐어드
-    SharedPreferences sharedPreferences;
-
-    String pushId, welf_name, welf_local, push_title, push_body, push_date;
-
-    /* 어댑터에서 데이터를 담은 리스트를 액티비티에서 사용하기 위한 변수 */
-    private List<PushGatherItem> activity_list;
+    String push_id, welf_name, welf_id, push_title, push_body, update_date;
 
     // 알림 삭제 결과 확인용 변수
-    String status, message;
+    private int status_code;
+    String message;
 
-    //토큰, 세션 아이디
-    private String token, sessionId;
+    // 토큰, 세션 아이디
+    private String token, session_id;
     private boolean isLogin; //로그인 했는지 여부
 
-    //로그인관련 쉐어드 singleton
     private SharedSingleton sharedSingleton;
 
     PushViewModel viewModel;
@@ -102,30 +95,35 @@ public class AllPushFragment extends Fragment
     {
         super.onViewCreated(view, savedInstanceState);
 
-        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
-
         push_recyclerview = view.findViewById(R.id.push_recyclerview);
         push_recyclerview.setHasFixedSize(true);
         push_recyclerview.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         push_recyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        activity_list = new ArrayList<>();
-
         sharedSingleton = SharedSingleton.getInstance(getActivity());
-        token = sharedSingleton.getToken(); //토큰 값
-        sessionId = sharedSingleton.getSessionId(); //세션 값
-        isLogin = sharedSingleton.getBooleanLogin(); //로그인 했는지 여부
+        token = sharedSingleton.getToken();
+        session_id = sharedSingleton.getSessionId();
+        isLogin = sharedSingleton.getBooleanLogin();
 
         if (isLogin)
         {
-            // 로그인 상태인 경우 - 알림이 있으면 알림들을 보여주고, 없으면 벨 이미지와 문자열이 바뀐 텍스트뷰를 보여준다
+            // 로그인 상태
             push_bell_image.setVisibility(View.GONE);
             push_bell_textview.setVisibility(View.GONE);
             push_login_button.setVisibility(View.GONE);
             push_recyclerview.setVisibility(View.VISIBLE);
-            getPushData();
+            // 로그인 상태일 때 푸시 알림 목록을 가져와서 보여준다
+            getMyPush();
         }
-
+        else
+        {
+            // 비로그인 상태
+            push_bell_textview.setText("최신 혜택과 추천 혜택을 받고 싶다면\n로그인을 해 주세요");
+            push_bell_image.setVisibility(View.VISIBLE);
+            push_bell_textview.setVisibility(View.VISIBLE);
+            push_login_button.setVisibility(View.VISIBLE);
+            push_recyclerview.setVisibility(View.GONE);
+        }
 
         // 비로그인 시 푸시 화면 넘어오면 보이는 로그인 버튼
         push_login_button.setOnClickListener(v ->
@@ -133,6 +131,7 @@ public class AllPushFragment extends Fragment
             Intent intent = new Intent(getActivity(), LoginActivity.class);
             startActivity(intent);
         });
+
     }
 
     /* 헤더에 토큰을 넣어서 계정별 푸시 알림을 가져오는 메서드 */
@@ -146,8 +145,8 @@ public class AllPushFragment extends Fragment
             {
                 if (str != null && !str.equals(""))
                 {
-                    Logger.t("TestPushGatherFragment에서 받은 푸시 값 : ").json(str);
-                    parsePushData(str);
+                    Logger.t("AllPushFragment에서 받은 푸시 값 : ").json(str);
+                    parseGotPush(str);
                 }
             }
         };
@@ -155,82 +154,66 @@ public class AllPushFragment extends Fragment
         viewModel.getMyPush().observe(getActivity(), pushObserver);
     }
 
-    private void parsePushData(String result)
+    /* 푸시 알림 가져온 결과를 파싱해서 프래그먼트에 뿌려주는 메서드 */
+    private void parseGotPush(String result)
     {
-        try
-        {
-            JSONObject jsonObject = new JSONObject(result);
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    /* 서버에서 푸시 데이터들을 가져오는 메서드 */
-    private void getPushData()
-    {
-        ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
-        Call<String> call = apiInterface.getPushData(token, sessionId, "pushList");
-        call.enqueue(new Callback<String>()
-        {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response)
-            {
-                if (response.isSuccessful() && response.body() != null)
-                {
-                    String result = response.body();
-                    Logger.t("푸시 받아온 결과 : ").json(result);
-                    parseGetPush(result);
-                }
-                else
-                {
-                    Logger.t("푸시 받아오기 실패 : ").json(response.body());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t)
-            {
-                Logger.d("푸시 받아오기 에러 : " + t.getMessage());
-            }
-        });
-    }
-
-    private void parseGetPush(String result)
-    {
+        // 리사이클러뷰 어댑터 초기화 시 넣을 리스트를 초기화함
         List<PushGatherItem> list = new ArrayList<>();
         try
         {
             JSONObject jsonObject = new JSONObject(result);
-            // 알림이 없으면 토스트 알림을 띄우기 위해 상태값 쉐어드에 저장
-            if (!jsonObject.getString("Status").equals(""))
-            {
-                String status = jsonObject.getString("Status");
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("push_status", status);
-                editor.apply();
-            }
-            status = jsonObject.getString("Status");
-            JSONArray jsonArray = jsonObject.getJSONArray("Message");
-            for (int i = 0; i < jsonArray.length(); i++)
-            {
-                JSONObject push_object = jsonArray.getJSONObject(i);
-                pushId = push_object.getString("pushId");
-                welf_name = push_object.getString("welf_name");
-                welf_local = push_object.getString("welf_local");
-                push_title = push_object.getString("title");
-                push_body = push_object.getString("content");
-                push_date = push_object.getString("update_date");
+            status_code = jsonObject.getInt("status_code");
+            message = jsonObject.getString("message");
 
-                PushGatherItem item = new PushGatherItem();
-                item.setPushId(pushId);
-                item.setWelf_name(welf_name);
-                item.setPush_gather_title(push_title);
-                item.setPush_gather_desc(push_body);
-                item.setPush_gather_date(push_date);
-                item.setWelf_local(welf_local);
-                list.add(item);
+            // status_code가 500(알림 정보가 존재하지 않습니다), 404(data is empty), 400(계정이 존재하지 않습니다) 일 때
+            if (status_code == 500 || status_code == 404 || status_code == 400)
+            {
+                push_bell_textview.setText("도착한 혜택 알림이 없어요");
+                push_bell_textview.setVisibility(View.VISIBLE);
+                push_bell_image.setVisibility(View.VISIBLE);
+                push_recyclerview.setVisibility(View.GONE);
+            }
+            else
+            {
+                // status_code가 200일 때 JSONArray(message) 안의 값들 파싱
+                JSONArray jsonArray = jsonObject.getJSONArray("message");
+                for (int i = 0; i < jsonArray.length(); i++)
+                {
+                    JSONObject push_object = jsonArray.getJSONObject(i);
+                    push_id = push_object.getString("push_id");
+                    welf_id = push_object.getString("welf_id");
+                    welf_name = push_object.getString("welf_name");
+                    push_title = push_object.getString("title");
+                    push_body = push_object.getString("content");
+                    update_date = push_object.getString("update_date");
+
+                    PushGatherItem item = new PushGatherItem();
+                    item.setPushId(push_id);
+                    item.setWelf_id(welf_id);
+                    item.setWelf_name(welf_name);
+                    item.setPush_gather_title(push_title);
+                    item.setPush_gather_desc(push_body);
+                    item.setPush_gather_date(update_date);
+                    list.add(item);
+                }
+
+                /* 푸시 알림들을 보여줄 리사이클러뷰 어댑터 초기화 */
+                adapter = new PushGatherAdapter(getActivity(), list, itemClickListener);
+                adapter.setOnItemClickListener((view, position) ->
+                {
+                    // 알림 클릭 시 해당 알림의 id와 일치하는 알림 데이터의 수신 상태값을 바꾼다
+                    String welf_id = list.get(position).getWelf_id();
+                    changePushStatusWhenClicked();
+                    // 알림 클릭 시 혜택의 id를 얻어 혜택 상세보기 액티비티로 이동하도록 한다
+                    Intent intent = new Intent(getActivity(), DetailTabLayoutActivity.class);
+                    intent.putExtra("welf_id", welf_id);
+                    startActivity(intent);
+                });
+//                activity_list = adapter.getList();
+                push_bell_image.setVisibility(View.GONE);
+                push_bell_textview.setVisibility(View.GONE);
+                push_recyclerview.setVisibility(View.VISIBLE);
+                push_recyclerview.setAdapter(adapter);
             }
         }
         catch (JSONException e)
@@ -238,77 +221,23 @@ public class AllPushFragment extends Fragment
             e.printStackTrace();
         }
 
-        /* 푸시 알림 리스트를 만들 어댑터 초기화 */
-        adapter = new PushGatherAdapter(getActivity(), list, itemClickListener);
-        adapter.setOnItemClickListener((view, position) ->
-        {
-            String welf_name = list.get(position).getWelf_name();
-            welf_local = list.get(position).getWelf_local();
-            // 혜택 이름을 뽑고 푸시를 클릭하면 해당 액티비티로 이동하도록 한다
-            // 알림 클릭 시 해당 알림의 id와 일치하는 알림 데이터의 수신 상태값을 바꾼다
-            checkUserWatchedPush();
-            // TODO : 위의 구 메서드 주석 처리하고 아래의 새 메서드 테스트해보기
-            changePushStatusWhenClicked();
-            Intent intent = new Intent(getActivity(), DetailBenefitActivity.class);
-            intent.putExtra("name", welf_name);
-            intent.putExtra("welf_local", welf_local);
-            startActivity(intent);
-        });
-        activity_list = adapter.getList();
-        /* getItemCount()의 결과값이 0이라면 아이템이 없는 것이니 리사이클러뷰를 감추고 텍스트뷰를 보여준다
-         * 0이 아니라면 알림이 있는 것이니 텍스트뷰를 감추고 리사이클러뷰를 보여준다
-         * invisible은 뷰를 안 보이게 하는 대신 위치를 차지하지만 gone은 뷰를 안 보이게 하고 위치도 지워줘서 invisible보다 gone을 쓰는 게 더 좋다 */
-        if (adapter.getItemCount() == 0)
-        {
-            // 어댑터에 값이 없으면 알림이 없는 것이니 리사이클러뷰를 숨기고 텍스트뷰를 보여준다
-            push_bell_textview.setText("도착한 혜택 알림이 없어요");
-            push_bell_textview.setVisibility(View.VISIBLE);
-            push_bell_image.setVisibility(View.VISIBLE);
-            push_recyclerview.setVisibility(View.GONE);
-        }
-        else
-        {
-            push_bell_image.setVisibility(View.GONE);
-            push_bell_textview.setVisibility(View.GONE);
-            push_recyclerview.setVisibility(View.VISIBLE);
-        }
-        push_recyclerview.setAdapter(adapter);
     }
 
-    /* 알림 클릭 시 수신 상태값을 바꾸는 메서드 (신) */
+    /* 알림 클릭 시 수신 상태값을 바꾸는 메서드 */
     private void changePushStatusWhenClicked()
     {
-        Logger.d("클릭 후 수신 상태값 바꾸는 메서드에서 확인한 토큰 : " + token);
         ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
-        Call<String> call = apiInterface.changePushStatusWhenClicked(token, pushId);
-        call.enqueue(new Callback<String>()
+        // 서버로 push_id 값을 넘길 때 JSON으로 바꿔서 넘겨야 하기 때문에 JSON 변환 처리
+        JSONObject jsonObject = new JSONObject();
+        try
         {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response)
-            {
-                if (response.isSuccessful() && response.body() != null)
-                {
-                    Logger.t("알림 클릭 후 수신 알림값 변경 확인 : ").json(response.body());
-                }
-                else
-                {
-                    Logger.t("수신 알림값 변경 실패 : ").json(response.body());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t)
-            {
-                Logger.d("수신 알림값 변경 에러 : " + t.getMessage());
-            }
-        });
-    }
-
-    /* 알림 클릭 시 수신 상태값을 바꾸는 메서드 (구) */
-    void checkUserWatchedPush()
-    {
-        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.checkUserWatchedPush(sessionId, token, pushId, "pushRecv");
+            jsonObject.put("push_id", push_id);
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        Call<String> call = apiInterface.changePushStatusWhenClicked(token, jsonObject.toString());
         call.enqueue(new Callback<String>()
         {
             @Override

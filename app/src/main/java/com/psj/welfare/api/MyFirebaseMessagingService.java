@@ -34,10 +34,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
 
     private SharedSingleton sharedSingleton;
 
+    /* 푸시 알림을 받았을 때 */
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage)
     {
-        // FirebaseMessagingService 안에서 컨텍스트를 가져오는 방법이 뭐가 있을까 생각하다 떠올라서 써봄
         sharedSingleton = SharedSingleton.getInstance(getApplicationContext());
         token = sharedSingleton.getToken();
 
@@ -65,6 +65,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         }
     }
 
+    // 푸시 알람이 오면 화면에 띄우고 클릭 시 해당 혜택의 상세보기 화면으로 이동시키는 메서드
     public void showNotification(String title, String message, String icon)
     {
         Intent intent = new Intent(this, SplashActivity.class);

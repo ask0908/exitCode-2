@@ -115,4 +115,17 @@ public class SharedSingleton {
         editor.putBoolean("is_preview", BooleanPreview);
         editor.apply();
     }
+
+    // fcm_canceled(푸시 알림 받을지 여부) 값 쉐어드에서 가져오기
+    public boolean getBooleanFcmCanceled()
+    {
+        return shared.getBoolean("fcm_canceled", false);
+    }
+
+    // fcm_canceled(푸시 알림 받을지 여부) 값 쉐어드에 저장
+    public void setBooleanFcmCanceled(boolean booleanCanceled)
+    {
+        editor.putBoolean("fcm_canceled", booleanCanceled);
+        editor.apply();
+    }
 }

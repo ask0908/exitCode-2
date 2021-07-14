@@ -8,6 +8,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.psj.welfare.repository.PushRepository;
 
+/* AllPushFragment에서 호출하는 푸시 알림 목록 가져오기 메서드를 가진 뷰모델
+*  */
 public class PushViewModel extends AndroidViewModel
 {
     private final String TAG = PushViewModel.class.getSimpleName();

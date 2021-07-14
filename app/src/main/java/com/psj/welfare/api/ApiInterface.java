@@ -260,7 +260,6 @@ public interface ApiInterface
      *     "message": "알림 수신 상태가 변경되었습니다."
      * }
      */
-    @FormUrlEncoded
     @POST("https://www.hyemo.com/django/push/users")
     Call<String> changePushStatusWhenClicked(
             @Header("logintoken") String token,
