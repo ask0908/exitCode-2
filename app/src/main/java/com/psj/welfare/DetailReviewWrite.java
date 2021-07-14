@@ -93,8 +93,10 @@ public class DetailReviewWrite extends AppCompatActivity
     //로그인관련 쉐어드 singleton
     private SharedSingleton sharedSingleton;
 
+    // API 호출 후 서버 응답코드
+    private int status_code;
 
-    String result_code;
+//    String result_code;
 
     int checkStatus = 0;  //어떤 액티비티에서 넘어왔는지 확인 (100 = '내가 작성한 리뷰 페이지' or '모든 리뷰 보기 페이지', 200 = '상세페이지')
     int written_review_id;
@@ -325,15 +327,24 @@ public class DetailReviewWrite extends AppCompatActivity
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
+                    String result = response.body();
+                    Log.e(TAG, "리뷰 수정 성공1 : " + response.body());
+
+                    JSONObject jsonObject = null;
                     try
                     {
-                        JSONObject inner_json = new JSONObject(response.body());
-                        Log.e(TAG, "리뷰 수정 성공 : " + inner_json.toString());
-                        editReviewResultParsing(inner_json.toString());
+                        jsonObject = new JSONObject(result);
+                        status_code = jsonObject.getInt("status_code");
                     }
                     catch (JSONException e)
                     {
                         e.printStackTrace();
+                    }
+
+                    if(status_code == 200){
+                        editReviewResultParsing(result);
+                    } else {
+                        Toast.makeText(DetailReviewWrite.this,"오류가 발생했습니다",Toast.LENGTH_SHORT).show();
                     }
                 }
                 else
@@ -353,39 +364,12 @@ public class DetailReviewWrite extends AppCompatActivity
     // 리뷰 수정 후 서버에서 넘어온 결과값 파싱
     private void editReviewResultParsing(String result)
     {
-        try
-        {
-            JSONObject jsonObject = new JSONObject(result);
-            result_code = jsonObject.getString("statusCode");
+        Toast.makeText(this, "리뷰 수정이 완료됐습니다", Toast.LENGTH_SHORT).show();
+        if(checkStatus == 100){
+            finish();
+        } else if (checkStatus == 200){
+            goto_review();
         }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-
-        // 리뷰 수정 성공했으면 토스트 띄우고 화면 종료
-        if (result_code.equals("200"))
-        {
-            Toast.makeText(this, "리뷰 수정이 완료됐습니다", Toast.LENGTH_SHORT).show();
-            if(checkStatus == 100){
-                finish();
-            } else if (checkStatus == 200){
-                goto_review();
-            }
-
-//                Log.e(TAG,"----------------");
-//                Log.e(TAG,"welf_id : " + welf_id);
-//                Intent intent = new Intent(DetailReviewWrite.this, DetailTabLayoutActivity.class);
-////                STACK 정리, 기존의 상세보기 페이지가 stack에 맨위에 있으면 기존 액티비티는 종료하고 새로운 액티비티를 띄운다
-//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                intent.putExtra("being_id", true);
-//                intent.putExtra("review_write", true);
-//                intent.putExtra("welf_id", welf_id);
-//                finish();
-//                startActivity(intent);
-//            }
-        }
-
     }
 
 
@@ -449,13 +433,6 @@ public class DetailReviewWrite extends AppCompatActivity
                 Log.e(TAG, "리뷰 작성 에러 : " + t.getMessage());
             }
         });
-
-
-
-
-
-
-
 
     }
 

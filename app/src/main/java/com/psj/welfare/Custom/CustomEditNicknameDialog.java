@@ -4,13 +4,14 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Window;
 import android.view.WindowManager;
@@ -39,18 +40,20 @@ public class CustomEditNicknameDialog
 {
     private final String TAG = this.getClass().getSimpleName();
     private String message;
-    boolean isDuplicated = true;
+    private boolean isDuplicated = false; //중복 검사를 했는지 (true면 중복 검사를 했다)
 //    DBOpenHelper helper;
     private MyDialogListener dialogListener;
 
     private Context context;
     private EditNicknameDialogBinding binding;
 
-
     //쉐어드 싱글톤
     private SharedSingleton sharedSingleton;
     //토큰
     private String token;
+
+    // API 호출 후 서버 응답코드
+    private int status_code;
 
     public void setDialogListener(MyDialogListener dialogListener)
     {
@@ -123,15 +126,17 @@ public class CustomEditNicknameDialog
                 spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#757576")), 0, spannableString.length(),
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 binding.goodOrBadTextview.setText(spannableString);
+
+                isDuplicated = false; //중복 검사를 다시 해야 하기 때문에 false로!
             });
 
 
-            /* 복확인 버튼 */
+            /* 중복확인 버튼 */
             binding.duplicateCheckBtn.setOnClickListener(v ->
             {
                 // 중복확인 버튼을 누르면 아이디가 중복되는지 체크
                 int length = binding.editNicknameEdittext.getText().toString().length();
-                if (TextUtils.isEmpty(binding.editNicknameEdittext.getText().toString()) || length == 0 || length > 11)
+                if (TextUtils.isEmpty(binding.editNicknameEdittext.getText().toString()) || length < 2 || length > 11)
                 {
                     //텍스트 꾸미기 -> SpannableString
                     SpannableString spannableString = new SpannableString("닉네임은 2~10자 문자/숫자만 가능해요");
@@ -141,44 +146,13 @@ public class CustomEditNicknameDialog
                 }
                 else
                 {
-
-
-
-
-
-
-
+                    //중복 확인 메서드
                     duplicationCheck(binding.editNicknameEdittext.getText().toString(), "check");
-
-
-
-
-
-
-//                    dialogListener.onDuplicatedCheck(!isDuplicated);
-
-
-
-
-
-
-
-
-
-
-
-                    SpannableString spannableString = new SpannableString("사용할 수 있는 닉네임이에요");
-                    spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#99FF33")), 0, spannableString.length(),
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    binding.goodOrBadTextview.setText(spannableString);
                 }
             });
 
             // 취소 버튼
             binding.editNicknameCancel.setOnClickListener(v -> dialog.dismiss());
-
-
-
 
             // 닉네임 변경 버튼
             binding.editNicknameOk.setOnClickListener(v ->
@@ -192,14 +166,14 @@ public class CustomEditNicknameDialog
                 }
 
                 // 닉네임 변경 버튼을 누르면 다이얼로그에서 프래그먼트로 값을 넘긴다
-                if (TextUtils.isEmpty(input))
+               if (TextUtils.isEmpty(input))
                 {
                     cannotUseThis();
                 }
                 else
                 {
-                    Log.e(TAG, "isDuplicated : " + isDuplicated);
-                    if (!isDuplicated)
+//                    Log.e(TAG, "isDuplicated : " + isDuplicated);
+                    if (isDuplicated)
                     {
                         dialogListener.onPositiveClicked(input);
                         duplicationCheck(input, "save");
@@ -207,10 +181,42 @@ public class CustomEditNicknameDialog
                     }
                     else
                     {
-                        Toast.makeText(context, "중복확인을 먼저 해주세요", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "닉네임 중복확인을 해주세요", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
+
+            binding.editNicknameEdittext.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    // 중복확인 버튼을 누르면 아이디가 중복되는지 체크
+                    int length = binding.editNicknameEdittext.getText().toString().length();
+                    if (TextUtils.isEmpty(binding.editNicknameEdittext.getText().toString()) || length < 2 || length > 11)
+                    {
+                        //텍스트 꾸미기 -> SpannableString
+                        SpannableString spannableString = new SpannableString("닉네임은 2~10자 문자/숫자만 가능해요");
+                        spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#CC0033")), 0, spannableString.length(),
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        binding.goodOrBadTextview.setText(spannableString);
+                    }
+                    else
+                    {
+                        //텍스트 꾸미기 -> SpannableString
+                        SpannableString spannableString = new SpannableString("문자/숫자만 가능 (2~10자리)");
+                        spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#757576")), 0, spannableString.length(),
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        binding.goodOrBadTextview.setText(spannableString);
+                    }
+
+                    isDuplicated = false; //텍스트가 바뀌면 중복확인을 다시 해야한다
+                }
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
+
         }
     }
 
@@ -224,29 +230,9 @@ public class CustomEditNicknameDialog
     }
 
 
-
-
-
-
-
-
-
-
-
     // 닉네임 중복 검사
     void duplicationCheck(String nickname, String type)
     {
-//        Log.e(TAG,"nickname : " + nickname);
-//        Cursor cursor = helper.selectColumns();
-//        if (cursor != null)
-//        {
-//            while (cursor.moveToNext())
-//            {
-//                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-//            }
-//        }
-//        Logger.e("token : " + token + ", 변경할 닉네임 : " + nickname + ", type : " + type);
-
         ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
         Call<String> call = apiInterface.editNickname(token, nickname, type);
         call.enqueue(new Callback<String>()
@@ -254,13 +240,12 @@ public class CustomEditNicknameDialog
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
             {
-//                Log.e(TAG,"testnickname");
 //                Log.e(TAG,"response.body() : " + response.body());
-//                Log.e(TAG,"response.isSuccessful() : " + response.isSuccessful());
 
-
+                //서버에서 null값이 올 수도 있다
                 if (response.isSuccessful() && response.body() != null)
                 {
+
                     String result = response.body();
                     Logger.t("닉네임 중복 확인 결과 : ").json(result);
                     duplicateParsing(result);
@@ -285,6 +270,7 @@ public class CustomEditNicknameDialog
         {
             JSONObject jsonObject = new JSONObject(result);
             message = jsonObject.getString("message");
+            status_code = jsonObject.getInt("status_code");
         }
         catch (JSONException e)
         {
@@ -292,37 +278,24 @@ public class CustomEditNicknameDialog
         }
 
 
+        //사용 가능한 닉네임 일 때
+        if(status_code == 200){
+            SpannableString spannableString = new SpannableString("사용할 수 있는 닉네임이에요");
+            spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#99FF33")), 0, spannableString.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            binding.goodOrBadTextview.setText(spannableString);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        isDuplicated = !message.equals("사용 가능한 닉네임 입니다.");
-        if (message.equals("중복된 닉네임 입니다."))
-        {
-            SpannableString spannableString = new SpannableString("다른 사용자가 이미 사용중이에요");
+            isDuplicated = true; //중복 확인을 했다
+        }
+        //닉네임이 중복 됐을 때
+        else if(status_code == 200){
+            SpannableString spannableString = new SpannableString("현재 사용하고 있는 닉네임이에요");
             spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#CC0033")), 0, spannableString.length(),
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             binding.goodOrBadTextview.setText(spannableString);
+        } else {
+            Toast.makeText(context,"오류가 발생했습니다.",Toast.LENGTH_SHORT).show();
         }
-
-
-
-
-
-
-
-
     }
 
 }

@@ -67,8 +67,10 @@ public class TestMyPageFragment extends Fragment
 
     SharedPreferences sharedPreferences;
 
+    //닉네임 변경 다이얼로그
+    private CustomEditNicknameDialog NicknameDialog;
 //    DBOpenHelper helper;
-    String message;
+    private String message;
 //    String receivedNickname = "";
     //토큰, 세션 아이디
     private String token, sessionId;
@@ -183,8 +185,8 @@ public class TestMyPageFragment extends Fragment
         binding.nicknameEditImage.setOnClickListener(v ->
         {
             /* 커스텀 다이얼로그를 호출해서 닉네임 변경 */
-            CustomEditNicknameDialog dialog = new CustomEditNicknameDialog(getActivity());
-            dialog.setDialogListener(new MyDialogListener()
+            NicknameDialog = new CustomEditNicknameDialog(getActivity());
+            NicknameDialog.setDialogListener(new MyDialogListener()
             {
 //                @Override
 //                public void onDuplicatedCheck(boolean isDuplicated)
@@ -199,7 +201,7 @@ public class TestMyPageFragment extends Fragment
                     changeNickname(message, "save");
                 }
             });
-            dialog.showDialog();
+            NicknameDialog.showDialog();
         });
 
         // 로그인
@@ -451,19 +453,6 @@ public class TestMyPageFragment extends Fragment
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     // 가져온 내 닉네임을 텍스트뷰에 set하는 메서드
     @SuppressLint("CheckResult")
     private void parseResult(String result, String nickname)
@@ -693,4 +682,5 @@ public class TestMyPageFragment extends Fragment
             putPushSetting(false);
         }
     }
+
 }

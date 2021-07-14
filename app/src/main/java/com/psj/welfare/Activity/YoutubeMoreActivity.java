@@ -12,6 +12,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -70,6 +71,9 @@ public class YoutubeMoreActivity extends AppCompatActivity {
 
     //쉐어드 싱글톤
     private SharedSingleton sharedSingleton;
+
+    // API 호출 후 서버 응답코드
+    private int status_code;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,9 +174,25 @@ public class YoutubeMoreActivity extends AppCompatActivity {
                 public void onResponse(Call<String> call, Response<String> response) {
                     if (response.isSuccessful() && response.body() != null) {
                         String result = response.body();
+//                        Log.e(TAG, "result1 : " + result);
 
-                        Log.e(TAG, "result1 : " + result);
-                        responseParse(result);
+                        JSONObject jsonObject = null;
+                        try {
+                            jsonObject = new JSONObject(result);
+                            status_code = jsonObject.getInt("status_code");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        //서버에서 정상적으로 값을 받았다면
+                        if(status_code == 200){
+                            responseParse(result);
+                        } else {
+                            Toast.makeText(YoutubeMoreActivity.this,"오류가 발생했습니다",Toast.LENGTH_SHORT).show();
+                        }
+
+
+
                     } else {
                         Log.e(TAG, "비로그인일 시 데이터 가져오기 실패 : " + response.body());
                     }
@@ -194,9 +214,23 @@ public class YoutubeMoreActivity extends AppCompatActivity {
                 public void onResponse(Call<String> call, Response<String> response) {
                     if (response.isSuccessful() && response.body() != null) {
                         String result = response.body();
+//                        Log.e(TAG, "result2 : " + result);
 
-                        Log.e(TAG, "result2 : " + result);
-                        responseParse(result);
+                        JSONObject jsonObject = null;
+                        try {
+                            jsonObject = new JSONObject(result);
+                            status_code = jsonObject.getInt("status_code");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        //서버에서 정상적으로 값을 받았다면
+                        if(status_code == 200){
+                            responseParse(result);
+                        } else {
+                            Toast.makeText(YoutubeMoreActivity.this,"오류가 발생했습니다",Toast.LENGTH_SHORT).show();
+                        }
+
                     } else {
                         Log.e(TAG, "비로그인일 시 데이터 가져오기 실패 : " + response.body());
                     }

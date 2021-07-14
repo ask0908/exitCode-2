@@ -90,8 +90,8 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
     //로그인 관련 쉐어드 singleton
     private SharedSingleton sharedSingleton;
 
-    //서버에서 받은 statusCode 값
-    private String statusCode;
+    // API 호출 후 서버 응답코드
+    private int status_code;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -202,14 +202,15 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
                 send_category = category_builder.toString();
                 send_category = send_category.substring(0, send_category.length() - 1);
 
-                sharedPreferences = getSharedPreferences("app_pref", 0);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-//                editor.putString("force_stopped", "0");
-                editor.putString("interest_age", send_age);
-                editor.putString("interest_local", send_local);
-                editor.putString("interest_family", send_family);
-                editor.putString("interest_category", send_category);
-                editor.apply();
+
+//                sharedPreferences = getSharedPreferences("app_pref", 0);
+//                SharedPreferences.Editor editor = sharedPreferences.edit();
+////                editor.putString("force_stopped", "0");
+//                editor.putString("interest_age", send_age);
+//                editor.putString("interest_local", send_local);
+//                editor.putString("interest_family", send_family);
+//                editor.putString("interest_category", send_category);
+//                editor.apply();
 
 
                 //이전에 관심사 선택을 했었다면 관심사 수정
@@ -245,7 +246,23 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
                 {
                     String result = response.body();
                     Log.e(TAG, "관심사 수정 결과 : " + result);
-                    parseModifyResult(result);
+
+                    JSONObject jsonObject = null;
+                    try {
+                        jsonObject = new JSONObject(result);
+                        status_code = jsonObject.getInt("status_code");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    //서버에서 정상적으로 값을 받았다면
+                    if(status_code == 200){
+                        parseModifyResult(result);
+                    } else {
+                        Toast.makeText(ChooseSecondInterestActivity.this,"오류가 발생했습니다",Toast.LENGTH_SHORT).show();
+                    }
+
+
                 }
                 else
                 {
@@ -276,7 +293,23 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
                 {
                     String result = response.body();
                     Log.e(TAG, "관심사 수정 결과 : " + result);
-                    parseModifyResult(result);
+
+                    JSONObject jsonObject = null;
+                    try {
+                        jsonObject = new JSONObject(result);
+                        status_code = jsonObject.getInt("status_code");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    //서버에서 정상적으로 값을 받았다면
+                    if(status_code == 200){
+                        parseModifyResult(result);
+                    } else {
+                        Toast.makeText(ChooseSecondInterestActivity.this,"오류가 발생했습니다",Toast.LENGTH_SHORT).show();
+                    }
+
+
                 }
                 else
                 {
@@ -373,18 +406,19 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
                     String result = response.body();
                     Log.e(TAG, "서버에 저장된 내 관심사 : " + result);
 
-
                     JSONObject jsonObject = null;
                     try {
                         jsonObject = new JSONObject(result);
-                        statusCode = jsonObject.getString("statusCode");
+                        status_code = jsonObject.getInt("status_code");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
                     //서버에서 정상적으로 값을 받았다면
-                    if(statusCode.equals("200")){
+                    if(status_code == 200){
                         parseInterest(result);
+                    } else {
+                        Toast.makeText(ChooseSecondInterestActivity.this,"오류가 발생했습니다",Toast.LENGTH_SHORT).show();
                     }
 
                 }

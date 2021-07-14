@@ -98,6 +98,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     //쉐어드 싱글톤
     private SharedSingleton sharedSingleton;
 
+    // API 호출 후 서버 응답코드
+    private int status_code;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
@@ -337,11 +340,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         {
             e.printStackTrace();
         }
-
-
-        Log.e(TAG,"jsonObject.toString() : " + jsonObject.toString());
-
-
+//        Log.e(TAG,"jsonObject.toString() : " + jsonObject.toString());
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
 //        Call<String> call = apiInterface.sendUserTypeAndPlatform(jsonObject.toString());
         Call<String> call = apiInterface.Login(jsonObject.toString());
@@ -354,7 +353,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 {
                     String result = response.body();
                     Log.e(TAG, "로그인 결과 : " + result);
-                    tokenParsing(result);
+
+                    JSONObject jsonObject = null;
+                    try {
+                        jsonObject = new JSONObject(result);
+                        status_code = jsonObject.getInt("status_code");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    //서버에서 정상적으로 값을 받았다면
+                    if(status_code == 200){
+                        tokenParsing(result);
+                    } else {
+                        Toast.makeText(LoginActivity.this,"오류가 발생했습니다",Toast.LENGTH_SHORT).show();
+                    }
+
                 }
                 else
                 {

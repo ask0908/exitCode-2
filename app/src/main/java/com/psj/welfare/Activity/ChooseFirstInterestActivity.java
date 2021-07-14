@@ -88,6 +88,9 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
     //앱 종료 시간 체크
     long backKeyPressedTime = 0;
 
+    // API 호출 후 서버 응답코드
+    private int status_code;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -103,6 +106,7 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
 
         // findViewById() 모아놓은 메서드
         init();
+
         buttonsClickListener();
 
         activity = ChooseFirstInterestActivity.this;
@@ -190,8 +194,24 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-                    Log.e(TAG, "서버에 저장된 내 관심사 : " + result);
-                    parseInterest(result);
+//                    Log.e(TAG, "서버에 저장된 내 관심사 : " + result);
+
+                    JSONObject jsonObject = null;
+                    try {
+                        jsonObject = new JSONObject(result);
+                        status_code = jsonObject.getInt("status_code");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    //서버에서 정상적으로 값을 받았다면
+                    if(status_code == 200){
+                        parseInterest(result);
+                    } else {
+                        Toast.makeText(ChooseFirstInterestActivity.this,"오류가 발생했습니다",Toast.LENGTH_SHORT).show();
+                    }
+
+
                 }
                 else
                 {
@@ -225,18 +245,23 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        Log.e(TAG, "user_age : " + user_age);
-        Log.e(TAG, "user_local : " + user_local);
+//        Log.e(TAG, "user_age : " + user_age);
+//        Log.e(TAG, "user_local : " + user_local);
         String[] age_arr = user_age.split("\\|");   // "|"을 split하려면 이스케이프 문자를 2번 넣어줘야 한다
         String[] local_arr = user_local.split("\\|");
-        Log.e(TAG, "age_arr : " + Arrays.toString(age_arr));
-        Log.e(TAG, "local_arr : " + Arrays.toString(local_arr));
+//        Log.e(TAG, "age_arr : " + Arrays.toString(age_arr));
+//        Log.e(TAG, "local_arr : " + Arrays.toString(local_arr));
         age_list = new ArrayList<>(Arrays.asList(age_arr));
         local_list = new ArrayList<>(Arrays.asList(local_arr));
 
         for (int i = 0; i < local_list.size(); i++)
         {
             Log.e(TAG, "local_list : " + local_list.get(i));
+        }
+
+        for (int i = 0; i < age_list.size(); i++)
+        {
+            Log.e(TAG, "age_list : " + age_list.get(i));
         }
 
         Button age_btn;
@@ -917,7 +942,7 @@ public class ChooseFirstInterestActivity extends AppCompatActivity
 
         interest_gyonggi_btn.setOnClickListener(v ->
         {
-            String value = "강원";
+            String value = "경기";
             arr[9]++;
             if (arr[9] % 2 == 0)
             {

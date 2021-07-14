@@ -56,8 +56,10 @@ public class DetailReviewAllLook extends AppCompatActivity {
 
 
     private String token = null; //토큰 값
-    private String status = null; //리뷰 삭제후 반환값
+//    private String status = null; //리뷰 삭제후 반환값
     private String message; //리뷰 삭제후 받을 메세지
+    // API 호출 후 서버 응답코드
+    private int status_code;
 
     private String filter = "newest";
 
@@ -182,7 +184,22 @@ public class DetailReviewAllLook extends AppCompatActivity {
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    removeResponseParse(response.body());
+                    String result = response.body();
+                    JSONObject jsonObject = null;
+                    try {
+                        jsonObject = new JSONObject(result);
+                        status_code = jsonObject.getInt("status_code");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    if(status_code == 200){
+                        removeResponseParse(response.body());
+                    } else {
+                        Toast.makeText(DetailReviewAllLook.this,"오류가 발생했습니다",Toast.LENGTH_SHORT).show();
+                    }
+
+
                 }
             }
 
@@ -197,23 +214,8 @@ public class DetailReviewAllLook extends AppCompatActivity {
     //리뷰 삭제후 반환값 받기
     private void removeResponseParse(String result)
     {
-
-        try
-        {
-            JSONObject result_object = new JSONObject(result);
-            status = result_object.getString("statusCode");
-            message = result_object.getString("message");
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-
-        if (status.equals("200"))
-        {
-            Toast.makeText(DetailReviewAllLook.this, "리뷰가 성공적으로 삭제됐어요", Toast.LENGTH_SHORT).show();
-            LoadReview();
-        }
+        Toast.makeText(DetailReviewAllLook.this, "리뷰가 성공적으로 삭제됐어요", Toast.LENGTH_SHORT).show();
+        LoadReview();
     }
 
     //인텐트로 받아온 welf_id값
@@ -250,7 +252,22 @@ public class DetailReviewAllLook extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-                    GsonResponseParse(result);
+//                    Log.e(TAG,"리뷰 데이터 받기 : " + result);
+
+                    JSONObject jsonObject = null;
+                    try {
+                        jsonObject = new JSONObject(result);
+                        status_code = jsonObject.getInt("status_code");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    if(status_code == 200){
+                        GsonResponseParse(result);
+                    } else {
+                        Toast.makeText(DetailReviewAllLook.this,"오류가 발생했습니다",Toast.LENGTH_SHORT).show();
+                    }
+
                 }
                 else
                 {
@@ -268,12 +285,11 @@ public class DetailReviewAllLook extends AppCompatActivity {
 
     //Gson으로 파싱
     private void GsonResponseParse(String result){
-        Log.e(TAG,"result : " + result);
+//        Log.e(TAG,"result : " + result);
 
         Gson gson = new Gson();
         try {
             JSONObject jsonObject = new JSONObject(result);
-
 
             review_count.setText("사용자 리뷰 " + jsonObject.getString("total_num") + "개");
             JSONArray jsonArray = jsonObject.getJSONArray("message");

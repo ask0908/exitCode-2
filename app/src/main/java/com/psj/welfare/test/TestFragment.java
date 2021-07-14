@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,7 +30,6 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.orhanobut.logger.Logger;
 import com.psj.welfare.BannerDetail;
 import com.psj.welfare.DetailTabLayoutActivity;
 import com.psj.welfare.MainBannerAdapter;
@@ -120,6 +120,9 @@ public class TestFragment extends Fragment
     private String token;
     //닉네임
     private String user_nickname;
+    // API 호출 후 서버 응답코드
+    private int status_code;
+
 
 //    DBOpenHelper helper;
 //    String sqlite_token;
@@ -197,7 +200,6 @@ public class TestFragment extends Fragment
         user_nickname = sharedSingleton.getNickname(); //닉네임
 
 
-
 //        keyword_list = new ArrayList<>();
         down_list = new ArrayList<>();
 //        youtube_hashmap = new HashMap<>();
@@ -208,8 +210,6 @@ public class TestFragment extends Fragment
 
 //        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
 //        changed_nickname = sharedPreferences.getString("changed_nickname", "");
-
-
 
 
         MainWelfdata.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -673,9 +673,23 @@ public class TestFragment extends Fragment
             {
                 if (str != null)
                 {
-                    responseParse(str);
-                    Log.e(TAG, "비로그인 상태로 가져온 혜택, 유튜브 데이터들 : " + str);
-                    Log.e(TAG,"test02 : " + str);
+
+                    JSONObject jsonObject = null;
+                    try {
+                        jsonObject = new JSONObject(str);
+                        status_code = jsonObject.getInt("status_code");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    if(status_code == 200){
+                        responseParse(str);
+                    } else {
+                        Toast.makeText(getActivity(),"오류가 발생했습니다",Toast.LENGTH_SHORT).show();
+                    }
+
+//                    Log.e(TAG, "비로그인 상태로 가져온 혜택, 유튜브 데이터들 : " + str);
+//                    Log.e(TAG,"test02 : " + str);
                 }
                 else
                 {
@@ -708,8 +722,19 @@ public class TestFragment extends Fragment
             {
                 if (str != null)
                 {
-                    Logger.d("로그인 후 가져온 혜택, 유튜브 데이터 : " + str);
-                    responseParse(str);
+
+                    JSONObject jsonObject = null;
+                    try {
+                        jsonObject = new JSONObject(str);
+                        status_code = jsonObject.getInt("status_code");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    if(status_code == 200){
+                        responseParse(str);
+                    }
+
                     Log.e(TAG,"test03 : " + str);
                 }
                 else

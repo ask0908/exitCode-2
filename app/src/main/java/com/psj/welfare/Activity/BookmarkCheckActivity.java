@@ -73,6 +73,8 @@ public class BookmarkCheckActivity extends AppCompatActivity
     private SharedSingleton sharedSingleton;
     //토큰 값
     private String token;
+    // API 호출 후 서버 응답코드
+    private int status_code;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -243,14 +245,24 @@ public class BookmarkCheckActivity extends AppCompatActivity
             {
                 Log.e(TAG,"bookmark result : " + s);
 
-
-                if(!paging){ //페이징으로 서버를 연결한다면
-                    bookmarkParsing(s);
-                    dialog.dismiss();
-                } else { //페이징이 아닌 처음 액티비티로 들어왔을 때 서버를 연결항다면
-                    bookmarkParsing(s);
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(s);
+                    status_code = jsonObject.getInt("status_code");
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
 
+                if(status_code == 200){
+                    if(!paging){ //페이징으로 서버를 연결한다면
+                        bookmarkParsing(s);
+                        dialog.dismiss();
+                    } else { //페이징이 아닌 처음 액티비티로 들어왔을 때 서버를 연결항다면
+                        bookmarkParsing(s);
+                    }
+                } else {
+                    Toast.makeText(BookmarkCheckActivity.this,"오류가 발생했습니다",Toast.LENGTH_SHORT).show();
+                }
 
 
 

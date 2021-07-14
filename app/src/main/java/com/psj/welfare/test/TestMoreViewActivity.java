@@ -6,13 +6,13 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -26,15 +26,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
-import com.orhanobut.logger.Logger;
 import com.psj.welfare.DetailTabLayoutActivity;
 import com.psj.welfare.R;
 import com.psj.welfare.ScreenSize;
+import com.psj.welfare.SharedSingleton;
 import com.psj.welfare.adapter.MoreViewAdapter;
 import com.psj.welfare.adapter.SeeMoreBottomAdapter;
 import com.psj.welfare.data.MoreViewItem;
 import com.psj.welfare.data.SeeMoreItem;
-import com.psj.welfare.util.DBOpenHelper;
 import com.psj.welfare.util.NetworkStatus;
 import com.psj.welfare.viewmodel.MoreViewModel;
 
@@ -44,10 +43,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import io.reactivex.Flowable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * 로그인했을 때만 더보기 리스트 들어갈 수 있는데
@@ -95,13 +90,19 @@ public class TestMoreViewActivity extends AppCompatActivity
     String support_id, support_name, support_tag, support_count;
 
     // API 호출 후 서버 응답코드
-    String status;
-    String sqlite_token, sessionId;
+    private int status_code;
+//    String sqlite_token, sessionId;
 
-    DBOpenHelper helper;
+//    DBOpenHelper helper;
 
     private Parcelable recyclerViewState;
     private int page = 1;
+
+    //쉐어드 싱글톤
+    private SharedSingleton sharedSingleton;
+
+    //토큰, 세션 아이디
+    private String token, sessionId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -112,36 +113,17 @@ public class TestMoreViewActivity extends AppCompatActivity
         // 인터넷 연결 상태를 체크해서 3G, 와이파이 중 하나라도 연결돼 있다면 더보기 화면에서 필요한 로직들을 진행시킨다
         if (NetworkStatus.checkNetworkStatus(this) == 1 || NetworkStatus.checkNetworkStatus(this) == 2)
         {
-            /* 3G, 와이파이 중 하나라도 연결돼 있을 경우 */
-            helper = new DBOpenHelper(TestMoreViewActivity.this);
-            helper.openDatabase();
-            helper.create();
 
-            Cursor cursor = helper.selectColumns();
-            if (cursor != null)
-            {
-                while (cursor.moveToNext())
-                {
-                    sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
-                }
-            }
+            //쉐어드 싱글톤 사용
+            sharedSingleton = SharedSingleton.getInstance(this);
+            token = sharedSingleton.getToken(); //토큰 값
+            sessionId = sharedSingleton.getSessionId(); //세션 id
 
-            more_view_result_count = findViewById(R.id.more_view_result_count);
-            more_view_top_recyclerview = findViewById(R.id.more_view_top_recyclerview);
-            more_view_bottom_recyclerview = findViewById(R.id.more_view_bottom_recyclerview);
-            // 하단 리사이클러뷰에 보이는 아이템들의 크기를 고정으로 설정
-            more_view_bottom_recyclerview.setHasFixedSize(true);
-            more_view_bottom_recyclerview.setLayoutManager(new LinearLayoutManager(this));
+            //자바 변수 xml연결, 초기화 작업
+            init();
 
-            // 화면 최상단의 '맞춤 혜택 총 n개' 텍스트뷰 글자 크기, 하단 리사이클러뷰 아이템 등 뷰들의 간격 및 크기 조절 위한 전처리
-            ScreenSize screen = new ScreenSize();
-            Point size = screen.getScreenSize(TestMoreViewActivity.this);
-
-            // 하단 리사이클러뷰 패딩 설정
-            more_view_bottom_recyclerview.setPadding((int) (size.x * 0.058), 0, (int) (size.x * 0.015), 0);
-
-            // "맞춤 혜택 총 n개" 글자 크기 설정
-            more_view_result_count.setTextSize((int) (size.x * 0.017));
+            //xml크기를 동적으로 변환
+            setsize();
 
             // 상, 하단 리사이클러뷰에 사용할 리스트 초기화
             up_list = new ArrayList<>();
@@ -153,33 +135,36 @@ public class TestMoreViewActivity extends AppCompatActivity
             up_list.add(0, new MoreViewItem("전체"));
 
             sharedPreferences = getSharedPreferences("app_pref", 0);
-            sessionId = sharedPreferences.getString("sessionId", "");
+//            sessionId = sharedPreferences.getString("sessionId", "");
 
-            /* 로그인 상태에 따른 더보기 리스트 예외처리 */
-            String gender = sharedPreferences.getString("gender", "");
-            String age = sharedPreferences.getString("age_group", "");
-            String area = sharedPreferences.getString("user_area", "");
-            if (gender != null && age != null && area != null)
-            {
-                if (!gender.equals("") && !age.equals("") && !area.equals(""))
-                {
-                    // 로그인 x, 관심사 o인 경우 여기로 이동된다
-                    Logger.d("비로그인으로 들어옴\n페이지 : " + page + ", assist_method : " + getString(R.string.assist_method_all));
-                    getDataFromFormOfSupport(String.valueOf(page), getString(R.string.assist_method_all));
-                }
-                else
-                {
-                    // 로그인한 경우
-                    Logger.d("로그인으로 들어왔지만 나이, 성별, 지역이 없음");
-                    moreViewWelfareLogin(page, getString(R.string.assist_method_start));
-                }
-            }
-            // 로그인 했을 때는 else 안으로 빠진다
-            else
-            {
-                Logger.d("로그인해서 들어왔고 나이, 성별, 지역값 있음\n나이 : " + age + ", 성별 : " + gender + ", 지역 : " + area);
-                moreViewWelfareLogin(page, getString(R.string.assist_method_start));
-            }
+//            /* 로그인 상태에 따른 더보기 리스트 예외처리 */
+//            String gender = sharedPreferences.getString("gender", "");
+//            String age = sharedPreferences.getString("age_group", "");
+//            String area = sharedPreferences.getString("user_area", "");
+//            if (gender != null && age != null && area != null)
+//            {
+//                if (!gender.equals("") && !age.equals("") && !area.equals(""))
+//                {
+//                    // 로그인 x, 관심사 o인 경우 여기로 이동된다
+//                    Logger.d("비로그인으로 들어옴\n페이지 : " + page + ", assist_method : " + getString(R.string.assist_method_all));
+//                    getDataFromFormOfSupport(String.valueOf(page), getString(R.string.assist_method_all));
+//                }
+//                else
+//                {
+//                    // 로그인한 경우
+//                    Logger.d("로그인으로 들어왔지만 나이, 성별, 지역이 없음");
+//                    moreViewWelfareLogin(page, getString(R.string.assist_method_start));
+//                }
+//            }
+//            // 로그인 했을 때는 else 안으로 빠진다
+//            else
+//            {
+//                Logger.d("로그인해서 들어왔고 나이, 성별, 지역값 있음\n나이 : " + age + ", 성별 : " + gender + ", 지역 : " + area);
+//                moreViewWelfareLogin(page, getString(R.string.assist_method_start));
+//            }
+
+            //혜택 더보기
+            moreViewWelfareLogin(page, getString(R.string.assist_method_start));
 
             // 리사이클러뷰 페이징 처리
             moreViewPaging();
@@ -202,8 +187,11 @@ public class TestMoreViewActivity extends AppCompatActivity
                         }
                     }).show();
         }
-
     }   // onCreate() end
+
+
+
+
 
     /* 관심사 o, 로그인 x일 때 상단 리사이클러뷰의 지원 형태를 눌렀을 경우 데이터를 가져오는 메서드
      * 이 메서드에선 페이징 처리를 해줘야 한다 */
@@ -239,6 +227,8 @@ public class TestMoreViewActivity extends AppCompatActivity
                 .observe(this, getDataFromFormObserver);
     }
 
+
+
     /* 상단 리사이클러뷰의 지원 형태를 눌렀을 경우 데이터를 가져오는 메서드, 토큰을 서버로 넘겨야 하기 때문에 로그인 시에만 호출한다
      * 이 메서드에선 페이징 처리를 해줘야 한다 */
     private void getDataFromFormOfSupport(String page, String assist_method)
@@ -269,7 +259,7 @@ public class TestMoreViewActivity extends AppCompatActivity
             }
         };
 
-        moreViewModel.moreViewWelfareLogin(sqlite_token, sessionId, page, assist_method)
+        moreViewModel.moreViewWelfareLogin(token, sessionId, page, assist_method)
                 .observe(this, getDataFromFormObserver);
     }
 
@@ -307,6 +297,8 @@ public class TestMoreViewActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
+
+
 //        for (int i = 0; i < list.size(); i++)
 //        {
 //            Log.e(TAG, "list - getAssist_method : " + list.get(i).getAssist_method());
@@ -316,11 +308,13 @@ public class TestMoreViewActivity extends AppCompatActivity
 //            Log.e(TAG, "list - getWelf_tag : " + list.get(i).getWelf_tag());
 //        }
 
-        // 하단 리사이클러뷰에 보여주는 데이터 개수만큼 텍스트뷰에 총 몇개인지 보여준다
-        Flowable.just(list.size())
-                .observeOn(Schedulers.io())
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(data -> more_view_result_count.setText("맞춤 혜택 총 " + list.size() + "개"));
+//        // 하단 리사이클러뷰에 보여주는 데이터 개수만큼 텍스트뷰에 총 몇개인지 보여준다
+//        Flowable.just(list.size())
+//                .observeOn(Schedulers.io())
+//                .subscribeOn(AndroidSchedulers.mainThread())
+//                .subscribe(data -> more_view_result_count.setText("맞춤 혜택 총 " + list.size() + "개"));
+
+        more_view_result_count.setText("맞춤 혜택 총 " + total_num + "개");
 
         // 하단 리사이클러뷰 초기화
         adapter = new SeeMoreBottomAdapter(TestMoreViewActivity.this, list, itemClickListener);
@@ -331,7 +325,7 @@ public class TestMoreViewActivity extends AppCompatActivity
             String assist_method = list.get(pos).getAssist_method();
             String tag = list.get(pos).getWelf_tag();
             String count = list.get(pos).getWelf_count();
-            Logger.d("하단 리사이클러뷰의 아이템 이름 : " + name + ", 조회수 : " + count + ", id : " + id + ", 태그 : " + tag + ", 지원 형태 : " + assist_method);
+//            Logger.d("하단 리사이클러뷰의 아이템 이름 : " + name + ", 조회수 : " + count + ", id : " + id + ", 태그 : " + tag + ", 지원 형태 : " + assist_method);
             Intent intent = new Intent(this, DetailTabLayoutActivity.class);
             intent.putExtra("welf_id", id);
             startActivity(intent);
@@ -339,6 +333,8 @@ public class TestMoreViewActivity extends AppCompatActivity
         more_view_bottom_recyclerview.setAdapter(adapter);
 
     } // parseDataFromForm() end
+
+
 
     /* 로그인 후 더보기를 눌러 이 화면에 들어왔을 경우 호출되는 메서드 */
     private void moreViewWelfareLogin(int page, String assist_method)
@@ -371,22 +367,25 @@ public class TestMoreViewActivity extends AppCompatActivity
         };
 
         // assist_method : 상단 리사이클러뷰에서 선택한 지원형태 이름
-        moreViewModel.moreViewWelfareLogin(sqlite_token, sessionId, String.valueOf(page), assist_method)
+        moreViewModel.moreViewWelfareLogin(token, sessionId, String.valueOf(page), assist_method)
                 .observe(this, moreViewObserver);
     }
+
 
     /* 로그인 시 더보기를 눌렀을 경우 받아온 JSON 값을 파싱하는 메서드
      * 이 메서드는 페이징이 필요없다 */
     @SuppressLint("CheckResult")
     private void firstEntranceParsing(String result)
     {
-        Log.e(TAG, "처음 더보기 화면 들어오고 firstEntranceParsing() 호출##");
-        Log.e(TAG, "firstEntranceParsing()으로 들어온 값 : " + result);
+//        Log.e(TAG, "처음 더보기 화면 들어오고 firstEntranceParsing() 호출##");
+//        Log.e(TAG, "firstEntranceParsing()으로 들어온 값 : " + result);
+//        Logger.e(TAG, result);
         Gson gson = new Gson();
         try
         {
             JSONObject jsonObject = new JSONObject(result);
-            status = jsonObject.getString("statusCode");
+            status_code = jsonObject.getInt("status_code");
+            total_num = jsonObject.getInt("total_num");
             /* 이 JSONArray를 JSONObject로 파싱할 때는 주의해야 한다. message라는 JSONArray를 가져와 JSONArray 객체에 담지만
              * 그 안의 assist_method_10과 all_10이 "message":[{"assist_method_10":[{"welf_id":580}]}] 형태로 들어있기 때문에
              * for문으로 jsonArray의 길이만큼 반복하며 값을 가져오는 게 아니라 곧바로 getJSONObject(0)으로 JSONArray가 value인 assist_method_10 JSONObject를 가져와야 한다 */
@@ -420,7 +419,7 @@ public class TestMoreViewActivity extends AppCompatActivity
         checkDuplicate();
 
         // 서버 응답 코드에 따른 예외처리
-        if (status.equals("400") || status.equals("404") || status.equals("500"))
+        if (status_code == 400 || status_code == 404 || status_code == 500)
         {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("인터넷 연결이 불안정해요\n잠시 후 다시 시도해 주세요")
@@ -445,18 +444,19 @@ public class TestMoreViewActivity extends AppCompatActivity
 //                Log.e(TAG, "list - getWelf_id : " + list.get(i).getWelf_id());
 //                Log.e(TAG, "list - getWelf_count : " + list.get(i).getWelf_count());
 //            }
-            /* 서버 응답 코드가 200(성공)인 경우 */
-            Flowable.just(list.size())
-                    .observeOn(Schedulers.io())
-                    .subscribeOn(AndroidSchedulers.mainThread())
-                    .subscribe(data -> more_view_result_count.setText("맞춤 혜택 총 " + list.size() + "개"));
+//            /* 서버 응답 코드가 200(성공)인 경우 */
+//            Flowable.just(list.size())
+//                    .observeOn(Schedulers.io())
+//                    .subscribeOn(AndroidSchedulers.mainThread())
+//                    .subscribe(data -> more_view_result_count.setText("맞춤 혜택 총 " + list.size() + "개"));
+
+            more_view_result_count.setText("맞춤 혜택 총 " + total_num + "개");
 
             // 처음 더보기 화면에 들어왔을 때 상단 리사이클러뷰에 값을 넣어서 보여줘야 하니까 이건 필요한 처리다
             // 상단 리사이클러뷰, 어댑터 초기화
             up_adapter = new MoreViewAdapter(this, noRepeat, up_clickListener);
             up_adapter.setOnItemClickListener(pos ->
             {
-
                 page = 1;
                 // 상단 리사이클러뷰에서 선택한 지원형태의 이름을 변수에 담는다
                 String name = noRepeat.get(pos).getAssist_method();
@@ -535,6 +535,7 @@ public class TestMoreViewActivity extends AppCompatActivity
         }
     }
 
+
     /* 객체 내의 중복된 값들을 제거하고 ArrayList에 중복 제거된 값들을 담는 메서드 */
     private void checkDuplicate()
     {
@@ -574,49 +575,50 @@ public class TestMoreViewActivity extends AppCompatActivity
 
     }
 
-    /* 비로그인 시 더보기 눌렀을 경우 호출돼 데이터를 가져오는 메서드 */
-    private void moreViewWelfareNotLogin(String page, String assist_method, String gender, String age_group, String area)
-    {
-        final ProgressDialog dialog = new ProgressDialog(this);
-        dialog.setMax(100);
-        dialog.setMessage("잠시만 기다려 주세요...");
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        dialog.show();
-
-        /* ↓ context를 사용하는 AVM이 아니라 일반 VM을 쓰면 이렇게 해야 함 */
-//        moreViewModel.moreViewWelfareNoLogin().observe(this, new Observer<String>()
+//    /* 비로그인 시 더보기 눌렀을 경우 호출돼 데이터를 가져오는 메서드 */
+//    private void moreViewWelfareNotLogin(String page, String assist_method, String gender, String age_group, String area)
+//    {
+//        final ProgressDialog dialog = new ProgressDialog(this);
+//        dialog.setMax(100);
+//        dialog.setMessage("잠시만 기다려 주세요...");
+//        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//        dialog.show();
+//
+//        /* ↓ context를 사용하는 AVM이 아니라 일반 VM을 쓰면 이렇게 해야 함 */
+////        moreViewModel.moreViewWelfareNoLogin().observe(this, new Observer<String>()
+////        {
+////            @Override
+////            public void onChanged(String s)
+////            {
+////
+////            }
+////        });
+//
+//        moreViewModel = new ViewModelProvider(this).get(MoreViewModel.class);
+//        final Observer<String> moreViewObserver = new Observer<String>()
 //        {
 //            @Override
-//            public void onChanged(String s)
+//            public void onChanged(String str)
 //            {
-//
+//                if (str != null)
+//                {
+//                    Log.e(TAG, "비로그인 상태에서 더보기 눌러 데이터 가져온 결과 : " + str);
+//                    firstEntranceParsing(str);
+//                    dialog.dismiss();
+//                }
+//                else
+//                {
+//                    Log.e(TAG, "비로그인 상태에서 str이 null입니다");
+//                }
 //            }
-//        });
+//        };
+//
+//        // theme : 상단 리사이클러뷰에서 선택한 카테고리 이름을 넣는다
+//        // gender, age, local : 미리보기 부분의 파일이 없어 하드코딩으로 대신
+//        moreViewModel.moreViewWelfareNotLogin(sessionId, page, assist_method, gender, age_group, area)
+//                .observe(this, moreViewObserver);
+//    }
 
-        moreViewModel = new ViewModelProvider(this).get(MoreViewModel.class);
-        final Observer<String> moreViewObserver = new Observer<String>()
-        {
-            @Override
-            public void onChanged(String str)
-            {
-                if (str != null)
-                {
-                    Log.e(TAG, "비로그인 상태에서 더보기 눌러 데이터 가져온 결과 : " + str);
-                    firstEntranceParsing(str);
-                    dialog.dismiss();
-                }
-                else
-                {
-                    Log.e(TAG, "비로그인 상태에서 str이 null입니다");
-                }
-            }
-        };
-
-        // theme : 상단 리사이클러뷰에서 선택한 카테고리 이름을 넣는다
-        // gender, age, local : 미리보기 부분의 파일이 없어 하드코딩으로 대신
-        moreViewModel.moreViewWelfareNotLogin(sessionId, page, assist_method, gender, age_group, area)
-                .observe(this, moreViewObserver);
-    }
 
     // 리사이클러뷰 스크롤이 마지막에 도달하면 이벤트 발생
     private void moreViewPaging()
@@ -763,10 +765,37 @@ public class TestMoreViewActivity extends AppCompatActivity
 //        });
     }
 
+    //자바 변수 xml연결, 초기화 작업
+    private void init() {
+        more_view_result_count = findViewById(R.id.more_view_result_count);
+        more_view_top_recyclerview = findViewById(R.id.more_view_top_recyclerview);
+        more_view_bottom_recyclerview = findViewById(R.id.more_view_bottom_recyclerview);
+        // 하단 리사이클러뷰에 보이는 아이템들의 크기를 고정으로 설정
+        more_view_bottom_recyclerview.setHasFixedSize(true);
+        more_view_bottom_recyclerview.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+
+    //xml크기를 동적으로 변환
+    private void setsize() {
+        // 화면 최상단의 '맞춤 혜택 총 n개' 텍스트뷰 글자 크기, 하단 리사이클러뷰 아이템 등 뷰들의 간격 및 크기 조절 위한 전처리
+        ScreenSize screen = new ScreenSize();
+        Point size = screen.getScreenSize(TestMoreViewActivity.this);
+
+        // 하단 리사이클러뷰 패딩 설정
+        more_view_bottom_recyclerview.setPadding((int) (size.x * 0.058), 0, (int) (size.x * 0.015), 0);
+
+        // "맞춤 혜택 총 n개" 글자 크기 설정
+//        more_view_result_count.setTextSize((int) (size.x * 0.018));
+        more_view_result_count.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int) (size.y * 0.035)); //"마이페이지" 텍스트
+    }
+
+
+
     public void setStatusBarGradiant(Activity activity)
     {
         Window window = activity.getWindow();
-        Drawable background = activity.getResources().getDrawable(R.drawable.gradation_background);
+        Drawable background = activity.getResources().getDrawable(R.drawable.renewal_gradation_background);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(activity.getResources().getColor(android.R.color.transparent));
         window.setBackgroundDrawable(background);

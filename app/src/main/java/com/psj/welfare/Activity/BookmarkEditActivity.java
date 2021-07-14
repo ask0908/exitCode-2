@@ -95,6 +95,9 @@ public class BookmarkEditActivity extends AppCompatActivity
     //로그인관련 쉐어드 singleton
     private SharedSingleton sharedSingleton;
 
+    // API 호출 후 서버 응답코드
+    private int status_code;
+
     @SuppressLint("CheckResult")
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -446,10 +449,7 @@ public class BookmarkEditActivity extends AppCompatActivity
 //        }
 
 
-
-
-
-
+        
 
         ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
         Call<String> call = apiInterface.deleteBookmark(token, type, page, id);
@@ -461,8 +461,21 @@ public class BookmarkEditActivity extends AppCompatActivity
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();
-                    Log.e(TAG, "북마크 삭제 결과 : " + result);
-                    Toast.makeText(BookmarkEditActivity.this, "선택하신 북마크의 삭제가 완료됐어요", Toast.LENGTH_SHORT).show();
+                    JSONObject jsonObject = null;
+                    try {
+                        jsonObject = new JSONObject(result);
+                        status_code = jsonObject.getInt("status_code");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    if(status_code == 200){
+                        Log.e(TAG, "북마크 삭제 결과 : " + result);
+                        Toast.makeText(BookmarkEditActivity.this, "선택하신 북마크의 삭제가 완료됐어요", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(BookmarkEditActivity.this,"오류가 발생했습니다",Toast.LENGTH_SHORT).show();
+                    }
+
                     finish();
 //                    setResult(RESULT_OK);
                 }

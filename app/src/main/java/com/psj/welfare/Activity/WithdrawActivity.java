@@ -73,7 +73,7 @@ public class WithdrawActivity extends AppCompatActivity
     //토큰 값
     private String token;
 
-    String status, message;
+    String message;
     SharedPreferences sharedPreferences;
     // 구글 애널리틱스
     private FirebaseAnalytics analytics;
@@ -82,6 +82,9 @@ public class WithdrawActivity extends AppCompatActivity
 
     //쉐어드 싱글톤
     private SharedSingleton sharedSingleton;
+
+    // API 호출 후 서버 응답코드
+    private int status_code;
 
     @SuppressLint("CheckResult")
     @Override
@@ -315,8 +318,6 @@ public class WithdrawActivity extends AppCompatActivity
         withdraw_button.setOnClickListener(v ->
         {
             // 기타를 선택한 게 아니라면 라디오 버튼의 문자열들을 가져와서 변수에 대입
-            Log.e(TAG, "회원탈퇴 api로 보낼 탈퇴 이유 : " + reason);
-
             // 라디오 버튼의 문자열(탈퇴 사유)을 api 인자로 넘겨 서버 통신
             leaveFromApp(reason);
 
@@ -346,12 +347,24 @@ public class WithdrawActivity extends AppCompatActivity
     private void leaveFromApp(String reason)
     {
 
+        JSONObject jsonObject = new JSONObject();
+        try
+        {
+            jsonObject.put("type", "leave");
+            jsonObject.put("leave_reason", reason);
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
 
+        Log.e(TAG,"reason : " + reason);
+        Log.e(TAG,"JSONObject : " + jsonObject.toString());
 
 
         ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
-        Call<String> call = apiInterface.leaveFromApp(token, "leave", reason);
-        Log.e("회원탈퇴 메서드 안", "token : " + token + ", 탈퇴 사유 : " + reason);
+        Call<String> call = apiInterface.WithdrawalApp(token, jsonObject.toString());
+//        Log.e("회원탈퇴 메서드 안", "token : " + token + ", 탈퇴 사유 : " + reason);
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -383,19 +396,19 @@ public class WithdrawActivity extends AppCompatActivity
         try
         {
             JSONObject jsonObject = new JSONObject(result);
-            status = jsonObject.getString("status_code");
+            status_code = jsonObject.getInt("status_code");
             message = jsonObject.getString("message");
         }
         catch (JSONException e)
         {
             e.printStackTrace();
         }
-        if (status.equals("200"))
+        if (status_code == 200)
         {
             // 회원탈퇴 성공한 경우 스플래시 화면부터 다시 앱을 시작하도록 한다
             kakaoUnlink();
         }
-        else if (status.equals("400") || status.equals("404") || status.equals("500"))
+        else if (status_code == 400 || status_code == 404 || status_code == 500)
         {
             Toast.makeText(this, "일시적인 오류가 발생했어요. 잠시 후 다시 시도해 주세요", Toast.LENGTH_SHORT).show();
         }

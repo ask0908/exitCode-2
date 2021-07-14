@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -15,7 +14,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -32,7 +30,6 @@ import com.psj.welfare.fragment.MainFragment;
 import com.psj.welfare.fragment.MyPageFragment;
 import com.psj.welfare.fragment.PushGatherFragment;
 import com.psj.welfare.fragment.SearchFragment;
-import com.psj.welfare.util.DBOpenHelper;
 import com.psj.welfare.util.LogUtil;
 
 import java.io.UnsupportedEncodingException;
@@ -46,7 +43,7 @@ import retrofit2.Response;
 public class MainTabLayoutActivity extends AppCompatActivity
 {
     public final String TAG = this.getClass().getSimpleName();
-    SharedPreferences sharedPreferences;
+//    SharedPreferences sharedPreferences;
 
     ViewPager viewPager;
 
@@ -62,16 +59,21 @@ public class MainTabLayoutActivity extends AppCompatActivity
 
     String result;
 
-    DBOpenHelper helper;
+//    DBOpenHelper helper;
 
 //    DataFromActivityToFragment dataFromActivityToFragment;
 
-    //로그인 토큰 값
-    private String token;
+    //토큰, 세션 아이디
+    private String token, sessionId;
 
     //로그인 관련 쉐어드 singleton
     private SharedSingleton sharedSingleton;
 
+    // API 호출 후 서버 응답코드
+    private int status_code;
+
+    //프래그먼트에서 뒤로가기 버튼 누를 수 있도록 리스너 선언
+//    private OnBackPressedListener listener;
 
     @Override
     protected void onStart()
@@ -89,6 +91,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
         //쉐어드 싱글톤 사용
         sharedSingleton = SharedSingleton.getInstance(this);
         token = sharedSingleton.getToken();
+        sessionId = sharedSingleton.getSessionId();
 
         //sqlite 사용한 흔적
 //        helper = new DBOpenHelper(this);
@@ -106,7 +109,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
 
         analytics = FirebaseAnalytics.getInstance(this);
 
-        sharedPreferences = getSharedPreferences("app_pref", 0);
+//        sharedPreferences = getSharedPreferences("app_pref", 0);
 
         mainFragment = new MainFragment();
         searchFragment = new SearchFragment();
@@ -120,48 +123,47 @@ public class MainTabLayoutActivity extends AppCompatActivity
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
 
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
-        {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
-            {
-            }
-
-            @Override
-            public void onPageSelected(int position)
-            {
-                // 탭을 눌러 프래그먼트가 완벽히 나오게 됐을 때 호출된다
-                switch (position)
-                {
-                    case 0:
-                        // 홈 프래그먼트로 들어왔을 때 혜택, 유튜브 데이터들을 보여준다
-                        String token = sharedPreferences.getString("token", "");
-                        userOrderedWelfare(token);
-                        break;
-
-                    case 1:
-                        //
-                        break;
-
-                    case 2:
-                        //
-                        break;
-
-                    case 3:
-                        //
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state)
-            {
-                // 탭을 눌러 프래그먼트가 완벽히 나오기 바로 전, 완벽히 나온 후에 호출돼 탭을 누를 때마다 2번씩 호출된다
-            }
-        });
+//        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
+//        {
+//            @Override
+//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
+//            {
+//            }
+//
+//            @Override
+//            public void onPageSelected(int position)
+//            {
+//                // 탭을 눌러 프래그먼트가 완벽히 나오게 됐을 때 호출된다
+//                switch (position)
+//                {
+//                    case 0:
+//                        // 홈 프래그먼트로 들어왔을 때 혜택, 유튜브 데이터들을 보여준다
+////                        String token = sharedPreferences.getString("token", "");
+////                        userOrderedWelfare();
+//                        break;
+//                    case 1:
+//                        //
+//                        break;
+//
+//                    case 2:
+//                        //
+//                        break;
+//
+//                    case 3:
+//                        //
+//                        break;
+//
+//                    default:
+//                        break;
+//                }
+//            }
+//
+//            @Override
+//            public void onPageScrollStateChanged(int state)
+//            {
+//                // 탭을 눌러 프래그먼트가 완벽히 나오기 바로 전, 완벽히 나온 후에 호출돼 탭을 누를 때마다 2번씩 호출된다
+//            }
+//        });
 
         Intent intent = getIntent();
         int push_clicked_value = intent.getIntExtra("push", -1);
@@ -264,11 +266,11 @@ public class MainTabLayoutActivity extends AppCompatActivity
                         bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 알람 모아보는 프래그먼트로 진입");
                         analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
                         // 서버에서 전송받은 상태 메시지가 400, 500인 경우 받은 알림이 없다는 메시지를 띄운다
-                        if (sharedPreferences.getString("push_status", "").equals("400") ||
-                                sharedPreferences.getString("push_status", "").equals("500"))
-                        {
-//                        Toast.makeText(MainTabLayoutActivity.this, "현재 받은 알림이 없습니다", Toast.LENGTH_SHORT).show();
-                        }
+//                        if (sharedPreferences.getString("push_status", "").equals("400") ||
+//                                sharedPreferences.getString("push_status", "").equals("500"))
+//                        {
+////                        Toast.makeText(MainTabLayoutActivity.this, "현재 받은 알림이 없습니다", Toast.LENGTH_SHORT).show();
+//                        }
                     }
                     else if (position == 3)
                     {
@@ -416,11 +418,11 @@ public class MainTabLayoutActivity extends AppCompatActivity
                         bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "다른 프래그먼트에서 알람 모아보는 프래그먼트로 진입");
                         analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
                         // 서버에서 전송받은 상태 메시지가 400, 500인 경우 받은 알림이 없다는 메시지를 띄운다
-                        if (sharedPreferences.getString("push_status", "").equals("400") ||
-                                sharedPreferences.getString("push_status", "").equals("500"))
-                        {
-//                        Toast.makeText(MainTabLayoutActivity.this, "현재 받은 알림이 없습니다", Toast.LENGTH_SHORT).show();
-                        }
+//                        if (sharedPreferences.getString("push_status", "").equals("400") ||
+//                                sharedPreferences.getString("push_status", "").equals("500"))
+//                        {
+////                        Toast.makeText(MainTabLayoutActivity.this, "현재 받은 알림이 없습니다", Toast.LENGTH_SHORT).show();
+//                        }
                     }
                     else if (position == 3)
                     {
@@ -460,7 +462,7 @@ public class MainTabLayoutActivity extends AppCompatActivity
                     if (position == 0)
                     {
                         tab.setIcon(R.drawable.home_icon_gray);
-                        userOrderedWelfare(token);
+//                        userOrderedWelfare();
                     }
                     else if (position == 1)
                     {
@@ -502,19 +504,19 @@ public class MainTabLayoutActivity extends AppCompatActivity
     void mypageEnterLog(String user_action)
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        sharedPreferences = getSharedPreferences("app_pref", 0);
-        String token;
-        if (sharedPreferences.getString("token", "").equals(""))
-        {
-            token = null;
-        }
-        else
-        {
-            token = sharedPreferences.getString("token", "");
-        }
-        String session = sharedPreferences.getString("sessionId", "");
+//        sharedPreferences = getSharedPreferences("app_pref", 0);
+//        String token;
+//        if (sharedPreferences.getString("token", "").equals(""))
+//        {
+//            token = null;
+//        }
+//        else
+//        {
+//            token = sharedPreferences.getString("token", "");
+//        }
+//        String session = sharedPreferences.getString("sessionId", "");
         String action = userAction(user_action);
-        Call<String> call = apiInterface.userLog(token, session, "myPage", action, null, LogUtil.getUserLog());
+        Call<String> call = apiInterface.userLog(token, sessionId, "myPage", action, null, LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -542,19 +544,19 @@ public class MainTabLayoutActivity extends AppCompatActivity
     void searchEnterLog(String search_action)
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        sharedPreferences = getSharedPreferences("app_pref", 0);
-        String token;
-        if (sharedPreferences.getString("token", "").equals(""))
-        {
-            token = null;
-        }
-        else
-        {
-            token = sharedPreferences.getString("token", "");
-        }
-        String session = sharedPreferences.getString("sessionId", "");
+//        sharedPreferences = getSharedPreferences("app_pref", 0);
+//        String token;
+//        if (sharedPreferences.getString("token", "").equals(""))
+//        {
+//            token = null;
+//        }
+//        else
+//        {
+//            token = sharedPreferences.getString("token", "");
+//        }
+//        String session = sharedPreferences.getString("sessionId", "");
         String action = userAction(search_action);
-        Call<String> call = apiInterface.userLog(token, session, "search", action, null, LogUtil.getUserLog());
+        Call<String> call = apiInterface.userLog(token, sessionId, "search", action, null, LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -582,19 +584,19 @@ public class MainTabLayoutActivity extends AppCompatActivity
     void alarmLog(String alarm_action)
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        sharedPreferences = getSharedPreferences("app_pref", 0);
-        String token;
-        if (sharedPreferences.getString("token", "").equals(""))
-        {
-            token = null;
-        }
-        else
-        {
-            token = sharedPreferences.getString("token", "");
-        }
-        String session = sharedPreferences.getString("sessionId", "");
+//        sharedPreferences = getSharedPreferences("app_pref", 0);
+//        String token;
+//        if (sharedPreferences.getString("token", "").equals(""))
+//        {
+//            token = null;
+//        }
+//        else
+//        {
+//            token = sharedPreferences.getString("token", "");
+//        }
+//        String session = sharedPreferences.getString("sessionId", "");
         String action = userAction(alarm_action);
-        Call<String> call = apiInterface.userLog(token, session, "push_list", action, null, LogUtil.getUserLog());
+        Call<String> call = apiInterface.userLog(token, sessionId, "push_list", action, null, LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -622,19 +624,19 @@ public class MainTabLayoutActivity extends AppCompatActivity
     void reHomeLog(String home_action)
     {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        sharedPreferences = getSharedPreferences("app_pref", 0);
-        String token;
-        if (sharedPreferences.getString("token", "").equals(""))
-        {
-            token = null;
-        }
-        else
-        {
-            token = sharedPreferences.getString("token", "");
-        }
-        String session = sharedPreferences.getString("sessionId", "");
+//        sharedPreferences = getSharedPreferences("app_pref", 0);
+//        String token;
+//        if (sharedPreferences.getString("token", "").equals(""))
+//        {
+//            token = null;
+//        }
+//        else
+//        {
+//            token = sharedPreferences.getString("token", "");
+//        }
+//        String session = sharedPreferences.getString("sessionId", "");
         String action = userAction(home_action);
-        Call<String> call = apiInterface.userLog(token, session, "home", action, null, LogUtil.getUserLog());
+        Call<String> call = apiInterface.userLog(token, sessionId, "home", action, null, LogUtil.getUserLog());
         call.enqueue(new Callback<String>()
         {
             @Override
@@ -673,25 +675,6 @@ public class MainTabLayoutActivity extends AppCompatActivity
         return user_action;
     }
 
-    /* 백버튼 눌렀을 때 일정 시간이 지난 후 백버튼을 눌러야 앱이 종료되도록 한다 */
-    @Override
-    public void onBackPressed()
-    {
-        if (System.currentTimeMillis() > backKeyPressedTime + 2000)
-        {
-            backKeyPressedTime = System.currentTimeMillis();
-            Toast.makeText(this, "\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        // 2초 이내에 뒤로가기 버튼을 한번 더 클릭 시 앱 종료
-        else if (System.currentTimeMillis() <= backKeyPressedTime + 2000)
-        {
-            Bundle bundle = new Bundle();
-            bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "앱 종료");
-            analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
-            finishAndRemoveTask(); // 액티비티 종료 + 태스크 리스트에서 지우기
-        }
-    }
 
     /* 인터넷 연결 체크하는 메서드 */
     public boolean isNetworkConnected(Context context)
@@ -734,35 +717,62 @@ public class MainTabLayoutActivity extends AppCompatActivity
         window.setBackgroundDrawable(background);
     }
 
-    /* 유저 관심사에 따라 맞춤 혜택들을 보여주는 메서드, 처음에 프래그먼트가 켜질 때 혜택들을 제대로 받아오지 못하는 경우가 있다
-     * 로그인 해야 맞춤 혜택이 보이도록 처리해야 함 */
-    public void userOrderedWelfare(String token)
+
+
+
+
+//    /* 유저 관심사에 따라 맞춤 혜택들을 보여주는 메서드, 처음에 프래그먼트가 켜질 때 혜택들을 제대로 받아오지 못하는 경우가 있다
+//     * 로그인 해야 맞춤 혜택이 보이도록 처리해야 함 */
+//    public void userOrderedWelfare()
+//    {
+////        sharedPreferences = getSharedPreferences("app_pref", 0);
+////        token = sharedPreferences.getString("token", "");
+//        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+//        Call<String> call = apiInterface.userOrderedWelfare(token, "customized", LogUtil.getUserLog());   // 2번 인자는 customized로 고정이다
+//        call.enqueue(new Callback<String>()
+//        {
+//            @Override
+//            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
+//            {
+//                if (response.isSuccessful() && response.body() != null)
+//                {
+//                    result = response.body();
+//                    Log.e(TAG,"result" + result);
+//                }
+//                else
+//                {
+//                    Log.e(TAG, "맞춤 혜택 가져오기 실패 : " + response.body());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
+//            {
+//                Log.e(TAG, "맞춤 혜택 가져오기 에러 : " + t.getMessage());
+//            }
+//        });
+//    }
+
+    /* 백버튼 눌렀을 때 일정 시간이 지난 후 백버튼을 눌러야 앱이 종료되도록 한다 */
+    @Override
+    public void onBackPressed()
     {
-        sharedPreferences = getSharedPreferences("app_pref", 0);
-        token = sharedPreferences.getString("token", "");
-        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<String> call = apiInterface.userOrderedWelfare(token, "customized", LogUtil.getUserLog());   // 2번 인자는 customized로 고정이다
-        call.enqueue(new Callback<String>()
-        {
-            @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
+            if (System.currentTimeMillis() > backKeyPressedTime + 2000)
             {
-                if (response.isSuccessful() && response.body() != null)
-                {
-                    result = response.body();
-                }
-                else
-                {
-                    Log.e(TAG, "맞춤 혜택 가져오기 실패 : " + response.body());
-                }
+                backKeyPressedTime = System.currentTimeMillis();
+                Toast.makeText(this, "\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            // 2초 이내에 뒤로가기 버튼을 한번 더 클릭 시 앱 종료
+            else if (System.currentTimeMillis() <= backKeyPressedTime + 2000)
+            {
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "앱 종료");
+                analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+                finishAndRemoveTask(); // 액티비티 종료 + 태스크 리스트에서 지우기
             }
 
-            @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t)
-            {
-                Log.e(TAG, "맞춤 혜택 가져오기 에러 : " + t.getMessage());
-            }
-        });
+
     }
 
     @Override

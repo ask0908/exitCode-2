@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -106,6 +107,9 @@ public class YoutubeActivity extends AppCompatActivity
 
     //쉐어드 싱글톤
     private SharedSingleton sharedSingleton;
+
+    // API 호출 후 서버 응답코드
+    private int status_code;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -308,7 +312,6 @@ public class YoutubeActivity extends AppCompatActivity
     //유튜브 데이터 서버에서 받아오기
     public void youtubedata(int page){
 
-
         //서버 연결전에 프로그래스바 보여주기
         final ProgressDialog dialog = new ProgressDialog(this);
         dialog.setMax(100);
@@ -316,7 +319,6 @@ public class YoutubeActivity extends AppCompatActivity
         dialog.setCancelable(false); //"false"면 다이얼로그 나올 때 dismiss 띄우기 전까지 안사라짐
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.show();
-
 
         if(Islogin) //로그인 했을 경우
         {
@@ -330,9 +332,22 @@ public class YoutubeActivity extends AppCompatActivity
                     if (response.isSuccessful() && response.body() != null)
                     {
                         String result = response.body();
+//                        Log.e(TAG,"유튜브 로그인: " + result);
 
-//                        Log.e(TAG,"result1 : " + result);
-                        responseParse(result);
+                        JSONObject jsonObject = null;
+                        try {
+                            jsonObject = new JSONObject(result);
+                            status_code = jsonObject.getInt("status_code");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        //서버에서 정상적으로 값을 받았다면
+                        if(status_code == 200){
+                            responseParse(result);
+                        } else {
+                            Toast.makeText(YoutubeActivity.this,"오류가 발생했습니다",Toast.LENGTH_SHORT).show();
+                        }
                     }
                     else
                     {
@@ -363,8 +378,22 @@ public class YoutubeActivity extends AppCompatActivity
                     if (response.isSuccessful() && response.body() != null)
                     {
                         String result = response.body();
+//                        Log.e(TAG,"유튜브 비로그인: " + result);
 
-                        responseParse(result);
+                        JSONObject jsonObject = null;
+                        try {
+                            jsonObject = new JSONObject(result);
+                            status_code = jsonObject.getInt("status_code");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        //서버에서 정상적으로 값을 받았다면
+                        if(status_code == 200){
+                            responseParse(result);
+                        } else {
+                            Toast.makeText(YoutubeActivity.this,"오류가 발생했습니다",Toast.LENGTH_SHORT).show();
+                        }
                     }
                     else
                     {
@@ -453,24 +482,6 @@ public class YoutubeActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //    public static Object getkey(HashMap<String, String> hashmap, Object value)
@@ -698,14 +709,6 @@ public class YoutubeActivity extends AppCompatActivity
 //        }
 //        return str;
 //    }
-
-
-
-
-
-
-
-
 
 
 

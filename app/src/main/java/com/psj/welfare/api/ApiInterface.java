@@ -1122,6 +1122,13 @@ public interface ApiInterface
             @Query("leave_reason") String reason
     );
 
+    //회원 탈퇴
+    @POST("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/leave-member")
+    Call<String> WithdrawalApp(
+            @Header("logintoken") String LoginToken,
+            @Body String reason
+    );
+
     // 리뷰 작성 테스트
     @POST("https://8daummzu2k.execute-api.ap-northeast-2.amazonaws.com/v2/review")
     Call<String> reviewWrite(

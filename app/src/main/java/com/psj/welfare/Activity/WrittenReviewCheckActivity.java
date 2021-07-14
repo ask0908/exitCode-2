@@ -96,9 +96,12 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
     //쉐어드 싱글톤
     private SharedSingleton sharedSingleton;
 
-    String message, status;
+    String message;
 
     private Parcelable recyclerViewState;
+
+    // API 호출 후 서버 응답코드
+    private int status_code;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -223,8 +226,23 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
             {
                 if (s != null)
                 {
-                    parsingResult(s);
-                    dialog.dismiss();
+                    Log.e(TAG,"작성한 리뷰 체크 : " + s);
+                    JSONObject jsonObject = null;
+                    try {
+                        jsonObject = new JSONObject(s);
+                        status_code = jsonObject.getInt("status_code");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    //서버에서 정상적으로 값을 받았다면
+                    if(status_code == 200){
+                        parsingResult(s);
+                        dialog.dismiss();
+                    } else {
+                        Toast.makeText(WrittenReviewCheckActivity.this,"오류가 발생했습니다",Toast.LENGTH_SHORT).show();
+                    }
+
                 }
             }
         };
@@ -360,7 +378,45 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
-                    removeResponseParse(response.body());
+
+                    try
+                    {
+                        JSONObject result_object = new JSONObject(response.body());
+                        status_code = result_object.getInt("status_code");
+                    }
+                    catch (JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+
+                    //서버에서 정상적으로 값을 받았다면
+                    if(status_code == 200){
+                        removeResponseParse(response.body());
+                    } else {
+                        Toast.makeText(WrittenReviewCheckActivity.this,"오류가 발생했습니다",Toast.LENGTH_SHORT).show();
+                    }
+
+//                    if (s != null)
+//                    {
+//                        Log.e(TAG,"작성한 리뷰 체크 : " + s);
+//                        JSONObject jsonObject = null;
+//                        try {
+//                            jsonObject = new JSONObject(s);
+//                            status_code = jsonObject.getInt("status_code");
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                        //서버에서 정상적으로 값을 받았다면
+//                        if(status_code == 200){
+//                            parsingResult(s);
+//                            dialog.dismiss();
+//                        } else {
+//                            Toast.makeText(WrittenReviewCheckActivity.this,"오류가 발생했습니다",Toast.LENGTH_SHORT).show();
+//                        }
+//
+//                    }
                 }
             }
 
@@ -375,23 +431,9 @@ public class WrittenReviewCheckActivity extends AppCompatActivity
     /* 리뷰 삭제 결과 파싱 */
     private void removeResponseParse(String result)
     {
-        try
-        {
-            JSONObject result_object = new JSONObject(result);
-            status = result_object.getString("statusCode");
-            message = result_object.getString("message");
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-
-        if (status.equals("200"))
-        {
-            Toast.makeText(this, "리뷰가 성공적으로 삭제됐어요", Toast.LENGTH_SHORT).show();
-            getMyReview(String.valueOf(page));
-            adapter.notifyDataSetChanged();
-        }
+        Toast.makeText(this, "리뷰가 성공적으로 삭제됐어요", Toast.LENGTH_SHORT).show();
+        getMyReview(String.valueOf(page));
+        adapter.notifyDataSetChanged();
     }
 
     /* 상태바 색상 변경 */

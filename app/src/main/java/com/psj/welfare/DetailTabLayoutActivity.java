@@ -87,6 +87,8 @@ public class DetailTabLayoutActivity extends AppCompatActivity
     //로그인관련 쉐어드 singleton
     private SharedSingleton sharedSingleton;
 
+    // API 호출 후 서버 응답코드
+    private int status_code;
 
     //공유하기 버튼 중복 클릭 방지 시간 설정 ( 해당 시간 이후에 다시 클릭 가능 )
     private static final long MIN_CLICK_INTERVAL = 600;
@@ -311,6 +313,7 @@ public class DetailTabLayoutActivity extends AppCompatActivity
 
     //북마크 하기
     private void SetBookmark() {
+
         //서버에서 값을 받는걸 기다리기에는 적용이 너무 느림
         if (isBookmark.equals("true")) { //북마크를 했었다면 북마크 취소하기
             isBookmark = "false"; //북마크 값을 false
@@ -330,7 +333,22 @@ public class DetailTabLayoutActivity extends AppCompatActivity
         call.enqueue(new Callback<String>() { //enqueue로 비동기 통신 실행, 통신 완료 후 이벤트 처리 위한 callback 리스너 등록
             @Override
             public void onResponse(Call<String> call, retrofit2.Response<String> response) { //onResponse 통신 성공시 callback
-//                Log.e("결과",response.body().toString());
+//                Log.e("결과",response.body());
+                String result = response.body();
+
+                String message = null;
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(result);
+                    status_code = jsonObject.getInt("status_code");
+                    message = jsonObject.getString("message");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                if(status_code == 200){
+                    Log.e(TAG,message);
+                }
 
             }
             @Override
