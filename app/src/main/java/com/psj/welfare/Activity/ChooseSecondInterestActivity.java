@@ -90,6 +90,8 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
     //로그인 관련 쉐어드 singleton
     private SharedSingleton sharedSingleton;
 
+    //서버에서 받은 statusCode 값
+    private String statusCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -367,9 +369,24 @@ public class ChooseSecondInterestActivity extends AppCompatActivity
             {
                 if (response.isSuccessful() && response.body() != null)
                 {
+
                     String result = response.body();
                     Log.e(TAG, "서버에 저장된 내 관심사 : " + result);
-                    parseInterest(result);
+
+
+                    JSONObject jsonObject = null;
+                    try {
+                        jsonObject = new JSONObject(result);
+                        statusCode = jsonObject.getString("statusCode");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    //서버에서 정상적으로 값을 받았다면
+                    if(statusCode.equals("200")){
+                        parseInterest(result);
+                    }
+
                 }
                 else
                 {
