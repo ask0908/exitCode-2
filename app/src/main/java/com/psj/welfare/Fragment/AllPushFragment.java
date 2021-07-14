@@ -102,6 +102,8 @@ public class AllPushFragment extends Fragment
     {
         super.onViewCreated(view, savedInstanceState);
 
+        sharedPreferences = getActivity().getSharedPreferences("app_pref", 0);
+
         push_recyclerview = view.findViewById(R.id.push_recyclerview);
         push_recyclerview.setHasFixedSize(true);
         push_recyclerview.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
