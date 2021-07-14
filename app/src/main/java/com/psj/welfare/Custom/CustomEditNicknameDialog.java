@@ -123,12 +123,6 @@ public class CustomEditNicknameDialog
                 spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#757576")), 0, spannableString.length(),
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 binding.goodOrBadTextview.setText(spannableString);
-
-
-
-
-
-                    
             });
 
 
@@ -155,7 +149,13 @@ public class CustomEditNicknameDialog
 
 
                     duplicationCheck(binding.editNicknameEdittext.getText().toString(), "check");
-                    dialogListener.onDuplicatedCheck(!isDuplicated);
+
+
+
+
+
+
+//                    dialogListener.onDuplicatedCheck(!isDuplicated);
 
 
 
@@ -236,6 +236,7 @@ public class CustomEditNicknameDialog
     // 닉네임 중복 검사
     void duplicationCheck(String nickname, String type)
     {
+//        Log.e(TAG,"nickname : " + nickname);
 //        Cursor cursor = helper.selectColumns();
 //        if (cursor != null)
 //        {
@@ -244,9 +245,7 @@ public class CustomEditNicknameDialog
 //                sqlite_token = cursor.getString(cursor.getColumnIndex("token"));
 //            }
 //        }
-
-//        Logger.d("token : " + sqlite_token + ", 변경할 닉네임 : " + nickname + ", type : " + type);
-
+//        Logger.e("token : " + token + ", 변경할 닉네임 : " + nickname + ", type : " + type);
 
         ApiInterface apiInterface = ApiClient.getRetrofit().create(ApiInterface.class);
         Call<String> call = apiInterface.editNickname(token, nickname, type);
@@ -255,6 +254,11 @@ public class CustomEditNicknameDialog
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response)
             {
+//                Log.e(TAG,"testnickname");
+//                Log.e(TAG,"response.body() : " + response.body());
+//                Log.e(TAG,"response.isSuccessful() : " + response.isSuccessful());
+
+
                 if (response.isSuccessful() && response.body() != null)
                 {
                     String result = response.body();

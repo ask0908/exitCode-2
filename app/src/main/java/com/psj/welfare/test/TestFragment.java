@@ -913,7 +913,10 @@ public class TestFragment extends Fragment
         //나중에 옵저버블로 바꿔야함!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         //마이페이지에서 닉네임 변경후 바로 적용할 수 있도록
         //생명 주기 이용해서 작업중
-        Welfdata_first_title.setText(sharedSingleton.getNickname() + "님");
+        if(sharedSingleton.getNickname() != null){
+            Welfdata_first_title.setText(sharedSingleton.getNickname() + "님");
+        }
+
     }
 
 

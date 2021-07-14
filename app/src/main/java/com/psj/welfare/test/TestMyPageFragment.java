@@ -186,12 +186,11 @@ public class TestMyPageFragment extends Fragment
             CustomEditNicknameDialog dialog = new CustomEditNicknameDialog(getActivity());
             dialog.setDialogListener(new MyDialogListener()
             {
-                @Override
-                public void onDuplicatedCheck(boolean isDuplicated)
-                {
-                    Log.e(TAG, "닉네임 중복 여부 확인 : " + isDuplicated);
-                }
-
+//                @Override
+//                public void onDuplicatedCheck(boolean isDuplicated)
+//                {
+//                    Log.e(TAG, "닉네임 중복 여부 확인 : " + isDuplicated);
+//                }
                 @SuppressLint("CheckResult")
                 @Override
                 public void onPositiveClicked(String message)
